@@ -1,0 +1,21 @@
+# Files Fern must not modify or delete when regenerating this repo.
+#
+# Fern owns the SDK source and its ci.yml, and prunes anything it did not generate — it
+# reads this file from the pull request's base branch, so an entry only protects a file
+# once it is on main.
+#
+# publish-main.yml is hand-written: it releases the whop_sdk crate when a merge to main
+# lands a Cargo.toml [package] version that is not yet on crates.io. It is meant to be the
+# only path to crates.io, and it authenticates with the CARGO_REGISTRY_TOKEN secret.
+#
+# Unlike the Ruby generator, the Fern Rust generator's ci.yml carries no publish job — it
+# is check / compile / test on push and holds no id-token or registry credential — so
+# there is no second path to the registry to neutralise, and ci.yml is left to Fern.
+#
+# LICENSE is listed ahead of the file existing. Fern does not carry over a LICENSE, and
+# crates.io rejects an upload from a manifest with no license or license-file; the
+# generator currently defaults Cargo.toml to `license = "MIT"` on its own. Whoever settles
+# that decision should land the matching LICENSE file, and this entry keeps the next
+# regeneration from deleting it.
+.github/workflows/publish-main.yml
+LICENSE
