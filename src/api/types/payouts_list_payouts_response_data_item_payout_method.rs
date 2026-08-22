@@ -1,0 +1,49 @@
+pub use crate::prelude::*;
+
+/// The saved payout method used. Requires payout:destination:read; null without it.
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+pub struct ListPayoutsResponseDataItemPayoutMethod {
+    /// Saved payout method nickname.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub nickname: Option<String>,
+    /// Supported payout method display details.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub supported_payout_method:
+        Option<ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod>,
+}
+
+impl ListPayoutsResponseDataItemPayoutMethod {
+    pub fn builder() -> ListPayoutsResponseDataItemPayoutMethodBuilder {
+        <ListPayoutsResponseDataItemPayoutMethodBuilder as Default>::default()
+    }
+}
+
+#[derive(Clone, PartialEq, Default, Debug)]
+#[non_exhaustive]
+pub struct ListPayoutsResponseDataItemPayoutMethodBuilder {
+    nickname: Option<String>,
+    supported_payout_method: Option<ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod>,
+}
+
+impl ListPayoutsResponseDataItemPayoutMethodBuilder {
+    pub fn nickname(mut self, value: impl Into<String>) -> Self {
+        self.nickname = Some(value.into());
+        self
+    }
+
+    pub fn supported_payout_method(
+        mut self,
+        value: ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod,
+    ) -> Self {
+        self.supported_payout_method = Some(value);
+        self
+    }
+
+    /// Consumes the builder and constructs a [`ListPayoutsResponseDataItemPayoutMethod`].
+    pub fn build(self) -> Result<ListPayoutsResponseDataItemPayoutMethod, BuildError> {
+        Ok(ListPayoutsResponseDataItemPayoutMethod {
+            nickname: self.nickname,
+            supported_payout_method: self.supported_payout_method,
+        })
+    }
+}

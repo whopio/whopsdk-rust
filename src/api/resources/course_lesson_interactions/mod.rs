@@ -1,0 +1,2 @@
+pub mod course_lesson_interactions;
+pub use course_lesson_interactions::CourseLessonInteractionsClient;
