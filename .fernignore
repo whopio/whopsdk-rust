@@ -12,10 +12,11 @@
 # is check / compile / test on push and holds no id-token or registry credential — so
 # there is no second path to the registry to neutralise, and ci.yml is left to Fern.
 #
-# LICENSE is listed ahead of the file existing. Fern does not carry over a LICENSE, and
-# crates.io rejects an upload from a manifest with no license or license-file; the
-# generator currently defaults Cargo.toml to `license = "MIT"` on its own. Whoever settles
-# that decision should land the matching LICENSE file, and this entry keeps the next
-# regeneration from deleting it.
+# LICENSE is hand-written and this entry keeps the next regeneration from deleting it.
+# Fern does not carry over a LICENSE of its own for Rust, and the file ships inside the
+# crate, so the licence Cargo.toml claims would otherwise be a claim with nothing behind
+# it. It currently reads MIT because the Rust generator hardcodes `license = "MIT"` into
+# Cargo.toml; whoever changes that has to change this file in the same commit, and the
+# release workflow fails the two apart.
 .github/workflows/publish-main.yml
 LICENSE

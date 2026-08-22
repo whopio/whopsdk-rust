@@ -16,20 +16,24 @@ permissions:
   contents: read
 
 concurrency:
-  group: publish-whop-sdk
-  cancel-in-progress: false
+  group: publish-whop-sdk-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   CRATE_NAME: whop_sdk
   MANIFEST: Cargo.toml
+  LOCKFILE: Cargo.lock
   CONFIG_FILE: src/config.rs
   METADATA_FILE: .fern/metadata.json
+  README_FILE: README.md
+  LICENSE_FILE: LICENSE
   RESOURCE_DIR: src/api/resources
   MIN_RESOURCE_MODULES: "40"
   CRATES_IO_UA: "whopsdk-release (github.com/whopio/whopsdk-rust)"
 
 jobs:
   decide:
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       release: ${{ steps.gate.outputs.release }}
@@ -41,6 +45,51 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
 
+      - name: Write the version-regression guard
+        run: |
+          set -euo pipefail
+          cat > "${RUNNER_TEMP}/version_ge.sh" <<'SH'
+          version_ge() {
+            if [ "$1" = "$2" ]; then
+              return 0
+            fi
+            [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ]
+          }
+          SH
+
+      - name: Self-test the version-regression guard
+        run: |
+          set -euo pipefail
+          . "${RUNNER_TEMP}/version_ge.sh"
+          failures=0
+
+          check() {
+            if version_ge "$1" "$2"; then
+              actual=allow
+            else
+              actual=block
+            fi
+
+            if [ "$actual" = "$3" ]; then
+              echo "ok: $1 vs $2 -> $actual"
+            else
+              echo "::error::version guard: $1 vs $2 expected $3, got $actual"
+              failures=$((failures + 1))
+            fi
+          }
+
+          check 1.0.11 1.0.11 allow
+          check 1.0.12 1.0.11 allow
+          check 1.0.11 1.0.12 block
+          check 1.0.10 1.0.9 allow
+          check 1.0.9 1.0.10 block
+          check 1.10.0 1.9.0 allow
+          check 1.9.0 1.10.0 block
+          check 2.0.0 1.99.99 allow
+          check 1.99.99 2.0.0 block
+
+          [ "$failures" -eq 0 ]
+
       - name: Decide whether to release
         id: gate
         env:
@@ -48,18 +97,35 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: |
           set -euo pipefail
+          . "${RUNNER_TEMP}/version_ge.sh"
 
           emit() { echo "$1=$2" >> "$GITHUB_OUTPUT"; }
+
+          if [ "$EVENT" = "pull_request" ] || [ "$DRY_RUN" = "true" ]; then
+            dry=true
+          else
+            dry=false
+          fi
+          emit dry "$dry"
+          echo "event=${EVENT} ref=${GITHUB_REF} dry=${dry}"
+
+          refuse() {
+            if [ "$dry" = "true" ]; then
+              echo "::warning::[dry] a real release would stop here: $*"
+              return 0
+            fi
+            echo "::error::$*"
+            exit 1
+          }
 
           if [ ! -f "$MANIFEST" ]; then
             echo "::notice::${MANIFEST} does not exist — this is not a tree this workflow can release."
             emit release false
-            emit dry true
             emit version ""
             exit 0
           fi
 
-          python3 - "$MANIFEST" > /tmp/package.env <<'PY'
+          python3 - "$MANIFEST" > "${RUNNER_TEMP}/package.env" <<'PY'
           import sys
           import tomllib
 
@@ -72,19 +138,19 @@ jobs:
           print("license=" + (license if isinstance(license, str) else ""))
           PY
 
-          version=$(sed -n 's/^version=//p' /tmp/package.env)
-          license=$(sed -n 's/^license=//p' /tmp/package.env)
+          version=$(sed -n 's/^version=//p' "${RUNNER_TEMP}/package.env")
+          license=$(sed -n 's/^license=//p' "${RUNNER_TEMP}/package.env")
 
           if [ -z "$version" ]; then
             echo "::error::${MANIFEST} has no [package] version."
             exit 1
           fi
 
-          echo "${MANIFEST} version: $version"
+          echo "${MANIFEST} version: ${version}"
           emit version "$version"
 
           if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "::error::'$version' is not stable semver; prereleases are not released from main."
+            echo "::error::'${version}' is not stable semver; prereleases are not released from main."
             exit 1
           fi
 
@@ -92,70 +158,162 @@ jobs:
             echo "::error::${MANIFEST} declares neither license nor license-file. crates.io rejects the upload, but cargo only warns and a dry run stays green, so this has to fail here."
             exit 1
           fi
-          echo "${MANIFEST} license: $license"
+          echo "${MANIFEST} license: ${license}"
 
-          if [ "$EVENT" = "pull_request" ] || [ "$DRY_RUN" = "true" ]; then
-            echo "Dry run: packaging and verifying the crate, publishing nothing."
-            emit release true
-            emit dry true
-            exit 0
+          if [ ! -f "$LICENSE_FILE" ]; then
+            refuse "${MANIFEST} claims ${license} but the tree carries no ${LICENSE_FILE}. cargo packages a crate without one and emits no warning at all, and the licence a published crate claims cannot be withdrawn."
+          else
+            license_ok=no
+            case "$license" in
+              MIT)
+                if grep -qF 'MIT License' "$LICENSE_FILE"; then license_ok=yes; fi
+                ;;
+              Apache-2.0)
+                if grep -qF 'Apache License' "$LICENSE_FILE" && grep -qF 'Version 2.0' "$LICENSE_FILE"; then license_ok=yes; fi
+                ;;
+              *)
+                refuse "${MANIFEST} claims ${license}, which this workflow cannot check against ${LICENSE_FILE}. Teach it that identifier before releasing under it."
+                license_ok=skipped
+                ;;
+            esac
+
+            if [ "$license_ok" = "no" ]; then
+              echo "::group::${LICENSE_FILE}"
+              head -5 "$LICENSE_FILE"
+              echo "::endgroup::"
+              refuse "${MANIFEST} claims ${license} but ${LICENSE_FILE} does not read like ${license}. The manifest and the shipped file have to agree before the first publish."
+            elif [ "$license_ok" = "yes" ]; then
+              echo "${LICENSE_FILE} matches the declared ${license}."
+            fi
           fi
 
-          emit dry false
+          verdict=skip
+          summary=""
 
-          if [ "$EVENT" = "push" ]; then
-            changed=$(git diff --name-only HEAD^ HEAD)
-            if [ "$changed" != "$MANIFEST" ]; then
-              echo "::error::a release push must change ${MANIFEST} and nothing else. Changed:"
-              printf '%s\n' "$changed"
-              exit 1
-            fi
+          if ! git rev-parse --verify --quiet HEAD^ >/dev/null; then
+            refuse "HEAD has no parent, so the only-version-changed check cannot run at all."
+          elif ! git cat-file -e "HEAD^:${MANIFEST}" 2>/dev/null; then
+            verdict=bad
+            summary="${MANIFEST} did not exist in HEAD^; this commit introduces it rather than bumping a version."
+          else
+            git show "HEAD^:${MANIFEST}" > "${RUNNER_TEMP}/manifest.before"
+            changed_files=$(git diff --name-only HEAD^ HEAD)
+            changed_keys=$(python3 - "${RUNNER_TEMP}/manifest.before" "$MANIFEST" <<'PY'
+          import sys
+          import tomllib
 
-            body=$(git diff -U0 HEAD^ HEAD -- "$MANIFEST" | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' || true)
-            if [ "$(printf '%s\n' "$body" | grep -cvE '^[+-]version = ')" -ne 0 ]; then
-              echo "::error::a release push must change only the version line. Diff:"
-              printf '%s\n' "$body"
-              exit 1
+
+          def flatten(node, prefix=""):
+              flat = {}
+              if isinstance(node, dict):
+                  for key, value in node.items():
+                      flat.update(flatten(value, f"{prefix}.{key}" if prefix else key))
+              elif isinstance(node, list):
+                  for index, value in enumerate(node):
+                      flat.update(flatten(value, f"{prefix}[{index}]"))
+              else:
+                  flat[prefix] = node
+              return flat
+
+
+          def load(path):
+              with open(path, "rb") as handle:
+                  return flatten(tomllib.load(handle))
+
+
+          before, after = load(sys.argv[1]), load(sys.argv[2])
+          for key in sorted(set(before) | set(after)):
+              if before.get(key) != after.get(key):
+                  print(key)
+          PY
+          )
+
+            if ! printf '%s\n' "$changed_keys" | grep -qxF 'package.version'; then
+              verdict=noop
+              summary="${MANIFEST} [package] version is unchanged between HEAD^ and HEAD."
+            elif [ "$changed_keys" != "package.version" ]; then
+              verdict=bad
+              summary="a release commit must change [package] version and nothing else in ${MANIFEST}. Changed keys: $(printf '%s' "$changed_keys" | tr '\n' ' ')"
+            elif [ "$changed_files" != "$MANIFEST" ]; then
+              verdict=bad
+              summary="a release commit must change ${MANIFEST} and nothing else. Changed files: $(printf '%s' "$changed_files" | tr '\n' ' ')"
+            else
+              verdict=good
             fi
           fi
 
-          status=$(curl -sS -o /dev/null -w '%{http_code}' -H "User-Agent: ${CRATES_IO_UA}" \
-            "https://crates.io/api/v1/crates/${CRATE_NAME}/${version}")
-
-          case "$status" in
-            200)
-              echo "::notice::${CRATE_NAME} ${version} is already on crates.io; nothing to publish."
-              emit release false
-              exit 0
+          case "$verdict" in
+            good)
+              echo "HEAD bumps [package] version in ${MANIFEST} and changes nothing else."
               ;;
-            404) ;;
-            *)
-              echo "::error::crates.io returned HTTP ${status} for ${CRATE_NAME} ${version}; refusing to guess whether it is published."
-              exit 1
+            noop)
+              echo "::notice::${summary} There is nothing to release."
+              if [ "$dry" = "false" ]; then
+                emit release false
+                exit 0
+              fi
+              ;;
+            bad)
+              if [ "$EVENT" = "pull_request" ]; then
+                echo "::notice::[pull_request] this is not a release commit, so the diff is informational: ${summary}"
+              else
+                refuse "$summary"
+              fi
               ;;
           esac
 
-          crate_status=$(curl -sS -o /tmp/crate.json -w '%{http_code}' -H "User-Agent: ${CRATES_IO_UA}" \
-            "https://crates.io/api/v1/crates/${CRATE_NAME}")
+          crate_status=$(curl -sS --max-time 30 -o "${RUNNER_TEMP}/crate.json" -w '%{http_code}' \
+            -H "User-Agent: ${CRATES_IO_UA}" \
+            "https://crates.io/api/v1/crates/${CRATE_NAME}" || echo 000)
+          echo "crates.io returned HTTP ${crate_status} for ${CRATE_NAME}"
 
           case "$crate_status" in
             200)
-              latest=$(python3 -c 'import json; print(json.load(open("/tmp/crate.json"))["crate"]["max_version"])')
-              echo "Latest on crates.io: $latest"
-              highest=$(printf '%s\n%s\n' "$latest" "$version" | sort -V | tail -1)
-              if [ "$latest" != "$version" ] && [ "$highest" = "$latest" ]; then
-                echo "::error::${MANIFEST} is at ${version} but crates.io already has ${latest}. This branch was generated before that release; regenerate it before merging."
-                exit 1
+              latest=$(python3 -c 'import json; print(json.load(open("'"${RUNNER_TEMP}"'/crate.json"))["crate"]["max_version"])' || true)
+              if [ -z "$latest" ]; then
+                refuse "crates.io answered 200 for ${CRATE_NAME} but the response carried no crate.max_version; refusing to guess the published version."
+              else
+                echo "Latest on crates.io: ${latest}"
+                if version_ge "$version" "$latest"; then
+                  echo "${version} is at or ahead of ${latest}."
+                else
+                  refuse "${MANIFEST} is at ${version} but crates.io already has ${latest}. This branch was generated before that release; regenerate it before merging."
+                fi
               fi
               ;;
             404)
               echo "::warning::${CRATE_NAME} is not on crates.io. Publishing ${version} claims the name permanently and cannot be undone — yanking hides a version, it never deletes one."
               ;;
             *)
-              echo "::error::crates.io returned HTTP ${crate_status} for ${CRATE_NAME}; refusing to guess the published version."
-              exit 1
+              refuse "crates.io returned HTTP ${crate_status} for ${CRATE_NAME}; refusing to guess the published version."
               ;;
           esac
+
+          status=$(curl -sS --max-time 30 -o /dev/null -w '%{http_code}' \
+            -H "User-Agent: ${CRATES_IO_UA}" \
+            "https://crates.io/api/v1/crates/${CRATE_NAME}/${version}" || echo 000)
+          echo "crates.io returned HTTP ${status} for ${CRATE_NAME} ${version}"
+
+          published=unknown
+          case "$status" in
+            200) published=yes ;;
+            404) published=no ;;
+            *)
+              refuse "crates.io returned HTTP ${status} for ${CRATE_NAME} ${version}; refusing to guess whether it is published."
+              ;;
+          esac
+
+          if [ "$dry" = "true" ]; then
+            echo "Dry run: packaging and verifying the crate, publishing nothing."
+            emit release true
+            exit 0
+          fi
+
+          if [ "$published" = "yes" ]; then
+            echo "::notice::${CRATE_NAME} ${version} is already on crates.io; nothing to publish."
+            emit release false
+            exit 0
+          fi
 
           emit release true
 
@@ -193,7 +351,7 @@ jobs:
           VERSION: ${{ needs.decide.outputs.version }}
         run: |
           set -euo pipefail
-          python3 - "$VERSION" "$CONFIG_FILE" "$METADATA_FILE" <<'PY'
+          python3 - "$VERSION" "$CONFIG_FILE" "$METADATA_FILE" "$README_FILE" "$CRATE_NAME" <<'PY'
           import json
           import pathlib
           import re
@@ -202,6 +360,8 @@ jobs:
           version = sys.argv[1]
           config_path = pathlib.Path(sys.argv[2])
           metadata_path = pathlib.Path(sys.argv[3])
+          readme_path = pathlib.Path(sys.argv[4])
+          crate_name = sys.argv[5]
           stamped = 0
 
           if config_path.exists():
@@ -222,18 +382,55 @@ jobs:
                       stamped += 1
               metadata_path.write_text(json.dumps(metadata, indent=2) + "\n")
 
+          if readme_path.exists():
+              text = readme_path.read_text()
+              pattern = rf'(?m)^({re.escape(crate_name)}\s*=\s*")[0-9][^"]*'
+              text, count = re.subn(pattern, rf"\g<1>{version}", text)
+              if count == 0:
+                  sys.exit(
+                      f"::error::{readme_path} ships inside the crate and is the crates.io landing page, "
+                      f'but it carries no `{crate_name} = "<version>"` install line to stamp'
+                  )
+              readme_path.write_text(text)
+              stamped += count
+
           print(f"stamped {stamped} occurrence(s) with {version}")
           PY
 
-          stale=$(grep -rEn '"X-Fern-SDK-Version"' src | grep -v "\"${VERSION}\"" || true)
+          stale=$(grep -rIn --exclude-dir=.git --exclude-dir=target \
+            -E "X-Fern-SDK-Version|^${CRATE_NAME}[[:space:]]*=[[:space:]]*\"[0-9]" . \
+            | grep -E '[0-9]+\.[0-9]+\.[0-9]+' \
+            | grep -Fv "\"${VERSION}\"" || true)
           if [ -n "$stale" ]; then
-            echo "::error::the source tree still reports a version other than ${VERSION}:"
+            echo "::error::the tree still reports a version other than ${VERSION}:"
             printf '%s\n' "$stale"
             exit 1
           fi
 
+      - name: Resolve dependencies
+        run: |
+          set -euo pipefail
+          cargo generate-lockfile
+          if [ ! -f "$LOCKFILE" ]; then
+            echo "::error::cargo generate-lockfile did not produce ${LOCKFILE}."
+            exit 1
+          fi
+          echo "${LOCKFILE}: $(grep -c '^\[\[package\]\]' "$LOCKFILE") resolved packages"
+
+      - name: Check the lockfile records this version
+        env:
+          VERSION: ${{ needs.decide.outputs.version }}
+        run: |
+          set -euo pipefail
+          locked=$(grep -A1 -F "name = \"${CRATE_NAME}\"" "$LOCKFILE" | sed -n 's/^version = "\(.*\)"$/\1/p' || true)
+          if [ "$locked" != "$VERSION" ]; then
+            echo "::error::${LOCKFILE} records ${CRATE_NAME} ${locked:-<missing>}, expected ${VERSION}."
+            exit 1
+          fi
+          echo "${LOCKFILE} records ${CRATE_NAME} ${VERSION}"
+
       - name: Test
-        run: cargo test
+        run: cargo test --locked
 
       - name: Package and verify the crate
         id: package
@@ -241,7 +438,7 @@ jobs:
           VERSION: ${{ needs.decide.outputs.version }}
         run: |
           set -euo pipefail
-          cargo package --allow-dirty
+          cargo package --locked --allow-dirty
 
           crate="target/package/${CRATE_NAME}-${VERSION}.crate"
           if [ ! -f "$crate" ]; then
@@ -250,36 +447,53 @@ jobs:
             exit 1
           fi
 
-          locked=$(grep -A1 -F "name = \"${CRATE_NAME}\"" Cargo.lock | sed -n 's/^version = "\(.*\)"$/\1/p' || true)
-          if [ "$locked" != "$VERSION" ]; then
-            echo "::error::Cargo.lock records ${CRATE_NAME} ${locked:-<missing>}, expected ${VERSION}."
-            exit 1
-          fi
-
           digest=$(sha256sum "$crate" | cut -d' ' -f1)
           echo "digest=${digest}" >> "$GITHUB_OUTPUT"
           echo "${crate} -> sha256:${digest}"
 
-      - name: Check the packaged crate reports the right version
+      - name: Check the packaged crate ships the right version and licence
         env:
           VERSION: ${{ needs.decide.outputs.version }}
         run: |
           set -euo pipefail
-          rm -rf /tmp/unpacked
-          mkdir -p /tmp/unpacked
-          tar -xzf "target/package/${CRATE_NAME}-${VERSION}.crate" -C /tmp/unpacked
+          rm -rf "${RUNNER_TEMP}/unpacked"
+          mkdir -p "${RUNNER_TEMP}/unpacked"
+          tar -xzf "target/package/${CRATE_NAME}-${VERSION}.crate" -C "${RUNNER_TEMP}/unpacked"
 
-          root="/tmp/unpacked/${CRATE_NAME}-${VERSION}"
-          if ! grep -q "\"${VERSION}\"" "${root}/${CONFIG_FILE}"; then
-            echo "::error::the packaged ${CONFIG_FILE} does not report ${VERSION} on the wire."
-            grep -n '"X-Fern-SDK-Version"' "${root}/${CONFIG_FILE}" || true
-            exit 1
+          root="${RUNNER_TEMP}/unpacked/${CRATE_NAME}-${VERSION}"
+          failures=0
+
+          for shipped in "$CONFIG_FILE" "$README_FILE"; do
+            if [ ! -f "${root}/${shipped}" ]; then
+              echo "::error::${shipped} is not in the packaged crate."
+              failures=$((failures + 1))
+            elif ! grep -qF "\"${VERSION}\"" "${root}/${shipped}"; then
+              echo "::error::the packaged ${shipped} does not report ${VERSION}."
+              grep -nE 'X-Fern-SDK-Version|^'"${CRATE_NAME}"'[[:space:]]*=' "${root}/${shipped}" || true
+              failures=$((failures + 1))
+            else
+              echo "packaged ${shipped} reports ${VERSION}"
+            fi
+          done
+
+          if [ ! -f "${root}/${LICENSE_FILE}" ]; then
+            echo "::error::${LICENSE_FILE} is not in the packaged crate; the crate would claim a licence it does not carry."
+            failures=$((failures + 1))
+          else
+            echo "packaged ${LICENSE_FILE} present"
           fi
-          grep -A1 -F "name = \"${CRATE_NAME}\"" "${root}/Cargo.lock"
-          echo "${CRATE_NAME} ${VERSION} packages with a matching wire version and lockfile entry"
+
+          if ! grep -A1 -F "name = \"${CRATE_NAME}\"" "${root}/${LOCKFILE}" | grep -qF "version = \"${VERSION}\""; then
+            echo "::error::the packaged ${LOCKFILE} does not record ${CRATE_NAME} ${VERSION}."
+            failures=$((failures + 1))
+          else
+            echo "packaged ${LOCKFILE} records ${CRATE_NAME} ${VERSION}"
+          fi
+
+          [ "$failures" -eq 0 ]
 
       - name: Exercise the publish path
-        run: cargo publish --dry-run --no-verify --allow-dirty
+        run: cargo publish --dry-run --locked --no-verify --allow-dirty
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -291,17 +505,20 @@ jobs:
       - name: Collect the stamped files
         run: |
           set -euo pipefail
-          rm -rf /tmp/stamps
-          mkdir -p "/tmp/stamps/$(dirname "$CONFIG_FILE")" "/tmp/stamps/$(dirname "$METADATA_FILE")"
-          cp "$MANIFEST" /tmp/stamps/
-          if [ -f "$CONFIG_FILE" ]; then cp "$CONFIG_FILE" "/tmp/stamps/${CONFIG_FILE}"; fi
-          if [ -f "$METADATA_FILE" ]; then cp "$METADATA_FILE" "/tmp/stamps/${METADATA_FILE}"; fi
-          find /tmp/stamps -type f
+          rm -rf "${RUNNER_TEMP}/stamps"
+          mkdir -p "${RUNNER_TEMP}/stamps"
+          for tracked in "$MANIFEST" "$LOCKFILE" "$CONFIG_FILE" "$METADATA_FILE" "$README_FILE"; do
+            if [ -f "$tracked" ]; then
+              mkdir -p "${RUNNER_TEMP}/stamps/$(dirname "$tracked")"
+              cp "$tracked" "${RUNNER_TEMP}/stamps/${tracked}"
+            fi
+          done
+          find "${RUNNER_TEMP}/stamps" -type f
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: stamps
-          path: /tmp/stamps
+          path: ${{ runner.temp }}/stamps
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
@@ -310,6 +527,7 @@ jobs:
     needs: [decide, build]
     if: needs.decide.outputs.release == 'true' && needs.decide.outputs.dry == 'false'
     runs-on: ubuntu-latest
+    environment: crates-io
     permissions:
       contents: read
     steps:
@@ -326,7 +544,7 @@ jobs:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: stamps
-          path: /tmp/stamps
+          path: ${{ runner.temp }}/stamps
 
       - name: Check the token is present
         env:
@@ -334,14 +552,18 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${CARGO_REGISTRY_TOKEN:-}" ]; then
-            echo "::error::CARGO_REGISTRY_TOKEN is not set on this repository; the upload would fail after the build."
+            echo "::error::CARGO_REGISTRY_TOKEN is not readable from the crates-io environment; the upload would fail after the build."
             exit 1
           fi
 
       - name: Restore the stamped tree
         run: |
           set -euo pipefail
-          cp -R /tmp/stamps/. .
+          cp -R "${RUNNER_TEMP}/stamps/." .
+          if [ ! -f "$LOCKFILE" ]; then
+            echo "::error::${LOCKFILE} is not in the stamps artifact. Without it cargo resolves dependencies again here and can upload a different tree than the one the build job verified."
+            exit 1
+          fi
           git --no-pager diff --stat
 
       - name: Repackage and match the verified crate
@@ -350,7 +572,7 @@ jobs:
           EXPECTED: ${{ needs.build.outputs.digest }}
         run: |
           set -euo pipefail
-          cargo package --allow-dirty --no-verify
+          cargo package --locked --allow-dirty --no-verify
 
           digest=$(sha256sum "target/package/${CRATE_NAME}-${VERSION}.crate" | cut -d' ' -f1)
           if [ "$digest" != "$EXPECTED" ]; then
@@ -362,11 +584,24 @@ jobs:
       - name: Publish to crates.io
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        run: cargo publish --no-verify --allow-dirty
+          VERSION: ${{ needs.decide.outputs.version }}
+          EXPECTED: ${{ needs.build.outputs.digest }}
+        run: |
+          set -euo pipefail
+          cargo publish --locked --no-verify --allow-dirty
+
+          uploaded="target/package/tmp-crate/${CRATE_NAME}-${VERSION}.crate"
+          if [ -f "$uploaded" ]; then
+            digest=$(sha256sum "$uploaded" | cut -d' ' -f1)
+            echo "cargo publish repackaged sha256:${digest}"
+            if [ "$digest" != "$EXPECTED" ]; then
+              echo "::warning::cargo publish uploaded sha256:${digest}, not the verified sha256:${EXPECTED}. The version is already on crates.io and cannot be withdrawn — audit it before announcing."
+            fi
+          fi
 
   tag:
     needs: [decide, build, publish]
-    if: always() && needs.decide.outputs.dry == 'false' && needs.decide.outputs.version != ''
+    if: always() && needs.decide.result == 'success' && needs.decide.outputs.dry == 'false' && needs.decide.outputs.version != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -379,8 +614,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          status=$(curl -sS -o /dev/null -w '%{http_code}' -H "User-Agent: ${CRATES_IO_UA}" \
-            "https://crates.io/api/v1/crates/${CRATE_NAME}/${VERSION}")
+          status=$(curl -sS --max-time 30 -o /dev/null -w '%{http_code}' \
+            -H "User-Agent: ${CRATES_IO_UA}" \
+            "https://crates.io/api/v1/crates/${CRATE_NAME}/${VERSION}" || echo 000)
           if [ "$status" != "200" ]; then
             echo "::notice::${CRATE_NAME} ${VERSION} is not on crates.io (HTTP ${status}); nothing to tag."
             exit 0
