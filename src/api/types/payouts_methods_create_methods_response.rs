@@ -1,0 +1,251 @@
+pub use crate::prelude::*;
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct CreateMethodsResponse {
+    /// Masked identifier for the destination.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_reference: Option<String>,
+    /// Lifecycle trust state: `checking` (verification still running), `verified` (bank confirmed ownership or a payout already completed to it), `no_data` (verification unavailable or bank returned no ownership data), `warning` (bank could not confirm the destination's owner), `broken` (payouts failed with a permanent account error), `null` (never checked).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bank_verification_state: Option<CreateMethodsResponseBankVerificationState>,
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset")]
+    pub created_at: DateTime<FixedOffset>,
+    #[serde(default)]
+    pub destination_currency: String,
+    /// Null on create. List payout methods to retrieve arrival estimates.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub estimated_arrival: Option<HashMap<String, serde_json::Value>>,
+    /// Null on create. List payout methods to retrieve the configured fee terms.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fee_structure: Option<HashMap<String, serde_json::Value>>,
+    /// Payout method ID, usable as payout_method_id on POST /payouts.
+    #[serde(default)]
+    pub id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub institution_name: Option<String>,
+    /// Whether this method is a copy of one saved on another of the payer's accounts.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_clone: Option<bool>,
+    #[serde(default)]
+    pub is_default: bool,
+    /// When the most recent completed payout was delivered to this method, as an ISO 8601 timestamp. `null` when nothing has been paid out to it yet.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub last_paid_out_at: Option<DateTime<FixedOffset>>,
+    /// Whether the payer added this method by signing in to their bank rather than typing account details.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub linked_via_plaid: Option<bool>,
+    /// Whether the bank sign-in behind this method has expired and must be redone before it counts as linked.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub needs_plaid_reconnect: Option<bool>,
+    /// User-defined label for the payout method.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub nickname: Option<String>,
+    pub object: CreateMethodsResponseObject,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payer_name: Option<String>,
+    /// Always null on create.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quote: Option<HashMap<String, serde_json::Value>>,
+    /// Always `created` on create — no payout has used the method yet.
+    pub status: CreateMethodsResponseStatus,
+    /// Always `null` on create.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status_reason: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub supported_payout_method: Option<CreateMethodsResponseSupportedPayoutMethod>,
+    /// Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unavailable_reason: Option<CreateMethodsResponseUnavailableReason>,
+}
+
+impl CreateMethodsResponse {
+    pub fn builder() -> CreateMethodsResponseBuilder {
+        <CreateMethodsResponseBuilder as Default>::default()
+    }
+}
+
+#[derive(Clone, PartialEq, Default, Debug)]
+#[non_exhaustive]
+pub struct CreateMethodsResponseBuilder {
+    account_reference: Option<String>,
+    bank_verification_state: Option<CreateMethodsResponseBankVerificationState>,
+    created_at: Option<DateTime<FixedOffset>>,
+    destination_currency: Option<String>,
+    estimated_arrival: Option<HashMap<String, serde_json::Value>>,
+    fee_structure: Option<HashMap<String, serde_json::Value>>,
+    id: Option<String>,
+    institution_name: Option<String>,
+    is_clone: Option<bool>,
+    is_default: Option<bool>,
+    last_paid_out_at: Option<DateTime<FixedOffset>>,
+    linked_via_plaid: Option<bool>,
+    needs_plaid_reconnect: Option<bool>,
+    nickname: Option<String>,
+    object: Option<CreateMethodsResponseObject>,
+    payer_name: Option<String>,
+    quote: Option<HashMap<String, serde_json::Value>>,
+    status: Option<CreateMethodsResponseStatus>,
+    status_reason: Option<String>,
+    supported_payout_method: Option<CreateMethodsResponseSupportedPayoutMethod>,
+    unavailable_reason: Option<CreateMethodsResponseUnavailableReason>,
+}
+
+impl CreateMethodsResponseBuilder {
+    pub fn account_reference(mut self, value: impl Into<String>) -> Self {
+        self.account_reference = Some(value.into());
+        self
+    }
+
+    pub fn bank_verification_state(
+        mut self,
+        value: CreateMethodsResponseBankVerificationState,
+    ) -> Self {
+        self.bank_verification_state = Some(value);
+        self
+    }
+
+    pub fn created_at(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.created_at = Some(value);
+        self
+    }
+
+    pub fn destination_currency(mut self, value: impl Into<String>) -> Self {
+        self.destination_currency = Some(value.into());
+        self
+    }
+
+    pub fn estimated_arrival(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.estimated_arrival = Some(value);
+        self
+    }
+
+    pub fn fee_structure(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.fee_structure = Some(value);
+        self
+    }
+
+    pub fn id(mut self, value: impl Into<String>) -> Self {
+        self.id = Some(value.into());
+        self
+    }
+
+    pub fn institution_name(mut self, value: impl Into<String>) -> Self {
+        self.institution_name = Some(value.into());
+        self
+    }
+
+    pub fn is_clone(mut self, value: bool) -> Self {
+        self.is_clone = Some(value);
+        self
+    }
+
+    pub fn is_default(mut self, value: bool) -> Self {
+        self.is_default = Some(value);
+        self
+    }
+
+    pub fn last_paid_out_at(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.last_paid_out_at = Some(value);
+        self
+    }
+
+    pub fn linked_via_plaid(mut self, value: bool) -> Self {
+        self.linked_via_plaid = Some(value);
+        self
+    }
+
+    pub fn needs_plaid_reconnect(mut self, value: bool) -> Self {
+        self.needs_plaid_reconnect = Some(value);
+        self
+    }
+
+    pub fn nickname(mut self, value: impl Into<String>) -> Self {
+        self.nickname = Some(value.into());
+        self
+    }
+
+    pub fn object(mut self, value: CreateMethodsResponseObject) -> Self {
+        self.object = Some(value);
+        self
+    }
+
+    pub fn payer_name(mut self, value: impl Into<String>) -> Self {
+        self.payer_name = Some(value.into());
+        self
+    }
+
+    pub fn quote(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.quote = Some(value);
+        self
+    }
+
+    pub fn status(mut self, value: CreateMethodsResponseStatus) -> Self {
+        self.status = Some(value);
+        self
+    }
+
+    pub fn status_reason(mut self, value: impl Into<String>) -> Self {
+        self.status_reason = Some(value.into());
+        self
+    }
+
+    pub fn supported_payout_method(
+        mut self,
+        value: CreateMethodsResponseSupportedPayoutMethod,
+    ) -> Self {
+        self.supported_payout_method = Some(value);
+        self
+    }
+
+    pub fn unavailable_reason(mut self, value: CreateMethodsResponseUnavailableReason) -> Self {
+        self.unavailable_reason = Some(value);
+        self
+    }
+
+    /// Consumes the builder and constructs a [`CreateMethodsResponse`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`created_at`](CreateMethodsResponseBuilder::created_at)
+    /// - [`destination_currency`](CreateMethodsResponseBuilder::destination_currency)
+    /// - [`id`](CreateMethodsResponseBuilder::id)
+    /// - [`is_default`](CreateMethodsResponseBuilder::is_default)
+    /// - [`object`](CreateMethodsResponseBuilder::object)
+    /// - [`status`](CreateMethodsResponseBuilder::status)
+    pub fn build(self) -> Result<CreateMethodsResponse, BuildError> {
+        Ok(CreateMethodsResponse {
+            account_reference: self.account_reference,
+            bank_verification_state: self.bank_verification_state,
+            created_at: self
+                .created_at
+                .ok_or_else(|| BuildError::missing_field("created_at"))?,
+            destination_currency: self
+                .destination_currency
+                .ok_or_else(|| BuildError::missing_field("destination_currency"))?,
+            estimated_arrival: self.estimated_arrival,
+            fee_structure: self.fee_structure,
+            id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            institution_name: self.institution_name,
+            is_clone: self.is_clone,
+            is_default: self
+                .is_default
+                .ok_or_else(|| BuildError::missing_field("is_default"))?,
+            last_paid_out_at: self.last_paid_out_at,
+            linked_via_plaid: self.linked_via_plaid,
+            needs_plaid_reconnect: self.needs_plaid_reconnect,
+            nickname: self.nickname,
+            object: self
+                .object
+                .ok_or_else(|| BuildError::missing_field("object"))?,
+            payer_name: self.payer_name,
+            quote: self.quote,
+            status: self
+                .status
+                .ok_or_else(|| BuildError::missing_field("status"))?,
+            status_reason: self.status_reason,
+            supported_payout_method: self.supported_payout_method,
+            unavailable_reason: self.unavailable_reason,
+        })
+    }
+}

@@ -1,0 +1,2 @@
+pub mod users_preferences_notifications_topics;
+pub use users_preferences_notifications_topics::TopicsClient2;
