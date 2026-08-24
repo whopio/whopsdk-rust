@@ -18,5 +18,48 @@
 # it. It currently reads MIT because the Rust generator hardcodes `license = "MIT"` into
 # Cargo.toml; whoever changes that has to change this file in the same commit, and the
 # release workflow fails the two apart.
+#
+# src/helpers holds the hand-written helpers in this SDK. verify_webhook is the Standard
+# Webhooks signature verifier: it restores the verification half of `client.webhooks.unwrap`,
+# which the Stainless SDKs shipped and Fern cannot generate, because Fern generates from
+# OpenAPI paths and `unwrap` was never a path. It depends only on base64/hmac/sha2 and the
+# standard library, never on generated client code, so it survives the client being replaced.
+#
+# src/lib.rs is protected WITH it, and that entry is the load-bearing one. Rust compiles no
+# file that no `mod` declares, and src/lib.rs is generated (`generateLibFile` in the
+# generator bundle) — so without this entry a regeneration drops `pub mod helpers;` and
+# src/helpers becomes a directory the crate does not contain. The Ruby generator has
+# `requirePaths` for exactly this and the Rust generator has no equivalent: its whole config
+# schema is crate/package metadata, extraDependencies, features and casing, with no key that
+# injects a module. Owning the file is the only mechanism it offers.
+#
+# The cost of owning it is that the generator's own changes to lib.rs stop arriving. That
+# file is 40 lines and nearly static — a crate-level doc comment whose Getting Started
+# snippet is built from one endpoint, a module list of which only `environment` is
+# conditional, and the re-exports. A local generation at 0.46.0 reproduces the tree's copy
+# byte for byte apart from the two lines added here, so whoever bumps the generator should
+# diff `.generated/rust-sdk/src/lib.rs` against this one and reapply.
+#
+# Nothing of this is enforced by a hand-written check, because it does not need to be: Fern's
+# own ci.yml runs cargo check / build / test, tests/verify_webhook.rs reaches the helper
+# through `whop_sdk::helpers`, and dropping either the module declaration or the crypto
+# dependencies is a compile error rather than a silent regression. That is the Rust
+# difference from Ruby, whose missing `require` had to be asserted for.
+#
+# The dependencies themselves live in Cargo.toml, which is generated, so they are restored
+# from `extraDependencies` in the rust config in whop-monorepo's sdks/fern/generators.yml —
+# `base64: "0.22"`, `hmac: "0.12"`, `sha2: "0.10"`. They and this file travel together.
+#
+# The helper's tests live inside src/helpers/verify_webhook.rs rather than in tests/, and
+# that is a CI constraint, not a style choice: an integration test is a second binary linked
+# against the whole crate, and `cargo test` on 82 resource clients and ~4k generated types
+# was killed on a GitHub runner with the extra target and passes without it. An inline
+# `#[cfg(test)] mod tests` adds no target at all, and it is protected by the src/helpers
+# entry above. Nothing in it computes a signature with the code under test: every fixture is
+# signed the way WebhooksManager::SignWebhook signs, which is the only way to catch the
+# mismatch the helper exists to avoid — the backend HMACs with the literal bytes of the
+# `ws_…` secret, and every Standard Webhooks library base64-decodes its key instead.
 .github/workflows/publish-main.yml
 LICENSE
+src/helpers
+src/lib.rs
