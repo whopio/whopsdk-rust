@@ -69,6 +69,13 @@ impl ForumPostsClient {
         request: &ForumPostsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListForumPostsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -145,6 +152,13 @@ impl ForumPostsClient {
         request: &CreateForumPostsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ForumPost, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -190,6 +204,13 @@ impl ForumPostsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ForumPost, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -242,6 +263,13 @@ impl ForumPostsClient {
         request: &UpdateForumPostsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ForumPost, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

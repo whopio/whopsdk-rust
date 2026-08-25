@@ -84,6 +84,13 @@ impl AdGroupsClient {
         request: &AdGroupsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAdGroupsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -173,6 +180,13 @@ impl AdGroupsClient {
         request: &CreateAdGroupsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -229,6 +243,13 @@ impl AdGroupsClient {
         request: &EstimateReachAdGroupsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ReachEstimate, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -293,6 +314,13 @@ impl AdGroupsClient {
         request: &SearchTargetingOptionsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<SearchTargetingOptionsAdGroupsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -361,6 +389,13 @@ impl AdGroupsClient {
         request: &AdGroupsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -408,6 +443,13 @@ impl AdGroupsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteAdGroupsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -460,6 +502,13 @@ impl AdGroupsClient {
         request: &UpdateAdGroupsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -512,6 +561,13 @@ impl AdGroupsClient {
         request: &DuplicateAdGroupsRequest,
         options: Option<RequestOptions>,
     ) -> Result<DuplicateAdGroupsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -554,6 +610,13 @@ impl AdGroupsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -596,6 +659,13 @@ impl AdGroupsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

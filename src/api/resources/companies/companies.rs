@@ -65,6 +65,13 @@ impl CompaniesClient {
         request: &CompaniesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListCompaniesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -134,6 +141,13 @@ impl CompaniesClient {
         request: &CreateCompaniesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Company, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -182,6 +196,13 @@ impl CompaniesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Company, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -238,6 +259,13 @@ impl CompaniesClient {
         request: &UpdateCompaniesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Company, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -293,6 +321,13 @@ impl CompaniesClient {
         request: &CreateApiKeyCompaniesRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateApiKeyCompaniesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

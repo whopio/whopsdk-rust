@@ -68,6 +68,13 @@ impl CompanyTokenTransactionsClient {
         request: &CompanyTokenTransactionsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListCompanyTokenTransactionsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -118,8 +125,8 @@ impl CompanyTokenTransactionsClient {
     ///     client
     ///         .company_token_transactions
     ///         .create(
-    ///             &CreateCompanyTokenTransactionsRequest::Transfer {
-    ///                 data: CreateCompanyTokenTransactionsRequestTransfer {
+    ///             &CreateCompanyTokenTransactionsRequestBody::Transfer {
+    ///                 data: CreateCompanyTokenTransactionsRequestBodyTransfer {
     ///                     amount: 6.9,
     ///                     company_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                     destination_user_id: "destination_user_id".to_string(),
@@ -134,9 +141,16 @@ impl CompanyTokenTransactionsClient {
     /// ```
     pub async fn create(
         &self,
-        request: &CreateCompanyTokenTransactionsRequest,
+        request: &CreateCompanyTokenTransactionsRequestBody,
         options: Option<RequestOptions>,
     ) -> Result<CompanyTokenTransaction, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -187,6 +201,13 @@ impl CompanyTokenTransactionsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<CompanyTokenTransaction, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

@@ -70,6 +70,13 @@ impl SetupIntentsClient {
         request: &SetupIntentsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListSetupIntentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -121,8 +128,8 @@ impl SetupIntentsClient {
     ///     client
     ///         .setup_intents
     ///         .create(
-    ///             &CreateSetupIntentsRequest::CreateSetupIntentsRequestConfirmationToken(
-    ///                 CreateSetupIntentsRequestConfirmationToken {
+    ///             &CreateSetupIntentsRequestBody::CreateSetupIntentsRequestBodyConfirmationToken(
+    ///                 CreateSetupIntentsRequestBodyConfirmationToken {
     ///                     company_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                     confirmation_token: "ctok_xxxxxxxxxxxxxx".to_string(),
     ///                     ..Default::default()
@@ -135,9 +142,16 @@ impl SetupIntentsClient {
     /// ```
     pub async fn create(
         &self,
-        request: &CreateSetupIntentsRequest,
+        request: &CreateSetupIntentsRequestBody,
         options: Option<RequestOptions>,
     ) -> Result<CreateSetupIntentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -188,6 +202,13 @@ impl SetupIntentsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<SetupIntent, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -240,6 +261,13 @@ impl SetupIntentsClient {
         request: &UpdateReturnUrlSetupIntentsRequest,
         options: Option<RequestOptions>,
     ) -> Result<SetupStatus, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -285,6 +313,13 @@ impl SetupIntentsClient {
         setup_intent_id: &str,
         options: Option<RequestOptions>,
     ) -> Result<SetupStatus, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

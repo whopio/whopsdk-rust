@@ -62,6 +62,13 @@ impl DmChannelsClient {
         request: &DmChannelsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListDmChannelsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -123,6 +130,13 @@ impl DmChannelsClient {
         request: &CreateDmChannelsRequest,
         options: Option<RequestOptions>,
     ) -> Result<DmChannel, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -169,6 +183,13 @@ impl DmChannelsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DmChannel, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -215,6 +236,13 @@ impl DmChannelsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -271,6 +299,13 @@ impl DmChannelsClient {
         request: &UpdateDmChannelsRequest,
         options: Option<RequestOptions>,
     ) -> Result<DmChannel, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

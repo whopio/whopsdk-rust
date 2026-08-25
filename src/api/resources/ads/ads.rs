@@ -88,6 +88,13 @@ impl AdsClient {
         request: &AdsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAdsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -157,6 +164,13 @@ impl AdsClient {
         request: &CreateAdsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -213,6 +227,13 @@ impl AdsClient {
         request: &AdsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -260,6 +281,13 @@ impl AdsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteAdsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::DELETE, &format!("ads/{}", id), None, None, options)
             .await
@@ -306,6 +334,13 @@ impl AdsClient {
         request: &UpdateAdsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -358,6 +393,13 @@ impl AdsClient {
         request: &DuplicateAdsRequest,
         options: Option<RequestOptions>,
     ) -> Result<DuplicateAdsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -396,6 +438,13 @@ impl AdsClient {
     /// }
     /// ```
     pub async fn pause(&self, id: &str, options: Option<RequestOptions>) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -434,6 +483,13 @@ impl AdsClient {
     /// }
     /// ```
     pub async fn unpause(&self, id: &str, options: Option<RequestOptions>) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

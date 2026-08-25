@@ -76,6 +76,13 @@ impl ResolutionCenterCasesClient {
         request: &ResolutionCenterCasesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListResolutionCenterCasesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -143,6 +150,13 @@ impl ResolutionCenterCasesClient {
         request: &CreateResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -207,6 +221,13 @@ impl ResolutionCenterCasesClient {
         request: &ResolutionCenterCasesSummaryQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<SummaryResolutionCenterCasesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -261,6 +282,13 @@ impl ResolutionCenterCasesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -313,6 +341,13 @@ impl ResolutionCenterCasesClient {
         request: &AcceptResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -366,6 +401,13 @@ impl ResolutionCenterCasesClient {
         request: &AppealResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -421,6 +463,13 @@ impl ResolutionCenterCasesClient {
         request: &DenyResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -477,6 +526,13 @@ impl ResolutionCenterCasesClient {
         request: &EventsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<EventsResolutionCenterCasesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -535,6 +591,13 @@ impl ResolutionCenterCasesClient {
         request: &ReplyResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -587,6 +650,13 @@ impl ResolutionCenterCasesClient {
         request: &RequestInfoResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -632,6 +702,13 @@ impl ResolutionCenterCasesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

@@ -63,6 +63,13 @@ impl AppsClient {
         request: &AppsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAppsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -131,6 +138,13 @@ impl AppsClient {
         request: &CreateAppsRequest,
         options: Option<RequestOptions>,
     ) -> Result<App, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -191,6 +205,13 @@ impl AppsClient {
         request: &UpdatePermissionsAppRequest,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -233,6 +254,13 @@ impl AppsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<App, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, &format!("apps/{}", id), None, None, options)
             .await
@@ -269,6 +297,13 @@ impl AppsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteAppsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::DELETE, &format!("apps/{}", id), None, None, options)
             .await
@@ -315,6 +350,13 @@ impl AppsClient {
         request: &UpdateAppsRequest,
         options: Option<RequestOptions>,
     ) -> Result<App, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -367,6 +409,13 @@ impl AppsClient {
         request: &DeployAppsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AppDeployment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -427,6 +476,13 @@ impl AppsClient {
         request: &LogsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<LogsAppsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -494,6 +550,13 @@ impl AppsClient {
         request: &UpdatePermissionsAppsRequest,
         options: Option<RequestOptions>,
     ) -> Result<App, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

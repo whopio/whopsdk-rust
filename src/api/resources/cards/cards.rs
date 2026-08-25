@@ -53,6 +53,13 @@ impl CardsClient {
         request: &CardsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListCardsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -105,6 +112,13 @@ impl CardsClient {
         request: &CreateCardsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateCardsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -159,6 +173,13 @@ impl CardsClient {
         request: &CardsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<RetrieveCardsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -214,6 +235,13 @@ impl CardsClient {
         request: &UpdateCardsRequest,
         options: Option<RequestOptions>,
     ) -> Result<UpdateCardsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

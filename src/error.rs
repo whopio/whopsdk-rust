@@ -6,42 +6,37 @@ pub enum ApiError {
     #[error("BadRequestError: Bad request - {message}")]
     BadRequestError {
         message: String,
-        field: Option<String>,
-        details: Option<String>,
+        error: Option<V1ErrorResponseError>,
     },
     #[error("UnauthorizedError: Authentication failed - {message}")]
     UnauthorizedError {
         message: String,
-        auth_type: Option<String>,
+        error: Option<V1ErrorResponseError>,
     },
     #[error("ForbiddenError: Access forbidden - {message}")]
     ForbiddenError {
         message: String,
-        resource: Option<String>,
-        required_permission: Option<String>,
+        error: Option<V1ErrorResponseError>,
     },
     #[error("NotFoundError: Resource not found - {message}")]
     NotFoundError {
         message: String,
-        resource_id: Option<String>,
-        resource_type: Option<String>,
+        error: Option<V1ErrorResponseError>,
     },
     #[error("UnprocessableEntityError: Unprocessable entity - {message}")]
     UnprocessableEntityError {
         message: String,
-        field: Option<String>,
-        validation_error: Option<String>,
+        error: Option<V1ErrorResponseError>,
     },
     #[error("TooManyRequestsError: Rate limit exceeded - {message}")]
     TooManyRequestsError {
         message: String,
-        retry_after_seconds: Option<u64>,
-        limit_type: Option<String>,
+        error: Option<V1ErrorResponseError>,
     },
     #[error("InternalServerError: Internal server error - {message}")]
     InternalServerError {
         message: String,
-        error_id: Option<String>,
+        error: Option<V1ErrorResponseError>,
     },
     #[error("ConflictError: Conflict - {message}")]
     ConflictError {
@@ -93,19 +88,15 @@ impl ApiError {
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("Unknown error")
                                 .to_string(),
-                            field: parsed
-                                .get("field")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
-                            details: parsed
-                                .get("details")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
+                            error: parsed.get("error").and_then(|v| {
+                                serde_json::from_value::<V1ErrorResponseError>(v.clone()).ok()
+                            }),
                         };
                     }
                 }
                 return Self::BadRequestError {
                     message: body.unwrap_or("Unknown error").to_string(),
-                    field: None,
-                    details: None,
+                    error: None,
                 };
             }
             401 => {
@@ -118,15 +109,15 @@ impl ApiError {
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("Unknown error")
                                 .to_string(),
-                            auth_type: parsed
-                                .get("authType")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
+                            error: parsed.get("error").and_then(|v| {
+                                serde_json::from_value::<V1ErrorResponseError>(v.clone()).ok()
+                            }),
                         };
                     }
                 }
                 return Self::UnauthorizedError {
                     message: body.unwrap_or("Unknown error").to_string(),
-                    auth_type: None,
+                    error: None,
                 };
             }
             403 => {
@@ -139,19 +130,15 @@ impl ApiError {
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("Unknown error")
                                 .to_string(),
-                            resource: parsed
-                                .get("resource")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
-                            required_permission: parsed
-                                .get("requiredPermission")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
+                            error: parsed.get("error").and_then(|v| {
+                                serde_json::from_value::<V1ErrorResponseError>(v.clone()).ok()
+                            }),
                         };
                     }
                 }
                 return Self::ForbiddenError {
                     message: body.unwrap_or("Unknown error").to_string(),
-                    resource: None,
-                    required_permission: None,
+                    error: None,
                 };
             }
             404 => {
@@ -164,19 +151,15 @@ impl ApiError {
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("Unknown error")
                                 .to_string(),
-                            resource_id: parsed
-                                .get("resourceId")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
-                            resource_type: parsed
-                                .get("resourceType")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
+                            error: parsed.get("error").and_then(|v| {
+                                serde_json::from_value::<V1ErrorResponseError>(v.clone()).ok()
+                            }),
                         };
                     }
                 }
                 return Self::NotFoundError {
                     message: body.unwrap_or("Unknown error").to_string(),
-                    resource_id: None,
-                    resource_type: None,
+                    error: None,
                 };
             }
             422 => {
@@ -189,19 +172,15 @@ impl ApiError {
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("Unknown error")
                                 .to_string(),
-                            field: parsed
-                                .get("field")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
-                            validation_error: parsed
-                                .get("validationError")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
+                            error: parsed.get("error").and_then(|v| {
+                                serde_json::from_value::<V1ErrorResponseError>(v.clone()).ok()
+                            }),
                         };
                     }
                 }
                 return Self::UnprocessableEntityError {
                     message: body.unwrap_or("Unknown error").to_string(),
-                    field: None,
-                    validation_error: None,
+                    error: None,
                 };
             }
             429 => {
@@ -214,19 +193,15 @@ impl ApiError {
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("Unknown error")
                                 .to_string(),
-                            retry_after_seconds: parsed
-                                .get("retryAfterSeconds")
-                                .and_then(|v| v.as_u64()),
-                            limit_type: parsed
-                                .get("limitType")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
+                            error: parsed.get("error").and_then(|v| {
+                                serde_json::from_value::<V1ErrorResponseError>(v.clone()).ok()
+                            }),
                         };
                     }
                 }
                 return Self::TooManyRequestsError {
                     message: body.unwrap_or("Unknown error").to_string(),
-                    retry_after_seconds: None,
-                    limit_type: None,
+                    error: None,
                 };
             }
             500 => {
@@ -239,15 +214,15 @@ impl ApiError {
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("Unknown error")
                                 .to_string(),
-                            error_id: parsed
-                                .get("errorId")
-                                .and_then(|v| v.as_str().map(|s| s.to_string())),
+                            error: parsed.get("error").and_then(|v| {
+                                serde_json::from_value::<V1ErrorResponseError>(v.clone()).ok()
+                            }),
                         };
                     }
                 }
                 return Self::InternalServerError {
                     message: body.unwrap_or("Unknown error").to_string(),
-                    error_id: None,
+                    error: None,
                 };
             }
             409 => {

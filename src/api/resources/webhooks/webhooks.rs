@@ -66,6 +66,13 @@ impl WebhooksClient {
         request: &WebhooksListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -129,6 +136,13 @@ impl WebhooksClient {
         request: &CreateWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<Webhook, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -171,6 +185,13 @@ impl WebhooksClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Webhook, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -213,6 +234,13 @@ impl WebhooksClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -265,6 +293,13 @@ impl WebhooksClient {
         request: &UpdateWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<Webhook, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -319,6 +354,13 @@ impl WebhooksClient {
         request: &ListDeliveriesQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListDeliveriesWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -377,6 +419,13 @@ impl WebhooksClient {
         request: &ReplayDeliveryWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<ReplayDeliveryWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -433,6 +482,13 @@ impl WebhooksClient {
         request: &ReplayWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<ReplayWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -485,6 +541,13 @@ impl WebhooksClient {
         request: &TestWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<TestWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -546,6 +609,13 @@ impl WebhooksClient {
         request: &DeliveriesWebhookQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<DeliveriesWebhookResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

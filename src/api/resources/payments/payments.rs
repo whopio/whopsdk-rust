@@ -98,6 +98,13 @@ impl PaymentsClient {
         request: &PaymentsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListPaymentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -174,32 +181,34 @@ impl PaymentsClient {
     ///     client
     ///         .payments
     ///         .create(
-    ///             &CreatePaymentsRequest::CreatePaymentsRequestZero(CreatePaymentsRequestZero {
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-    ///                 confirmation_token: "confirmation_token".to_string(),
-    ///                 email: None,
-    ///                 metadata: None,
-    ///                 payment_method_id: None,
-    ///                 plan: CreatePaymentsRequestZeroPlan {
-    ///                     application_fee_amount: None,
-    ///                     billing_period: None,
-    ///                     currency: Currencies::Usd,
-    ///                     description: None,
-    ///                     expiration_days: None,
-    ///                     force_create_new_plan: None,
-    ///                     initial_price: None,
-    ///                     internal_notes: None,
-    ///                     plan_type: None,
-    ///                     product: None,
-    ///                     product_id: None,
-    ///                     renewal_price: None,
-    ///                     title: None,
-    ///                     trial_period_days: None,
-    ///                     visibility: None,
+    ///             &CreatePaymentsRequestBody::CreatePaymentsRequestBodyZero(
+    ///                 CreatePaymentsRequestBodyZero {
+    ///                     company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                     confirmation_token: "confirmation_token".to_string(),
+    ///                     email: None,
+    ///                     metadata: None,
+    ///                     payment_method_id: None,
+    ///                     plan: CreatePaymentsRequestBodyZeroPlan {
+    ///                         application_fee_amount: None,
+    ///                         billing_period: None,
+    ///                         currency: Currencies::Usd,
+    ///                         description: None,
+    ///                         expiration_days: None,
+    ///                         force_create_new_plan: None,
+    ///                         initial_price: None,
+    ///                         internal_notes: None,
+    ///                         plan_type: None,
+    ///                         product: None,
+    ///                         product_id: None,
+    ///                         renewal_price: None,
+    ///                         title: None,
+    ///                         trial_period_days: None,
+    ///                         visibility: None,
+    ///                     },
+    ///                     promo_code_id: None,
+    ///                     return_url: None,
     ///                 },
-    ///                 promo_code_id: None,
-    ///                 return_url: None,
-    ///             }),
+    ///             ),
     ///             None,
     ///         )
     ///         .await;
@@ -207,9 +216,16 @@ impl PaymentsClient {
     /// ```
     pub async fn create(
         &self,
-        request: &CreatePaymentsRequest,
+        request: &CreatePaymentsRequestBody,
         options: Option<RequestOptions>,
     ) -> Result<CreatePaymentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -267,6 +283,13 @@ impl PaymentsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<RetrievePaymentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -328,6 +351,13 @@ impl PaymentsClient {
         request: &ListFeesQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListFeesPaymentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -397,6 +427,13 @@ impl PaymentsClient {
         request: &RefundPaymentsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Payment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -454,6 +491,13 @@ impl PaymentsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Payment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -511,6 +555,13 @@ impl PaymentsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Payment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -563,6 +614,13 @@ impl PaymentsClient {
         request: &UpdateReturnUrlPaymentsRequest,
         options: Option<RequestOptions>,
     ) -> Result<PaymentStatus, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -608,6 +666,13 @@ impl PaymentsClient {
         payment_id: &str,
         options: Option<RequestOptions>,
     ) -> Result<PaymentStatus, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

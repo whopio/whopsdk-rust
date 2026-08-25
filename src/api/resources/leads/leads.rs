@@ -72,6 +72,13 @@ impl LeadsClient {
         request: &LeadsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListLeadsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -140,6 +147,13 @@ impl LeadsClient {
         request: &CreateLeadsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Lead, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -191,6 +205,13 @@ impl LeadsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Lead, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, &format!("leads/{}", id), None, None, options)
             .await
@@ -243,6 +264,13 @@ impl LeadsClient {
         request: &UpdateLeadsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Lead, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

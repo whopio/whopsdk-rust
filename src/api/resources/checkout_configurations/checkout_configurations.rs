@@ -66,6 +66,13 @@ impl CheckoutConfigurationsClient {
         request: &CheckoutConfigurationsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListCheckoutConfigurationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -126,6 +133,13 @@ impl CheckoutConfigurationsClient {
         request: &CreateCheckoutConfigurationsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateCheckoutConfigurationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -171,6 +185,13 @@ impl CheckoutConfigurationsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<RetrieveCheckoutConfigurationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -216,6 +237,13 @@ impl CheckoutConfigurationsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteCheckoutConfigurationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,

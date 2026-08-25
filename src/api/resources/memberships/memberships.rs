@@ -64,6 +64,13 @@ impl MembershipsClient {
         request: &MembershipsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListMembershipsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -131,6 +138,13 @@ impl MembershipsClient {
         request: &InviteMembershipsRequestBody,
         options: Option<RequestOptions>,
     ) -> Result<InviteMembershipsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -173,6 +187,13 @@ impl MembershipsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -225,6 +246,13 @@ impl MembershipsClient {
         request: &UpdateMembershipsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -280,6 +308,13 @@ impl MembershipsClient {
         request: &AddFreeDaysMembershipRequest,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -332,6 +367,13 @@ impl MembershipsClient {
         request: &CancelMembershipsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -382,6 +424,13 @@ impl MembershipsClient {
         request: &ExtendMembershipsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -434,6 +483,13 @@ impl MembershipsClient {
         request: &PauseMembershipsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -476,6 +532,13 @@ impl MembershipsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -526,6 +589,13 @@ impl MembershipsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -568,6 +638,13 @@ impl MembershipsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<TransferMembershipsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -618,6 +695,13 @@ impl MembershipsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Membership, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

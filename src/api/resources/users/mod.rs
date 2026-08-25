@@ -68,6 +68,13 @@ impl UsersClient {
         request: &UsersListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListUsersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -129,6 +136,13 @@ impl UsersClient {
         request: &MeQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<User, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -189,6 +203,13 @@ impl UsersClient {
         request: &UpdateMeUsersRequest,
         options: Option<RequestOptions>,
     ) -> Result<User, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -249,6 +270,13 @@ impl UsersClient {
         request: &UsersRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<User, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -312,6 +340,13 @@ impl UsersClient {
         request: &UpdateUsersRequest,
         options: Option<RequestOptions>,
     ) -> Result<User, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -361,6 +396,13 @@ impl UsersClient {
         resource_id: &str,
         options: Option<RequestOptions>,
     ) -> Result<CheckAccessUsersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -406,6 +448,13 @@ impl UsersClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<RecommendActionsUsersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
