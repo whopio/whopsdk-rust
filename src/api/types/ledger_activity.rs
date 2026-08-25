@@ -30,6 +30,9 @@ pub struct LedgerActivity {
     /// The ledger line category this activity was posted under.
     pub line_type: LedgerActivityLineType,
     pub object: LedgerActivityObject,
+    /// Payment related to this ledger activity. Included when rich resource hydration is enabled and the movement is tied to a payment.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment: Option<LedgerActivityPayment>,
     /// When the activity posted to the ledger.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
@@ -60,6 +63,7 @@ pub struct LedgerActivityBuilder {
     ledger_account_id: Option<String>,
     line_type: Option<LedgerActivityLineType>,
     object: Option<LedgerActivityObject>,
+    payment: Option<LedgerActivityPayment>,
     posted_at: Option<DateTime<FixedOffset>>,
     resource: Option<LedgerActivityResource>,
     source: Option<LedgerActivitySource>,
@@ -111,6 +115,11 @@ impl LedgerActivityBuilder {
         self
     }
 
+    pub fn payment(mut self, value: LedgerActivityPayment) -> Self {
+        self.payment = Some(value);
+        self
+    }
+
     pub fn posted_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.posted_at = Some(value);
         self
@@ -153,6 +162,7 @@ impl LedgerActivityBuilder {
             object: self
                 .object
                 .ok_or_else(|| BuildError::missing_field("object"))?,
+            payment: self.payment,
             posted_at: self
                 .posted_at
                 .ok_or_else(|| BuildError::missing_field("posted_at"))?,

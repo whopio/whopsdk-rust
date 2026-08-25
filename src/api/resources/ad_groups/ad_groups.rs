@@ -251,6 +251,7 @@ impl AdGroupsClient {
     /// * `location_types` - Narrow location results to these kinds of places. Only applies when `types` includes `locations`.
     /// * `country` - Narrow location results to one country, as an ISO 3166-1 code such as `US`. Only applies when `types` includes `locations`.
     /// * `limit` - Maximum number of results per requested type.
+    /// * `special_ad_categories` - The campaign's declared special ad categories. Under `housing`, `employment`, or `financial_products` the ad platform allows interests only, drawn from a short approved list, so results are narrowed to what such a campaign can launch with and other kinds return nothing. Blank `query` browses that approved list instead of the usual fixed lists.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -280,6 +281,7 @@ impl AdGroupsClient {
     ///                 location_types: vec![],
     ///                 country: None,
     ///                 limit: None,
+    ///                 special_ad_categories: vec![],
     ///             },
     ///             None,
     ///         )
@@ -304,6 +306,10 @@ impl AdGroupsClient {
                     .serialize_array("location_types", request.location_types.clone())
                     .string("country", request.country.clone())
                     .int("limit", request.limit.clone())
+                    .serialize_array(
+                        "special_ad_categories",
+                        request.special_ad_categories.clone(),
+                    )
                     .build(),
                 options,
             )

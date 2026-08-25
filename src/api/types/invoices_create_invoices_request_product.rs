@@ -26,7 +26,7 @@ pub struct CreateInvoicesRequestProduct {
     /// The email address of the customer. Required when creating an invoice for a customer who is not yet a member of the company.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email_address: Option<String>,
-    /// Optional line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price.
+    /// Optional line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub line_items: Option<Vec<CreateInvoicesRequestProductLineItemsItem>>,
     /// The unique identifier of an existing mailing address to attach to this invoice. Cannot be used together with billing_address.

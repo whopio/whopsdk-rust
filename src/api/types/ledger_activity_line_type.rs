@@ -17,6 +17,8 @@ pub enum LedgerActivityLineType {
     AirdropReversal,
     ApplicationFee,
     ApplicationFeePayout,
+    BalanceReservation,
+    BalanceReservationReversal,
     BankTransfer,
     BillingPercentageFee,
     BuyerFee,
@@ -122,6 +124,10 @@ impl Serialize for LedgerActivityLineType {
             Self::AirdropReversal => serializer.serialize_str("airdrop_reversal"),
             Self::ApplicationFee => serializer.serialize_str("application_fee"),
             Self::ApplicationFeePayout => serializer.serialize_str("application_fee_payout"),
+            Self::BalanceReservation => serializer.serialize_str("balance_reservation"),
+            Self::BalanceReservationReversal => {
+                serializer.serialize_str("balance_reservation_reversal")
+            }
             Self::BankTransfer => serializer.serialize_str("bank_transfer"),
             Self::BillingPercentageFee => serializer.serialize_str("billing_percentage_fee"),
             Self::BuyerFee => serializer.serialize_str("buyer_fee"),
@@ -274,6 +280,8 @@ impl<'de> Deserialize<'de> for LedgerActivityLineType {
             "airdrop_reversal" => Ok(Self::AirdropReversal),
             "application_fee" => Ok(Self::ApplicationFee),
             "application_fee_payout" => Ok(Self::ApplicationFeePayout),
+            "balance_reservation" => Ok(Self::BalanceReservation),
+            "balance_reservation_reversal" => Ok(Self::BalanceReservationReversal),
             "bank_transfer" => Ok(Self::BankTransfer),
             "billing_percentage_fee" => Ok(Self::BillingPercentageFee),
             "buyer_fee" => Ok(Self::BuyerFee),
@@ -377,6 +385,8 @@ impl fmt::Display for LedgerActivityLineType {
             Self::AirdropReversal => write!(f, "airdrop_reversal"),
             Self::ApplicationFee => write!(f, "application_fee"),
             Self::ApplicationFeePayout => write!(f, "application_fee_payout"),
+            Self::BalanceReservation => write!(f, "balance_reservation"),
+            Self::BalanceReservationReversal => write!(f, "balance_reservation_reversal"),
             Self::BankTransfer => write!(f, "bank_transfer"),
             Self::BillingPercentageFee => write!(f, "billing_percentage_fee"),
             Self::BuyerFee => write!(f, "buyer_fee"),

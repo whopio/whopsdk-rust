@@ -45,6 +45,8 @@ pub struct App {
     /// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
     #[serde(default)]
     pub domain_id: String,
+    #[serde(default)]
+    pub elements_used: Vec<AppElementsUsedItem>,
     /// URL path for the member-facing hub view, or `null` when not configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub experience_path: Option<String>,
@@ -129,6 +131,7 @@ pub struct AppBuilder {
     description: Option<String>,
     discover_path: Option<String>,
     domain_id: Option<String>,
+    elements_used: Option<Vec<AppElementsUsedItem>>,
     experience_path: Option<String>,
     hosted_url: Option<String>,
     icon: Option<AppIcon>,
@@ -225,6 +228,11 @@ impl AppBuilder {
 
     pub fn domain_id(mut self, value: impl Into<String>) -> Self {
         self.domain_id = Some(value.into());
+        self
+    }
+
+    pub fn elements_used(mut self, value: Vec<AppElementsUsedItem>) -> Self {
+        self.elements_used = Some(value);
         self
     }
 
@@ -341,6 +349,7 @@ impl AppBuilder {
     /// - [`businesses_created_logo_urls`](AppBuilder::businesses_created_logo_urls)
     /// - [`creator`](AppBuilder::creator)
     /// - [`domain_id`](AppBuilder::domain_id)
+    /// - [`elements_used`](AppBuilder::elements_used)
     /// - [`icon`](AppBuilder::icon)
     /// - [`id`](AppBuilder::id)
     /// - [`name`](AppBuilder::name)
@@ -379,6 +388,9 @@ impl AppBuilder {
             domain_id: self
                 .domain_id
                 .ok_or_else(|| BuildError::missing_field("domain_id"))?,
+            elements_used: self
+                .elements_used
+                .ok_or_else(|| BuildError::missing_field("elements_used"))?,
             experience_path: self.experience_path,
             hosted_url: self.hosted_url,
             icon: self.icon.ok_or_else(|| BuildError::missing_field("icon"))?,

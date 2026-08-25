@@ -43,6 +43,9 @@ pub struct Account {
     /// Account owner email address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
+    /// The account's end-user license agreement document, or `null` if they have not published one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eula: Option<File>,
     #[serde(default)]
     pub home_preferences: Vec<AccountHomePreferencesItem>,
     /// Account ID, prefixed `biz_`.
@@ -87,6 +90,9 @@ pub struct Account {
     /// Payment health controls currently applied to the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_controls: Option<AccountPaymentControls>,
+    /// The account's privacy policy document, or `null` if they have not published one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub privacy_policy: Option<File>,
     /// Tax classification code applied by default to the account's products, with `id`, `name`, and `product_type`. `null` when no default is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_tax_code: Option<HashMap<String, serde_json::Value>>,
@@ -99,6 +105,9 @@ pub struct Account {
     pub require2fa: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required_actions: Option<Vec<AccountRequiredAction>>,
+    /// The account's return policy document, or `null` if they have not published one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub return_policy: Option<File>,
     /// Account public route identifier.
     #[serde(default)]
     pub route: String,
@@ -141,6 +150,9 @@ pub struct Account {
     /// How tax is applied to the account's prices: `inclusive` (tax included in the listed price) or `exclusive` (tax added on top). Defaults to `exclusive` when unset; `null` only when the account has no payment connection.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_type: Option<AccountTaxType>,
+    /// The account's terms of service document, or `null` if they have not published one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub terms_of_service: Option<File>,
     /// Account-level 3D Secure behavior. `mandate_challenge` requires cardholder verification on supported card payments; `null` uses the standard checkout flow.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<AccountThreeDsLevel>,
@@ -194,6 +206,7 @@ pub struct AccountBuilder {
     created_at: Option<String>,
     description: Option<String>,
     email: Option<String>,
+    eula: Option<File>,
     home_preferences: Option<Vec<AccountHomePreferencesItem>>,
     id: Option<String>,
     industry_group: Option<AccountIndustryGroup>,
@@ -209,10 +222,12 @@ pub struct AccountBuilder {
     owner: Option<UserSummary>,
     parent_account: Option<AccountParent>,
     payment_controls: Option<AccountPaymentControls>,
+    privacy_policy: Option<File>,
     product_tax_code: Option<HashMap<String, serde_json::Value>>,
     recommended_actions: Option<Vec<AccountRecommendedAction>>,
     require2fa: Option<bool>,
     required_actions: Option<Vec<AccountRequiredAction>>,
+    return_policy: Option<File>,
     route: Option<String>,
     send_customer_emails: Option<bool>,
     show_joined_whops: Option<bool>,
@@ -228,6 +243,7 @@ pub struct AccountBuilder {
     tax_identifiers: Option<Vec<AccountTaxIdentifier>>,
     tax_remitted_by: Option<AccountTaxRemittedBy>,
     tax_type: Option<AccountTaxType>,
+    terms_of_service: Option<File>,
     three_ds_level: Option<AccountThreeDsLevel>,
     title: Option<String>,
     total_earned_usd: Option<f64>,
@@ -309,6 +325,11 @@ impl AccountBuilder {
         self
     }
 
+    pub fn eula(mut self, value: File) -> Self {
+        self.eula = Some(value);
+        self
+    }
+
     pub fn home_preferences(mut self, value: Vec<AccountHomePreferencesItem>) -> Self {
         self.home_preferences = Some(value);
         self
@@ -384,6 +405,11 @@ impl AccountBuilder {
         self
     }
 
+    pub fn privacy_policy(mut self, value: File) -> Self {
+        self.privacy_policy = Some(value);
+        self
+    }
+
     pub fn product_tax_code(mut self, value: HashMap<String, serde_json::Value>) -> Self {
         self.product_tax_code = Some(value);
         self
@@ -401,6 +427,11 @@ impl AccountBuilder {
 
     pub fn required_actions(mut self, value: Vec<AccountRequiredAction>) -> Self {
         self.required_actions = Some(value);
+        self
+    }
+
+    pub fn return_policy(mut self, value: File) -> Self {
+        self.return_policy = Some(value);
         self
     }
 
@@ -476,6 +507,11 @@ impl AccountBuilder {
 
     pub fn tax_type(mut self, value: AccountTaxType) -> Self {
         self.tax_type = Some(value);
+        self
+    }
+
+    pub fn terms_of_service(mut self, value: File) -> Self {
+        self.terms_of_service = Some(value);
         self
     }
 
@@ -572,6 +608,7 @@ impl AccountBuilder {
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
             description: self.description,
             email: self.email,
+            eula: self.eula,
             home_preferences: self
                 .home_preferences
                 .ok_or_else(|| BuildError::missing_field("home_preferences"))?,
@@ -593,12 +630,14 @@ impl AccountBuilder {
                 .ok_or_else(|| BuildError::missing_field("owner"))?,
             parent_account: self.parent_account,
             payment_controls: self.payment_controls,
+            privacy_policy: self.privacy_policy,
             product_tax_code: self.product_tax_code,
             recommended_actions: self.recommended_actions,
             require2fa: self
                 .require2fa
                 .ok_or_else(|| BuildError::missing_field("require2fa"))?,
             required_actions: self.required_actions,
+            return_policy: self.return_policy,
             route: self
                 .route
                 .ok_or_else(|| BuildError::missing_field("route"))?,
@@ -634,6 +673,7 @@ impl AccountBuilder {
                 .ok_or_else(|| BuildError::missing_field("tax_identifiers"))?,
             tax_remitted_by: self.tax_remitted_by,
             tax_type: self.tax_type,
+            terms_of_service: self.terms_of_service,
             three_ds_level: self.three_ds_level,
             title: self
                 .title

@@ -9,7 +9,7 @@ pub struct CreateInvoicesRequestProductLineItemsItem {
     /// The quantity of this line item. Defaults to 1.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quantity: Option<f64>,
-    /// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43
+    /// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43. Negative values represent a credit or deduction, as long as the line items still total a chargeable amount.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub unit_price: f64,

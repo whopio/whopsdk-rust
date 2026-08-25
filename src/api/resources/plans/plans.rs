@@ -13,17 +13,17 @@ impl PlansClient {
         })
     }
 
-    /// Returns a paginated list of plans belonging to an account, with optional filtering by visibility, type, release method, and product.
+    /// Returns a paginated list of plans. Omit `account_id` and pass `product_ids` to list a product's public buyable plans.
     ///
     /// # Arguments
     ///
-    /// * `account_id` - The unique identifier of the account to list plans for.
+    /// * `account_id` - The unique identifier of the account to list plans for. Required unless `product_ids` is provided for a public product-plan read.
     /// * `direction` - The sort direction for results. Defaults to descending.
     /// * `order` - The field to sort results by. Defaults to created_at.
     /// * `release_methods` - Filter to only plans matching these release methods.
     /// * `visibilities` - Filter to only plans matching these visibility states.
     /// * `plan_types` - Filter to only plans matching these billing types.
-    /// * `product_ids` - Filter to only plans belonging to these product identifiers.
+    /// * `product_ids` - Filter to only plans belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice plans are returned.
     /// * `created_before` - Only return plans created before this timestamp.
     /// * `created_after` - Only return plans created after this timestamp.
     /// * `first` - The number of plans to return (default and max 100).
@@ -52,11 +52,11 @@ impl PlansClient {
     ///         .plans
     ///         .list(
     ///             &PlansListQueryRequest {
-    ///                 account_id: "account_id".to_string(),
     ///                 release_methods: vec![Some("buy_now".to_string())],
     ///                 visibilities: vec![Some("visible".to_string())],
     ///                 plan_types: vec![Some("renewal".to_string())],
     ///                 product_ids: vec![Some("prod_xxxxxxxxxxxxxx".to_string())],
+    ///                 account_id: None,
     ///                 direction: None,
     ///                 order: None,
     ///                 created_before: None,

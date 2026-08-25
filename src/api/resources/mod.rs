@@ -22,6 +22,7 @@
 //! - **Cards**
 //! - **ChatChannels**
 //! - **Checkout Configurations**
+//! - **Checkout Sessions**
 //! - **Companies**
 //! - **CompanyTokenTransactions**
 //! - **CourseChapters**
@@ -106,6 +107,7 @@ pub mod card_transactions;
 pub mod cards;
 pub mod chat_channels;
 pub mod checkout_configurations;
+pub mod checkout_sessions;
 pub mod companies;
 pub mod company_token_transactions;
 pub mod course_chapters;
@@ -189,6 +191,7 @@ pub struct Whop {
     pub cards: CardsClient,
     pub chat_channels: ChatChannelsClient,
     pub checkout_configurations: CheckoutConfigurationsClient,
+    pub checkout_sessions: CheckoutSessionsClient,
     pub companies: CompaniesClient,
     pub company_token_transactions: CompanyTokenTransactionsClient,
     pub course_chapters: CourseChaptersClient,
@@ -276,6 +279,7 @@ impl Whop {
             cards: CardsClient::new(config.clone())?,
             chat_channels: ChatChannelsClient::new(config.clone())?,
             checkout_configurations: CheckoutConfigurationsClient::new(config.clone())?,
+            checkout_sessions: CheckoutSessionsClient::new(config.clone())?,
             companies: CompaniesClient::new(config.clone())?,
             company_token_transactions: CompanyTokenTransactionsClient::new(config.clone())?,
             course_chapters: CourseChaptersClient::new(config.clone())?,
@@ -361,6 +365,7 @@ pub use card_transactions::CardTransactionsClient;
 pub use cards::CardsClient;
 pub use chat_channels::ChatChannelsClient;
 pub use checkout_configurations::CheckoutConfigurationsClient;
+pub use checkout_sessions::CheckoutSessionsClient;
 pub use companies::CompaniesClient;
 pub use company_token_transactions::CompanyTokenTransactionsClient;
 pub use course_chapters::CourseChaptersClient;

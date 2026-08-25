@@ -8,11 +8,10 @@ pub enum ListSupportedMethodsResponseDataItemDeliveryType {
     BankDeposit,
     HomeDelivery,
     MobileWallet,
-    MasspayCard,
-    PaperCheck,
+    Card,
+    Check,
     Bill,
     Cryptocurrency,
-    Unknown,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -25,11 +24,10 @@ impl Serialize for ListSupportedMethodsResponseDataItemDeliveryType {
             Self::BankDeposit => serializer.serialize_str("bank_deposit"),
             Self::HomeDelivery => serializer.serialize_str("home_delivery"),
             Self::MobileWallet => serializer.serialize_str("mobile_wallet"),
-            Self::MasspayCard => serializer.serialize_str("masspay_card"),
-            Self::PaperCheck => serializer.serialize_str("paper_check"),
+            Self::Card => serializer.serialize_str("card"),
+            Self::Check => serializer.serialize_str("check"),
             Self::Bill => serializer.serialize_str("bill"),
             Self::Cryptocurrency => serializer.serialize_str("cryptocurrency"),
-            Self::Unknown => serializer.serialize_str("unknown"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -43,11 +41,10 @@ impl<'de> Deserialize<'de> for ListSupportedMethodsResponseDataItemDeliveryType 
             "bank_deposit" => Ok(Self::BankDeposit),
             "home_delivery" => Ok(Self::HomeDelivery),
             "mobile_wallet" => Ok(Self::MobileWallet),
-            "masspay_card" => Ok(Self::MasspayCard),
-            "paper_check" => Ok(Self::PaperCheck),
+            "card" => Ok(Self::Card),
+            "check" => Ok(Self::Check),
             "bill" => Ok(Self::Bill),
             "cryptocurrency" => Ok(Self::Cryptocurrency),
-            "unknown" => Ok(Self::Unknown),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -60,11 +57,10 @@ impl fmt::Display for ListSupportedMethodsResponseDataItemDeliveryType {
             Self::BankDeposit => write!(f, "bank_deposit"),
             Self::HomeDelivery => write!(f, "home_delivery"),
             Self::MobileWallet => write!(f, "mobile_wallet"),
-            Self::MasspayCard => write!(f, "masspay_card"),
-            Self::PaperCheck => write!(f, "paper_check"),
+            Self::Card => write!(f, "card"),
+            Self::Check => write!(f, "check"),
             Self::Bill => write!(f, "bill"),
             Self::Cryptocurrency => write!(f, "cryptocurrency"),
-            Self::Unknown => write!(f, "unknown"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

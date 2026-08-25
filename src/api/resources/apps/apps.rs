@@ -21,6 +21,7 @@ impl AppsClient {
     /// * `app_type` - Filter apps by the type of end-user they are built for. Apps of type `website` are left out unless you ask for them by name.
     /// * `view_type` - Only return apps supporting this view type, such as `dashboard` or `hub`.
     /// * `verified_apps_only` - Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
+    /// * `recommended` - Only return apps Whop recommends (or, with `false`, only those it does not). The community blueprints gallery is the recommended slice of the public website list.
     /// * `query` - A search string matched against app names.
     /// * `order` - The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
     /// * `direction` - Sort direction.
@@ -72,6 +73,7 @@ impl AppsClient {
                     .serialize("app_type", request.app_type.clone())
                     .serialize("view_type", request.view_type.clone())
                     .bool("verified_apps_only", request.verified_apps_only.clone())
+                    .bool("recommended", request.recommended.clone())
                     .structured_query("query", request.query.clone())
                     .serialize("order", request.order.clone())
                     .serialize("direction", request.direction.clone())

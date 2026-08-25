@@ -23,6 +23,10 @@ pub struct SearchTargetingOptionsQueryRequest {
     /// Maximum number of results per requested type.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<i64>,
+    /// The campaign's declared special ad categories. Under `housing`, `employment`, or `financial_products` the ad platform allows interests only, drawn from a short approved list, so results are narrowed to what such a campaign can launch with and other kinds return nothing. Blank `query` browses that approved list instead of the usual fixed lists.
+    #[serde(default)]
+    pub special_ad_categories:
+        Vec<Option<SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem>>,
 }
 
 impl SearchTargetingOptionsQueryRequest {
@@ -41,6 +45,8 @@ pub struct SearchTargetingOptionsQueryRequestBuilder {
     location_types: Option<Vec<Option<SearchTargetingOptionsAdGroupsRequestLocationTypesItem>>>,
     country: Option<String>,
     limit: Option<i64>,
+    special_ad_categories:
+        Option<Vec<Option<SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem>>>,
 }
 
 impl SearchTargetingOptionsQueryRequestBuilder {
@@ -85,11 +91,20 @@ impl SearchTargetingOptionsQueryRequestBuilder {
         self
     }
 
+    pub fn special_ad_categories(
+        mut self,
+        value: Vec<Option<SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem>>,
+    ) -> Self {
+        self.special_ad_categories = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`SearchTargetingOptionsQueryRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`platform`](SearchTargetingOptionsQueryRequestBuilder::platform)
     /// - [`types`](SearchTargetingOptionsQueryRequestBuilder::types)
     /// - [`location_types`](SearchTargetingOptionsQueryRequestBuilder::location_types)
+    /// - [`special_ad_categories`](SearchTargetingOptionsQueryRequestBuilder::special_ad_categories)
     pub fn build(self) -> Result<SearchTargetingOptionsQueryRequest, BuildError> {
         Ok(SearchTargetingOptionsQueryRequest {
             account_id: self.account_id,
@@ -105,6 +120,9 @@ impl SearchTargetingOptionsQueryRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("location_types"))?,
             country: self.country,
             limit: self.limit,
+            special_ad_categories: self
+                .special_ad_categories
+                .ok_or_else(|| BuildError::missing_field("special_ad_categories"))?,
         })
     }
 }

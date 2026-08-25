@@ -15,6 +15,9 @@ pub struct AppsListQueryRequest {
     /// Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verified_apps_only: Option<bool>,
+    /// Only return apps Whop recommends (or, with `false`, only those it does not). The community blueprints gallery is the recommended slice of the public website list.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recommended: Option<bool>,
     /// A search string matched against app names.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
@@ -51,6 +54,7 @@ pub struct AppsListQueryRequestBuilder {
     app_type: Option<ListAppsRequestAppType>,
     view_type: Option<ListAppsRequestViewType>,
     verified_apps_only: Option<bool>,
+    recommended: Option<bool>,
     query: Option<String>,
     order: Option<ListAppsRequestOrder>,
     direction: Option<ListAppsRequestDirection>,
@@ -78,6 +82,11 @@ impl AppsListQueryRequestBuilder {
 
     pub fn verified_apps_only(mut self, value: bool) -> Self {
         self.verified_apps_only = Some(value);
+        self
+    }
+
+    pub fn recommended(mut self, value: bool) -> Self {
+        self.recommended = Some(value);
         self
     }
 
@@ -123,6 +132,7 @@ impl AppsListQueryRequestBuilder {
             app_type: self.app_type,
             view_type: self.view_type,
             verified_apps_only: self.verified_apps_only,
+            recommended: self.recommended,
             query: self.query,
             order: self.order,
             direction: self.direction,

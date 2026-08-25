@@ -3,10 +3,12 @@
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fwhopio%2Fwhopsdk-rust)
 [![crates.io shield](https://img.shields.io/crates/v/whop_sdk)](https://crates.io/crates/whop_sdk)
 
-The Whop Rust library provides convenient access to the Whop APIs from Rust.
+The Whop SDK gives you typed access to the Whop API. Pass your API key to the client explicitly — the SDK reads no environment variables, so a client built without a key sends unauthenticated requests and the API answers 401.
+
 
 ## Table of Contents
 
+- [Documentation](#documentation)
 - [Installation](#installation)
 - [Reference](#reference)
 - [Usage](#usage)
@@ -21,13 +23,17 @@ The Whop Rust library provides convenient access to the Whop APIs from Rust.
   - [Custom Client](#custom-client)
 - [Contributing](#contributing)
 
+## Documentation
+
+API reference documentation is available [here](https://docs.whop.com/api-reference).
+
 ## Installation
 
 Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-whop_sdk = "1.0.11"
+whop_sdk = "1.0.13"
 ```
 
 Or install via cargo:
