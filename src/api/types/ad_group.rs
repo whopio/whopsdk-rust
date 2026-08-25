@@ -136,7 +136,7 @@ pub struct AdGroup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub desired_cost_per_result: Option<f64>,
-    /// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting, and unavailable to campaigns with special_ad_categories.
+    /// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting. Special ad category campaigns are limited to approved interests.
     #[serde(default)]
     pub detailed_targeting: AdGroupDetailedTargeting,
     /// Device platforms and operating systems targeted.

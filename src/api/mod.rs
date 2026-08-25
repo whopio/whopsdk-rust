@@ -16,7 +16,7 @@ pub use resources::{
     AdReportsClient, AdsClient, AffiliatesClient, AiChatsClient, ApiKeysClient, AppBuildsClient,
     AppsClient, AudiencesClient, AuthorizedUsersClient, BountiesClient, BountySubmissionsClient,
     CardTransactionsClient, CardsClient, ChatChannelsClient, CheckoutConfigurationsClient,
-    CompaniesClient, CompanyTokenTransactionsClient, CourseChaptersClient,
+    CheckoutSessionsClient, CompaniesClient, CompanyTokenTransactionsClient, CourseChaptersClient,
     CourseLessonInteractionsClient, CourseLessonsClient, CourseStudentsClient, CoursesClient,
     DepositsClient, DisputeAlertsClient, DisputesClient, DmChannelsClient, DmMembersClient,
     EntriesClient, EventsClient, ExperiencesClient, ExportsClient, FeeMarkupsClient, FilesClient,

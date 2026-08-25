@@ -4,6 +4,7 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum GetFinancialReportResponseRowsItemLineCategory {
+    AcceleratedSettlementFee,
     AccountSettlement,
     AdBalanceFundingReceipt,
     AdBudgetRelease,
@@ -169,6 +170,7 @@ pub enum GetFinancialReportResponseRowsItemLineCategory {
     PlatformEarningSettlement,
     PlatformEarningUnreconciledClearing,
     PromoReversal,
+    PspAcceleratedSettlementFee,
     PspAccountUpdaterFee,
     PspAdjustedProcessingFee,
     PspAuthenticationFee,
@@ -289,6 +291,9 @@ pub enum GetFinancialReportResponseRowsItemLineCategory {
 impl Serialize for GetFinancialReportResponseRowsItemLineCategory {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::AcceleratedSettlementFee => {
+                serializer.serialize_str("accelerated_settlement_fee")
+            }
             Self::AccountSettlement => serializer.serialize_str("account_settlement"),
             Self::AdBalanceFundingReceipt => serializer.serialize_str("ad_balance_funding_receipt"),
             Self::AdBudgetRelease => serializer.serialize_str("ad_budget_release"),
@@ -558,6 +563,9 @@ impl Serialize for GetFinancialReportResponseRowsItemLineCategory {
                 serializer.serialize_str("platform_earning_unreconciled_clearing")
             }
             Self::PromoReversal => serializer.serialize_str("promo_reversal"),
+            Self::PspAcceleratedSettlementFee => {
+                serializer.serialize_str("psp_accelerated_settlement_fee")
+            }
             Self::PspAccountUpdaterFee => serializer.serialize_str("psp_account_updater_fee"),
             Self::PspAdjustedProcessingFee => {
                 serializer.serialize_str("psp_adjusted_processing_fee")
@@ -739,6 +747,7 @@ impl<'de> Deserialize<'de> for GetFinancialReportResponseRowsItemLineCategory {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "accelerated_settlement_fee" => Ok(Self::AcceleratedSettlementFee),
             "account_settlement" => Ok(Self::AccountSettlement),
             "ad_balance_funding_receipt" => Ok(Self::AdBalanceFundingReceipt),
             "ad_budget_release" => Ok(Self::AdBudgetRelease),
@@ -914,6 +923,7 @@ impl<'de> Deserialize<'de> for GetFinancialReportResponseRowsItemLineCategory {
                 Ok(Self::PlatformEarningUnreconciledClearing)
             }
             "promo_reversal" => Ok(Self::PromoReversal),
+            "psp_accelerated_settlement_fee" => Ok(Self::PspAcceleratedSettlementFee),
             "psp_account_updater_fee" => Ok(Self::PspAccountUpdaterFee),
             "psp_adjusted_processing_fee" => Ok(Self::PspAdjustedProcessingFee),
             "psp_authentication_fee" => Ok(Self::PspAuthenticationFee),
@@ -1036,6 +1046,7 @@ impl<'de> Deserialize<'de> for GetFinancialReportResponseRowsItemLineCategory {
 impl fmt::Display for GetFinancialReportResponseRowsItemLineCategory {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::AcceleratedSettlementFee => write!(f, "accelerated_settlement_fee"),
             Self::AccountSettlement => write!(f, "account_settlement"),
             Self::AdBalanceFundingReceipt => write!(f, "ad_balance_funding_receipt"),
             Self::AdBudgetRelease => write!(f, "ad_budget_release"),
@@ -1229,6 +1240,7 @@ impl fmt::Display for GetFinancialReportResponseRowsItemLineCategory {
                 write!(f, "platform_earning_unreconciled_clearing")
             }
             Self::PromoReversal => write!(f, "promo_reversal"),
+            Self::PspAcceleratedSettlementFee => write!(f, "psp_accelerated_settlement_fee"),
             Self::PspAccountUpdaterFee => write!(f, "psp_account_updater_fee"),
             Self::PspAdjustedProcessingFee => write!(f, "psp_adjusted_processing_fee"),
             Self::PspAuthenticationFee => write!(f, "psp_authentication_fee"),

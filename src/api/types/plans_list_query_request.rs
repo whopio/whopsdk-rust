@@ -3,9 +3,9 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct PlansListQueryRequest {
-    /// The unique identifier of the account to list plans for.
-    #[serde(default)]
-    pub account_id: String,
+    /// The unique identifier of the account to list plans for. Required unless `product_ids` is provided for a public product-plan read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
     /// The sort direction for results. Defaults to descending.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<ListPlansRequestDirection>,
@@ -21,7 +21,7 @@ pub struct PlansListQueryRequest {
     /// Filter to only plans matching these billing types.
     #[serde(default)]
     pub plan_types: Vec<Option<String>>,
-    /// Filter to only plans belonging to these product identifiers.
+    /// Filter to only plans belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice plans are returned.
     #[serde(default)]
     pub product_ids: Vec<Option<String>>,
     /// Only return plans created before this timestamp.
@@ -136,16 +136,13 @@ impl PlansListQueryRequestBuilder {
 
     /// Consumes the builder and constructs a [`PlansListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`account_id`](PlansListQueryRequestBuilder::account_id)
     /// - [`release_methods`](PlansListQueryRequestBuilder::release_methods)
     /// - [`visibilities`](PlansListQueryRequestBuilder::visibilities)
     /// - [`plan_types`](PlansListQueryRequestBuilder::plan_types)
     /// - [`product_ids`](PlansListQueryRequestBuilder::product_ids)
     pub fn build(self) -> Result<PlansListQueryRequest, BuildError> {
         Ok(PlansListQueryRequest {
-            account_id: self
-                .account_id
-                .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            account_id: self.account_id,
             direction: self.direction,
             order: self.order,
             release_methods: self

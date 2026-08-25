@@ -23,7 +23,7 @@ pub struct UpdateInvoicesRequest {
     /// The email address of the customer.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email_address: Option<String>,
-    /// Line items that break down the invoice total.
+    /// Line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge. Pass an empty list to remove the breakdown.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub line_items: Option<Vec<UpdateInvoicesRequestLineItemsItem>>,
     /// The unique identifier of an existing mailing address to attach.

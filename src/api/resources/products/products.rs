@@ -13,20 +13,27 @@ impl ProductsClient {
         })
     }
 
-    /// Returns a paginated list of products belonging to an account.
+    /// Returns a paginated list of products. Omit `account_id` to search the public marketplace.
     ///
     /// # Arguments
     ///
-    /// * `account_id` - The unique identifier of the account to list products for.
-    /// * `visibilities` - Filter to only products matching these visibility states.
+    /// * `account_id` - The unique identifier of the account to list products for. Omit to search the public marketplace.
+    /// * `query` - Ranked search against product title and headline. Omit to browse by recency.
+    /// * `marketplace_category_route` - Only return marketplace products assigned to this category route, such as `trading`.
+    /// * `plan_types` - Filter to products with a buyable plan of these billing models, such as `one_time` or `renewal`.
+    /// * `price_minimum` - Only return products whose advertised buyable plan has a displayed price of at least this amount. Recurring plans use renewal price.
+    /// * `price_maximum` - Only return products whose advertised buyable plan has a displayed price of at most this amount. Recurring plans use renewal price.
+    /// * `visibilities` - Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products.
     /// * `access_pass_types` - Filter to only products matching these types.
     /// * `labels` - Filter to only products carrying all of these labels. Labels are matched lowercased.
     /// * `direction` - The sort direction for results. Defaults to descending.
-    /// * `order` - The field to sort results by. Defaults to created_at.
+    /// * `order` - The field to sort results by. Account lists default to `created_at`. Marketplace lists default to `discoverable_at` and accept `created_at` or `discoverable_at`. Cannot be combined with `query`.
     /// * `first` - The number of products to return (default and max 100).
     /// * `after` - A cursor; returns products after this position.
     /// * `last` - The number of products to return from the end of the range.
     /// * `before` - A cursor; returns products before this position.
+    /// * `created_after` - Only return products created after this ISO 8601 timestamp.
+    /// * `created_before` - Only return products created before this ISO 8601 timestamp.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -49,9 +56,14 @@ impl ProductsClient {
     ///         .products
     ///         .list(
     ///             &ProductsListQueryRequest {
-    ///                 account_id: "account_id".to_string(),
     ///                 visibilities: vec![Some("visible".to_string())],
     ///                 access_pass_types: vec![Some("regular".to_string())],
+    ///                 account_id: None,
+    ///                 query: None,
+    ///                 marketplace_category_route: None,
+    ///                 plan_types: vec![],
+    ///                 price_minimum: None,
+    ///                 price_maximum: None,
     ///                 labels: vec![],
     ///                 direction: None,
     ///                 order: None,
@@ -59,6 +71,8 @@ impl ProductsClient {
     ///                 after: None,
     ///                 last: None,
     ///                 before: None,
+    ///                 created_after: None,
+    ///                 created_before: None,
     ///             },
     ///             None,
     ///         )
@@ -77,6 +91,14 @@ impl ProductsClient {
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .structured_query("query", request.query.clone())
+                    .string(
+                        "marketplace_category_route",
+                        request.marketplace_category_route.clone(),
+                    )
+                    .serialize_array("plan_types", request.plan_types.clone())
+                    .float("price_minimum", request.price_minimum.clone())
+                    .float("price_maximum", request.price_maximum.clone())
                     .string_array("visibilities", request.visibilities.clone())
                     .string_array("access_pass_types", request.access_pass_types.clone())
                     .string_array("labels", request.labels.clone())
@@ -86,6 +108,8 @@ impl ProductsClient {
                     .string("after", request.after.clone())
                     .int("last", request.last.clone())
                     .string("before", request.before.clone())
+                    .string("created_after", request.created_after.clone())
+                    .string("created_before", request.created_before.clone())
                     .build(),
                 options,
             )
@@ -159,7 +183,7 @@ impl ProductsClient {
             .await
     }
 
-    /// Retrieves the details of an existing product. This endpoint is publicly accessible.
+    /// Retrieves a product. Public — no credentials.
     ///
     /// # Arguments
     ///

@@ -6,6 +6,9 @@ pub struct LedgerActivitySource {
     /// Withdrawal amount as a decimal number in the destination currency (withdrawal sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub amount_float: Option<f64>,
+    /// Card brand used by the payment source.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub card_brand: Option<String>,
     /// Chain the deposit landed on, for example plasma (onchain_transaction sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub chain: Option<String>,
@@ -31,6 +34,15 @@ pub struct LedgerActivitySource {
     /// Name of the entity processing the payout (withdrawal sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payer_name: Option<String>,
+    /// Total charged by the payment source.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_amount: Option<Money>,
+    /// Payment method used by the payment source.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_method_type: Option<String>,
+    /// Processor used by the payment source.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_processor: Option<String>,
     /// Payout destination display info (withdrawal sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_destination: Option<LedgerActivitySourcePayoutDestination>,
@@ -70,6 +82,7 @@ impl LedgerActivitySource {
 #[non_exhaustive]
 pub struct LedgerActivitySourceBuilder {
     amount_float: Option<f64>,
+    card_brand: Option<String>,
     chain: Option<String>,
     claim_url: Option<String>,
     created_at: Option<DateTime<FixedOffset>>,
@@ -79,6 +92,9 @@ pub struct LedgerActivitySourceBuilder {
     id: Option<String>,
     object: Option<String>,
     payer_name: Option<String>,
+    payment_amount: Option<Money>,
+    payment_method_type: Option<String>,
+    payment_processor: Option<String>,
     payout_destination: Option<LedgerActivitySourcePayoutDestination>,
     payout_token_nickname: Option<String>,
     reason: Option<String>,
@@ -92,6 +108,11 @@ pub struct LedgerActivitySourceBuilder {
 impl LedgerActivitySourceBuilder {
     pub fn amount_float(mut self, value: f64) -> Self {
         self.amount_float = Some(value);
+        self
+    }
+
+    pub fn card_brand(mut self, value: impl Into<String>) -> Self {
+        self.card_brand = Some(value.into());
         self
     }
 
@@ -137,6 +158,21 @@ impl LedgerActivitySourceBuilder {
 
     pub fn payer_name(mut self, value: impl Into<String>) -> Self {
         self.payer_name = Some(value.into());
+        self
+    }
+
+    pub fn payment_amount(mut self, value: Money) -> Self {
+        self.payment_amount = Some(value);
+        self
+    }
+
+    pub fn payment_method_type(mut self, value: impl Into<String>) -> Self {
+        self.payment_method_type = Some(value.into());
+        self
+    }
+
+    pub fn payment_processor(mut self, value: impl Into<String>) -> Self {
+        self.payment_processor = Some(value.into());
         self
     }
 
@@ -187,6 +223,7 @@ impl LedgerActivitySourceBuilder {
     pub fn build(self) -> Result<LedgerActivitySource, BuildError> {
         Ok(LedgerActivitySource {
             amount_float: self.amount_float,
+            card_brand: self.card_brand,
             chain: self.chain,
             claim_url: self.claim_url,
             created_at: self.created_at,
@@ -198,6 +235,9 @@ impl LedgerActivitySourceBuilder {
                 .object
                 .ok_or_else(|| BuildError::missing_field("object"))?,
             payer_name: self.payer_name,
+            payment_amount: self.payment_amount,
+            payment_method_type: self.payment_method_type,
+            payment_processor: self.payment_processor,
             payout_destination: self.payout_destination,
             payout_token_nickname: self.payout_token_nickname,
             reason: self.reason,

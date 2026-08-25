@@ -17,7 +17,10 @@ pub struct Product {
     /// Custom text label on customer's bank statement.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_statement_descriptor: Option<String>,
-    /// Written description displayed on product page.
+    /// Buyable plan to show and check out with. The configured default when that plan is buyable, otherwise the first buyable plan in product-page order. `null` when none is buyable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default_plan: Option<ProductPublicPlan>,
+    /// Written description displayed on the product page. `null` if none is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     /// External identifier stored on the product for your own reference.
@@ -99,6 +102,7 @@ pub struct ProductBuilder {
     custom_cta: Option<ProductCustomCta>,
     custom_cta_url: Option<String>,
     custom_statement_descriptor: Option<String>,
+    default_plan: Option<ProductPublicPlan>,
     description: Option<String>,
     external_identifier: Option<String>,
     gallery_images: Option<Vec<ProductGalleryImage>>,
@@ -145,6 +149,11 @@ impl ProductBuilder {
 
     pub fn custom_statement_descriptor(mut self, value: impl Into<String>) -> Self {
         self.custom_statement_descriptor = Some(value.into());
+        self
+    }
+
+    pub fn default_plan(mut self, value: ProductPublicPlan) -> Self {
+        self.default_plan = Some(value);
         self
     }
 
@@ -275,6 +284,7 @@ impl ProductBuilder {
             custom_cta: self.custom_cta,
             custom_cta_url: self.custom_cta_url,
             custom_statement_descriptor: self.custom_statement_descriptor,
+            default_plan: self.default_plan,
             description: self.description,
             external_identifier: self.external_identifier,
             gallery_images: self
