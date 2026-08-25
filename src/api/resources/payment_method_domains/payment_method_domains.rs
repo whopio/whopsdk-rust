@@ -63,6 +63,13 @@ impl PaymentMethodDomainsClient {
         request: &PaymentMethodDomainsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListPaymentMethodDomainsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -126,6 +133,13 @@ impl PaymentMethodDomainsClient {
         request: &CreatePaymentMethodDomainsRequest,
         options: Option<RequestOptions>,
     ) -> Result<PaymentMethodDomain, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -171,6 +185,13 @@ impl PaymentMethodDomainsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<PaymentMethodDomain, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -216,6 +237,13 @@ impl PaymentMethodDomainsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeletePaymentMethodDomainsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -261,6 +289,13 @@ impl PaymentMethodDomainsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<PaymentMethodDomain, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

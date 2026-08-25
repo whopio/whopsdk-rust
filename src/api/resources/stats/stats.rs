@@ -42,6 +42,13 @@ impl StatsClient {
         &self,
         options: Option<RequestOptions>,
     ) -> Result<ListStatsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, "stats", None, None, options)
             .await
@@ -93,6 +100,13 @@ impl StatsClient {
         request: &DescribeStatsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<DescribeStatsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -166,6 +180,13 @@ impl StatsClient {
         request: &MetricStatsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<MetricStatsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -244,6 +265,13 @@ impl StatsClient {
         request: &RawStatsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<RawStatsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -373,6 +401,13 @@ impl StatsClient {
         request: &StatsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<RetrieveStatsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

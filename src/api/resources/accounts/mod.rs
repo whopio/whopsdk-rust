@@ -72,6 +72,13 @@ impl AccountsClient {
         request: &AccountsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -135,6 +142,13 @@ impl AccountsClient {
         request: &CreateAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -172,6 +186,13 @@ impl AccountsClient {
     /// }
     /// ```
     pub async fn me(&self, options: Option<RequestOptions>) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, "accounts/me", None, None, options)
             .await
@@ -208,6 +229,13 @@ impl AccountsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -260,6 +288,13 @@ impl AccountsClient {
         request: &UpdateAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -359,6 +394,13 @@ impl AccountsClient {
         request: &FormCompanyAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<FormCompanyAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -374,7 +416,6 @@ impl AccountsClient {
     ///
     /// # Arguments
     ///
-    /// * `id` - Account ID, prefixed `biz_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -412,6 +453,13 @@ impl AccountsClient {
         request: &TransferOwnershipAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<TransferOwnershipAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

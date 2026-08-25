@@ -62,6 +62,13 @@ impl AudiencesClient {
         request: &AudiencesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAudiencesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -127,6 +134,13 @@ impl AudiencesClient {
         request: &CreateAudiencesRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateAudiencesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -169,6 +183,13 @@ impl AudiencesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteAudiencesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -221,6 +242,13 @@ impl AudiencesClient {
         request: &UpdateAudiencesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Audience, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -236,7 +264,6 @@ impl AudiencesClient {
     ///
     /// # Arguments
     ///
-    /// * `id` - Audience ID, prefixed `adaud_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -273,6 +300,13 @@ impl AudiencesClient {
         request: &AddPeopleAudiencesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Audience, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

@@ -67,6 +67,13 @@ impl ReactionsClient {
         request: &ReactionsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListReactionsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -131,6 +138,13 @@ impl ReactionsClient {
         request: &CreateReactionsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Reaction, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -183,6 +197,13 @@ impl ReactionsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Reaction, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -243,6 +264,13 @@ impl ReactionsClient {
         request: &ReactionsDeleteQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,

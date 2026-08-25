@@ -72,6 +72,13 @@ impl SocialAccountsClient {
         request: &SocialAccountsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -134,6 +141,13 @@ impl SocialAccountsClient {
         request: &CreateSocialAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<SocialAccount, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -186,6 +200,13 @@ impl SocialAccountsClient {
         request: &ConnectSocialAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ConnectSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -240,6 +261,13 @@ impl SocialAccountsClient {
         request: &SocialAccountsDeleteQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<DeleteSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -296,6 +324,13 @@ impl SocialAccountsClient {
         request: &LeadFormsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<LeadFormsSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -357,6 +392,13 @@ impl SocialAccountsClient {
         request: &PostsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<PostsSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

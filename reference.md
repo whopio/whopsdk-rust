@@ -1253,7 +1253,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — Account ID, prefixed `biz_`.
+**id:** `String` 
     
 </dd>
 </dl>
@@ -8281,7 +8281,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — Audience ID, prefixed `adaud_`.
+**id:** `String` 
     
 </dd>
 </dl>
@@ -12205,7 +12205,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.company_token_transactions.<a href="/src/api/resources/company_token_transactions/client.rs">create</a>(request: CreateCompanyTokenTransactionsRequest) -> Result&lt;CompanyTokenTransaction, ApiError&gt;</code></summary>
+<details><summary><code>client.company_token_transactions.<a href="/src/api/resources/company_token_transactions/client.rs">create</a>(request: CreateCompanyTokenTransactionsRequestBody) -> Result&lt;CompanyTokenTransaction, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -12249,8 +12249,8 @@ async fn main() {
     client
         .company_token_transactions
         .create(
-            &CreateCompanyTokenTransactionsRequest::Transfer {
-                data: CreateCompanyTokenTransactionsRequestTransfer {
+            &CreateCompanyTokenTransactionsRequestBody::Transfer {
+                data: CreateCompanyTokenTransactionsRequestBodyTransfer {
                     amount: 6.9,
                     company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     destination_user_id: "destination_user_id".to_string(),
@@ -20902,7 +20902,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client.rs">create</a>(request: CreateInvoicesRequest) -> Result&lt;Invoice, ApiError&gt;</code></summary>
+<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client.rs">create</a>(request: CreateInvoicesRequestBody) -> Result&lt;Invoice, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -20947,30 +20947,32 @@ async fn main() {
     client
         .invoices
         .create(
-            &CreateInvoicesRequest::CreateInvoicesRequestProduct(CreateInvoicesRequestProduct {
-                automatically_finalizes_at: None,
-                billing_address: None,
-                charge_buyer_fee: None,
-                collection_method: InvoiceCollectionMethods::SendInvoice,
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                customer_name: None,
-                due_date: None,
-                email_address: None,
-                line_items: None,
-                mailing_address_id: None,
-                member_id: None,
-                payment_method_id: None,
-                payment_token_id: None,
-                plan: CreateInvoicesRequestProductPlan {
-                    ..Default::default()
+            &CreateInvoicesRequestBody::CreateInvoicesRequestBodyProduct(
+                CreateInvoicesRequestBodyProduct {
+                    automatically_finalizes_at: None,
+                    billing_address: None,
+                    charge_buyer_fee: None,
+                    collection_method: InvoiceCollectionMethods::SendInvoice,
+                    company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                    customer_name: None,
+                    due_date: None,
+                    email_address: None,
+                    line_items: None,
+                    mailing_address_id: None,
+                    member_id: None,
+                    payment_method_id: None,
+                    payment_token_id: None,
+                    plan: CreateInvoicesRequestBodyProductPlan {
+                        ..Default::default()
+                    },
+                    product: CreateInvoicesRequestBodyProductProduct {
+                        title: "title".to_string(),
+                        ..Default::default()
+                    },
+                    save_as_draft: None,
+                    subscription_billing_anchor_at: None,
                 },
-                product: CreateInvoicesRequestProductProduct {
-                    title: "title".to_string(),
-                    ..Default::default()
-                },
-                save_as_draft: None,
-                subscription_billing_anchor_at: None,
-            }),
+            ),
             None,
         )
         .await;
@@ -25784,7 +25786,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">create</a>(request: CreatePaymentsRequest) -> Result&lt;CreatePaymentsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">create</a>(request: CreatePaymentsRequestBody) -> Result&lt;CreatePaymentsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -25838,32 +25840,34 @@ async fn main() {
     client
         .payments
         .create(
-            &CreatePaymentsRequest::CreatePaymentsRequestZero(CreatePaymentsRequestZero {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                confirmation_token: "confirmation_token".to_string(),
-                email: None,
-                metadata: None,
-                payment_method_id: None,
-                plan: CreatePaymentsRequestZeroPlan {
-                    application_fee_amount: None,
-                    billing_period: None,
-                    currency: Currencies::Usd,
-                    description: None,
-                    expiration_days: None,
-                    force_create_new_plan: None,
-                    initial_price: None,
-                    internal_notes: None,
-                    plan_type: None,
-                    product: None,
-                    product_id: None,
-                    renewal_price: None,
-                    title: None,
-                    trial_period_days: None,
-                    visibility: None,
+            &CreatePaymentsRequestBody::CreatePaymentsRequestBodyZero(
+                CreatePaymentsRequestBodyZero {
+                    company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                    confirmation_token: "confirmation_token".to_string(),
+                    email: None,
+                    metadata: None,
+                    payment_method_id: None,
+                    plan: CreatePaymentsRequestBodyZeroPlan {
+                        application_fee_amount: None,
+                        billing_period: None,
+                        currency: Currencies::Usd,
+                        description: None,
+                        expiration_days: None,
+                        force_create_new_plan: None,
+                        initial_price: None,
+                        internal_notes: None,
+                        plan_type: None,
+                        product: None,
+                        product_id: None,
+                        renewal_price: None,
+                        title: None,
+                        trial_period_days: None,
+                        visibility: None,
+                    },
+                    promo_code_id: None,
+                    return_url: None,
                 },
-                promo_code_id: None,
-                return_url: None,
-            }),
+            ),
             None,
         )
         .await;
@@ -32307,7 +32311,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.setup_intents.<a href="/src/api/resources/setup_intents/client.rs">create</a>(request: CreateSetupIntentsRequest) -> Result&lt;CreateSetupIntentsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.setup_intents.<a href="/src/api/resources/setup_intents/client.rs">create</a>(request: CreateSetupIntentsRequestBody) -> Result&lt;CreateSetupIntentsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -32351,8 +32355,8 @@ async fn main() {
     client
         .setup_intents
         .create(
-            &CreateSetupIntentsRequest::CreateSetupIntentsRequestConfirmationToken(
-                CreateSetupIntentsRequestConfirmationToken {
+            &CreateSetupIntentsRequestBody::CreateSetupIntentsRequestBodyConfirmationToken(
+                CreateSetupIntentsRequestBodyConfirmationToken {
                     company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     confirmation_token: "ctok_xxxxxxxxxxxxxx".to_string(),
                     ..Default::default()
@@ -37006,7 +37010,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.verifications.<a href="/src/api/resources/verifications/client.rs">create</a>(request: CreateVerificationsRequestBody, account_id: Option&lt;String&gt;) -> Result&lt;CreateVerificationsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.verifications.<a href="/src/api/resources/verifications/client.rs">create</a>(request: CreateVerificationsRequestBody) -> Result&lt;CreateVerificationsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -37045,12 +37049,9 @@ async fn main() {
     client
         .verifications
         .create(
-            &CreateRequest {
-                account_id: "account_id".to_string(),
-                body: CreateVerificationsRequestBody::Individual {
-                    data: CreateVerificationsRequestBodyIndividual {
-                        ..Default::default()
-                    },
+            &CreateVerificationsRequestBody::Individual {
+                data: CreateVerificationsRequestBodyIndividual {
+                    ..Default::default()
                 },
             },
             None,
@@ -37058,21 +37059,6 @@ async fn main() {
         .await;
 }
 ```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**account_id:** `String` — Account or user ID whose identity you want to verify. Use a `biz_` account ID for account verifications, or the caller's `user_` ID for personal verification.
-    
 </dd>
 </dl>
 </dd>

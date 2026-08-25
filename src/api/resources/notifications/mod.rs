@@ -61,6 +61,13 @@ impl NotificationsClient {
         request: &NotificationsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListNotificationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -125,6 +132,13 @@ impl NotificationsClient {
         request: &CreateNotificationsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateNotificationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -177,6 +191,13 @@ impl NotificationsClient {
         request: &BadgesQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<BadgesNotificationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -229,6 +250,13 @@ impl NotificationsClient {
         request: &MarkReadNotificationsRequest,
         options: Option<RequestOptions>,
     ) -> Result<MarkReadNotificationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -271,6 +299,13 @@ impl NotificationsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Notification, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

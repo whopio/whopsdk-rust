@@ -75,6 +75,13 @@ impl InvoicesClient {
         request: &InvoicesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListInvoicesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -131,30 +138,32 @@ impl InvoicesClient {
     ///     client
     ///         .invoices
     ///         .create(
-    ///             &CreateInvoicesRequest::CreateInvoicesRequestProduct(CreateInvoicesRequestProduct {
-    ///                 automatically_finalizes_at: None,
-    ///                 billing_address: None,
-    ///                 charge_buyer_fee: None,
-    ///                 collection_method: InvoiceCollectionMethods::SendInvoice,
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-    ///                 customer_name: None,
-    ///                 due_date: None,
-    ///                 email_address: None,
-    ///                 line_items: None,
-    ///                 mailing_address_id: None,
-    ///                 member_id: None,
-    ///                 payment_method_id: None,
-    ///                 payment_token_id: None,
-    ///                 plan: CreateInvoicesRequestProductPlan {
-    ///                     ..Default::default()
+    ///             &CreateInvoicesRequestBody::CreateInvoicesRequestBodyProduct(
+    ///                 CreateInvoicesRequestBodyProduct {
+    ///                     automatically_finalizes_at: None,
+    ///                     billing_address: None,
+    ///                     charge_buyer_fee: None,
+    ///                     collection_method: InvoiceCollectionMethods::SendInvoice,
+    ///                     company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                     customer_name: None,
+    ///                     due_date: None,
+    ///                     email_address: None,
+    ///                     line_items: None,
+    ///                     mailing_address_id: None,
+    ///                     member_id: None,
+    ///                     payment_method_id: None,
+    ///                     payment_token_id: None,
+    ///                     plan: CreateInvoicesRequestBodyProductPlan {
+    ///                         ..Default::default()
+    ///                     },
+    ///                     product: CreateInvoicesRequestBodyProductProduct {
+    ///                         title: "title".to_string(),
+    ///                         ..Default::default()
+    ///                     },
+    ///                     save_as_draft: None,
+    ///                     subscription_billing_anchor_at: None,
     ///                 },
-    ///                 product: CreateInvoicesRequestProductProduct {
-    ///                     title: "title".to_string(),
-    ///                     ..Default::default()
-    ///                 },
-    ///                 save_as_draft: None,
-    ///                 subscription_billing_anchor_at: None,
-    ///             }),
+    ///             ),
     ///             None,
     ///         )
     ///         .await;
@@ -162,9 +171,16 @@ impl InvoicesClient {
     /// ```
     pub async fn create(
         &self,
-        request: &CreateInvoicesRequest,
+        request: &CreateInvoicesRequestBody,
         options: Option<RequestOptions>,
     ) -> Result<Invoice, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -216,6 +232,13 @@ impl InvoicesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Invoice, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -264,6 +287,13 @@ impl InvoicesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -322,6 +352,13 @@ impl InvoicesClient {
         request: &UpdateInvoicesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Invoice, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -370,6 +407,13 @@ impl InvoicesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -418,6 +462,13 @@ impl InvoicesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -466,6 +517,13 @@ impl InvoicesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -510,6 +568,13 @@ impl InvoicesClient {
     /// }
     /// ```
     pub async fn void(&self, id: &str, options: Option<RequestOptions>) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

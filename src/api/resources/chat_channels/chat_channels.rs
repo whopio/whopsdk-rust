@@ -65,6 +65,13 @@ impl ChatChannelsClient {
         request: &ChatChannelsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListChatChannelsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -117,6 +124,13 @@ impl ChatChannelsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ChatChannel, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -172,6 +186,13 @@ impl ChatChannelsClient {
         request: &UpdateChatChannelsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ChatChannel, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

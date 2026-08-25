@@ -46,6 +46,13 @@ impl PreferencesClient2 {
         &self,
         options: Option<RequestOptions>,
     ) -> Result<UserPreferences, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, "users/me/preferences", None, None, options)
             .await
@@ -90,6 +97,13 @@ impl PreferencesClient2 {
         request: &UpdatePreferencesRequest,
         options: Option<RequestOptions>,
     ) -> Result<UserPreferences, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

@@ -72,6 +72,13 @@ impl DisputesClient {
         request: &DisputesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListDisputesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -144,6 +151,13 @@ impl DisputesClient {
         request: &DisputesSummaryQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<SummaryDisputesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -193,6 +207,13 @@ impl DisputesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -245,6 +266,13 @@ impl DisputesClient {
         request: &UpdateDisputesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -287,6 +315,13 @@ impl DisputesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -342,6 +377,13 @@ impl DisputesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -404,6 +446,13 @@ impl DisputesClient {
         request: &UpdateEvidenceDisputeRequest,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -462,6 +511,13 @@ impl DisputesClient {
         request: &UploadEvidenceDisputesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

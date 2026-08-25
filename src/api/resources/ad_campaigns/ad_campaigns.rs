@@ -66,6 +66,13 @@ impl AdCampaignsClient {
         request: &AdCampaignsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAdCampaignsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -142,6 +149,13 @@ impl AdCampaignsClient {
         request: &CreateAdCampaignsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdCampaign, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -198,6 +212,13 @@ impl AdCampaignsClient {
         request: &AdCampaignsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdCampaign, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -245,6 +266,13 @@ impl AdCampaignsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteAdCampaignsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -297,6 +325,13 @@ impl AdCampaignsClient {
         request: &UpdateAdCampaignsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdCampaign, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -349,6 +384,13 @@ impl AdCampaignsClient {
         request: &DuplicateAdCampaignsRequest,
         options: Option<RequestOptions>,
     ) -> Result<DuplicateAdCampaignsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -391,6 +433,13 @@ impl AdCampaignsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AdCampaign, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -436,6 +485,13 @@ impl AdCampaignsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AdCampaign, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -478,6 +534,13 @@ impl AdCampaignsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AdCampaign, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

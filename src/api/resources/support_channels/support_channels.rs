@@ -63,6 +63,13 @@ impl SupportChannelsClient {
         request: &SupportChannelsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListSupportChannelsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -128,6 +135,13 @@ impl SupportChannelsClient {
         request: &CreateSupportChannelsRequest,
         options: Option<RequestOptions>,
     ) -> Result<SupportChannel, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -176,6 +190,13 @@ impl SupportChannelsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<SupportChannel, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

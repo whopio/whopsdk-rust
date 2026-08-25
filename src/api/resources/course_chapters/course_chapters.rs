@@ -63,6 +63,13 @@ impl CourseChaptersClient {
         request: &CourseChaptersListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListCourseChaptersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -122,6 +129,13 @@ impl CourseChaptersClient {
         request: &CreateCourseChaptersRequest,
         options: Option<RequestOptions>,
     ) -> Result<CourseChapter, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -170,6 +184,13 @@ impl CourseChaptersClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<CourseChapter, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -218,6 +239,13 @@ impl CourseChaptersClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -273,6 +301,13 @@ impl CourseChaptersClient {
         request: &UpdateCourseChaptersRequest,
         options: Option<RequestOptions>,
     ) -> Result<CourseChapter, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

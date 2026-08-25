@@ -76,6 +76,13 @@ impl PlansClient {
         request: &PlansListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListPlansResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -139,6 +146,13 @@ impl PlansClient {
         request: &CreatePlansRequest,
         options: Option<RequestOptions>,
     ) -> Result<Plan, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -181,6 +195,13 @@ impl PlansClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Plan, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, &format!("plans/{}", id), None, None, options)
             .await
@@ -217,6 +238,13 @@ impl PlansClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeletePlansResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -269,6 +297,13 @@ impl PlansClient {
         request: &UpdatePlansRequest,
         options: Option<RequestOptions>,
     ) -> Result<Plan, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -326,6 +361,13 @@ impl PlansClient {
         request: &CalculateTaxPlansRequest,
         options: Option<RequestOptions>,
     ) -> Result<CalculateTaxPlansResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

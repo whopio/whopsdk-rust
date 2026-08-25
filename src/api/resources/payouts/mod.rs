@@ -71,6 +71,13 @@ impl PayoutsClient {
         request: &PayoutsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListPayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -131,6 +138,13 @@ impl PayoutsClient {
         request: &CreatePayoutsRequestBody,
         options: Option<RequestOptions>,
     ) -> Result<CreatePayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -185,6 +199,13 @@ impl PayoutsClient {
         request: &PayoutsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<RetrievePayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-21-1".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
