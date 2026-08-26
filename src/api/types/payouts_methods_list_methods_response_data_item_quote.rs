@@ -1,28 +1,28 @@
 pub use crate::prelude::*;
 
-/// Fee and delivery estimate for withdrawing the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
+/// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListMethodsResponseDataItemQuote {
-    /// The withdrawal amount the quote is for.
+    /// The payout amount the quote is for.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub amount: f64,
     /// Currency of the quoted amount.
     #[serde(default)]
     pub currency: String,
-    /// Exchange rate from the withdrawal currency to the destination currency.
+    /// Exchange rate from the payout currency to the destination currency.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub exchange_rate: f64,
     /// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub instant: Option<ListMethodsResponseDataItemQuoteInstant>,
-    /// Maximum withdrawal amount for this method, in the withdrawal currency.
+    /// Maximum payout amount for this method, in the payout currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub max_limit: Option<f64>,
-    /// Minimum withdrawal amount for this method, in the withdrawal currency.
+    /// Minimum payout amount for this method, in the payout currency.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub min_limit: f64,

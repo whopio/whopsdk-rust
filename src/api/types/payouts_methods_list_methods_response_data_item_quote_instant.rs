@@ -3,11 +3,11 @@ pub use crate::prelude::*;
 /// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListMethodsResponseDataItemQuoteInstant {
-    /// Total fee charged, in the withdrawal currency.
+    /// Total fee charged, in the payout currency.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub fee: f64,
-    /// Amount delivered after fees, in the withdrawal currency.
+    /// Amount delivered after fees, in the payout currency.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub total_received: f64,

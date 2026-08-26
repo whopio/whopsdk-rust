@@ -10,7 +10,7 @@ pub struct PostPayoutMethodCreatedPayloadDataFeeStructure {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub fixed_amount: f64,
-    /// Percentage of the withdrawal amount charged as a fee.
+    /// Percentage of the payout amount charged as a fee.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub percentage: f64,

@@ -14,6 +14,9 @@ pub struct PaymentBankTransfer {
     /// The kind of account receiving the transfer, such as a checking account, in the local system's own vocabulary.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bank_account_type: Option<String>,
+    /// The receiving bank's address.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bank_address: Option<String>,
     /// The receiving branch, where the local system routes by branch.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bank_branch: Option<String>,
@@ -44,6 +47,9 @@ pub struct PaymentBankTransfer {
     /// The reference the buyer must attach to the transfer so it can be matched to this payment.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reference: Option<String>,
+    /// The receiving bank's routing number for US transfers.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub routing_number: Option<String>,
     /// A second account number, where the rail publishes the same destination in more than one format.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secondary_account_number: Option<String>,
@@ -65,6 +71,7 @@ pub struct PaymentBankTransferBuilder {
     account_number_label: Option<String>,
     amount: Option<Money>,
     bank_account_type: Option<String>,
+    bank_address: Option<String>,
     bank_branch: Option<String>,
     bank_code: Option<String>,
     bank_name: Option<String>,
@@ -75,6 +82,7 @@ pub struct PaymentBankTransferBuilder {
     expires_at: Option<String>,
     instructions: Option<String>,
     reference: Option<String>,
+    routing_number: Option<String>,
     secondary_account_number: Option<String>,
     secondary_account_number_label: Option<String>,
 }
@@ -97,6 +105,11 @@ impl PaymentBankTransferBuilder {
 
     pub fn bank_account_type(mut self, value: impl Into<String>) -> Self {
         self.bank_account_type = Some(value.into());
+        self
+    }
+
+    pub fn bank_address(mut self, value: impl Into<String>) -> Self {
+        self.bank_address = Some(value.into());
         self
     }
 
@@ -150,6 +163,11 @@ impl PaymentBankTransferBuilder {
         self
     }
 
+    pub fn routing_number(mut self, value: impl Into<String>) -> Self {
+        self.routing_number = Some(value.into());
+        self
+    }
+
     pub fn secondary_account_number(mut self, value: impl Into<String>) -> Self {
         self.secondary_account_number = Some(value.into());
         self
@@ -167,6 +185,7 @@ impl PaymentBankTransferBuilder {
             account_number_label: self.account_number_label,
             amount: self.amount,
             bank_account_type: self.bank_account_type,
+            bank_address: self.bank_address,
             bank_branch: self.bank_branch,
             bank_code: self.bank_code,
             bank_name: self.bank_name,
@@ -177,6 +196,7 @@ impl PaymentBankTransferBuilder {
             expires_at: self.expires_at,
             instructions: self.instructions,
             reference: self.reference,
+            routing_number: self.routing_number,
             secondary_account_number: self.secondary_account_number,
             secondary_account_number_label: self.secondary_account_number_label,
         })

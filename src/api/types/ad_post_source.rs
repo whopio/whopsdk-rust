@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Identifies the network that owns `post_id`; `null` when the ad uses uploaded creatives.
+/// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AdPostSource {

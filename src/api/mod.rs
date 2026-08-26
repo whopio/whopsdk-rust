@@ -16,7 +16,7 @@ pub use resources::{
     AdReportsClient, AdsClient, AffiliatesClient, AiChatsClient, ApiKeysClient, AppBuildsClient,
     AppsClient, AudiencesClient, AuthorizedUsersClient, BountiesClient, BountySubmissionsClient,
     CardTransactionsClient, CardsClient, ChatChannelsClient, CheckoutConfigurationsClient,
-    CheckoutSessionsClient, CompaniesClient, CompanyTokenTransactionsClient, CourseChaptersClient,
+    CompaniesClient, CompanyTokenTransactionsClient, CourseChaptersClient,
     CourseLessonInteractionsClient, CourseLessonsClient, CourseStudentsClient, CoursesClient,
     DepositsClient, DisputeAlertsClient, DisputesClient, DmChannelsClient, DmMembersClient,
     EntriesClient, EventsClient, ExperiencesClient, ExportsClient, FeeMarkupsClient, FilesClient,
@@ -29,6 +29,5 @@ pub use resources::{
     ResolutionCenterCasesClient, ReviewsClient, SetupIntentsClient, ShipmentsClient,
     SocialAccountsClient, StatsClient, SupportChannelsClient, SwapsClient, TeamMembersClient,
     TopupsClient, TransfersClient, UsersClient, VerificationsClient, WebhooksClient, Whop,
-    WithdrawalsClient,
 };
 pub use types::*;

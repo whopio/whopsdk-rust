@@ -1818,7 +1818,7 @@ async fn main() {
 <dl>
 <dd>
 
-Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget optimization), and launches a draft campaign by setting status to active. Objective, budget type and desired cost per result are fixed at creation and cannot be changed.
+Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget type and budget optimization), and launches a draft campaign by setting status to active. Objective and desired cost per result are fixed at creation and cannot be changed.
 </dd>
 </dl>
 </dd>
@@ -1883,7 +1883,7 @@ async fn main() {
 <dl>
 <dd>
 
-**budget_amount:** `Option<f64>` — The campaign budget, in the account's currency. Interpreted as daily or lifetime per the campaign's existing budget type.
+**budget_amount:** `Option<f64>` — The campaign budget, in the account's currency. Interpreted as daily or lifetime per the campaign's budget type, including a budget_type sent in the same request.
     
 </dd>
 </dl>
@@ -1892,6 +1892,14 @@ async fn main() {
 <dd>
 
 **budget_optimization:** `Option<UpdateAdCampaignsRequestBudgetOptimization>` — Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign is live on the ad network; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**budget_type:** `Option<UpdateAdCampaignsRequestBudgetType>` — Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`). Only changeable while the campaign is a draft; send budget_amount in the same request so the amount lands on the new type.
     
 </dd>
 </dl>
@@ -4124,6 +4132,14 @@ async fn main() {
 <dl>
 <dd>
 
+**existing_post_id:** `Option<String>` — Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **headlines:** `Option<Vec<String>>` — The headline variants shown on the ad.
     
 </dd>
@@ -4164,15 +4180,7 @@ async fn main() {
 <dl>
 <dd>
 
-**post_id:** `Option<String>` — Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**post_source:** `Option<CreateAdsRequestPostSource>` — Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+**post_source:** `Option<CreateAdsRequestPostSource>` — Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
     
 </dd>
 </dl>
@@ -4486,6 +4494,14 @@ async fn main() {
 <dl>
 <dd>
 
+**existing_post_id:** `Option<String>` — Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **headlines:** `Option<Vec<String>>` — The headline variants shown on the ad.
     
 </dd>
@@ -4526,15 +4542,7 @@ async fn main() {
 <dl>
 <dd>
 
-**post_id:** `Option<String>` — Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**post_source:** `Option<UpdateAdsRequestPostSource>` — Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+**post_source:** `Option<UpdateAdsRequestPostSource>` — Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
     
 </dd>
 </dl>
@@ -11267,183 +11275,6 @@ async fn main() {
 <dd>
 
 **id:** `String` — The ID of the checkout configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Checkout Sessions
-<details><summary><code>client.checkout_sessions.<a href="/src/api/resources/checkout_sessions/client.rs">create</a>(request: CreateCheckoutSessionsRequest) -> Result&lt;CheckoutSession, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Opens a checkout session. No credentials required. Pass exactly one of `items`, `checkout_configuration`, or `link`. The response includes `client_secret` once; later calls authenticate with it.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .checkout_sessions
-        .create(
-            &CreateCheckoutSessionsRequest {
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**affiliate_code:** `Option<Option<String>>` — The affiliate this checkout is attributed to. Write-once — set it here or never.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**attribution:** `Option<Option<std::collections::HashMap<String, serde_json::Value>>>` — String-to-string acquisition context. Recognized keys: `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `tracking_link_id`, `funnel_id`, `source`, `country`; anything else is dropped.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**checkout_configuration:** `Option<Option<String>>` — A seller's checkout configuration (`ch_…`) to open this checkout from. Its plan, mode, affiliate code, metadata, redirect URL, 3DS level and payment method configuration seed the session; anything you also send explicitly wins.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**items:** `Option<Vec<CreateCheckoutSessionsRequestItemsItem>>` — What the buyer is purchasing. Exactly one entry today — more are refused until multi-item checkout ships; the array shape is the forward contract. Alongside a `checkout_configuration` or `link` it may only name that mount's own plan, where it sets quantity.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**link:** `Option<Option<String>>` — Any checkout link the seller has shared, resolved for you: a plan ID, a checkout configuration ID, a vanity short link (send `page_route` with it), a membership transfer code, or a checkout link the seller handed out earlier. A link that is not a checkout link is refused with a coded message rather than a bare not-found.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `Option<Option<std::collections::HashMap<String, Option<String>>>>` — Free-form string-to-string map, at most 40 keys. Whop never interprets it.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**mode:** `Option<Option<CreateCheckoutSessionsRequestMode>>` — Defaults to the checkout configuration's mode, then `payment`. `setup` sessions are not yet available and are refused.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**origin:** `Option<Option<String>>` — Where this checkout is being opened from — the scheme and host of your page, with no path (`https://shop.example.com`). Ignored when the request carries a browser `Origin` header, which is used instead. Recorded against the session as acquisition context.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**page_route:** `Option<Option<String>>` — The product route a vanity `link` belongs to — the `pageRoute` in the seller's shared URL.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**password:** `Option<Option<String>>` — The password for a password-protected plan. Right, and the gate is cleared for the session's whole life; wrong or omitted, and the session still opens — it publishes a `custom_password` requirement, the answer arrives through update, and confirm refuses until it is right.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**promo_code:** `Option<Option<String>>` — A promo code to apply to the quote.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**return_url:** `Option<Option<String>>` — Where the buyer lands after an off-site payment step. Absolute https URL without credentials.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**top_up_membership:** `Option<Option<String>>` — An existing membership (`mem_…`) this checkout pays against instead of creating a new one — the buyer pays the plan's price again onto something they already own. Ownership is checked at confirm, against the buyer who confirms: a membership they do not own is refused as not found. Cannot accompany a membership transfer link.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**tracking_link_ids_by_account:** `Option<Option<std::collections::HashMap<String, Option<String>>>>` — First-party tracking-link candidates keyed by account ID. Ignored outside Whop's hosted checkout; an explicit `attribution.tracking_link_id` wins.
     
 </dd>
 </dl>
@@ -18950,6 +18781,132 @@ async fn main() {
 </details>
 
 ## Files
+<details><summary><code>client.files.<a href="/src/api/resources/files/client.rs">list</a>(order: Option&lt;Option&lt;ListFilesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListFilesRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFilesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the files with the given IDs, newest first — fetch a batch in one request instead of retrieving each file individually. Only files you created are returned; IDs that do not exist, or that another credential created, are omitted. A request for up to 100 IDs answers in a single page by default; a larger batch pages at up to 100 files per response — follow `page_info` with the same `file_ids` to walk the rest.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .files
+        .list(
+            &FilesListQueryRequest {
+                file_ids: vec![Some("file_xxxxxxxxxxxxx".to_string())],
+                order: None,
+                direction: None,
+                first: None,
+                after: None,
+                last: None,
+                before: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**file_ids:** `Option<String>` — The files to return, each prefixed `file_`. Repeat the parameter to pass several, up to 250 per request. Batches of up to 100 answer in one page by default; larger batches page at up to 100 per response.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListFilesRequestOrder>` — The field to sort by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListFilesRequestDirection>` — The sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — The number of files to return.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — A cursor; returns files after this position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — The number of files to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — A cursor; returns files before this position.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.files.<a href="/src/api/resources/files/client.rs">create</a>(request: CreateFilesRequest) -> Result&lt;File, ApiError&gt;</code></summary>
 <dl>
 <dd>
@@ -27010,6 +26967,87 @@ async fn main() {
 <dd>
 
 **account_id:** `Option<String>` — Owning account ID, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `Option<String>` — Owning user ID, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payouts.<a href="/src/api/resources/payouts/client.rs">cancel</a>(id: String, user_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;CancelPayoutsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Cancels a payout that is still in review and returns the funds, fees included, to the balance. A payout can be canceled while its status is `in_review`. A `requested` payout is still being prepared (its funds may be converting) and answers 409 until it reaches review; from `processing` on, the money is on its way and the answer is 409 with error type `not_cancelable`. Canceling a payout that is already canceled succeeds and returns it unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payouts
+        .cancel(
+            &"id".to_string(),
+            &CancelQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Payout ID, prefixed `wdrl_`, or the `cofr_` payout request ID returned by `POST /payouts` — both cancel the same payout.
     
 </dd>
 </dl>
@@ -38189,434 +38227,6 @@ async fn main() {
 </dl>
 </details>
 
-## Withdrawals
-<details><summary><code>client.withdrawals.<a href="/src/api/resources/withdrawals/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListWithdrawalsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a paginated list of withdrawals for a company, with optional sorting and date filtering.
-
-Required permissions:
- - `payout:withdrawal:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .withdrawals
-        .list(
-            &WithdrawalsListQueryRequest {
-                first: Some(42),
-                last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                after: None,
-                before: None,
-                direction: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `String` — The unique identifier of the company to list withdrawals for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**direction:** `Option<Direction>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_before:** `Option<String>` — Only return withdrawals created before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_after:** `Option<String>` — Only return withdrawals created after this timestamp.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.withdrawals.<a href="/src/api/resources/withdrawals/client.rs">create</a>(request: CreateWithdrawalsRequest) -> Result&lt;Withdrawal, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Creates a withdrawal request for a ledger account
-
-Required permissions:
- - `payout:withdraw_funds`
- - `payout:destination:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .withdrawals
-        .create(
-            &CreateWithdrawalsRequest {
-                amount: 6.9,
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                currency: Currencies::Usd,
-                acknowledge_bank_warning: None,
-                idempotency_key: None,
-                payout_method_id: None,
-                platform_covers_fees: None,
-                speed: None,
-                statement_descriptor: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**acknowledge_bank_warning:** `Option<Option<bool>>` — Set to true to continue when the bank could not confirm the account holder's name, or false to be refused in that case so the creator can fix the account or link their bank first. Omitting the argument skips the warning gate — a client that cannot show the warning keeps its pre-gate behavior.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**amount:** `f64` — The amount to withdraw in the specified currency
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `String` — The ID of the company to withdraw from.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**currency:** `Currencies` — The currency that is being withdrawn.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**idempotency_key:** `Option<Option<String>>` — A client-generated key that makes retries safe. Retrying with the same key returns the original withdrawal instead of creating a second one.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**payout_method_id:** `Option<Option<String>>` — The ID of the payout method to use for the withdrawal.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**platform_covers_fees:** `Option<Option<bool>>` — Whether the platform covers the payout fees.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**speed:** `Option<Option<WithdrawalSpeeds>>` — The processing speed for the withdrawal. Either standard or instant.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**statement_descriptor:** `Option<Option<String>>` — Custom statement descriptor for the withdrawal. Must be between 5 and 22 characters and contain only alphanumeric characters.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.withdrawals.<a href="/src/api/resources/withdrawals/client.rs">retrieve</a>(id: String) -> Result&lt;Withdrawal, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Retrieves the details of an existing withdrawal.
-
-Required permissions:
- - `payout:withdrawal:read`
- - `payout:destination:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .withdrawals
-        .retrieve(&"wdrl_xxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the withdrawal to retrieve.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.withdrawals.<a href="/src/api/resources/withdrawals/client.rs">generate_pdf</a>(id: String) -> Result&lt;GeneratePdfWithdrawalsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Generates a withdrawal PDF invoice and returns a temporary download URL.
-
-Required permissions:
- - `payout:withdrawal:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .withdrawals
-        .generate_pdf(&"wdrl_xxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the withdrawal to generate a PDF for.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Accounts Preferences
 <details><summary><code>client.accounts().preferences.<a href="/src/api/resources/accounts/preferences/client.rs">retrieve</a>(account_id: String) -> Result&lt;RetrievePreferencesResponse, ApiError&gt;</code></summary>
 <dl>
@@ -40199,7 +39809,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists the bank accounts, wallets, and crypto addresses an account or user can withdraw to, newest first.
+Lists the bank accounts, wallets, and crypto addresses an account or user can pay out to, newest first.
 </dd>
 </dl>
 </dd>
@@ -40272,7 +39882,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `Option<f64>` — Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
+**amount:** `Option<f64>` — Optional payout amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
     
 </dd>
 </dl>
@@ -40344,7 +39954,7 @@ async fn main() {
 <dl>
 <dd>
 
-Saves a new place an account or user can withdraw to. Sensitive details are vaulted in transit and never stored raw.
+Saves a new place an account or user can pay out to. Sensitive details are vaulted in transit and never stored raw.
 </dd>
 </dl>
 </dd>
@@ -40691,7 +40301,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `Option<f64>` — Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
+**amount:** `Option<f64>` — Optional payout amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
     
 </dd>
 </dl>

@@ -88,20 +88,6 @@ pub enum PaymentMethodListItem {
         sepa_debit: PaymentMethodListItemSepaDebitPaymentMethodSepaDebit,
     },
 
-    #[non_exhaustive]
-    PlatformBalancePaymentMethod {
-        #[serde(default)]
-        #[serde(with = "crate::core::flexible_datetime::offset")]
-        created_at: DateTime<FixedOffset>,
-        #[serde(default)]
-        icons: PaymentMethodListItemPlatformBalancePaymentMethodIcons,
-        #[serde(default)]
-        id: String,
-        payment_method_type: PaymentMethodTypes,
-        #[serde(default)]
-        platform_balance: PaymentMethodListItemPlatformBalancePaymentMethodPlatformBalance,
-    },
-
     /// Catch-all variant for unrecognized discriminant values.
     /// If the server sends a discriminant not recognized by the current SDK
     /// version, the raw payload is captured here so callers can still inspect it.
@@ -203,22 +189,6 @@ impl PaymentMethodListItem {
             id,
             payment_method_type,
             sepa_debit,
-        }
-    }
-
-    pub fn platform_balance_payment_method(
-        created_at: DateTime<FixedOffset>,
-        icons: PaymentMethodListItemPlatformBalancePaymentMethodIcons,
-        id: String,
-        payment_method_type: PaymentMethodTypes,
-        platform_balance: PaymentMethodListItemPlatformBalancePaymentMethodPlatformBalance,
-    ) -> Self {
-        Self::PlatformBalancePaymentMethod {
-            created_at,
-            icons,
-            id,
-            payment_method_type,
-            platform_balance,
         }
     }
 

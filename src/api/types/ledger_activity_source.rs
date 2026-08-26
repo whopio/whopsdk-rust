@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Source of this ledger activity.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct LedgerActivitySource {
-    /// Withdrawal amount as a decimal number in the destination currency (withdrawal sources only; requires payout:withdrawal:read).
+    /// Payout amount as a decimal number in the destination currency (payout sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub amount_float: Option<f64>,
     /// Card brand used by the payment source.
@@ -15,10 +15,10 @@ pub struct LedgerActivitySource {
     /// Public claim URL for the airdrop link (airdrop_link sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub claim_url: Option<String>,
-    /// Withdrawal creation time as an ISO 8601 timestamp (withdrawal sources only; requires payout:withdrawal:read).
+    /// Payout creation time as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_at: Option<DateTime<FixedOffset>>,
-    /// Estimated arrival as an ISO 8601 timestamp (withdrawal sources only; requires payout:withdrawal:read).
+    /// Estimated arrival as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub estimated_arrival: Option<DateTime<FixedOffset>>,
     /// Amount converted out of from_currency as a decimal string (swap sources only).
@@ -31,7 +31,7 @@ pub struct LedgerActivitySource {
     pub id: String,
     #[serde(default)]
     pub object: String,
-    /// Name of the entity processing the payout (withdrawal sources only; requires payout:withdrawal:read).
+    /// Name of the entity processing the payout (payout sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payer_name: Option<String>,
     /// Total charged by the payment source.
@@ -43,19 +43,22 @@ pub struct LedgerActivitySource {
     /// Processor used by the payment source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_processor: Option<String>,
-    /// Payout destination display info (withdrawal sources only).
+    /// Payout destination display info (payout sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_destination: Option<LedgerActivitySourcePayoutDestination>,
-    /// Saved payout destination nickname (withdrawal sources only).
+    /// Saved payout destination nickname (payout sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_token_nickname: Option<String>,
-    /// Why the activity happened. On transfer sources this is the transfer reason, for example pool_top_up or bounty_return. On withdrawal sources it explains why the withdrawal was canceled, denied, or failed (requires payout:withdrawal:read); null while the withdrawal is progressing normally.
+    /// Why the activity happened. On transfer sources this is the transfer reason, for example pool_top_up or bounty_return. On payout sources it explains why the payout was canceled, denied, or failed (requires payout:withdrawal:read); null while the payout is progressing normally.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    /// Whether this payout is currently held for manual risk review (payout sources only; requires payout:withdrawal:read).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub risk_review_hold: Option<bool>,
     /// Sender wallet address or onramp provider identifier (onchain_transaction sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sender_address: Option<String>,
-    /// Lifecycle status. On withdrawal sources this is the withdrawal status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated).
+    /// Lifecycle status. On payout sources this is the payout status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
     /// Amount received in to_currency as a decimal string (swap sources only).
@@ -98,6 +101,7 @@ pub struct LedgerActivitySourceBuilder {
     payout_destination: Option<LedgerActivitySourcePayoutDestination>,
     payout_token_nickname: Option<String>,
     reason: Option<String>,
+    risk_review_hold: Option<bool>,
     sender_address: Option<String>,
     status: Option<String>,
     to_amount: Option<String>,
@@ -191,6 +195,11 @@ impl LedgerActivitySourceBuilder {
         self
     }
 
+    pub fn risk_review_hold(mut self, value: bool) -> Self {
+        self.risk_review_hold = Some(value);
+        self
+    }
+
     pub fn sender_address(mut self, value: impl Into<String>) -> Self {
         self.sender_address = Some(value.into());
         self
@@ -241,6 +250,7 @@ impl LedgerActivitySourceBuilder {
             payout_destination: self.payout_destination,
             payout_token_nickname: self.payout_token_nickname,
             reason: self.reason,
+            risk_review_hold: self.risk_review_hold,
             sender_address: self.sender_address,
             status: self.status,
             to_amount: self.to_amount,

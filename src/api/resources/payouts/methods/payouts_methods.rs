@@ -13,14 +13,14 @@ impl MethodsClient {
         })
     }
 
-    /// Lists the bank accounts, wallets, and crypto addresses an account or user can withdraw to, newest first.
+    /// Lists the bank accounts, wallets, and crypto addresses an account or user can pay out to, newest first.
     ///
     /// # Arguments
     ///
     /// * `account_id` - The owning account ID (a biz_ identifier). Provide this or user_id.
     /// * `user_id` - The owning user ID (a user_ identifier). Provide this or account_id.
     /// * `status` - Optional status filter. `created` means saved but unused, `active` means a payout through it succeeded, `broken` means the last payout failed and the method needs fixing.
-    /// * `amount` - Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
+    /// * `amount` - Optional payout amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
     /// * `currency` - Currency code of the amount, for example `usd`. Only meaningful with amount or include_limits.
     /// * `include_limits` - When true, the response also carries limits — the live per-speed payout caps the account's payout requests are validated against, in the requested currency. Requires the payout:withdrawal:read scope.
     /// * `first` - Number of payout methods to return from the start of the window.
@@ -66,7 +66,7 @@ impl MethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -91,7 +91,7 @@ impl MethodsClient {
             .await
     }
 
-    /// Saves a new place an account or user can withdraw to. Sensitive details are vaulted in transit and never stored raw.
+    /// Saves a new place an account or user can pay out to. Sensitive details are vaulted in transit and never stored raw.
     ///
     /// # Arguments
     ///
@@ -140,7 +140,7 @@ impl MethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -189,7 +189,7 @@ impl MethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -249,7 +249,7 @@ impl MethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
