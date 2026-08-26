@@ -11,6 +11,9 @@ pub struct UpdateAdsRequest {
     /// The description variants shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub descriptions: Option<Vec<String>>,
+    /// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub existing_post_id: Option<String>,
     /// The headline variants shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub headlines: Option<Vec<String>>,
@@ -26,10 +29,7 @@ pub struct UpdateAdsRequest {
     /// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_advertiser_ads: Option<bool>,
-    /// Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_id: Option<String>,
-    /// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+    /// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_source: Option<UpdateAdsRequestPostSource>,
     /// The primary text variants shown in the ad body.
@@ -61,12 +61,12 @@ pub struct UpdateAdsRequestBuilder {
     call_to_action: Option<UpdateAdsRequestCallToAction>,
     creatives: Option<Vec<UpdateAdsRequestCreativesItem>>,
     descriptions: Option<Vec<String>>,
+    existing_post_id: Option<String>,
     headlines: Option<Vec<String>>,
     lead_form: Option<UpdateAdsRequestLeadForm>,
     lead_form_id: Option<String>,
     messaging_config: Option<UpdateAdsRequestMessagingConfig>,
     multi_advertiser_ads: Option<bool>,
-    post_id: Option<String>,
     post_source: Option<UpdateAdsRequestPostSource>,
     primary_texts: Option<Vec<String>>,
     social_accounts: Option<Vec<UpdateAdsRequestSocialAccountsItem>>,
@@ -88,6 +88,11 @@ impl UpdateAdsRequestBuilder {
 
     pub fn descriptions(mut self, value: Vec<String>) -> Self {
         self.descriptions = Some(value);
+        self
+    }
+
+    pub fn existing_post_id(mut self, value: impl Into<String>) -> Self {
+        self.existing_post_id = Some(value.into());
         self
     }
 
@@ -113,11 +118,6 @@ impl UpdateAdsRequestBuilder {
 
     pub fn multi_advertiser_ads(mut self, value: bool) -> Self {
         self.multi_advertiser_ads = Some(value);
-        self
-    }
-
-    pub fn post_id(mut self, value: impl Into<String>) -> Self {
-        self.post_id = Some(value.into());
         self
     }
 
@@ -157,12 +157,12 @@ impl UpdateAdsRequestBuilder {
             call_to_action: self.call_to_action,
             creatives: self.creatives,
             descriptions: self.descriptions,
+            existing_post_id: self.existing_post_id,
             headlines: self.headlines,
             lead_form: self.lead_form,
             lead_form_id: self.lead_form_id,
             messaging_config: self.messaging_config,
             multi_advertiser_ads: self.multi_advertiser_ads,
-            post_id: self.post_id,
             post_source: self.post_source,
             primary_texts: self.primary_texts,
             social_accounts: self.social_accounts,

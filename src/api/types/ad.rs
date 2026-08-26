@@ -120,6 +120,9 @@ pub struct Ad {
     pub delivery_status: AdDeliveryStatus,
     #[serde(default)]
     pub descriptions: Vec<String>,
+    /// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub existing_post_id: Option<String>,
     /// Platform-reported impressions divided by reach.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -156,13 +159,13 @@ pub struct Ad {
     /// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_advertiser_ads: Option<bool>,
-    /// The existing post this ad promotes — a Facebook post or Instagram media ID. `null` when the ad uses uploaded creatives.
+    /// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_id: Option<String>,
-    /// Identifies the network that owns `post_id`; `null` when the ad uses uploaded creatives.
+    /// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_source: Option<AdPostSource>,
-    /// Preview image of the existing post this ad promotes. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
+    /// Preview image of the post named by `existing_post_id`. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_thumbnail_url: Option<String>,
     #[serde(default)]
@@ -291,6 +294,7 @@ pub struct AdBuilder {
     custom_event_values: Option<HashMap<String, serde_json::Value>>,
     delivery_status: Option<AdDeliveryStatus>,
     descriptions: Option<Vec<String>>,
+    existing_post_id: Option<String>,
     frequency: Option<f64>,
     headlines: Option<Vec<String>>,
     id: Option<String>,
@@ -479,6 +483,11 @@ impl AdBuilder {
 
     pub fn descriptions(mut self, value: Vec<String>) -> Self {
         self.descriptions = Some(value);
+        self
+    }
+
+    pub fn existing_post_id(mut self, value: impl Into<String>) -> Self {
+        self.existing_post_id = Some(value.into());
         self
     }
 
@@ -786,6 +795,7 @@ impl AdBuilder {
             descriptions: self
                 .descriptions
                 .ok_or_else(|| BuildError::missing_field("descriptions"))?,
+            existing_post_id: self.existing_post_id,
             frequency: self.frequency,
             headlines: self
                 .headlines

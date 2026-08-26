@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Payout destination display info (withdrawal sources only).
+/// Payout destination display info (payout sources only).
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct LedgerActivitySourcePayoutDestination {
     #[serde(skip_serializing_if = "Option::is_none")]

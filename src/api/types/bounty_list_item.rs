@@ -61,6 +61,9 @@ pub struct BountyListItem {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub gross_reward_amount: f64,
+    /// Account hosting the bounty's forum — the one whose `route` and `experience_id` address its discussion thread, and where its submissions dashboard lives. `null` for a platform-wide bounty with no host. May differ from `funding_account`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hosting_account: Option<StorefrontAccount>,
     /// Bounty ID, prefixed `bnty_`.
     #[serde(default)]
     pub id: String,
@@ -127,6 +130,7 @@ pub struct BountyListItemBuilder {
     funding_account: Option<AccountSummary>,
     gross_paid_out_amount: Option<f64>,
     gross_reward_amount: Option<f64>,
+    hosting_account: Option<StorefrontAccount>,
     id: Option<String>,
     net_reward_amount: Option<f64>,
     poster: Option<UserSummary>,
@@ -237,6 +241,11 @@ impl BountyListItemBuilder {
 
     pub fn gross_reward_amount(mut self, value: f64) -> Self {
         self.gross_reward_amount = Some(value);
+        self
+    }
+
+    pub fn hosting_account(mut self, value: StorefrontAccount) -> Self {
+        self.hosting_account = Some(value);
         self
     }
 
@@ -368,6 +377,7 @@ impl BountyListItemBuilder {
             gross_reward_amount: self
                 .gross_reward_amount
                 .ok_or_else(|| BuildError::missing_field("gross_reward_amount"))?,
+            hosting_account: self.hosting_account,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             net_reward_amount: self
                 .net_reward_amount

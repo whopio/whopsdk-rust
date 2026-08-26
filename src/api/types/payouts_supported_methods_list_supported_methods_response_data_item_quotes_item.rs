@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListSupportedMethodsResponseDataItemQuotesItem {
-    /// The withdrawal amount the quote is for.
+    /// The payout amount the quote is for.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub amount: f64,
@@ -12,19 +12,19 @@ pub struct ListSupportedMethodsResponseDataItemQuotesItem {
     /// Currency the funds are delivered in.
     #[serde(default)]
     pub destination_currency: String,
-    /// Exchange rate from the withdrawal currency to the destination currency.
+    /// Exchange rate from the payout currency to the destination currency.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub exchange_rate: f64,
     /// Instant-delivery estimate. Null if unsupported, unavailable for the account, or the amount does not cover the fee.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub instant: Option<ListSupportedMethodsResponseDataItemQuotesItemInstant>,
-    /// Maximum withdrawal amount, in the withdrawal currency.
+    /// Maximum payout amount, in the payout currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub max_limit: Option<f64>,
-    /// Minimum withdrawal amount, in the withdrawal currency.
+    /// Minimum payout amount, in the payout currency.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub min_limit: f64,

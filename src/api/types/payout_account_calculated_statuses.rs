@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The granular calculated statuses reflecting payout account KYC and withdrawal readiness.
+/// The granular calculated statuses reflecting payout account KYC and payout readiness.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PayoutAccountCalculatedStatuses {

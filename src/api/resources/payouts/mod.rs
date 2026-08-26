@@ -75,7 +75,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -142,7 +142,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -203,7 +203,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -213,6 +213,68 @@ impl PayoutsClient {
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .string("user_id", request.user_id.clone())
+                    .build(),
+                options,
+            )
+            .await
+    }
+
+    /// Cancels a payout that is still in review and returns the funds, fees included, to the balance. A payout can be canceled while its status is `in_review`. A `requested` payout is still being prepared (its funds may be converting) and answers 409 until it reaches review; from `processing` on, the money is on its way and the answer is 409 with error type `not_cancelable`. Canceling a payout that is already canceled succeeds and returns it unchanged.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Payout ID, prefixed `wdrl_`, or the `cofr_` payout request ID returned by `POST /payouts` — both cancel the same payout.
+    /// * `user_id` - Owning user ID, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .payouts
+    ///         .cancel(
+    ///             &"id".to_string(),
+    ///             &CancelQueryRequest {
+    ///                 ..Default::default()
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn cancel(
+        &self,
+        id: &str,
+        request: &CancelQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<CancelPayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-25-1".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::POST,
+                &format!("payouts/{}/cancel", id),
+                None,
+                QueryBuilder::new()
                     .string("user_id", request.user_id.clone())
                     .build(),
                 options,

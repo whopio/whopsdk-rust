@@ -25,6 +25,15 @@ pub struct LedgerActivityPayment {
     /// Processor that handled the payment, such as `stripe`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_processor: Option<String>,
+    /// Plan associated with the payment, when applicable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan: Option<LedgerActivityPaymentPlan>,
+    /// Product associated with the payment, when applicable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product: Option<LedgerActivityPaymentProduct>,
+    /// Customer associated with the payment. Email requires member:email:read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user: Option<LedgerActivityPaymentUser>,
 }
 
 impl LedgerActivityPayment {
@@ -44,6 +53,9 @@ pub struct LedgerActivityPaymentBuilder {
     object: Option<LedgerActivityPaymentObject>,
     payment_method_type: Option<String>,
     payment_processor: Option<String>,
+    plan: Option<LedgerActivityPaymentPlan>,
+    product: Option<LedgerActivityPaymentProduct>,
+    user: Option<LedgerActivityPaymentUser>,
 }
 
 impl LedgerActivityPaymentBuilder {
@@ -87,6 +99,21 @@ impl LedgerActivityPaymentBuilder {
         self
     }
 
+    pub fn plan(mut self, value: LedgerActivityPaymentPlan) -> Self {
+        self.plan = Some(value);
+        self
+    }
+
+    pub fn product(mut self, value: LedgerActivityPaymentProduct) -> Self {
+        self.product = Some(value);
+        self
+    }
+
+    pub fn user(mut self, value: LedgerActivityPaymentUser) -> Self {
+        self.user = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`LedgerActivityPayment`].
     /// This method will fail if any of the following fields are not set:
     /// - [`created_at`](LedgerActivityPaymentBuilder::created_at)
@@ -106,6 +133,9 @@ impl LedgerActivityPaymentBuilder {
                 .ok_or_else(|| BuildError::missing_field("object"))?,
             payment_method_type: self.payment_method_type,
             payment_processor: self.payment_processor,
+            plan: self.plan,
+            product: self.product,
+            user: self.user,
         })
     }
 }

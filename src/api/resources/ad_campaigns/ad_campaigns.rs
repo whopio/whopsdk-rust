@@ -70,7 +70,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -153,7 +153,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -216,7 +216,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -270,7 +270,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -284,7 +284,7 @@ impl AdCampaignsClient {
             .await
     }
 
-    /// Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget optimization), and launches a draft campaign by setting status to active. Objective, budget type and desired cost per result are fixed at creation and cannot be changed.
+    /// Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget type and budget optimization), and launches a draft campaign by setting status to active. Objective and desired cost per result are fixed at creation and cannot be changed.
     ///
     /// # Arguments
     ///
@@ -329,7 +329,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -388,7 +388,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -437,7 +437,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -489,7 +489,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
@@ -538,7 +538,7 @@ impl AdCampaignsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client

@@ -20,7 +20,7 @@ impl SupportedMethodsClient {
     /// * `account_id` - The owning account ID (a biz_ identifier). Provide this or user_id.
     /// * `user_id` - The owning user ID (a user_ identifier). Provide this or account_id.
     /// * `country` - ISO 3166-1 alpha-2 country code for the bank account or wallet, such as `US`. Defaults to the country of supported_payout_method_id when one is given, otherwise the payout account's country.
-    /// * `amount` - Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
+    /// * `amount` - Optional payout amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
     /// * `currency` - Currency code of the amount, for example `usd`. Only meaningful with amount.
     /// * `supported_payout_method_id` - Narrows the list to one supported payout method (a podst_ identifier) and includes the required_fields needed to save it as a payout method.
     /// * `destination_currency` - Currency the supported payout method would deliver payouts in. Only meaningful with supported_payout_method_id; required fields vary by destination currency.
@@ -67,7 +67,7 @@ impl SupportedMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-21-1".to_string());
+                .or_insert_with(|| "2026-08-25-1".to_string());
             Some(o)
         };
         self.http_client
