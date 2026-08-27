@@ -153,6 +153,10 @@ pub struct Ad {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub leads: f64,
+    /// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub link_clicks: f64,
     /// Welcome message for click-to-message ads, shown when the conversation opens. `null` when the ad has none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub messaging_config: Option<AdMessagingConfig>,
@@ -304,6 +308,7 @@ pub struct AdBuilder {
     lead_form_id: Option<String>,
     lead_value: Option<f64>,
     leads: Option<f64>,
+    link_clicks: Option<f64>,
     messaging_config: Option<AdMessagingConfig>,
     multi_advertiser_ads: Option<bool>,
     post_id: Option<String>,
@@ -536,6 +541,11 @@ impl AdBuilder {
         self
     }
 
+    pub fn link_clicks(mut self, value: f64) -> Self {
+        self.link_clicks = Some(value);
+        self
+    }
+
     pub fn messaging_config(mut self, value: AdMessagingConfig) -> Self {
         self.messaging_config = Some(value);
         self
@@ -708,6 +718,7 @@ impl AdBuilder {
     /// - [`issues`](AdBuilder::issues)
     /// - [`lead_value`](AdBuilder::lead_value)
     /// - [`leads`](AdBuilder::leads)
+    /// - [`link_clicks`](AdBuilder::link_clicks)
     /// - [`primary_texts`](AdBuilder::primary_texts)
     /// - [`purchase_value`](AdBuilder::purchase_value)
     /// - [`purchases`](AdBuilder::purchases)
@@ -815,6 +826,9 @@ impl AdBuilder {
             leads: self
                 .leads
                 .ok_or_else(|| BuildError::missing_field("leads"))?,
+            link_clicks: self
+                .link_clicks
+                .ok_or_else(|| BuildError::missing_field("link_clicks"))?,
             messaging_config: self.messaging_config,
             multi_advertiser_ads: self.multi_advertiser_ads,
             post_id: self.post_id,

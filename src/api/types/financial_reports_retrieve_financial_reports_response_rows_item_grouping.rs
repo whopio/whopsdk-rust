@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// The family the row's `line_category` rolls up into. Balance summary rows are always `balance`.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum GetFinancialReportResponseRowsItemGrouping {
+pub enum RetrieveFinancialReportsResponseRowsItemGrouping {
     Advertising,
     AffiliatesAndRevshare,
     Airdrops,
@@ -29,7 +29,7 @@ pub enum GetFinancialReportResponseRowsItemGrouping {
     /// it will be captured here with the raw string value.
     __Unknown(String),
 }
-impl Serialize for GetFinancialReportResponseRowsItemGrouping {
+impl Serialize for RetrieveFinancialReportsResponseRowsItemGrouping {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::Advertising => serializer.serialize_str("advertising"),
@@ -57,7 +57,7 @@ impl Serialize for GetFinancialReportResponseRowsItemGrouping {
     }
 }
 
-impl<'de> Deserialize<'de> for GetFinancialReportResponseRowsItemGrouping {
+impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemGrouping {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
@@ -86,7 +86,7 @@ impl<'de> Deserialize<'de> for GetFinancialReportResponseRowsItemGrouping {
     }
 }
 
-impl fmt::Display for GetFinancialReportResponseRowsItemGrouping {
+impl fmt::Display for RetrieveFinancialReportsResponseRowsItemGrouping {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Advertising => write!(f, "advertising"),

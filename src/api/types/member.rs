@@ -19,6 +19,9 @@ pub struct Member {
     /// When the member last opened the account's content, as an ISO 8601 timestamp. `null` if they never have.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last_accessed_at: Option<String>,
+    /// The member's phone number, or `null`. Their account number when they have shared one with this seller; otherwise the most recent number collected (or verified) at checkout.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phone_number: Option<String>,
     /// `joined` while the member is part of the account, `left` after they leave.
     pub status: MemberStatus,
     /// The user behind this member. `null` when the buyer is another business rather than a person.
@@ -41,6 +44,7 @@ pub struct MemberBuilder {
     id: Option<String>,
     joined_at: Option<String>,
     last_accessed_at: Option<String>,
+    phone_number: Option<String>,
     status: Option<MemberStatus>,
     user: Option<UserSummary>,
 }
@@ -73,6 +77,11 @@ impl MemberBuilder {
 
     pub fn last_accessed_at(mut self, value: impl Into<String>) -> Self {
         self.last_accessed_at = Some(value.into());
+        self
+    }
+
+    pub fn phone_number(mut self, value: impl Into<String>) -> Self {
+        self.phone_number = Some(value.into());
         self
     }
 
@@ -110,6 +119,7 @@ impl MemberBuilder {
                 .joined_at
                 .ok_or_else(|| BuildError::missing_field("joined_at"))?,
             last_accessed_at: self.last_accessed_at,
+            phone_number: self.phone_number,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,

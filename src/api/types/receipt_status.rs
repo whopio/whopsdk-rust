@@ -6,6 +6,7 @@ pub use crate::prelude::*;
 pub enum ReceiptStatus {
     Draft,
     Open,
+    Authorized,
     Paid,
     Pending,
     Uncollectible,
@@ -21,6 +22,7 @@ impl Serialize for ReceiptStatus {
         match self {
             Self::Draft => serializer.serialize_str("draft"),
             Self::Open => serializer.serialize_str("open"),
+            Self::Authorized => serializer.serialize_str("authorized"),
             Self::Paid => serializer.serialize_str("paid"),
             Self::Pending => serializer.serialize_str("pending"),
             Self::Uncollectible => serializer.serialize_str("uncollectible"),
@@ -37,6 +39,7 @@ impl<'de> Deserialize<'de> for ReceiptStatus {
         match value.as_str() {
             "draft" => Ok(Self::Draft),
             "open" => Ok(Self::Open),
+            "authorized" => Ok(Self::Authorized),
             "paid" => Ok(Self::Paid),
             "pending" => Ok(Self::Pending),
             "uncollectible" => Ok(Self::Uncollectible),
@@ -52,6 +55,7 @@ impl fmt::Display for ReceiptStatus {
         match self {
             Self::Draft => write!(f, "draft"),
             Self::Open => write!(f, "open"),
+            Self::Authorized => write!(f, "authorized"),
             Self::Paid => write!(f, "paid"),
             Self::Pending => write!(f, "pending"),
             Self::Uncollectible => write!(f, "uncollectible"),

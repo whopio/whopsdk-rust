@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// The ledger line category the row aggregates. Balance summary rows carry the balance bucket instead.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum GetFinancialReportResponseRowsItemLineCategory {
+pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     AcceleratedSettlementFee,
     AccountSettlement,
     AdBalanceFundingReceipt,
@@ -171,6 +171,7 @@ pub enum GetFinancialReportResponseRowsItemLineCategory {
     PlatformEarningUnreconciledClearing,
     PromoReversal,
     PspAcceleratedSettlementFee,
+    PspAccountDebit,
     PspAccountUpdaterFee,
     PspAdjustedProcessingFee,
     PspAuthenticationFee,
@@ -288,7 +289,7 @@ pub enum GetFinancialReportResponseRowsItemLineCategory {
     /// it will be captured here with the raw string value.
     __Unknown(String),
 }
-impl Serialize for GetFinancialReportResponseRowsItemLineCategory {
+impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::AcceleratedSettlementFee => {
@@ -566,6 +567,7 @@ impl Serialize for GetFinancialReportResponseRowsItemLineCategory {
             Self::PspAcceleratedSettlementFee => {
                 serializer.serialize_str("psp_accelerated_settlement_fee")
             }
+            Self::PspAccountDebit => serializer.serialize_str("psp_account_debit"),
             Self::PspAccountUpdaterFee => serializer.serialize_str("psp_account_updater_fee"),
             Self::PspAdjustedProcessingFee => {
                 serializer.serialize_str("psp_adjusted_processing_fee")
@@ -743,7 +745,7 @@ impl Serialize for GetFinancialReportResponseRowsItemLineCategory {
     }
 }
 
-impl<'de> Deserialize<'de> for GetFinancialReportResponseRowsItemLineCategory {
+impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCategory {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
@@ -924,6 +926,7 @@ impl<'de> Deserialize<'de> for GetFinancialReportResponseRowsItemLineCategory {
             }
             "promo_reversal" => Ok(Self::PromoReversal),
             "psp_accelerated_settlement_fee" => Ok(Self::PspAcceleratedSettlementFee),
+            "psp_account_debit" => Ok(Self::PspAccountDebit),
             "psp_account_updater_fee" => Ok(Self::PspAccountUpdaterFee),
             "psp_adjusted_processing_fee" => Ok(Self::PspAdjustedProcessingFee),
             "psp_authentication_fee" => Ok(Self::PspAuthenticationFee),
@@ -1043,7 +1046,7 @@ impl<'de> Deserialize<'de> for GetFinancialReportResponseRowsItemLineCategory {
     }
 }
 
-impl fmt::Display for GetFinancialReportResponseRowsItemLineCategory {
+impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::AcceleratedSettlementFee => write!(f, "accelerated_settlement_fee"),
@@ -1241,6 +1244,7 @@ impl fmt::Display for GetFinancialReportResponseRowsItemLineCategory {
             }
             Self::PromoReversal => write!(f, "promo_reversal"),
             Self::PspAcceleratedSettlementFee => write!(f, "psp_accelerated_settlement_fee"),
+            Self::PspAccountDebit => write!(f, "psp_account_debit"),
             Self::PspAccountUpdaterFee => write!(f, "psp_account_updater_fee"),
             Self::PspAdjustedProcessingFee => write!(f, "psp_adjusted_processing_fee"),
             Self::PspAuthenticationFee => write!(f, "psp_authentication_fee"),

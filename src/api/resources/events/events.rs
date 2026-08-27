@@ -74,7 +74,7 @@ impl EventsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -137,6 +137,8 @@ impl EventsClient {
     ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 event_name: "coating_deposit_paid".to_string(),
     ///                 action_source: None,
+    ///                 app_build_id: None,
+    ///                 app_id: None,
     ///                 context: None,
     ///                 currency: None,
     ///                 custom_name: None,
@@ -167,7 +169,7 @@ impl EventsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -227,7 +229,7 @@ impl EventsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -288,7 +290,7 @@ impl EventsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client

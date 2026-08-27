@@ -18,6 +18,9 @@ pub struct FinancialActivityListQueryRequest {
     /// Optional ledger line categories to include. Some categories (for example `onchain_deposit`, which covers inbound crypto deposits such as MoonPay onramps) are only returned when explicitly requested here.
     #[serde(default)]
     pub line_types: Vec<Option<ListFinancialActivityRequestLineTypesItem>>,
+    /// Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub direction: Option<ListFinancialActivityRequestDirection>,
     /// Optional currency code filter, for example `usd`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
@@ -59,6 +62,7 @@ pub struct FinancialActivityListQueryRequestBuilder {
     include_owned_accounts: Option<bool>,
     include_resource: Option<bool>,
     line_types: Option<Vec<Option<ListFinancialActivityRequestLineTypesItem>>>,
+    direction: Option<ListFinancialActivityRequestDirection>,
     currency: Option<String>,
     posted_after: Option<DateTime<FixedOffset>>,
     posted_before: Option<DateTime<FixedOffset>>,
@@ -94,6 +98,11 @@ impl FinancialActivityListQueryRequestBuilder {
         value: Vec<Option<ListFinancialActivityRequestLineTypesItem>>,
     ) -> Self {
         self.line_types = Some(value);
+        self
+    }
+
+    pub fn direction(mut self, value: ListFinancialActivityRequestDirection) -> Self {
+        self.direction = Some(value);
         self
     }
 
@@ -144,6 +153,7 @@ impl FinancialActivityListQueryRequestBuilder {
             line_types: self
                 .line_types
                 .ok_or_else(|| BuildError::missing_field("line_types"))?,
+            direction: self.direction,
             currency: self.currency,
             posted_after: self.posted_after,
             posted_before: self.posted_before,

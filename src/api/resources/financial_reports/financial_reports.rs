@@ -2,11 +2,11 @@ use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
 use reqwest::Method;
 
-pub struct LedgersClient {
+pub struct FinancialReportsClient {
     pub http_client: HttpClient,
 }
 
-impl LedgersClient {
+impl FinancialReportsClient {
     pub fn new(config: ClientConfig) -> Result<Self, ApiError> {
         Ok(Self {
             http_client: HttpClient::new(config.clone())?,
@@ -25,8 +25,11 @@ impl LedgersClient {
     /// * `to_date` - End of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
     /// * `group_by` - Grouping granularity for report rows.
     /// * `timezone` - IANA timezone (for example `America/New_York`) used to bucket report periods and to interpret calendar-day boundaries for balance snapshots. Defaults to UTC. from_date/to_date remain exact instants regardless of this setting.
+    /// * `line_types` - Account-level balance activity only: ledger line categories to include.
+    /// * `direction` - Account-level balance activity only: include money moving in or money moving out.
     /// * `cumulative` - Platform-wide (global) reports only: when true, return cumulative balances as of to_date (all history, no lower bound) instead of activity within the period.
     /// * `scope_account_id` - Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
+    /// * `include_payment_fee_breakdown` - Balance activity only: include payment costs grouped by payment method and provider.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -46,35 +49,38 @@ impl LedgersClient {
     ///     };
     ///     let client = Whop::new(config).expect("Failed to build client");
     ///     client
-    ///         .ledgers
-    ///         .get_financial_report(
-    ///             &GetFinancialReportQueryRequest {
+    ///         .financial_reports
+    ///         .retrieve(
+    ///             &FinancialReportsRetrieveQueryRequest {
     ///                 account_id: "account_id".to_string(),
-    ///                 report_type: GetFinancialReportRequestReportType::BalanceSummary,
+    ///                 report_type: RetrieveFinancialReportsRequestReportType::BalanceSummary,
     ///                 currency: None,
     ///                 in_currency: None,
     ///                 from_date: None,
     ///                 to_date: None,
     ///                 group_by: None,
     ///                 timezone: None,
+    ///                 line_types: vec![],
+    ///                 direction: None,
     ///                 cumulative: None,
     ///                 scope_account_id: None,
+    ///                 include_payment_fee_breakdown: None,
     ///             },
     ///             None,
     ///         )
     ///         .await;
     /// }
     /// ```
-    pub async fn get_financial_report(
+    pub async fn retrieve(
         &self,
-        request: &GetFinancialReportQueryRequest,
+        request: &FinancialReportsRetrieveQueryRequest,
         options: Option<RequestOptions>,
-    ) -> Result<GetFinancialReportResponse, ApiError> {
+    ) -> Result<RetrieveFinancialReportsResponse, ApiError> {
         let options = {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -91,8 +97,14 @@ impl LedgersClient {
                     .string("to_date", request.to_date.clone())
                     .serialize("group_by", request.group_by.clone())
                     .string("timezone", request.timezone.clone())
+                    .serialize_array("line_types", request.line_types.clone())
+                    .serialize("direction", request.direction.clone())
                     .bool("cumulative", request.cumulative.clone())
                     .string("scope_account_id", request.scope_account_id.clone())
+                    .bool(
+                        "include_payment_fee_breakdown",
+                        request.include_payment_fee_breakdown.clone(),
+                    )
                     .build(),
                 options,
             )

@@ -28,7 +28,7 @@ pub struct AccountRecommendedActionOutcome {
     /// The first `payment.completed` on that business after the chain, prefixed `pay_`, or `null` if none landed within 30 days.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_id: Option<String>,
-    /// Why the generator proposed this chain, or `null` for seeded chains
+    /// Why this chain was recommended, or `null` when unavailable
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning: Option<HashMap<String, serde_json::Value>>,
     /// Headline for the chain

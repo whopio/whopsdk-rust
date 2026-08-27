@@ -75,7 +75,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -142,13 +142,75 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
             .execute_request(
                 Method::POST,
                 "payouts",
+                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
+                None,
+                options,
+            )
+            .await
+    }
+
+    /// Creates a short-lived, provider-backed quote for a payout. No funds move until the returned quote_token is submitted to POST /payouts. An Idempotency-Key header is required.
+    ///
+    /// # Arguments
+    ///
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .payouts
+    ///         .create_quote(
+    ///             &CreateQuotePayoutsRequest {
+    ///                 amount: 6762.41,
+    ///                 payout_method_id: "potk_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: None,
+    ///                 currency: None,
+    ///                 platform_covers_fees: None,
+    ///                 speed: None,
+    ///                 user_id: None,
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn create_quote(
+        &self,
+        request: &CreateQuotePayoutsRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<CreateQuotePayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-25-2".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::POST,
+                "payouts/quotes",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
                 None,
                 options,
@@ -203,7 +265,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -266,7 +328,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client

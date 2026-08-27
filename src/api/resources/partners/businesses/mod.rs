@@ -33,7 +33,7 @@ impl BusinessesClient {
     /// * `created_after` - Only return partner businesses created after this timestamp.
     /// * `referred_user_id` - Filter to referrals attributed to this user. For first-tier referrals, this is the referred account owner; for second-tier referrals, this is the partner you recruited.
     /// * `referred_username` - Filter by the referred user's exact username. Ignored when `referred_user_id` is present.
-    /// * `tier` - Filter to only first-tier referrals or only second-tier referrals.
+    /// * `tier` - Filter to referrals from a single tier: first, second, or blueprint.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -73,7 +73,7 @@ impl BusinessesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -140,7 +140,7 @@ impl BusinessesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client

@@ -8,6 +8,12 @@ pub struct CreateEventsRequest {
     /// Where the event originated.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub action_source: Option<CreateEventsRequestActionSource>,
+    /// The build of the hosted app that served the page where the event occurred.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub app_build_id: Option<String>,
+    /// The hosted app that served the page where the event occurred.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub app_id: Option<String>,
     /// Tracking and attribution context.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub context: Option<CreateEventsRequestContext>,
@@ -71,6 +77,8 @@ impl CreateEventsRequest {
 pub struct CreateEventsRequestBuilder {
     account_id: Option<String>,
     action_source: Option<CreateEventsRequestActionSource>,
+    app_build_id: Option<String>,
+    app_id: Option<String>,
     context: Option<CreateEventsRequestContext>,
     currency: Option<CreateEventsRequestCurrency>,
     custom_name: Option<String>,
@@ -97,6 +105,16 @@ impl CreateEventsRequestBuilder {
 
     pub fn action_source(mut self, value: CreateEventsRequestActionSource) -> Self {
         self.action_source = Some(value);
+        self
+    }
+
+    pub fn app_build_id(mut self, value: impl Into<String>) -> Self {
+        self.app_build_id = Some(value.into());
+        self
+    }
+
+    pub fn app_id(mut self, value: impl Into<String>) -> Self {
+        self.app_id = Some(value.into());
         self
     }
 
@@ -190,6 +208,8 @@ impl CreateEventsRequestBuilder {
                 .account_id
                 .ok_or_else(|| BuildError::missing_field("account_id"))?,
             action_source: self.action_source,
+            app_build_id: self.app_build_id,
+            app_id: self.app_id,
             context: self.context,
             currency: self.currency,
             custom_name: self.custom_name,

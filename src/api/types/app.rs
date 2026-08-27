@@ -73,6 +73,9 @@ pub struct App {
     /// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub origin: Option<String>,
+    /// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub preview_token: Option<String>,
     /// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
@@ -91,7 +94,7 @@ pub struct App {
     pub requested_permissions: Vec<AppRequestedPermission>,
     #[serde(default)]
     pub required_scopes: Vec<AppRequiredScopesItem>,
-    /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.app), or `null` if no route is claimed.
+    /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
     /// The app's production secrets as an object of string values, injected into the hosted server runtime. `null` when the caller lacks the `developer:update_app` permission.
@@ -141,6 +144,7 @@ pub struct AppBuilder {
     oauth_client_type: Option<AppOauthClientType>,
     openapi_path: Option<String>,
     origin: Option<String>,
+    preview_token: Option<String>,
     product_id: Option<String>,
     production_android_build: Option<AppProductionBuild>,
     production_ios_build: Option<AppProductionBuild>,
@@ -281,6 +285,11 @@ impl AppBuilder {
         self
     }
 
+    pub fn preview_token(mut self, value: impl Into<String>) -> Self {
+        self.preview_token = Some(value.into());
+        self
+    }
+
     pub fn product_id(mut self, value: impl Into<String>) -> Self {
         self.product_id = Some(value.into());
         self
@@ -402,6 +411,7 @@ impl AppBuilder {
                 .ok_or_else(|| BuildError::missing_field("oauth_client_type"))?,
             openapi_path: self.openapi_path,
             origin: self.origin,
+            preview_token: self.preview_token,
             product_id: self.product_id,
             production_android_build: self.production_android_build,
             production_ios_build: self.production_ios_build,

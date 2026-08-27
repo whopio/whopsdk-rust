@@ -10,7 +10,7 @@ pub struct AccountRecommendedActionChain {
     /// Chain ID — `rac_seed_<chain>_<nonce>` for seeded chains, `rac_chain_*` for generated ones
     #[serde(default)]
     pub id: String,
-    /// Why the generator proposed this chain, or `null` for seeded chains
+    /// Why this chain was recommended, or `null` when unavailable
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning: Option<HashMap<String, serde_json::Value>>,
     /// Headline for the chain

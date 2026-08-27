@@ -39,7 +39,7 @@ pub struct PartnersBusinessesListQueryRequest {
     /// Filter by the referred user's exact username. Ignored when `referred_user_id` is present.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub referred_username: Option<String>,
-    /// Filter to only first-tier referrals or only second-tier referrals.
+    /// Filter to referrals from a single tier: first, second, or blueprint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tier: Option<ListBusinessesRequestTier>,
 }

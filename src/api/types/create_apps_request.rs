@@ -20,7 +20,7 @@ pub struct CreateAppsRequest {
     /// The whitelisted OAuth callback URLs that users are redirected to after authorizing the app.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect_uris: Option<Vec<String>>,
-    /// The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.app.
+    /// The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
 }

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct AccountPaymentControls {
     /// Automatic refund settings for pre-chargeback dispute alerts.
     #[serde(default)]
@@ -36,6 +36,11 @@ pub struct AccountPaymentControls {
     pub resolution_center_auto_refund: AccountResolutionCenterAutoRefundControl,
     #[serde(default)]
     pub restricted_payment_methods: Vec<AccountPaymentControlsRestrictedPaymentMethodsItem>,
+    /// Why pending funds without a settlement date aren't moving yet, when it's something the merchant can act on. `null` when there's no reason to show (still clearing, or the account is held for a reason that isn't merchant-actionable).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub undated_pending_reason: Option<AccountPaymentControlsUndatedPendingReason>,
+    /// How the account's balance automatically withdraws.
+    pub withdrawal_schedule: AccountWithdrawalScheduleControl,
 }
 
 impl AccountPaymentControls {
@@ -57,6 +62,8 @@ pub struct AccountPaymentControlsBuilder {
     reserve: Option<AccountReserveControl>,
     resolution_center_auto_refund: Option<AccountResolutionCenterAutoRefundControl>,
     restricted_payment_methods: Option<Vec<AccountPaymentControlsRestrictedPaymentMethodsItem>>,
+    undated_pending_reason: Option<AccountPaymentControlsUndatedPendingReason>,
+    withdrawal_schedule: Option<AccountWithdrawalScheduleControl>,
 }
 
 impl AccountPaymentControlsBuilder {
@@ -119,6 +126,19 @@ impl AccountPaymentControlsBuilder {
         self
     }
 
+    pub fn undated_pending_reason(
+        mut self,
+        value: AccountPaymentControlsUndatedPendingReason,
+    ) -> Self {
+        self.undated_pending_reason = Some(value);
+        self
+    }
+
+    pub fn withdrawal_schedule(mut self, value: AccountWithdrawalScheduleControl) -> Self {
+        self.withdrawal_schedule = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`AccountPaymentControls`].
     /// This method will fail if any of the following fields are not set:
     /// - [`dispute_alert_auto_refund`](AccountPaymentControlsBuilder::dispute_alert_auto_refund)
@@ -130,6 +150,7 @@ impl AccountPaymentControlsBuilder {
     /// - [`reserve`](AccountPaymentControlsBuilder::reserve)
     /// - [`resolution_center_auto_refund`](AccountPaymentControlsBuilder::resolution_center_auto_refund)
     /// - [`restricted_payment_methods`](AccountPaymentControlsBuilder::restricted_payment_methods)
+    /// - [`withdrawal_schedule`](AccountPaymentControlsBuilder::withdrawal_schedule)
     pub fn build(self) -> Result<AccountPaymentControls, BuildError> {
         Ok(AccountPaymentControls {
             dispute_alert_auto_refund: self
@@ -160,6 +181,10 @@ impl AccountPaymentControlsBuilder {
             restricted_payment_methods: self
                 .restricted_payment_methods
                 .ok_or_else(|| BuildError::missing_field("restricted_payment_methods"))?,
+            undated_pending_reason: self.undated_pending_reason,
+            withdrawal_schedule: self
+                .withdrawal_schedule
+                .ok_or_else(|| BuildError::missing_field("withdrawal_schedule"))?,
         })
     }
 }

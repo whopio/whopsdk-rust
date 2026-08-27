@@ -13,15 +13,16 @@ impl AppsClient {
         })
     }
 
-    /// Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication, except for the publicly readable lists: `verified_apps_only=true`, and `app_type=website` with no `account_id`, which returns every live deployed website that Whop has not verified — verified templates are the curated `verified_apps_only=true` list instead.
+    /// Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication except for Whop's public app and website discovery lists. Public website discovery includes built official blueprints (verified apps with a product) and built, live community blueprints that Whop recommends.
     ///
     /// # Arguments
     ///
     /// * `account_id` - Only return apps created by this account (`biz_` tag). With developer access to the account this includes its unlisted and hidden apps.
     /// * `app_type` - Filter apps by the type of end-user they are built for. Apps of type `website` are left out unless you ask for them by name.
     /// * `view_type` - Only return apps supporting this view type, such as `dashboard` or `hub`.
-    /// * `verified_apps_only` - Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
-    /// * `recommended` - Only return apps Whop recommends (or, with `false`, only those it does not). The community blueprints gallery is the recommended slice of the public website list.
+    /// * `verified` - Only return apps whose Whop verification status matches this value. Omit this filter to include every verification status the caller can see.
+    /// * `verified_apps_only` - Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
+    /// * `recommended` - Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
     /// * `query` - A search string matched against app names.
     /// * `order` - The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
     /// * `direction` - Sort direction.
@@ -67,7 +68,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -79,6 +80,7 @@ impl AppsClient {
                     .string("account_id", request.account_id.clone())
                     .serialize("app_type", request.app_type.clone())
                     .serialize("view_type", request.view_type.clone())
+                    .bool("verified", request.verified.clone())
                     .bool("verified_apps_only", request.verified_apps_only.clone())
                     .bool("recommended", request.recommended.clone())
                     .structured_query("query", request.query.clone())
@@ -142,7 +144,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -209,7 +211,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -258,7 +260,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -301,7 +303,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -354,7 +356,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -413,7 +415,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -427,7 +429,7 @@ impl AppsClient {
             .await
     }
 
-    /// Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.app hosting. Logs are retained for 7 days.
+    /// Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.site hosting. Logs are retained for 7 days.
     ///
     /// # Arguments
     ///
@@ -480,7 +482,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
@@ -554,7 +556,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-1".to_string());
+                .or_insert_with(|| "2026-08-25-2".to_string());
             Some(o)
         };
         self.http_client
