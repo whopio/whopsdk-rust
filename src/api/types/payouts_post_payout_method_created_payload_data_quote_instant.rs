@@ -7,7 +7,7 @@ pub struct PostPayoutMethodCreatedPayloadDataQuoteInstant {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub fee: f64,
-    /// Amount delivered after fees, in the payout currency.
+    /// Amount remaining after fees, in the payout currency.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub total_received: f64,

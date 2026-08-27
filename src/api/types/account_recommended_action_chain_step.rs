@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct AccountRecommendedActionChainStep {
     /// The action definition key this step runs; new values may be added, so handle unknown actions gracefully
     #[serde(default)]
@@ -17,6 +17,8 @@ pub struct AccountRecommendedActionChainStep {
     /// Why the step failed, or `null`
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
+    /// Whether the client should navigate to the CTA or open the programmatic execution dialog
+    pub execution_type: AccountRecommendedActionChainStepExecutionType,
     /// The filled-in request body for the step's endpoint, or `null` when it was not recorded
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input: Option<HashMap<String, serde_json::Value>>,
@@ -26,7 +28,7 @@ pub struct AccountRecommendedActionChainStep {
     /// Zero-based order of this step within the chain
     #[serde(default)]
     pub position: i64,
-    /// Why the generator filled the step this way, or `null` for seeded chains
+    /// Why this step was recommended, or `null` when unavailable
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning: Option<HashMap<String, serde_json::Value>>,
     /// Where the run step currently stands, or `null` when the chain has not been run
@@ -51,6 +53,7 @@ pub struct AccountRecommendedActionChainStepBuilder {
     cta_label: Option<String>,
     description: Option<String>,
     error: Option<String>,
+    execution_type: Option<AccountRecommendedActionChainStepExecutionType>,
     input: Option<HashMap<String, serde_json::Value>>,
     output: Option<HashMap<String, serde_json::Value>>,
     position: Option<i64>,
@@ -82,6 +85,11 @@ impl AccountRecommendedActionChainStepBuilder {
 
     pub fn error(mut self, value: impl Into<String>) -> Self {
         self.error = Some(value.into());
+        self
+    }
+
+    pub fn execution_type(mut self, value: AccountRecommendedActionChainStepExecutionType) -> Self {
+        self.execution_type = Some(value);
         self
     }
 
@@ -121,6 +129,7 @@ impl AccountRecommendedActionChainStepBuilder {
     /// - [`cta`](AccountRecommendedActionChainStepBuilder::cta)
     /// - [`cta_label`](AccountRecommendedActionChainStepBuilder::cta_label)
     /// - [`description`](AccountRecommendedActionChainStepBuilder::description)
+    /// - [`execution_type`](AccountRecommendedActionChainStepBuilder::execution_type)
     /// - [`position`](AccountRecommendedActionChainStepBuilder::position)
     /// - [`title`](AccountRecommendedActionChainStepBuilder::title)
     pub fn build(self) -> Result<AccountRecommendedActionChainStep, BuildError> {
@@ -136,6 +145,9 @@ impl AccountRecommendedActionChainStepBuilder {
                 .description
                 .ok_or_else(|| BuildError::missing_field("description"))?,
             error: self.error,
+            execution_type: self
+                .execution_type
+                .ok_or_else(|| BuildError::missing_field("execution_type"))?,
             input: self.input,
             output: self.output,
             position: self

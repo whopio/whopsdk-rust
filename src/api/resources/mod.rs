@@ -41,7 +41,7 @@
 //! - **FeeMarkups**
 //! - **Files**
 //! - **FinancialActivity**
-//! - **Ledgers**
+//! - **FinancialReports**
 //! - **ForumPosts**
 //! - **Forums**
 //! - **IdentityProfiles**
@@ -124,13 +124,13 @@ pub mod exports;
 pub mod fee_markups;
 pub mod files;
 pub mod financial_activity;
+pub mod financial_reports;
 pub mod forum_posts;
 pub mod forums;
 pub mod identity_profiles;
 pub mod invoices;
 pub mod leads;
 pub mod ledger_accounts;
-pub mod ledgers;
 pub mod media;
 pub mod members;
 pub mod memberships;
@@ -206,7 +206,7 @@ pub struct Whop {
     pub fee_markups: FeeMarkupsClient,
     pub files: FilesClient,
     pub financial_activity: FinancialActivityClient,
-    pub ledgers: LedgersClient,
+    pub financial_reports: FinancialReportsClient,
     pub forum_posts: ForumPostsClient,
     pub forums: ForumsClient,
     pub identity_profiles: IdentityProfilesClient,
@@ -292,7 +292,7 @@ impl Whop {
             fee_markups: FeeMarkupsClient::new(config.clone())?,
             files: FilesClient::new(config.clone())?,
             financial_activity: FinancialActivityClient::new(config.clone())?,
-            ledgers: LedgersClient::new(config.clone())?,
+            financial_reports: FinancialReportsClient::new(config.clone())?,
             forum_posts: ForumPostsClient::new(config.clone())?,
             forums: ForumsClient::new(config.clone())?,
             identity_profiles: IdentityProfilesClient::new(config.clone())?,
@@ -376,13 +376,13 @@ pub use exports::ExportsClient;
 pub use fee_markups::FeeMarkupsClient;
 pub use files::FilesClient;
 pub use financial_activity::FinancialActivityClient;
+pub use financial_reports::FinancialReportsClient;
 pub use forum_posts::ForumPostsClient;
 pub use forums::ForumsClient;
 pub use identity_profiles::IdentityProfilesClient;
 pub use invoices::InvoicesClient;
 pub use leads::LeadsClient;
 pub use ledger_accounts::LedgerAccountsClient;
-pub use ledgers::LedgersClient;
 pub use media::MediaClient;
 pub use members::MembersClient;
 pub use memberships::MembershipsClient;

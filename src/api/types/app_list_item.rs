@@ -54,7 +54,7 @@ pub struct AppListItem {
     /// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub origin: Option<String>,
-    /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.app), or `null` if no route is claimed.
+    /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
     /// URL path to the app's skills directory, or `null` when not configured.

@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct PaymentStatus {
+    /// When the card authorization must be captured, as an ISO 8601 timestamp. `null` when this payment was not authorized for later capture.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub capture_expires_at: Option<String>,
     /// The payment this status describes, prefixed `pay_`.
     #[serde(default)]
     pub id: String,
@@ -20,7 +23,7 @@ pub struct PaymentStatus {
     /// Where to send the buyer once the payment reaches a resting state, or `null` to leave them where they are. Editable until they return — see the return_url operation.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_url: Option<String>,
-    /// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+    /// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
     pub status: PaymentStatusStatus,
 }
 
@@ -33,6 +36,7 @@ impl PaymentStatus {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct PaymentStatusBuilder {
+    capture_expires_at: Option<String>,
     id: Option<String>,
     last_payment_error: Option<PaymentLastPaymentError>,
     next_action: Option<PaymentNextAction>,
@@ -43,6 +47,11 @@ pub struct PaymentStatusBuilder {
 }
 
 impl PaymentStatusBuilder {
+    pub fn capture_expires_at(mut self, value: impl Into<String>) -> Self {
+        self.capture_expires_at = Some(value.into());
+        self
+    }
+
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
         self
@@ -85,6 +94,7 @@ impl PaymentStatusBuilder {
     /// - [`status`](PaymentStatusBuilder::status)
     pub fn build(self) -> Result<PaymentStatus, BuildError> {
         Ok(PaymentStatus {
+            capture_expires_at: self.capture_expires_at,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             last_payment_error: self.last_payment_error,
             next_action: self.next_action,

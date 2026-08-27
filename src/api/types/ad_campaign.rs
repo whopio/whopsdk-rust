@@ -143,6 +143,10 @@ pub struct AdCampaign {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub leads: f64,
+    /// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub link_clicks: f64,
     /// The goal the campaign optimizes toward.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub objective: Option<AdCampaignObjective>,
@@ -274,6 +278,7 @@ pub struct AdCampaignBuilder {
     issues: Option<Vec<AdPlatformIssue>>,
     lead_value: Option<f64>,
     leads: Option<f64>,
+    link_clicks: Option<f64>,
     objective: Option<AdCampaignObjective>,
     optimization_goal: Option<String>,
     platform: Option<AdCampaignPlatform>,
@@ -476,6 +481,11 @@ impl AdCampaignBuilder {
         self
     }
 
+    pub fn link_clicks(mut self, value: f64) -> Self {
+        self.link_clicks = Some(value);
+        self
+    }
+
     pub fn objective(mut self, value: AdCampaignObjective) -> Self {
         self.objective = Some(value);
         self
@@ -618,6 +628,7 @@ impl AdCampaignBuilder {
     /// - [`issues`](AdCampaignBuilder::issues)
     /// - [`lead_value`](AdCampaignBuilder::lead_value)
     /// - [`leads`](AdCampaignBuilder::leads)
+    /// - [`link_clicks`](AdCampaignBuilder::link_clicks)
     /// - [`platform`](AdCampaignBuilder::platform)
     /// - [`purchase_value`](AdCampaignBuilder::purchase_value)
     /// - [`purchases`](AdCampaignBuilder::purchases)
@@ -710,6 +721,9 @@ impl AdCampaignBuilder {
             leads: self
                 .leads
                 .ok_or_else(|| BuildError::missing_field("leads"))?,
+            link_clicks: self
+                .link_clicks
+                .ok_or_else(|| BuildError::missing_field("link_clicks"))?,
             objective: self.objective,
             optimization_goal: self.optimization_goal,
             platform: self

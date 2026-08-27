@@ -12,10 +12,13 @@ pub struct AppsListQueryRequest {
     /// Only return apps supporting this view type, such as `dashboard` or `hub`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub view_type: Option<ListAppsRequestViewType>,
-    /// Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
+    /// Only return apps whose Whop verification status matches this value. Omit this filter to include every verification status the caller can see.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub verified: Option<bool>,
+    /// Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verified_apps_only: Option<bool>,
-    /// Only return apps Whop recommends (or, with `false`, only those it does not). The community blueprints gallery is the recommended slice of the public website list.
+    /// Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recommended: Option<bool>,
     /// A search string matched against app names.
@@ -53,6 +56,7 @@ pub struct AppsListQueryRequestBuilder {
     account_id: Option<String>,
     app_type: Option<ListAppsRequestAppType>,
     view_type: Option<ListAppsRequestViewType>,
+    verified: Option<bool>,
     verified_apps_only: Option<bool>,
     recommended: Option<bool>,
     query: Option<String>,
@@ -77,6 +81,11 @@ impl AppsListQueryRequestBuilder {
 
     pub fn view_type(mut self, value: ListAppsRequestViewType) -> Self {
         self.view_type = Some(value);
+        self
+    }
+
+    pub fn verified(mut self, value: bool) -> Self {
+        self.verified = Some(value);
         self
     }
 
@@ -131,6 +140,7 @@ impl AppsListQueryRequestBuilder {
             account_id: self.account_id,
             app_type: self.app_type,
             view_type: self.view_type,
+            verified: self.verified,
             verified_apps_only: self.verified_apps_only,
             recommended: self.recommended,
             query: self.query,

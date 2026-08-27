@@ -13,11 +13,6 @@ pub struct LedgerActivity {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub available_at: Option<DateTime<FixedOffset>>,
-    /// When the activity record was created.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub created_at: Option<DateTime<FixedOffset>>,
     /// Currency for this ledger activity.
     #[serde(default)]
     pub currency: LedgerActivityCurrency,
@@ -81,7 +76,6 @@ pub struct LedgerActivityBuilder {
     account: Option<LedgerActivityAccount>,
     amount: Option<String>,
     available_at: Option<DateTime<FixedOffset>>,
-    created_at: Option<DateTime<FixedOffset>>,
     currency: Option<LedgerActivityCurrency>,
     id: Option<String>,
     ledger_account_id: Option<String>,
@@ -114,11 +108,6 @@ impl LedgerActivityBuilder {
 
     pub fn available_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.available_at = Some(value);
-        self
-    }
-
-    pub fn created_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.created_at = Some(value);
         self
     }
 
@@ -222,7 +211,6 @@ impl LedgerActivityBuilder {
                 .amount
                 .ok_or_else(|| BuildError::missing_field("amount"))?,
             available_at: self.available_at,
-            created_at: self.created_at,
             currency: self
                 .currency
                 .ok_or_else(|| BuildError::missing_field("currency"))?,

@@ -1,11 +1,12 @@
 pub use crate::prelude::*;
 
-/// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+/// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PaymentStatusStatus {
     RequiresConfirmation,
     RequiresAction,
+    RequiresCapture,
     Confirming,
     Processing,
     Succeeded,
@@ -20,6 +21,7 @@ impl Serialize for PaymentStatusStatus {
         match self {
             Self::RequiresConfirmation => serializer.serialize_str("requires_confirmation"),
             Self::RequiresAction => serializer.serialize_str("requires_action"),
+            Self::RequiresCapture => serializer.serialize_str("requires_capture"),
             Self::Confirming => serializer.serialize_str("confirming"),
             Self::Processing => serializer.serialize_str("processing"),
             Self::Succeeded => serializer.serialize_str("succeeded"),
@@ -35,6 +37,7 @@ impl<'de> Deserialize<'de> for PaymentStatusStatus {
         match value.as_str() {
             "requires_confirmation" => Ok(Self::RequiresConfirmation),
             "requires_action" => Ok(Self::RequiresAction),
+            "requires_capture" => Ok(Self::RequiresCapture),
             "confirming" => Ok(Self::Confirming),
             "processing" => Ok(Self::Processing),
             "succeeded" => Ok(Self::Succeeded),
@@ -49,6 +52,7 @@ impl fmt::Display for PaymentStatusStatus {
         match self {
             Self::RequiresConfirmation => write!(f, "requires_confirmation"),
             Self::RequiresAction => write!(f, "requires_action"),
+            Self::RequiresCapture => write!(f, "requires_capture"),
             Self::Confirming => write!(f, "confirming"),
             Self::Processing => write!(f, "processing"),
             Self::Succeeded => write!(f, "succeeded"),

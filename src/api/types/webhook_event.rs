@@ -55,6 +55,8 @@ pub enum WebhookEvent {
     IdentityProfileNeedsAction,
     IdentityProfileUpdated,
     PayoutAccountStatusUpdated,
+    PaymentAuthorized,
+    PaymentCanceled,
     ResolutionCenterCaseCreated,
     ResolutionCenterCaseUpdated,
     ResolutionCenterCaseDecided,
@@ -157,6 +159,8 @@ impl Serialize for WebhookEvent {
             Self::PayoutAccountStatusUpdated => {
                 serializer.serialize_str("payout_account.status_updated")
             }
+            Self::PaymentAuthorized => serializer.serialize_str("payment.authorized"),
+            Self::PaymentCanceled => serializer.serialize_str("payment.canceled"),
             Self::ResolutionCenterCaseCreated => {
                 serializer.serialize_str("resolution_center_case.created")
             }
@@ -252,6 +256,8 @@ impl<'de> Deserialize<'de> for WebhookEvent {
             "identity_profile.needs_action" => Ok(Self::IdentityProfileNeedsAction),
             "identity_profile.updated" => Ok(Self::IdentityProfileUpdated),
             "payout_account.status_updated" => Ok(Self::PayoutAccountStatusUpdated),
+            "payment.authorized" => Ok(Self::PaymentAuthorized),
+            "payment.canceled" => Ok(Self::PaymentCanceled),
             "resolution_center_case.created" => Ok(Self::ResolutionCenterCaseCreated),
             "resolution_center_case.updated" => Ok(Self::ResolutionCenterCaseUpdated),
             "resolution_center_case.decided" => Ok(Self::ResolutionCenterCaseDecided),
@@ -342,6 +348,8 @@ impl fmt::Display for WebhookEvent {
             Self::IdentityProfileNeedsAction => write!(f, "identity_profile.needs_action"),
             Self::IdentityProfileUpdated => write!(f, "identity_profile.updated"),
             Self::PayoutAccountStatusUpdated => write!(f, "payout_account.status_updated"),
+            Self::PaymentAuthorized => write!(f, "payment.authorized"),
+            Self::PaymentCanceled => write!(f, "payment.canceled"),
             Self::ResolutionCenterCaseCreated => write!(f, "resolution_center_case.created"),
             Self::ResolutionCenterCaseUpdated => write!(f, "resolution_center_case.updated"),
             Self::ResolutionCenterCaseDecided => write!(f, "resolution_center_case.decided"),

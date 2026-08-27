@@ -1,8 +1,9 @@
 pub use crate::prelude::*;
 
+/// The report that was generated, echoing the requested `report_type`.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum GetFinancialReportRequestReportType {
+pub enum RetrieveFinancialReportsResponseReportType {
     BalanceSummary,
     IncomeStatement,
     BalanceActivity,
@@ -11,7 +12,7 @@ pub enum GetFinancialReportRequestReportType {
     /// it will be captured here with the raw string value.
     __Unknown(String),
 }
-impl Serialize for GetFinancialReportRequestReportType {
+impl Serialize for RetrieveFinancialReportsResponseReportType {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::BalanceSummary => serializer.serialize_str("balance_summary"),
@@ -22,7 +23,7 @@ impl Serialize for GetFinancialReportRequestReportType {
     }
 }
 
-impl<'de> Deserialize<'de> for GetFinancialReportRequestReportType {
+impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseReportType {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
@@ -34,7 +35,7 @@ impl<'de> Deserialize<'de> for GetFinancialReportRequestReportType {
     }
 }
 
-impl fmt::Display for GetFinancialReportRequestReportType {
+impl fmt::Display for RetrieveFinancialReportsResponseReportType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::BalanceSummary => write!(f, "balance_summary"),

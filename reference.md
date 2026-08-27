@@ -433,6 +433,14 @@ async fn main() {
 <dl>
 <dd>
 
+**blueprint_id:** `Option<Option<String>>` — The blueprint App ID, prefixed `app_`. Creates a hosted website for the account and queues its deployment asynchronously; the Account response does not report deployment completion.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **country:** `Option<String>` — The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
     
 </dd>
@@ -6763,7 +6771,7 @@ async fn main() {
 </details>
 
 ## Apps
-<details><summary><code>client.apps.<a href="/src/api/resources/apps/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, app_type: Option&lt;Option&lt;ListAppsRequestAppType&gt;&gt;, view_type: Option&lt;Option&lt;ListAppsRequestViewType&gt;&gt;, verified_apps_only: Option&lt;Option&lt;bool&gt;&gt;, recommended: Option&lt;Option&lt;bool&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListAppsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListAppsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAppsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.apps.<a href="/src/api/resources/apps/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, app_type: Option&lt;Option&lt;ListAppsRequestAppType&gt;&gt;, view_type: Option&lt;Option&lt;ListAppsRequestViewType&gt;&gt;, verified: Option&lt;Option&lt;bool&gt;&gt;, verified_apps_only: Option&lt;Option&lt;bool&gt;&gt;, recommended: Option&lt;Option&lt;bool&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListAppsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListAppsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAppsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -6775,7 +6783,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication, except for the publicly readable lists: `verified_apps_only=true`, and `app_type=website` with no `account_id`, which returns every live deployed website that Whop has not verified — verified templates are the curated `verified_apps_only=true` list instead.
+Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication except for Whop's public app and website discovery lists. Public website discovery includes built official blueprints (verified apps with a product) and built, live community blueprints that Whop recommends.
 </dd>
 </dl>
 </dd>
@@ -6847,7 +6855,7 @@ async fn main() {
 <dl>
 <dd>
 
-**verified_apps_only:** `Option<bool>` — Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
+**verified:** `Option<bool>` — Only return apps whose Whop verification status matches this value. Omit this filter to include every verification status the caller can see.
     
 </dd>
 </dl>
@@ -6855,7 +6863,15 @@ async fn main() {
 <dl>
 <dd>
 
-**recommended:** `Option<bool>` — Only return apps Whop recommends (or, with `false`, only those it does not). The community blueprints gallery is the recommended slice of the public website list.
+**verified_apps_only:** `Option<bool>` — Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recommended:** `Option<bool>` — Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
     
 </dd>
 </dl>
@@ -7037,7 +7053,7 @@ async fn main() {
 <dl>
 <dd>
 
-**route:** `Option<Option<String>>` — The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.app.
+**route:** `Option<Option<String>>` — The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
     
 </dd>
 </dl>
@@ -7592,7 +7608,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.app hosting. Logs are retained for 7 days.
+Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.site hosting. Logs are retained for 7 days.
 </dd>
 </dl>
 </dd>
@@ -17034,6 +17050,8 @@ async fn main() {
                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 event_name: "coating_deposit_paid".to_string(),
                 action_source: None,
+                app_build_id: None,
+                app_id: None,
                 context: None,
                 currency: None,
                 custom_name: None,
@@ -17077,6 +17095,22 @@ async fn main() {
 <dd>
 
 **action_source:** `Option<Option<CreateEventsRequestActionSource>>` — Where the event originated.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**app_build_id:** `Option<Option<String>>` — The build of the hosted app that served the page where the event occurred.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**app_id:** `Option<Option<String>>` — The hosted app that served the page where the event occurred.
     
 </dd>
 </dl>
@@ -18321,7 +18355,7 @@ async fn main() {
 <dl>
 <dd>
 
-Starts an asynchronous CSV export of a resource for an account. Returns the export in `pending`; poll `GET /exports/{id}` until `download_url` is set.
+Starts an asynchronous export of a resource for an account. Returns the export in `pending`; poll `GET /exports/{id}` until `download_url` is set.
 </dd>
 </dl>
 </dd>
@@ -19165,7 +19199,7 @@ async fn main() {
 </details>
 
 ## FinancialActivity
-<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;ListFinancialActivityRequestDirection&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -19210,6 +19244,7 @@ async fn main() {
                 include_owned_accounts: None,
                 include_resource: None,
                 line_types: vec![],
+                direction: None,
                 currency: None,
                 posted_after: None,
                 posted_before: None,
@@ -19269,6 +19304,14 @@ async fn main() {
 <dd>
 
 **line_types:** `Option<ListFinancialActivityRequestLineTypesItem>` — Optional ledger line categories to include. Some categories (for example `onchain_deposit`, which covers inbound crypto deposits such as MoonPay onramps) are only returned when explicitly requested here.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListFinancialActivityRequestDirection>` — Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
     
 </dd>
 </dl>
@@ -19336,8 +19379,8 @@ async fn main() {
 </dl>
 </details>
 
-## Ledgers
-<details><summary><code>client.ledgers.<a href="/src/api/resources/ledgers/client.rs">get_financial_report</a>(account_id: Option&lt;String&gt;, report_type: Option&lt;GetFinancialReportRequestReportType&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, in_currency: Option&lt;Option&lt;String&gt;&gt;, from_date: Option&lt;Option&lt;String&gt;&gt;, to_date: Option&lt;Option&lt;String&gt;&gt;, group_by: Option&lt;Option&lt;GetFinancialReportRequestGroupBy&gt;&gt;, timezone: Option&lt;Option&lt;String&gt;&gt;, cumulative: Option&lt;Option&lt;bool&gt;&gt;, scope_account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;GetFinancialReportResponse, ApiError&gt;</code></summary>
+## FinancialReports
+<details><summary><code>client.financial_reports.<a href="/src/api/resources/financial_reports/client.rs">retrieve</a>(account_id: Option&lt;String&gt;, report_type: Option&lt;RetrieveFinancialReportsRequestReportType&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, in_currency: Option&lt;Option&lt;String&gt;&gt;, from_date: Option&lt;Option&lt;String&gt;&gt;, to_date: Option&lt;Option&lt;String&gt;&gt;, group_by: Option&lt;Option&lt;RetrieveFinancialReportsRequestGroupBy&gt;&gt;, timezone: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;RetrieveFinancialReportsRequestDirection&gt;&gt;, cumulative: Option&lt;Option&lt;bool&gt;&gt;, scope_account_id: Option&lt;Option&lt;String&gt;&gt;, include_payment_fee_breakdown: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;RetrieveFinancialReportsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -19374,19 +19417,22 @@ async fn main() {
     };
     let client = Whop::new(config).expect("Failed to build client");
     client
-        .ledgers
-        .get_financial_report(
-            &GetFinancialReportQueryRequest {
+        .financial_reports
+        .retrieve(
+            &FinancialReportsRetrieveQueryRequest {
                 account_id: "account_id".to_string(),
-                report_type: GetFinancialReportRequestReportType::BalanceSummary,
+                report_type: RetrieveFinancialReportsRequestReportType::BalanceSummary,
                 currency: None,
                 in_currency: None,
                 from_date: None,
                 to_date: None,
                 group_by: None,
                 timezone: None,
+                line_types: vec![],
+                direction: None,
                 cumulative: None,
                 scope_account_id: None,
+                include_payment_fee_breakdown: None,
             },
             None,
         )
@@ -19414,7 +19460,7 @@ async fn main() {
 <dl>
 <dd>
 
-**report_type:** `GetFinancialReportRequestReportType` — The type of financial report to generate.
+**report_type:** `RetrieveFinancialReportsRequestReportType` — The type of financial report to generate.
     
 </dd>
 </dl>
@@ -19454,7 +19500,7 @@ async fn main() {
 <dl>
 <dd>
 
-**group_by:** `Option<GetFinancialReportRequestGroupBy>` — Grouping granularity for report rows.
+**group_by:** `Option<RetrieveFinancialReportsRequestGroupBy>` — Grouping granularity for report rows.
     
 </dd>
 </dl>
@@ -19463,6 +19509,22 @@ async fn main() {
 <dd>
 
 **timezone:** `Option<String>` — IANA timezone (for example `America/New_York`) used to bucket report periods and to interpret calendar-day boundaries for balance snapshots. Defaults to UTC. from_date/to_date remain exact instants regardless of this setting.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**line_types:** `Option<RetrieveFinancialReportsRequestLineTypesItem>` — Account-level balance activity only: ledger line categories to include.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<RetrieveFinancialReportsRequestDirection>` — Account-level balance activity only: include money moving in or money moving out.
     
 </dd>
 </dl>
@@ -19479,6 +19541,14 @@ async fn main() {
 <dd>
 
 **scope_account_id:** `Option<String>` — Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_payment_fee_breakdown:** `Option<bool>` — Balance activity only: include payment costs grouped by payment method and provider.
     
 </dd>
 </dl>
@@ -25799,6 +25869,7 @@ async fn main() {
         .create(
             &CreatePaymentsRequestBody::CreatePaymentsRequestBodyZero(
                 CreatePaymentsRequestBodyZero {
+                    capture: None,
                     company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     confirmation_token: "confirmation_token".to_string(),
                     email: None,
@@ -25908,6 +25979,70 @@ async fn main() {
 <dd>
 
 **id:** `String` — The unique identifier of the payment.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">capture</a>(id: String) -> Result&lt;PaymentStatus, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Captures the full amount of a card payment created with `capture: false`. The payment must still be in `requires_capture` before `capture_expires_at`. Partial capture, multiple captures, capturing more than the authorized amount, and tips are not supported.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payments.capture(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` 
     
 </dd>
 </dl>
@@ -26887,6 +27022,132 @@ async fn main() {
         .await;
 }
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payouts.<a href="/src/api/resources/payouts/client.rs">create_quote</a>(request: CreateQuotePayoutsRequest) -> Result&lt;CreateQuotePayoutsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a short-lived, provider-backed quote for a payout. No funds move until the returned quote_token is submitted to POST /payouts. An Idempotency-Key header is required.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payouts
+        .create_quote(
+            &CreateQuotePayoutsRequest {
+                amount: 6762.41,
+                payout_method_id: "potk_xxxxxxxxxxxxxx".to_string(),
+                account_id: None,
+                currency: None,
+                platform_covers_fees: None,
+                speed: None,
+                user_id: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**amount:** `String` — The amount to pay out in the specified currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `Option<String>` — The balance currency to pay out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payout_method_id:** `String` — The saved payout method to quote (a potk_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform_covers_fees:** `Option<bool>` — Whether the parent platform covers the payout fee instead of the account being paid out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**speed:** `Option<CreateQuotePayoutsRequestSpeed>` — How fast the funds should arrive.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `Option<String>` — User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+    
 </dd>
 </dl>
 </dd>
@@ -39551,7 +39812,7 @@ async fn main() {
 <dl>
 <dd>
 
-**tier:** `Option<ListBusinessesRequestTier>` — Filter to only first-tier referrals or only second-tier referrals.
+**tier:** `Option<ListBusinessesRequestTier>` — Filter to referrals from a single tier: first, second, or blueprint.
     
 </dd>
 </dl>

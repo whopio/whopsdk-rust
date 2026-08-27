@@ -175,6 +175,10 @@ pub struct AdGroup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub leads: f64,
+    /// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub link_clicks: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub message_apps: Option<Vec<AdGroupMessageAppsItem>>,
     /// Minimum the ad group tries to spend each day. `null` when no floor is set.
@@ -323,6 +327,7 @@ pub struct AdGroupBuilder {
     languages: Option<Vec<String>>,
     lead_value: Option<f64>,
     leads: Option<f64>,
+    link_clicks: Option<f64>,
     message_apps: Option<Vec<AdGroupMessageAppsItem>>,
     minimum_daily_spend: Option<f64>,
     optimization_goal: Option<AdGroupOptimizationGoal>,
@@ -582,6 +587,11 @@ impl AdGroupBuilder {
         self
     }
 
+    pub fn link_clicks(mut self, value: f64) -> Self {
+        self.link_clicks = Some(value);
+        self
+    }
+
     pub fn message_apps(mut self, value: Vec<AdGroupMessageAppsItem>) -> Self {
         self.message_apps = Some(value);
         self
@@ -740,6 +750,7 @@ impl AdGroupBuilder {
     /// - [`languages`](AdGroupBuilder::languages)
     /// - [`lead_value`](AdGroupBuilder::lead_value)
     /// - [`leads`](AdGroupBuilder::leads)
+    /// - [`link_clicks`](AdGroupBuilder::link_clicks)
     /// - [`placements`](AdGroupBuilder::placements)
     /// - [`purchase_value`](AdGroupBuilder::purchase_value)
     /// - [`purchases`](AdGroupBuilder::purchases)
@@ -854,6 +865,9 @@ impl AdGroupBuilder {
             leads: self
                 .leads
                 .ok_or_else(|| BuildError::missing_field("leads"))?,
+            link_clicks: self
+                .link_clicks
+                .ok_or_else(|| BuildError::missing_field("link_clicks"))?,
             message_apps: self.message_apps,
             minimum_daily_spend: self.minimum_daily_spend,
             optimization_goal: self.optimization_goal,
