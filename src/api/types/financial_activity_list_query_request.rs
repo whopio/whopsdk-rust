@@ -21,6 +21,9 @@ pub struct FinancialActivityListQueryRequest {
     /// Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<ListFinancialActivityRequestDirection>,
+    /// Optional prefixed resource ID. Returns activity associated with that resource.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resource_id: Option<String>,
     /// Optional currency code filter, for example `usd`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
@@ -63,6 +66,7 @@ pub struct FinancialActivityListQueryRequestBuilder {
     include_resource: Option<bool>,
     line_types: Option<Vec<Option<ListFinancialActivityRequestLineTypesItem>>>,
     direction: Option<ListFinancialActivityRequestDirection>,
+    resource_id: Option<String>,
     currency: Option<String>,
     posted_after: Option<DateTime<FixedOffset>>,
     posted_before: Option<DateTime<FixedOffset>>,
@@ -103,6 +107,11 @@ impl FinancialActivityListQueryRequestBuilder {
 
     pub fn direction(mut self, value: ListFinancialActivityRequestDirection) -> Self {
         self.direction = Some(value);
+        self
+    }
+
+    pub fn resource_id(mut self, value: impl Into<String>) -> Self {
+        self.resource_id = Some(value.into());
         self
     }
 
@@ -154,6 +163,7 @@ impl FinancialActivityListQueryRequestBuilder {
                 .line_types
                 .ok_or_else(|| BuildError::missing_field("line_types"))?,
             direction: self.direction,
+            resource_id: self.resource_id,
             currency: self.currency,
             posted_after: self.posted_after,
             posted_before: self.posted_before,

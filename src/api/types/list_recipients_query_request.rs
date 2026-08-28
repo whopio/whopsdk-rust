@@ -6,7 +6,7 @@ pub struct ListRecipientsQueryRequest {
     /// The account sending the money: a company account ID (`biz_`), or a user ID (`user_`) for that user's own personal balance.
     #[serde(default)]
     pub origin_id: String,
-    /// Search anyone on Whop by name or username, plus your own accounts by name or ID. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches.
+    /// Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
     /// Number of recipients per page. Search queries preserve the dashboard's 20-result maximum.

@@ -3,6 +3,9 @@ pub use crate::prelude::*;
 /// The owner of the referred business.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct RetrieveBusinessesResponseOwner {
+    /// The business owner's email address, so a partner can follow up on a referral they made. Requires the `partner:email:read` scope; `null` without it, or while the account has no reachable address of its own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub email: Option<String>,
     /// User ID, prefixed `user_`.
     #[serde(default)]
     pub id: String,
@@ -26,6 +29,7 @@ impl RetrieveBusinessesResponseOwner {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct RetrieveBusinessesResponseOwnerBuilder {
+    email: Option<String>,
     id: Option<String>,
     name: Option<String>,
     profile_picture: Option<RetrieveBusinessesResponseOwnerProfilePicture>,
@@ -33,6 +37,11 @@ pub struct RetrieveBusinessesResponseOwnerBuilder {
 }
 
 impl RetrieveBusinessesResponseOwnerBuilder {
+    pub fn email(mut self, value: impl Into<String>) -> Self {
+        self.email = Some(value.into());
+        self
+    }
+
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
         self
@@ -60,6 +69,7 @@ impl RetrieveBusinessesResponseOwnerBuilder {
     /// - [`username`](RetrieveBusinessesResponseOwnerBuilder::username)
     pub fn build(self) -> Result<RetrieveBusinessesResponseOwner, BuildError> {
         Ok(RetrieveBusinessesResponseOwner {
+            email: self.email,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             name: self.name,
             profile_picture: self

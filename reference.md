@@ -1242,6 +1242,7 @@ async fn main() {
             &TransferOwnershipAccountsRequest {
                 identifier: "marcus@shinetime.example".to_string(),
                 as_partner: None,
+                message: None,
             },
             None,
         )
@@ -1278,6 +1279,14 @@ async fn main() {
 <dd>
 
 **identifier:** `String` — The user to transfer ownership to: a user ID (`user_*`) or an email address. An email address with no Whop account yet is sent an invite to create one.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**message:** `Option<String>` — A note from the partner, shown as a quote in the invite email and signed with their name. Requires `as_partner`; sending it on an ordinary transfer is a 400. Omit it and the email sends without a note.
     
 </dd>
 </dl>
@@ -4228,7 +4237,7 @@ async fn main() {
 <dl>
 <dd>
 
-**url_parameters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+**url_parameters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
     
 </dd>
 </dl>
@@ -4590,7 +4599,7 @@ async fn main() {
 <dl>
 <dd>
 
-**url_parameters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+**url_parameters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
     
 </dd>
 </dl>
@@ -16923,7 +16932,7 @@ async fn main() {
 <dl>
 <dd>
 
-**source:** `Option<String>` — Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct). Restricts the list to conversion targets attributed to that source — the debuggability twin of a metric cell's source parameter.
+**source:** `Option<String>` — Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct). Restricts the list to conversion targets attributed to that source — the debuggability twin of a metric cell's source parameter. A whop:... source combined with non-conversion event names (event=pixel.page) instead lists the events whose ad click resolved to that entity — the page views an ad drove.
     
 </dd>
 </dl>
@@ -18953,7 +18962,7 @@ async fn main() {
 <dl>
 <dd>
 
-Creates a file and returns a presigned destination to upload its bytes to. PUT the bytes to `upload_url` (single-part), or to each of `multipart_upload_urls` and then call Complete File Multipart Upload. Once the bytes land the file becomes `ready`, and its ID can be attached wherever a file is accepted — account legal documents, dispute evidence documents.
+Creates a file and returns a presigned destination to upload its bytes to. PUT the bytes to `upload_url` (single-part), or to each of `multipart_upload_urls` and then call Complete File Multipart Upload. Once the bytes land the file becomes `ready`, and its ID can be attached wherever a file is accepted — account legal documents, dispute evidence documents. For a step-by-step walkthrough of single-part and multipart uploads, see the [direct file uploads guide](/developer/guides/direct-file-uploads).
 </dd>
 </dl>
 </dd>
@@ -19116,7 +19125,7 @@ async fn main() {
 <dl>
 <dd>
 
-Assembles the parts of a multipart upload after every part has been PUT to its presigned URL. Pass the `multipart_upload_id` from Create File and each part's `ETag` response header.
+Assembles the parts of a multipart upload after every part has been PUT to its presigned URL. Pass the `multipart_upload_id` from Create File and each part's `ETag` response header. For a step-by-step walkthrough of multipart uploads, see the [direct file uploads guide](/developer/guides/direct-file-uploads).
 </dd>
 </dl>
 </dd>
@@ -19199,7 +19208,7 @@ async fn main() {
 </details>
 
 ## FinancialActivity
-<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;ListFinancialActivityRequestDirection&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;ListFinancialActivityRequestDirection&gt;&gt;, resource_id: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -19245,6 +19254,7 @@ async fn main() {
                 include_resource: None,
                 line_types: vec![],
                 direction: None,
+                resource_id: None,
                 currency: None,
                 posted_after: None,
                 posted_before: None,
@@ -19312,6 +19322,14 @@ async fn main() {
 <dd>
 
 **direction:** `Option<ListFinancialActivityRequestDirection>` — Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resource_id:** `Option<String>` — Optional prefixed resource ID. Returns activity associated with that resource.
     
 </dd>
 </dl>
@@ -36413,7 +36431,7 @@ async fn main() {
 <dl>
 <dd>
 
-**query:** `Option<String>` — Search anyone on Whop by name or username, plus your own accounts by name or ID. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches.
+**query:** `Option<String>` — Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches.
     
 </dd>
 </dl>
@@ -39446,6 +39464,125 @@ async fn main() {
 <dd>
 
 **id:** `String` — The submission to retrieve (`btys_` tag).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## FinancialReports Breakdown
+<details><summary><code>client.financial_reports().breakdown.<a href="/src/api/resources/financial_reports/breakdown/client.rs">retrieve</a>(account_id: Option&lt;String&gt;, bucket: Option&lt;RetrieveBreakdownRequestBucket&gt;, direction: Option&lt;RetrieveBreakdownRequestDirection&gt;, currency: Option&lt;String&gt;, from_date: Option&lt;String&gt;, to_date: Option&lt;String&gt;) -> Result&lt;RetrieveBreakdownResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the top entities behind one high-level financial report bucket and an aggregate remainder.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .financial_reports
+        .breakdown
+        .retrieve(
+            &FinancialReportsBreakdownRetrieveQueryRequest {
+                account_id: "account_id".to_string(),
+                bucket: RetrieveBreakdownRequestBucket::Transfers,
+                direction: RetrieveBreakdownRequestDirection::MoneyIn,
+                currency: "currency".to_string(),
+                from_date: "from_date".to_string(),
+                to_date: "to_date".to_string(),
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The owning account ID (a biz_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bucket:** `RetrieveBreakdownRequestBucket` — The high-level report bucket to explain.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `RetrieveBreakdownRequestDirection` — Whether to explain money received or money sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `String` — The report currency to explain.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**from_date:** `String` — Start of the report window as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to_date:** `String` — Exclusive end of the report window as an ISO 8601 timestamp.
     
 </dd>
 </dl>

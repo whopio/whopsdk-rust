@@ -5,6 +5,9 @@ pub struct ListBusinessesResponseDataItem {
     /// Referred account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account: Option<ListBusinessesResponseDataItemAccount>,
+    /// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub blueprint_partner: Option<ListBusinessesResponseDataItemBlueprintPartner>,
     /// When the partner business was created.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
@@ -55,6 +58,7 @@ impl ListBusinessesResponseDataItem {
 #[non_exhaustive]
 pub struct ListBusinessesResponseDataItemBuilder {
     account: Option<ListBusinessesResponseDataItemAccount>,
+    blueprint_partner: Option<ListBusinessesResponseDataItemBlueprintPartner>,
     created_at: Option<DateTime<FixedOffset>>,
     earnings_usd: Option<ListBusinessesResponseDataItemEarningsUsd>,
     first_tier_partner: Option<ListBusinessesResponseDataItemFirstTierPartner>,
@@ -73,6 +77,14 @@ pub struct ListBusinessesResponseDataItemBuilder {
 impl ListBusinessesResponseDataItemBuilder {
     pub fn account(mut self, value: ListBusinessesResponseDataItemAccount) -> Self {
         self.account = Some(value);
+        self
+    }
+
+    pub fn blueprint_partner(
+        mut self,
+        value: ListBusinessesResponseDataItemBlueprintPartner,
+    ) -> Self {
+        self.blueprint_partner = Some(value);
         self
     }
 
@@ -163,6 +175,7 @@ impl ListBusinessesResponseDataItemBuilder {
     pub fn build(self) -> Result<ListBusinessesResponseDataItem, BuildError> {
         Ok(ListBusinessesResponseDataItem {
             account: self.account,
+            blueprint_partner: self.blueprint_partner,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,

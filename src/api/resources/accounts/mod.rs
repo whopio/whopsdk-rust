@@ -441,6 +441,7 @@ impl AccountsClient {
     ///             &TransferOwnershipAccountsRequest {
     ///                 identifier: "marcus@shinetime.example".to_string(),
     ///                 as_partner: None,
+    ///                 message: None,
     ///             },
     ///             None,
     ///         )

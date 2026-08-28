@@ -6,6 +6,9 @@ pub struct ReferredUsersPartnersResponseDataItemUser {
     pub city: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub country: Option<String>,
+    /// The referred user's email address, so a partner can follow up with someone they brought onto Whop. Requires the `partner:email:read` scope; `null` without it, or while the account has no reachable address of its own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub email: Option<String>,
     #[serde(default)]
     pub id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -27,6 +30,7 @@ impl ReferredUsersPartnersResponseDataItemUser {
 pub struct ReferredUsersPartnersResponseDataItemUserBuilder {
     city: Option<String>,
     country: Option<String>,
+    email: Option<String>,
     id: Option<String>,
     name: Option<String>,
     profile_picture: Option<ReferredUsersPartnersResponseDataItemUserProfilePicture>,
@@ -41,6 +45,11 @@ impl ReferredUsersPartnersResponseDataItemUserBuilder {
 
     pub fn country(mut self, value: impl Into<String>) -> Self {
         self.country = Some(value.into());
+        self
+    }
+
+    pub fn email(mut self, value: impl Into<String>) -> Self {
+        self.email = Some(value.into());
         self
     }
 
@@ -75,6 +84,7 @@ impl ReferredUsersPartnersResponseDataItemUserBuilder {
         Ok(ReferredUsersPartnersResponseDataItemUser {
             city: self.city,
             country: self.country,
+            email: self.email,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             name: self.name,
             profile_picture: self.profile_picture,

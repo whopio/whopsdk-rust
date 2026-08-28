@@ -5,6 +5,9 @@ pub struct RetrieveBusinessesResponse {
     /// Referred account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account: Option<RetrieveBusinessesResponseAccount>,
+    /// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub blueprint_partner: Option<RetrieveBusinessesResponseBlueprintPartner>,
     /// When the partner business was created.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
@@ -55,6 +58,7 @@ impl RetrieveBusinessesResponse {
 #[non_exhaustive]
 pub struct RetrieveBusinessesResponseBuilder {
     account: Option<RetrieveBusinessesResponseAccount>,
+    blueprint_partner: Option<RetrieveBusinessesResponseBlueprintPartner>,
     created_at: Option<DateTime<FixedOffset>>,
     earnings_usd: Option<RetrieveBusinessesResponseEarningsUsd>,
     first_tier_partner: Option<RetrieveBusinessesResponseFirstTierPartner>,
@@ -73,6 +77,11 @@ pub struct RetrieveBusinessesResponseBuilder {
 impl RetrieveBusinessesResponseBuilder {
     pub fn account(mut self, value: RetrieveBusinessesResponseAccount) -> Self {
         self.account = Some(value);
+        self
+    }
+
+    pub fn blueprint_partner(mut self, value: RetrieveBusinessesResponseBlueprintPartner) -> Self {
+        self.blueprint_partner = Some(value);
         self
     }
 
@@ -160,6 +169,7 @@ impl RetrieveBusinessesResponseBuilder {
     pub fn build(self) -> Result<RetrieveBusinessesResponse, BuildError> {
         Ok(RetrieveBusinessesResponse {
             account: self.account,
+            blueprint_partner: self.blueprint_partner,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
