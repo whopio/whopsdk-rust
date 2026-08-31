@@ -128,10 +128,10 @@ pub struct Account {
     /// Whether the account settles on stablecoin rails — its balance is held on-chain as USDT and paid out over crypto, rather than as fiat cash.
     #[serde(default)]
     pub stablecoin_rails: bool,
-    /// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, and `me`; `null` otherwise.
+    /// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, `me`, and `suspend`; `null` otherwise.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
-    /// Why the account was suspended, in language safe to show the account owner. Computed only on `retrieve` and `me`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
+    /// Why the account was suspended, in language safe to show the account owner. Computed on `retrieve`, `me`, and `suspend`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status_reason: Option<String>,
     /// Account store page display configuration.

@@ -38,7 +38,7 @@ impl PaymentsClient {
     /// * `plan_ids` - Filter payments to only those associated with these specific plan identifiers.
     /// * `statuses` - Filter payments by their current status.
     /// * `substatuses` - Filter payments by their current substatus for more granular filtering.
-    /// * `include_free` - Whether to include payments with a zero amount.
+    /// * `include_free` - Whether to include payments with a zero amount. Defaults to false, so zero-amount payments are omitted unless you set this to true — a company whose sales are all free plans returns an empty list without it.
     /// * `created_before` - Only return payments created before this timestamp.
     /// * `created_after` - Only return payments created after this timestamp.
     /// * `updated_before` - Only return payments last updated before this timestamp.
@@ -140,7 +140,7 @@ impl PaymentsClient {
             .await
     }
 
-    /// Charge an existing member off-session using one of their stored payment methods. You can provide an existing plan, or create a new one in-line. This endpoint will respond with a payment object immediately, but the payment is processed asynchronously in the background. Use webhooks to be notified when the payment succeeds or fails.
+    /// Charge a buyer on-session with a `confirmation_token` for the method they selected, or charge an existing member off-session using a stored payment method. You can provide an existing plan or create one inline. The endpoint returns a payment immediately, but processing continues asynchronously. Use webhooks to learn whether it succeeds or fails, and poll the payment's status endpoint for any step the buyer must complete.
     ///
     /// Required permissions:
     /// - `payment:charge`

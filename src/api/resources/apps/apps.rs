@@ -24,7 +24,7 @@ impl AppsClient {
     /// * `verified_apps_only` - Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
     /// * `recommended` - Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
     /// * `query` - A search string matched against app names.
-    /// * `order` - The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
+    /// * `order` - The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
     /// * `direction` - Sort direction.
     /// * `first` - The number of apps to return (default 20, max 100).
     /// * `after` - A cursor; returns apps after this position.

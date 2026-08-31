@@ -40,7 +40,7 @@ pub struct PaymentsListQueryRequest {
     /// Filter payments by their current substatus for more granular filtering.
     #[serde(default)]
     pub substatuses: Vec<Option<FriendlyReceiptStatus>>,
-    /// Whether to include payments with a zero amount.
+    /// Whether to include payments with a zero amount. Defaults to false, so zero-amount payments are omitted unless you set this to true — a company whose sales are all free plans returns an empty list without it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub include_free: Option<bool>,
     /// Only return payments created before this timestamp.

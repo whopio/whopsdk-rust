@@ -15,13 +15,13 @@ pub struct RefundsListQueryRequest {
     /// Returns the last _n_ elements from the list.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// Filter refunds to only those associated with this specific payment.
+    /// Filter refunds to those associated with this specific payment. Mutually exclusive with company_id and user_id: provide exactly one.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_id: Option<String>,
-    /// Filter refunds to only those belonging to this company.
+    /// Filter refunds to those belonging to this company. Mutually exclusive with payment_id and user_id: provide exactly one.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub company_id: Option<String>,
-    /// Filter refunds to only those associated with this specific user.
+    /// Filter refunds to those associated with this specific user. Mutually exclusive with payment_id and company_id: provide exactly one. Requires a credential belonging to that user; any other credential receives 'You are not authorized'.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

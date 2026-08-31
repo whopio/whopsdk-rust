@@ -24,6 +24,7 @@ impl FinancialActivityClient {
     /// * `line_types` - Optional ledger line categories to include. Some categories (for example `onchain_deposit`, which covers inbound crypto deposits such as MoonPay onramps) are only returned when explicitly requested here.
     /// * `direction` - Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
     /// * `resource_id` - Optional prefixed resource ID. Returns activity associated with that resource.
+    /// * `activity_id` - Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
     /// * `currency` - Optional currency code filter, for example `usd`.
     /// * `posted_after` - Only include rows posted after this ISO 8601 timestamp.
     /// * `posted_before` - Only include rows posted before this ISO 8601 timestamp.
@@ -60,6 +61,7 @@ impl FinancialActivityClient {
     ///                 line_types: vec![],
     ///                 direction: None,
     ///                 resource_id: None,
+    ///                 activity_id: None,
     ///                 currency: None,
     ///                 posted_after: None,
     ///                 posted_before: None,
@@ -101,6 +103,7 @@ impl FinancialActivityClient {
                     .serialize_array("line_types", request.line_types.clone())
                     .serialize("direction", request.direction.clone())
                     .string("resource_id", request.resource_id.clone())
+                    .string("activity_id", request.activity_id.clone())
                     .string("currency", request.currency.clone())
                     .datetime("posted_after", request.posted_after.clone())
                     .datetime("posted_before", request.posted_before.clone())

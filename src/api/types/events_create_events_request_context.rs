@@ -54,6 +54,9 @@ pub struct CreateEventsRequestContext {
     /// Reddit click ID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rdt_cid: Option<String>,
+    /// Whop SC identifier.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sc: Option<String>,
     /// Snapchat click ID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sccid: Option<String>,
@@ -124,6 +127,7 @@ pub struct CreateEventsRequestContextBuilder {
     li_fat_id: Option<String>,
     msclkid: Option<String>,
     rdt_cid: Option<String>,
+    sc: Option<String>,
     sccid: Option<String>,
     screen_resolution: Option<String>,
     timezone: Option<String>,
@@ -226,6 +230,11 @@ impl CreateEventsRequestContextBuilder {
         self
     }
 
+    pub fn sc(mut self, value: impl Into<String>) -> Self {
+        self.sc = Some(value.into());
+        self
+    }
+
     pub fn sccid(mut self, value: impl Into<String>) -> Self {
         self.sccid = Some(value.into());
         self
@@ -316,6 +325,7 @@ impl CreateEventsRequestContextBuilder {
             li_fat_id: self.li_fat_id,
             msclkid: self.msclkid,
             rdt_cid: self.rdt_cid,
+            sc: self.sc,
             sccid: self.sccid,
             screen_resolution: self.screen_resolution,
             timezone: self.timezone,

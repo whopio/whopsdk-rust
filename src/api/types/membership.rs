@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct Membership {
     /// The account (seller) this membership belongs to.
     #[serde(default)]
-    pub account: MembershipAccount,
+    pub account: StorefrontAccount,
     /// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring plans.
     #[serde(default)]
     pub cancel_at_period_end: bool,
@@ -51,7 +51,7 @@ impl Membership {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct MembershipBuilder {
-    account: Option<MembershipAccount>,
+    account: Option<StorefrontAccount>,
     cancel_at_period_end: Option<bool>,
     created_at: Option<String>,
     current_period_end: Option<String>,
@@ -67,7 +67,7 @@ pub struct MembershipBuilder {
 }
 
 impl MembershipBuilder {
-    pub fn account(mut self, value: MembershipAccount) -> Self {
+    pub fn account(mut self, value: StorefrontAccount) -> Self {
         self.account = Some(value);
         self
     }

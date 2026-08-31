@@ -24,7 +24,7 @@ pub struct AppsListQueryRequest {
     /// A search string matched against app names.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
-    /// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
+    /// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<ListAppsRequestOrder>,
     /// Sort direction.

@@ -203,7 +203,7 @@ impl MethodsClient {
             .await
     }
 
-    /// Changes the label used to identify a saved payout method.
+    /// Changes the label used to identify a saved payout method or makes it the account's default payout method.
     ///
     /// # Arguments
     ///
@@ -232,7 +232,7 @@ impl MethodsClient {
     ///         .update(
     ///             &"id".to_string(),
     ///             &UpdateMethodsRequest {
-    ///                 nickname: "Primary checking".to_string(),
+    ///                 ..Default::default()
     ///             },
     ///             None,
     ///         )

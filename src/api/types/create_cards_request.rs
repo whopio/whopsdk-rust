@@ -5,7 +5,7 @@ pub struct CreateCardsRequest {
     /// The owning account ID (a biz_ identifier). Provide this or user_id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts.
+    /// The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts, and whenever a company API key files an account's first card application.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub assigned_user_id: Option<String>,
     /// A display name for the card.

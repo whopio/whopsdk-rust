@@ -5,6 +5,9 @@ pub struct StorefrontAccount {
     /// Account ID, prefixed `biz_`.
     #[serde(default)]
     pub id: String,
+    /// Account logo image URL. `null` when the account has not set one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub logo_url: Option<String>,
     /// Account public route identifier — the `whop.com/{route}` storefront path.
     #[serde(default)]
     pub route: String,
@@ -23,6 +26,7 @@ impl StorefrontAccount {
 #[non_exhaustive]
 pub struct StorefrontAccountBuilder {
     id: Option<String>,
+    logo_url: Option<String>,
     route: Option<String>,
     title: Option<String>,
 }
@@ -30,6 +34,11 @@ pub struct StorefrontAccountBuilder {
 impl StorefrontAccountBuilder {
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn logo_url(mut self, value: impl Into<String>) -> Self {
+        self.logo_url = Some(value.into());
         self
     }
 
@@ -51,6 +60,7 @@ impl StorefrontAccountBuilder {
     pub fn build(self) -> Result<StorefrontAccount, BuildError> {
         Ok(StorefrontAccount {
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            logo_url: self.logo_url,
             route: self
                 .route
                 .ok_or_else(|| BuildError::missing_field("route"))?,
