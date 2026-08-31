@@ -1199,6 +1199,70 @@ async fn main() {
 </dl>
 </details>
 
+<details><summary><code>client.accounts.<a href="/src/api/resources/accounts/client.rs">suspend</a>(id: String) -> Result&lt;Account, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.accounts.suspend(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Connected account ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.accounts.<a href="/src/api/resources/accounts/client.rs">transfer_ownership</a>(id: String, request: TransferOwnershipAccountsRequest) -> Result&lt;TransferOwnershipAccountsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
@@ -6378,6 +6442,159 @@ async fn main() {
 </dl>
 </details>
 
+## Api Logs
+<details><summary><code>client.api_logs.<a href="/src/api/resources/api_logs/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, operation_name: Option&lt;Option&lt;String&gt;&gt;, http_method: Option&lt;Option&lt;ListApiLogsRequestHttpMethod&gt;&gt;, status: Option&lt;Option&lt;ListApiLogsRequestStatus&gt;&gt;, api_key_id: Option&lt;Option&lt;String&gt;&gt;, min_duration_ms: Option&lt;Option&lt;i64&gt;&gt;, max_duration_ms: Option&lt;Option&lt;i64&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListApiLogsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the requests served by Whop's API with the account's API keys, newest first — every surface (GraphQL, REST, and native /api/v1), reads and failed requests included.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .api_logs
+        .list(
+            &APILogsListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The account (biz_*) whose API logs to list. Defaults to the authenticated account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_after:** `Option<String>` — Only return requests served at or after this ISO 8601 timestamp. Defaults to 7 days before created_before, or 7 days ago.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_before:** `Option<String>` — Only return requests served before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**operation_name:** `Option<String>` — Only return requests for this operation, matched exactly against the operation_name shown on each log row (for example api/v1/products#create).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**http_method:** `Option<ListApiLogsRequestHttpMethod>` — Only return requests made with this HTTP method.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListApiLogsRequestStatus>` — Only return requests that finished with this status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**api_key_id:** `Option<String>` — Only return requests made with this API key (apik_…).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**min_duration_ms:** `Option<i64>` — Only return requests that took at least this many milliseconds.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**max_duration_ms:** `Option<i64>` — Only return requests that took at most this many milliseconds.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of logs to return.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## App Builds
 <details><summary><code>client.app_builds.<a href="/src/api/resources/app_builds/client.rs">list</a>(app_id: Option&lt;String&gt;, platform: Option&lt;Option&lt;ListAppBuildsRequestPlatform&gt;&gt;, status: Option&lt;Option&lt;ListAppBuildsRequestStatus&gt;&gt;, created_before: Option&lt;Option&lt;ListAppBuildsRequestCreatedBefore&gt;&gt;, created_after: Option&lt;Option&lt;ListAppBuildsRequestCreatedAfter&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAppBuildsResponse, ApiError&gt;</code></summary>
 <dl>
@@ -6896,7 +7113,7 @@ async fn main() {
 <dl>
 <dd>
 
-**order:** `Option<ListAppsRequestOrder>` — The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
+**order:** `Option<ListAppsRequestOrder>` — The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
     
 </dd>
 </dl>
@@ -10225,7 +10442,7 @@ async fn main() {
 <dl>
 <dd>
 
-Issue a virtual card, or apply for card issuing.
+Issue a virtual card, or apply for card issuing. An account with no application files one here and gets back a `202`; call again to issue the card once it is approved.
 </dd>
 </dl>
 </dd>
@@ -10281,7 +10498,7 @@ async fn main() {
 <dl>
 <dd>
 
-**assigned_user_id:** `Option<String>` — The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts.
+**assigned_user_id:** `Option<String>` — The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts, and whenever a company API key files an account's first card application.
     
 </dd>
 </dl>
@@ -12190,6 +12407,232 @@ async fn main() {
 <dd>
 
 **id:** `String` — The unique identifier of the token transaction to retrieve.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Confirmation Tokens
+<details><summary><code>client.confirmation_tokens.<a href="/src/api/resources/confirmation_tokens/client.rs">create</a>(request: CreateConfirmationTokensRequest) -> Result&lt;ConfirmationToken, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Mints a single-use, short-lived confirmation token from what the buyer entered on your collection surface: the payment method payload, billing details, and attested save consent. Public and rate-limited — the account_id in the body scopes the token but does not authenticate. Confirm it with POST /payments from your server.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .confirmation_tokens
+        .create(
+            &CreateConfirmationTokensRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                billing_details: Some(CreateConfirmationTokensRequestBillingDetails {
+                    address: Some(HashMap::from([
+                        ("city".to_string(), serde_json::json!("Austin")),
+                        ("country".to_string(), serde_json::json!("US")),
+                        ("line1".to_string(), serde_json::json!("123 Main St")),
+                        ("postal_code".to_string(), serde_json::json!("78701")),
+                    ])),
+                    email: "buyer@example.com".to_string(),
+                    name: Some("Buyer Name".to_string()),
+                    ..Default::default()
+                }),
+                payment_method: CreateConfirmationTokensRequestPaymentMethod {
+                    apple_pay: None,
+                    balance: None,
+                    bank_debit: None,
+                    card: Some(CreateConfirmationTokensRequestPaymentMethodCard {
+                        brand: Some("visa".to_string()),
+                        last4: Some("4242".to_string()),
+                        token_intent: Some("bt_ti_123".to_string()),
+                        ..Default::default()
+                    }),
+                    category: CreateConfirmationTokensRequestPaymentMethodCategory::Card,
+                    google_pay: None,
+                    payer_document: None,
+                    saved: None,
+                    r#type: Some("card".to_string()),
+                },
+                setup_future_usage: Some(
+                    CreateConfirmationTokensRequestSetupFutureUsage::OffSession,
+                ),
+                browser_info: None,
+                return_url: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The account (biz_) this token is scoped to — the publishable identity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billing_details:** `Option<CreateConfirmationTokensRequestBillingDetails>` — Billing details collected with the method. `email` is always required; cards additionally require `name` and an address with `line1` and `country`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**browser_info:** `Option<Option<std::collections::HashMap<String, serde_json::Value>>>` — Screen/runtime facts from the buyer's browser (platform, screen dimensions, language, ...) used for authentication ceremonies. Header-derived fields are captured server-side.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payment_method:** `CreateConfirmationTokensRequestPaymentMethod` — The collected method: `type` names the payment method, `category` names the payload shape, and the category-keyed object carries the payload. Wallets are the exception: their payload rides the type key (`apple_pay` / `google_pay`). Send exactly the one payload arm the category selects — extra arms are rejected. Redirect-flow methods (category `redirect`, `bank_transfer`, `voucher`, and redirect wallets like `cashapp`) collect nothing and send no payload arm.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**return_url:** `Option<Option<String>>` — Where redirect flows send the buyer, carried onto the confirm that consumes this token.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**setup_future_usage:** `Option<Option<CreateConfirmationTokensRequestSetupFutureUsage>>` — The save-consent state your surface displayed when the buyer confirmed. Confirm may vault only if attested here.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.confirmation_tokens.<a href="/src/api/resources/confirmation_tokens/client.rs">retrieve</a>(id: String, account_id: Option&lt;String&gt;) -> Result&lt;ConfirmationToken, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a token's display-safe preview — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .confirmation_tokens
+        .retrieve(
+            &"id".to_string(),
+            &ConfirmationTokensRetrieveQueryRequest {
+                account_id: "account_id".to_string(),
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Confirmation token ID, prefixed `ctok_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The account (biz_) the token was minted for.
     
 </dd>
 </dl>
@@ -19208,7 +19651,7 @@ async fn main() {
 </details>
 
 ## FinancialActivity
-<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;ListFinancialActivityRequestDirection&gt;&gt;, resource_id: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;ListFinancialActivityRequestDirection&gt;&gt;, resource_id: Option&lt;Option&lt;String&gt;&gt;, activity_id: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -19255,6 +19698,7 @@ async fn main() {
                 line_types: vec![],
                 direction: None,
                 resource_id: None,
+                activity_id: None,
                 currency: None,
                 posted_after: None,
                 posted_before: None,
@@ -19330,6 +19774,14 @@ async fn main() {
 <dd>
 
 **resource_id:** `Option<String>` — Optional prefixed resource ID. Returns activity associated with that resource.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**activity_id:** `Option<String>` — Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
     
 </dd>
 </dl>
@@ -25771,7 +26223,7 @@ async fn main() {
 <dl>
 <dd>
 
-**include_free:** `Option<bool>` — Whether to include payments with a zero amount.
+**include_free:** `Option<bool>` — Whether to include payments with a zero amount. Defaults to false, so zero-amount payments are omitted unless you set this to true — a company whose sales are all free plans returns an empty list without it.
     
 </dd>
 </dl>
@@ -25843,7 +26295,7 @@ async fn main() {
 <dl>
 <dd>
 
-Charge an existing member off-session using one of their stored payment methods. You can provide an existing plan, or create a new one in-line. This endpoint will respond with a payment object immediately, but the payment is processed asynchronously in the background. Use webhooks to be notified when the payment succeeds or fails.
+Charge a buyer on-session with a `confirmation_token` for the method they selected, or charge an existing member off-session using a stored payment method. You can provide an existing plan or create one inline. The endpoint returns a payment immediately, but processing continues asynchronously. Use webhooks to learn whether it succeeds or fails, and poll the payment's status endpoint for any step the buyer must complete.
 
 Required permissions:
  - `payment:charge`
@@ -31035,7 +31487,7 @@ async fn main() {
 <dl>
 <dd>
 
-**payment_id:** `Option<String>` — Filter refunds to only those associated with this specific payment.
+**payment_id:** `Option<String>` — Filter refunds to those associated with this specific payment. Mutually exclusive with company_id and user_id: provide exactly one.
     
 </dd>
 </dl>
@@ -31043,7 +31495,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — Filter refunds to only those belonging to this company.
+**company_id:** `Option<String>` — Filter refunds to those belonging to this company. Mutually exclusive with payment_id and user_id: provide exactly one.
     
 </dd>
 </dl>
@@ -31051,7 +31503,7 @@ async fn main() {
 <dl>
 <dd>
 
-**user_id:** `Option<String>` — Filter refunds to only those associated with this specific user.
+**user_id:** `Option<String>` — Filter refunds to those associated with this specific user. Mutually exclusive with payment_id and company_id: provide exactly one. Requires a credential belonging to that user; any other credential receives 'You are not authorized'.
     
 </dd>
 </dl>
@@ -33597,8 +34049,8 @@ async fn main() {
         .connect(
             &ConnectSocialAccountsRequest {
                 platform: ConnectSocialAccountsRequestPlatform::MetaBusiness,
+                redirect_url: "https://example.com/settings/social-accounts".to_string(),
                 account_id: None,
-                redirect_url: None,
                 scopes: None,
             },
             None,
@@ -33627,7 +34079,7 @@ async fn main() {
 <dl>
 <dd>
 
-**platform:** `ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Supported options are `meta_business` and `tiktok`.
+**platform:** `ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
     
 </dd>
 </dl>
@@ -33635,7 +34087,7 @@ async fn main() {
 <dl>
 <dd>
 
-**redirect_url:** `Option<String>` — The Whop URL to redirect the user to after they finish connecting.
+**redirect_url:** `String` — Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. If the connection fails, the user is redirected with a `social_account_error` query param.
     
 </dd>
 </dl>
@@ -33643,7 +34095,7 @@ async fn main() {
 <dl>
 <dd>
 
-**scopes:** `Option<Vec<ConnectSocialAccountsRequestScopesItem>>` — Capabilities to grant for the connected social account. Use `advertise` when connecting a Meta Business or TikTok account for ads.
+**scopes:** `Option<Vec<ConnectSocialAccountsRequestScopesItem>>` — Capabilities to grant for the connected social account. `advertise` is required for both `meta_business` and `tiktok` connections — it is not conditional on whether you intend to run ads, and omitting it fails the request.
     
 </dd>
 </dl>
@@ -40543,7 +40995,7 @@ async fn main() {
 <dl>
 <dd>
 
-Changes the label used to identify a saved payout method.
+Changes the label used to identify a saved payout method or makes it the account's default payout method.
 </dd>
 </dl>
 </dd>
@@ -40573,7 +41025,7 @@ async fn main() {
         .update(
             &"id".to_string(),
             &UpdateMethodsRequest {
-                nickname: "Primary checking".to_string(),
+                ..Default::default()
             },
             None,
         )
@@ -40601,7 +41053,15 @@ async fn main() {
 <dl>
 <dd>
 
-**nickname:** `String` — New label for the payout method, with at least one non-whitespace character and a maximum of 100 characters.
+**is_default:** `Option<bool>` — Set to `true` to make this the account's default payout method. `false` is not accepted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nickname:** `Option<String>` — New label for the payout method, with at least one non-whitespace character and a maximum of 100 characters.
     
 </dd>
 </dl>

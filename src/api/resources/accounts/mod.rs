@@ -412,6 +412,55 @@ impl AccountsClient {
             .await
     }
 
+    /// Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Connected account ID, prefixed `biz_`.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client.accounts.suspend(&"id".to_string(), None).await;
+    /// }
+    /// ```
+    pub async fn suspend(
+        &self,
+        id: &str,
+        options: Option<RequestOptions>,
+    ) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-08-25-2".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::POST,
+                &format!("accounts/{}/suspend", id),
+                None,
+                None,
+                options,
+            )
+            .await
+    }
+
     /// Transfers ownership of the account to another user, identified by user ID or email address. If the recipient already holds the owner role, ownership moves immediately; otherwise they get an invite and ownership moves when they accept.
     ///
     /// # Arguments

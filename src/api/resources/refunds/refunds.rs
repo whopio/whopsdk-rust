@@ -24,9 +24,9 @@ impl RefundsClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `payment_id` - Filter refunds to only those associated with this specific payment.
-    /// * `company_id` - Filter refunds to only those belonging to this company.
-    /// * `user_id` - Filter refunds to only those associated with this specific user.
+    /// * `payment_id` - Filter refunds to those associated with this specific payment. Mutually exclusive with company_id and user_id: provide exactly one.
+    /// * `company_id` - Filter refunds to those belonging to this company. Mutually exclusive with payment_id and user_id: provide exactly one.
+    /// * `user_id` - Filter refunds to those associated with this specific user. Mutually exclusive with payment_id and company_id: provide exactly one. Requires a credential belonging to that user; any other credential receives 'You are not authorized'.
     /// * `created_before` - Only return refunds created before this timestamp.
     /// * `created_after` - Only return refunds created after this timestamp.
     /// * `options` - Additional request options such as headers, timeout, etc.

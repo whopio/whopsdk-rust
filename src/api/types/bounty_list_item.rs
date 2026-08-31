@@ -67,6 +67,9 @@ pub struct BountyListItem {
     /// Bounty ID, prefixed `bnty_`.
     #[serde(default)]
     pub id: String,
+    /// Total verified footage a submission must accumulate before it can be submitted, in seconds. Always a whole number of hours. Present only on `data_capture` bounties — it is what `net_reward_amount` pays for, so rate displays divide by it. `null` for every other goal type.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_total_verified_duration_seconds: Option<i64>,
     /// What a worker is quoted per accepted submission after the platform fee, in whole currency units. The exact post-fee figure, at the standard platform fee rate — a worker who locked a different rate, or who arrived through an affiliate link, is paid a different amount.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -132,6 +135,7 @@ pub struct BountyListItemBuilder {
     gross_reward_amount: Option<f64>,
     hosting_account: Option<StorefrontAccount>,
     id: Option<String>,
+    min_total_verified_duration_seconds: Option<i64>,
     net_reward_amount: Option<f64>,
     poster: Option<UserSummary>,
     scheduled_frequency: Option<BountyListItemScheduledFrequency>,
@@ -251,6 +255,11 @@ impl BountyListItemBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn min_total_verified_duration_seconds(mut self, value: i64) -> Self {
+        self.min_total_verified_duration_seconds = Some(value);
         self
     }
 
@@ -379,6 +388,7 @@ impl BountyListItemBuilder {
                 .ok_or_else(|| BuildError::missing_field("gross_reward_amount"))?,
             hosting_account: self.hosting_account,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            min_total_verified_duration_seconds: self.min_total_verified_duration_seconds,
             net_reward_amount: self
                 .net_reward_amount
                 .ok_or_else(|| BuildError::missing_field("net_reward_amount"))?,

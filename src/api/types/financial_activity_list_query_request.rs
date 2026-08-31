@@ -24,6 +24,9 @@ pub struct FinancialActivityListQueryRequest {
     /// Optional prefixed resource ID. Returns activity associated with that resource.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resource_id: Option<String>,
+    /// Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub activity_id: Option<String>,
     /// Optional currency code filter, for example `usd`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
@@ -67,6 +70,7 @@ pub struct FinancialActivityListQueryRequestBuilder {
     line_types: Option<Vec<Option<ListFinancialActivityRequestLineTypesItem>>>,
     direction: Option<ListFinancialActivityRequestDirection>,
     resource_id: Option<String>,
+    activity_id: Option<String>,
     currency: Option<String>,
     posted_after: Option<DateTime<FixedOffset>>,
     posted_before: Option<DateTime<FixedOffset>>,
@@ -112,6 +116,11 @@ impl FinancialActivityListQueryRequestBuilder {
 
     pub fn resource_id(mut self, value: impl Into<String>) -> Self {
         self.resource_id = Some(value.into());
+        self
+    }
+
+    pub fn activity_id(mut self, value: impl Into<String>) -> Self {
+        self.activity_id = Some(value.into());
         self
     }
 
@@ -164,6 +173,7 @@ impl FinancialActivityListQueryRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("line_types"))?,
             direction: self.direction,
             resource_id: self.resource_id,
+            activity_id: self.activity_id,
             currency: self.currency,
             posted_after: self.posted_after,
             posted_before: self.posted_before,

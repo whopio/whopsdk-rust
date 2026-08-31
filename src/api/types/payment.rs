@@ -60,6 +60,9 @@ pub struct Payment {
     /// If the payment failed, the reason for the failure.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub failure_message: Option<String>,
+    /// The fees associated with this specific payment.
+    #[serde(default)]
+    pub fees: Vec<PaymentFeesItem>,
     /// The number of financing installments for the payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub financing_installments_count: Option<i64>,
@@ -245,6 +248,7 @@ pub struct PaymentBuilder {
     dispute_alerted_at: Option<DateTime<FixedOffset>>,
     disputes: Option<Vec<PaymentDisputesItem>>,
     failure_message: Option<String>,
+    fees: Option<Vec<PaymentFeesItem>>,
     financing_installments_count: Option<i64>,
     financing_transactions: Option<Vec<PaymentFinancingTransactionsItem>>,
     id: Option<String>,
@@ -379,6 +383,11 @@ impl PaymentBuilder {
 
     pub fn failure_message(mut self, value: impl Into<String>) -> Self {
         self.failure_message = Some(value.into());
+        self
+    }
+
+    pub fn fees(mut self, value: Vec<PaymentFeesItem>) -> Self {
+        self.fees = Some(value);
         self
     }
 
@@ -608,6 +617,7 @@ impl PaymentBuilder {
     /// - [`auto_refunded`](PaymentBuilder::auto_refunded)
     /// - [`created_at`](PaymentBuilder::created_at)
     /// - [`currency`](PaymentBuilder::currency)
+    /// - [`fees`](PaymentBuilder::fees)
     /// - [`financing_transactions`](PaymentBuilder::financing_transactions)
     /// - [`id`](PaymentBuilder::id)
     /// - [`refundable`](PaymentBuilder::refundable)
@@ -647,6 +657,7 @@ impl PaymentBuilder {
             dispute_alerted_at: self.dispute_alerted_at,
             disputes: self.disputes,
             failure_message: self.failure_message,
+            fees: self.fees.ok_or_else(|| BuildError::missing_field("fees"))?,
             financing_installments_count: self.financing_installments_count,
             financing_transactions: self
                 .financing_transactions

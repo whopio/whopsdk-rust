@@ -186,8 +186,8 @@ impl SocialAccountsClient {
     ///         .connect(
     ///             &ConnectSocialAccountsRequest {
     ///                 platform: ConnectSocialAccountsRequestPlatform::MetaBusiness,
+    ///                 redirect_url: "https://example.com/settings/social-accounts".to_string(),
     ///                 account_id: None,
-    ///                 redirect_url: None,
     ///                 scopes: None,
     ///             },
     ///             None,
