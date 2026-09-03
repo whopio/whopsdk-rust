@@ -33,7 +33,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-whop_sdk = "1.0.14"
+whop_sdk = "1.1.0"
 ```
 
 Or install via cargo:
