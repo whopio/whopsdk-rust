@@ -2,9 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateAiChatsRequest {
-    /// The unique identifier of the company to set as context for the AI chat (e.g., "biz_XXXXX").
+    /// The unique identifier of the account to set as context for the AI chat (e.g., "biz_XXXXX").
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub current_company_id: Option<String>,
+    pub current_account_id: Option<String>,
     /// A list of previously uploaded file attachments to include with the first message.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub message_attachments: Option<Vec<CreateAiChatsRequestMessageAttachmentsItem>>,
@@ -31,7 +31,7 @@ impl CreateAiChatsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateAiChatsRequestBuilder {
-    current_company_id: Option<String>,
+    current_account_id: Option<String>,
     message_attachments: Option<Vec<CreateAiChatsRequestMessageAttachmentsItem>>,
     message_source: Option<AiChatMessageSourceTypes>,
     message_text: Option<String>,
@@ -40,8 +40,8 @@ pub struct CreateAiChatsRequestBuilder {
 }
 
 impl CreateAiChatsRequestBuilder {
-    pub fn current_company_id(mut self, value: impl Into<String>) -> Self {
-        self.current_company_id = Some(value.into());
+    pub fn current_account_id(mut self, value: impl Into<String>) -> Self {
+        self.current_account_id = Some(value.into());
         self
     }
 
@@ -78,7 +78,7 @@ impl CreateAiChatsRequestBuilder {
     /// - [`message_text`](CreateAiChatsRequestBuilder::message_text)
     pub fn build(self) -> Result<CreateAiChatsRequest, BuildError> {
         Ok(CreateAiChatsRequest {
-            current_company_id: self.current_company_id,
+            current_account_id: self.current_account_id,
             message_attachments: self.message_attachments,
             message_source: self.message_source,
             message_text: self

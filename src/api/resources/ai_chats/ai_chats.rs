@@ -112,7 +112,7 @@ impl AiChatsClient {
     ///         .create(
     ///             &CreateAiChatsRequest {
     ///                 message_text: "message_text".to_string(),
-    ///                 current_company_id: None,
+    ///                 current_account_id: None,
     ///                 message_attachments: None,
     ///                 message_source: None,
     ///                 suggestion_type: None,
@@ -253,7 +253,7 @@ impl AiChatsClient {
             .await
     }
 
-    /// Update an AI chat's title, notification preferences, or associated company context.
+    /// Update an AI chat's title, notification preferences, or associated account context.
     ///
     /// Required permissions:
     /// - `ai_chat:update`
