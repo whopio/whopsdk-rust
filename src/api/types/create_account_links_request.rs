@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct CreateAccountLinksRequest {
     /// The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
     #[serde(default)]
-    pub company_id: String,
+    pub account_id: String,
     /// The URL to redirect the user to if the session expires and needs to be re-authenticated, such as 'https://example.com/refresh'.
     #[serde(default)]
     pub refresh_url: String,
@@ -24,15 +24,15 @@ impl CreateAccountLinksRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateAccountLinksRequestBuilder {
-    company_id: Option<String>,
+    account_id: Option<String>,
     refresh_url: Option<String>,
     return_url: Option<String>,
     use_case: Option<AccountLinkUseCases>,
 }
 
 impl CreateAccountLinksRequestBuilder {
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -53,15 +53,15 @@ impl CreateAccountLinksRequestBuilder {
 
     /// Consumes the builder and constructs a [`CreateAccountLinksRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](CreateAccountLinksRequestBuilder::company_id)
+    /// - [`account_id`](CreateAccountLinksRequestBuilder::account_id)
     /// - [`refresh_url`](CreateAccountLinksRequestBuilder::refresh_url)
     /// - [`return_url`](CreateAccountLinksRequestBuilder::return_url)
     /// - [`use_case`](CreateAccountLinksRequestBuilder::use_case)
     pub fn build(self) -> Result<CreateAccountLinksRequest, BuildError> {
         Ok(CreateAccountLinksRequest {
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
             refresh_url: self
                 .refresh_url
                 .ok_or_else(|| BuildError::missing_field("refresh_url"))?,

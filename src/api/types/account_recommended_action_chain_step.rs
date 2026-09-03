@@ -17,7 +17,7 @@ pub struct AccountRecommendedActionChainStep {
     /// Why the step failed, or `null`
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
-    /// Whether the client should navigate to the CTA or open the programmatic execution dialog
+    /// Whether the client should navigate to the CTA, open the programmatic execution dialog, or run the CTA as a Whop AI prompt
     pub execution_type: AccountRecommendedActionChainStepExecutionType,
     /// The filled-in request body for the step's endpoint, or `null` when it was not recorded
     #[serde(skip_serializing_if = "Option::is_none")]

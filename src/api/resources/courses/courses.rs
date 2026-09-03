@@ -25,7 +25,7 @@ impl CoursesClient {
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
     /// * `experience_id` - The unique identifier of the experience to list courses for.
-    /// * `company_id` - The unique identifier of the company to list courses for.
+    /// * `account_id` - The unique identifier of the company to list courses for.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -51,7 +51,7 @@ impl CoursesClient {
     ///                 first: Some(42),
     ///                 last: Some(42),
     ///                 experience_id: Some("exp_xxxxxxxxxxxxxx".to_string()),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -68,7 +68,7 @@ impl CoursesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -82,7 +82,7 @@ impl CoursesClient {
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
                     .string("experience_id", request.experience_id.clone())
-                    .string("company_id", request.company_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -141,7 +141,7 @@ impl CoursesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -196,7 +196,7 @@ impl CoursesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -245,7 +245,7 @@ impl CoursesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -307,7 +307,7 @@ impl CoursesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

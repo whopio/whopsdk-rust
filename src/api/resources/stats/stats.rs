@@ -46,7 +46,7 @@ impl StatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -62,8 +62,8 @@ impl StatsClient {
     /// # Arguments
     ///
     /// * `resource` - Resource path using : as separator (e.g., 'receipts', 'payments:membership', 'receipts:gross_revenue').
-    /// * `company_id` - Scope query to a specific company.
     /// * `user_id` - Scope query to a specific user.
+    /// * `account_id` - Scope query to a specific company.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -86,8 +86,8 @@ impl StatsClient {
     ///         .stats
     ///         .describe_stats(
     ///             &DescribeStatsQueryRequest {
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -104,7 +104,7 @@ impl StatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -114,8 +114,8 @@ impl StatsClient {
                 None,
                 QueryBuilder::new()
                     .string("resource", request.resource.clone())
-                    .string("company_id", request.company_id.clone())
                     .string("user_id", request.user_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -136,8 +136,8 @@ impl StatsClient {
     /// * `time_zone` - IANA timezone for period bucketing (e.g. 'America/New_York'). Defaults to UTC. Only applies to ClickHouse metrics.
     /// * `from` - Start of time range (unix timestamp).
     /// * `to` - End of time range (unix timestamp).
-    /// * `company_id` - Scope query to a specific company.
     /// * `user_id` - Scope query to a specific user.
+    /// * `account_id` - Scope query to a specific company.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -163,8 +163,8 @@ impl StatsClient {
     ///                 resource: "resource".to_string(),
     ///                 from: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
     ///                 to: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 granularity: None,
     ///                 breakdowns: vec![],
     ///                 filters: None,
@@ -184,7 +184,7 @@ impl StatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -200,8 +200,8 @@ impl StatsClient {
                     .string("time_zone", request.time_zone.clone())
                     .datetime("from", request.from.clone())
                     .datetime("to", request.to.clone())
-                    .string("company_id", request.company_id.clone())
                     .string("user_id", request.user_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -221,8 +221,8 @@ impl StatsClient {
     /// * `limit` - Number of records to return (max 10000).
     /// * `cursor` - Pagination cursor for next page.
     /// * `sort` - Column to sort by.
-    /// * `company_id` - Scope query to a specific company.
     /// * `user_id` - Scope query to a specific user.
+    /// * `account_id` - Scope query to a specific company.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -249,8 +249,8 @@ impl StatsClient {
     ///                 from: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
     ///                 to: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
     ///                 limit: Some(42),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 cursor: None,
     ///                 sort: None,
     ///                 sort_direction: None,
@@ -269,7 +269,7 @@ impl StatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -285,8 +285,8 @@ impl StatsClient {
                     .string("cursor", request.cursor.clone())
                     .string("sort", request.sort.clone())
                     .serialize("sort_direction", request.sort_direction.clone())
-                    .string("company_id", request.company_id.clone())
                     .string("user_id", request.user_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -405,7 +405,7 @@ impl StatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

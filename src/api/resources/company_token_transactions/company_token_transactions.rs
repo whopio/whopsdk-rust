@@ -26,8 +26,8 @@ impl CompanyTokenTransactionsClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list token transactions for.
     /// * `user_id` - Filter transactions to only those involving this specific user.
+    /// * `account_id` - The unique identifier of the company to list token transactions for.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -52,8 +52,8 @@ impl CompanyTokenTransactionsClient {
     ///             &CompanyTokenTransactionsListQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 after: None,
     ///                 before: None,
     ///                 transaction_type: None,
@@ -72,7 +72,7 @@ impl CompanyTokenTransactionsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -85,9 +85,9 @@ impl CompanyTokenTransactionsClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .string("user_id", request.user_id.clone())
                     .serialize("transaction_type", request.transaction_type.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -127,8 +127,8 @@ impl CompanyTokenTransactionsClient {
     ///         .create(
     ///             &CreateCompanyTokenTransactionsRequestBody::Transfer {
     ///                 data: CreateCompanyTokenTransactionsRequestBodyTransfer {
+    ///                     account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                     amount: 6.9,
-    ///                     company_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                     destination_user_id: "destination_user_id".to_string(),
     ///                     user_id: "user_xxxxxxxxxxxxx".to_string(),
     ///                     ..Default::default()
@@ -148,7 +148,7 @@ impl CompanyTokenTransactionsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -205,7 +205,7 @@ impl CompanyTokenTransactionsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

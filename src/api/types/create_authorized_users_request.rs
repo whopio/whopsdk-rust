@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct CreateAuthorizedUsersRequest {
     /// The ID of the company to add the authorized user to.
     #[serde(default)]
-    pub company_id: String,
+    pub account_id: String,
     /// Re-authentication proof required to perform this sensitive action.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub elevation: Option<CreateAuthorizedUsersRequestElevation>,
@@ -27,7 +27,7 @@ impl CreateAuthorizedUsersRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateAuthorizedUsersRequestBuilder {
-    company_id: Option<String>,
+    account_id: Option<String>,
     elevation: Option<CreateAuthorizedUsersRequestElevation>,
     role: Option<GrantableAuthorizedUserRoles>,
     send_emails: Option<bool>,
@@ -35,8 +35,8 @@ pub struct CreateAuthorizedUsersRequestBuilder {
 }
 
 impl CreateAuthorizedUsersRequestBuilder {
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -62,14 +62,14 @@ impl CreateAuthorizedUsersRequestBuilder {
 
     /// Consumes the builder and constructs a [`CreateAuthorizedUsersRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](CreateAuthorizedUsersRequestBuilder::company_id)
+    /// - [`account_id`](CreateAuthorizedUsersRequestBuilder::account_id)
     /// - [`role`](CreateAuthorizedUsersRequestBuilder::role)
     /// - [`user_id`](CreateAuthorizedUsersRequestBuilder::user_id)
     pub fn build(self) -> Result<CreateAuthorizedUsersRequest, BuildError> {
         Ok(CreateAuthorizedUsersRequest {
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
             elevation: self.elevation,
             role: self.role.ok_or_else(|| BuildError::missing_field("role"))?,
             send_emails: self.send_emails,

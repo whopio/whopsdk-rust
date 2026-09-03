@@ -15,9 +15,6 @@ pub struct EntriesListQueryRequest {
     /// Returns the last _n_ elements from the list.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// The unique identifier of the company to list waitlist entries for.
-    #[serde(default)]
-    pub company_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<Direction>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -41,6 +38,9 @@ pub struct EntriesListQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub created_after: Option<DateTime<FixedOffset>>,
+    /// The unique identifier of the company to list waitlist entries for.
+    #[serde(default)]
+    pub account_id: String,
 }
 
 impl EntriesListQueryRequest {
@@ -56,7 +56,6 @@ pub struct EntriesListQueryRequestBuilder {
     before: Option<String>,
     first: Option<i64>,
     last: Option<i64>,
-    company_id: Option<String>,
     direction: Option<Direction>,
     order: Option<EntriesSortableColumns>,
     product_ids: Option<Vec<Option<String>>>,
@@ -64,6 +63,7 @@ pub struct EntriesListQueryRequestBuilder {
     statuses: Option<Vec<Option<EntryStatus>>>,
     created_before: Option<DateTime<FixedOffset>>,
     created_after: Option<DateTime<FixedOffset>>,
+    account_id: Option<String>,
 }
 
 impl EntriesListQueryRequestBuilder {
@@ -84,11 +84,6 @@ impl EntriesListQueryRequestBuilder {
 
     pub fn last(mut self, value: i64) -> Self {
         self.last = Some(value);
-        self
-    }
-
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
         self
     }
 
@@ -127,21 +122,23 @@ impl EntriesListQueryRequestBuilder {
         self
     }
 
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`EntriesListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](EntriesListQueryRequestBuilder::company_id)
     /// - [`product_ids`](EntriesListQueryRequestBuilder::product_ids)
     /// - [`plan_ids`](EntriesListQueryRequestBuilder::plan_ids)
     /// - [`statuses`](EntriesListQueryRequestBuilder::statuses)
+    /// - [`account_id`](EntriesListQueryRequestBuilder::account_id)
     pub fn build(self) -> Result<EntriesListQueryRequest, BuildError> {
         Ok(EntriesListQueryRequest {
             after: self.after,
             before: self.before,
             first: self.first,
             last: self.last,
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
             direction: self.direction,
             order: self.order,
             product_ids: self
@@ -155,6 +152,9 @@ impl EntriesListQueryRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("statuses"))?,
             created_before: self.created_before,
             created_after: self.created_after,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
         })
     }
 }

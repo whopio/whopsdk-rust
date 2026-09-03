@@ -24,8 +24,8 @@ impl ForumsClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list forums for.
     /// * `product_id` - The unique identifier of a product to filter by. When set, only forums connected to this product are returned.
+    /// * `account_id` - The unique identifier of the company to list forums for.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -50,8 +50,8 @@ impl ForumsClient {
     ///             &ForumsListQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 product_id: Some("prod_xxxxxxxxxxxxx".to_string()),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 after: None,
     ///                 before: None,
     ///             },
@@ -69,7 +69,7 @@ impl ForumsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -82,8 +82,8 @@ impl ForumsClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .string("product_id", request.product_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -128,7 +128,7 @@ impl ForumsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -184,7 +184,7 @@ impl ForumsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

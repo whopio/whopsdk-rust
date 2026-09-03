@@ -24,8 +24,8 @@ impl SupportChannelsClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
     /// * `open` - Whether to filter by open or resolved support channels. Set to true to only return channels awaiting a response, or false for resolved channels.
+    /// * `account_id` - The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -50,7 +50,7 @@ impl SupportChannelsClient {
     ///             &SupportChannelsListQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -67,7 +67,7 @@ impl SupportChannelsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -80,11 +80,11 @@ impl SupportChannelsClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .serialize("view", request.view.clone())
                     .bool("open", request.open.clone())
                     .serialize("direction", request.direction.clone())
                     .serialize("order", request.order.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -120,7 +120,7 @@ impl SupportChannelsClient {
     ///         .support_channels
     ///         .create(
     ///             &CreateSupportChannelsRequest {
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 user_id: "user_xxxxxxxxxxxxx".to_string(),
     ///                 custom_name: None,
     ///                 notifications_enabled: None,
@@ -139,7 +139,7 @@ impl SupportChannelsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -194,7 +194,7 @@ impl SupportChannelsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

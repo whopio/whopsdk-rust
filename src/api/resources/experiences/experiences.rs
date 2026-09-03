@@ -21,11 +21,11 @@ impl ExperiencesClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list experiences for.
     /// * `product_id` - Filter to only experiences attached to this product identifier.
     /// * `app_id` - Filter to only experiences powered by this app identifier.
     /// * `created_before` - Only return experiences created before this timestamp.
     /// * `created_after` - Only return experiences created after this timestamp.
+    /// * `account_id` - The unique identifier of the company to list experiences for.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -50,11 +50,11 @@ impl ExperiencesClient {
     ///             &ExperiencesListQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 product_id: Some("prod_xxxxxxxxxxxxx".to_string()),
     ///                 app_id: Some("app_xxxxxxxxxxxxxx".to_string()),
     ///                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
     ///                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 after: None,
     ///                 before: None,
     ///             },
@@ -72,7 +72,7 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -85,11 +85,11 @@ impl ExperiencesClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .string("product_id", request.product_id.clone())
                     .string("app_id", request.app_id.clone())
                     .datetime("created_before", request.created_before.clone())
                     .datetime("created_after", request.created_after.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -123,8 +123,8 @@ impl ExperiencesClient {
     ///         .experiences
     ///         .create(
     ///             &CreateExperiencesRequest {
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 app_id: "app_xxxxxxxxxxxxxx".to_string(),
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 is_public: None,
     ///                 logo: None,
     ///                 name: None,
@@ -145,7 +145,7 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -197,7 +197,7 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -250,7 +250,7 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -310,7 +310,7 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -372,7 +372,7 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -434,7 +434,7 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -499,7 +499,7 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

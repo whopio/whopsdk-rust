@@ -7,6 +7,7 @@ pub enum RetrieveBreakdownResponseBucket {
     Payments,
     Refunds,
     Ads,
+    ApplicationFees,
     CardSpend,
     CardAuthorizationReleases,
     Withdrawals,
@@ -23,6 +24,7 @@ impl Serialize for RetrieveBreakdownResponseBucket {
             Self::Payments => serializer.serialize_str("payments"),
             Self::Refunds => serializer.serialize_str("refunds"),
             Self::Ads => serializer.serialize_str("ads"),
+            Self::ApplicationFees => serializer.serialize_str("application_fees"),
             Self::CardSpend => serializer.serialize_str("card_spend"),
             Self::CardAuthorizationReleases => {
                 serializer.serialize_str("card_authorization_releases")
@@ -42,6 +44,7 @@ impl<'de> Deserialize<'de> for RetrieveBreakdownResponseBucket {
             "payments" => Ok(Self::Payments),
             "refunds" => Ok(Self::Refunds),
             "ads" => Ok(Self::Ads),
+            "application_fees" => Ok(Self::ApplicationFees),
             "card_spend" => Ok(Self::CardSpend),
             "card_authorization_releases" => Ok(Self::CardAuthorizationReleases),
             "withdrawals" => Ok(Self::Withdrawals),
@@ -58,6 +61,7 @@ impl fmt::Display for RetrieveBreakdownResponseBucket {
             Self::Payments => write!(f, "payments"),
             Self::Refunds => write!(f, "refunds"),
             Self::Ads => write!(f, "ads"),
+            Self::ApplicationFees => write!(f, "application_fees"),
             Self::CardSpend => write!(f, "card_spend"),
             Self::CardAuthorizationReleases => write!(f, "card_authorization_releases"),
             Self::Withdrawals => write!(f, "withdrawals"),

@@ -1,20 +1,15 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreateDepositsRequest {
     /// Amount to prefill on hosted deposit page.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub amount: Option<f64>,
-    /// Destination account ID or wallet address. Object form is supported for compatibility. Any business resolves by its account ID without authentication; a user account resolves only for that same authenticated user.
-    pub destination: CreateDepositsRequestDestination,
-    /// Metadata to include with the deposit response.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<HashMap<String, serde_json::Value>>,
-    /// Destination network override. Defaults to the destination wallet's own network.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub network: Option<CreateDepositsRequestNetwork>,
+    /// Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
+    #[serde(default)]
+    pub destination: String,
 }
 
 impl CreateDepositsRequest {
@@ -27,9 +22,7 @@ impl CreateDepositsRequest {
 #[non_exhaustive]
 pub struct CreateDepositsRequestBuilder {
     amount: Option<f64>,
-    destination: Option<CreateDepositsRequestDestination>,
-    metadata: Option<HashMap<String, serde_json::Value>>,
-    network: Option<CreateDepositsRequestNetwork>,
+    destination: Option<String>,
 }
 
 impl CreateDepositsRequestBuilder {
@@ -38,18 +31,8 @@ impl CreateDepositsRequestBuilder {
         self
     }
 
-    pub fn destination(mut self, value: CreateDepositsRequestDestination) -> Self {
-        self.destination = Some(value);
-        self
-    }
-
-    pub fn metadata(mut self, value: HashMap<String, serde_json::Value>) -> Self {
-        self.metadata = Some(value);
-        self
-    }
-
-    pub fn network(mut self, value: CreateDepositsRequestNetwork) -> Self {
-        self.network = Some(value);
+    pub fn destination(mut self, value: impl Into<String>) -> Self {
+        self.destination = Some(value.into());
         self
     }
 
@@ -62,8 +45,6 @@ impl CreateDepositsRequestBuilder {
             destination: self
                 .destination
                 .ok_or_else(|| BuildError::missing_field("destination"))?,
-            metadata: self.metadata,
-            network: self.network,
         })
     }
 }

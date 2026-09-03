@@ -5,7 +5,7 @@ pub use crate::prelude::*;
 pub struct CreateSetupIntentsRequestBodyPaymentMethodId {
     /// The ID of the company to save the payment method for.
     #[serde(default)]
-    pub company_id: String,
+    pub account_id: String,
     /// The currency the saved payment method will be used with. Controls which currency-specific payment methods are available. Defaults to usd.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<Currencies>,
@@ -32,7 +32,7 @@ impl CreateSetupIntentsRequestBodyPaymentMethodId {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateSetupIntentsRequestBodyPaymentMethodIdBuilder {
-    company_id: Option<String>,
+    account_id: Option<String>,
     currency: Option<Currencies>,
     email: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
@@ -41,8 +41,8 @@ pub struct CreateSetupIntentsRequestBodyPaymentMethodIdBuilder {
 }
 
 impl CreateSetupIntentsRequestBodyPaymentMethodIdBuilder {
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -73,13 +73,13 @@ impl CreateSetupIntentsRequestBodyPaymentMethodIdBuilder {
 
     /// Consumes the builder and constructs a [`CreateSetupIntentsRequestBodyPaymentMethodId`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](CreateSetupIntentsRequestBodyPaymentMethodIdBuilder::company_id)
+    /// - [`account_id`](CreateSetupIntentsRequestBodyPaymentMethodIdBuilder::account_id)
     /// - [`payment_method_id`](CreateSetupIntentsRequestBodyPaymentMethodIdBuilder::payment_method_id)
     pub fn build(self) -> Result<CreateSetupIntentsRequestBodyPaymentMethodId, BuildError> {
         Ok(CreateSetupIntentsRequestBodyPaymentMethodId {
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
             currency: self.currency,
             email: self.email,
             metadata: self.metadata,

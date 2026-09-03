@@ -29,6 +29,9 @@ pub struct LedgerActivitySource {
     pub from_currency: Option<String>,
     #[serde(default)]
     pub id: String,
+    /// Memo attached to the transfer source, or null when none was provided.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub notes: Option<String>,
     #[serde(default)]
     pub object: String,
     /// Name of the entity processing the payout (payout sources only; requires payout:withdrawal:read).
@@ -93,6 +96,7 @@ pub struct LedgerActivitySourceBuilder {
     from_amount: Option<String>,
     from_currency: Option<String>,
     id: Option<String>,
+    notes: Option<String>,
     object: Option<String>,
     payer_name: Option<String>,
     payment_amount: Option<Money>,
@@ -152,6 +156,11 @@ impl LedgerActivitySourceBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn notes(mut self, value: impl Into<String>) -> Self {
+        self.notes = Some(value.into());
         self
     }
 
@@ -240,6 +249,7 @@ impl LedgerActivitySourceBuilder {
             from_amount: self.from_amount,
             from_currency: self.from_currency,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            notes: self.notes,
             object: self
                 .object
                 .ok_or_else(|| BuildError::missing_field("object"))?,
