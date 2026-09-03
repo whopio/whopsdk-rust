@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for retrieve
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct PaymentMethodsRetrieveQueryRequest {
-    /// The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+    /// The unique identifier of the member. Provide either this or account_id, not both. Omit both to address your own saved payment methods.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_id: Option<String>,
     /// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.

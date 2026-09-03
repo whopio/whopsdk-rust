@@ -24,7 +24,7 @@ impl PaymentMethodsClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `member_id` - The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
+    /// * `member_id` - The unique identifier of the member to list payment methods for. Omit this and account_id to list your own saved payment methods.
     /// * `created_before` - Only return payment methods created before this timestamp.
     /// * `created_after` - Only return payment methods created after this timestamp.
     /// * `payment_method_types` - Only return payment methods of these types. Pass the eligible `type` values from the payment method types catalogue so the list holds nothing the purchase cannot take. An empty list returns no payment methods.
@@ -118,7 +118,7 @@ impl PaymentMethodsClient {
             .await
     }
 
-    /// Retrieves the details of an existing payment method. Addresses a member's wallet when member_id or company_id is given, otherwise your own.
+    /// Retrieves the details of an existing payment method. Addresses a member's wallet when member_id or account_id is given, otherwise your own.
     ///
     /// Required permissions:
     /// - `member:payment_methods:read`
@@ -126,7 +126,7 @@ impl PaymentMethodsClient {
     /// # Arguments
     ///
     /// * `id` - The unique identifier of the payment method.
-    /// * `member_id` - The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+    /// * `member_id` - The unique identifier of the member. Provide either this or account_id, not both. Omit both to address your own saved payment methods.
     /// * `account_id` - The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
@@ -195,7 +195,7 @@ impl PaymentMethodsClient {
     /// # Arguments
     ///
     /// * `id` - The unique identifier of the payment method to delete.
-    /// * `member_id` - The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+    /// * `member_id` - The unique identifier of the member. Provide either this or account_id, not both. Omit both to address your own saved payment methods.
     /// * `account_id` - The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///

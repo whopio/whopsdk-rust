@@ -15,7 +15,7 @@ pub struct PaymentMethodsListQueryRequest {
     /// Returns the last _n_ elements from the list.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
+    /// The unique identifier of the member to list payment methods for. Omit this and account_id to list your own saved payment methods.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

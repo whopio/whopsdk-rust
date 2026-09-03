@@ -3,12 +3,12 @@ pub use crate::prelude::*;
 /// A checkout configuration is a reusable configuration for a checkout, including the plan, affiliate, and custom metadata. Payments and memberships created from a checkout session inherit its metadata.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CheckoutConfigurationListItem {
+    /// The ID of the account to use for the checkout configuration
+    #[serde(default)]
+    pub account_id: String,
     /// The affiliate code to use for the checkout configuration
     #[serde(skip_serializing_if = "Option::is_none")]
     pub affiliate_code: Option<String>,
-    /// The ID of the company to use for the checkout configuration
-    #[serde(default)]
-    pub company_id: String,
     /// The currency to use for the configuration when in 'setup' mode. This is used to target which currency specific payment methods are available. If not provided, it will default to 'usd' when in setup mode.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<Currencies>,
@@ -44,8 +44,8 @@ impl CheckoutConfigurationListItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CheckoutConfigurationListItemBuilder {
+    account_id: Option<String>,
     affiliate_code: Option<String>,
-    company_id: Option<String>,
     currency: Option<Currencies>,
     id: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
@@ -57,13 +57,13 @@ pub struct CheckoutConfigurationListItemBuilder {
 }
 
 impl CheckoutConfigurationListItemBuilder {
-    pub fn affiliate_code(mut self, value: impl Into<String>) -> Self {
-        self.affiliate_code = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn affiliate_code(mut self, value: impl Into<String>) -> Self {
+        self.affiliate_code = Some(value.into());
         self
     }
 
@@ -112,16 +112,16 @@ impl CheckoutConfigurationListItemBuilder {
 
     /// Consumes the builder and constructs a [`CheckoutConfigurationListItem`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](CheckoutConfigurationListItemBuilder::company_id)
+    /// - [`account_id`](CheckoutConfigurationListItemBuilder::account_id)
     /// - [`id`](CheckoutConfigurationListItemBuilder::id)
     /// - [`mode`](CheckoutConfigurationListItemBuilder::mode)
     /// - [`purchase_url`](CheckoutConfigurationListItemBuilder::purchase_url)
     pub fn build(self) -> Result<CheckoutConfigurationListItem, BuildError> {
         Ok(CheckoutConfigurationListItem {
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
             affiliate_code: self.affiliate_code,
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
             currency: self.currency,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             metadata: self.metadata,
