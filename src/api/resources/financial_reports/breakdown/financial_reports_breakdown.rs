@@ -21,8 +21,10 @@ impl BreakdownClient {
     /// * `bucket` - The high-level report bucket to explain.
     /// * `direction` - Whether to explain money received or money sent.
     /// * `currency` - The report currency to explain.
-    /// * `from_date` - Start of the report window as an ISO 8601 timestamp.
-    /// * `to_date` - Exclusive end of the report window as an ISO 8601 timestamp.
+    /// * `from` - Start of the report window as an ISO 8601 timestamp.
+    /// * `to` - Exclusive end of the report window as an ISO 8601 timestamp.
+    /// * `group_by` - Period grouping used by the parent report.
+    /// * `timezone` - IANA timezone used by the parent report to bucket periods. Defaults to UTC.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -50,8 +52,10 @@ impl BreakdownClient {
     ///                 bucket: RetrieveBreakdownRequestBucket::Transfers,
     ///                 direction: RetrieveBreakdownRequestDirection::MoneyIn,
     ///                 currency: "currency".to_string(),
-    ///                 from_date: "from_date".to_string(),
-    ///                 to_date: "to_date".to_string(),
+    ///                 from: DateTime::parse_from_rfc3339("2024-01-15T09:30:00Z").unwrap(),
+    ///                 to: DateTime::parse_from_rfc3339("2024-01-15T09:30:00Z").unwrap(),
+    ///                 group_by: None,
+    ///                 timezone: None,
     ///             },
     ///             None,
     ///         )
@@ -67,7 +71,7 @@ impl BreakdownClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -80,8 +84,10 @@ impl BreakdownClient {
                     .serialize("bucket", Some(request.bucket.clone()))
                     .serialize("direction", Some(request.direction.clone()))
                     .string("currency", request.currency.clone())
-                    .string("from_date", request.from_date.clone())
-                    .string("to_date", request.to_date.clone())
+                    .datetime("from", request.from.clone())
+                    .datetime("to", request.to.clone())
+                    .serialize("group_by", request.group_by.clone())
+                    .string("timezone", request.timezone.clone())
                     .build(),
                 options,
             )

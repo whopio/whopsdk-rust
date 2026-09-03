@@ -12,6 +12,9 @@ pub struct MembersListQueryRequest {
     /// Filter by whether the member is still part of the account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<ListMembersRequestStatus>,
+    /// Only return members whose users match these `user_` identifiers.
+    #[serde(default)]
+    pub user_ids: Vec<Option<String>>,
     /// Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
@@ -53,6 +56,7 @@ pub struct MembersListQueryRequestBuilder {
     account_id: Option<String>,
     access_level: Option<ListMembersRequestAccessLevel>,
     status: Option<ListMembersRequestStatus>,
+    user_ids: Option<Vec<Option<String>>>,
     query: Option<String>,
     created_after: Option<String>,
     created_before: Option<String>,
@@ -77,6 +81,11 @@ impl MembersListQueryRequestBuilder {
 
     pub fn status(mut self, value: ListMembersRequestStatus) -> Self {
         self.status = Some(value);
+        self
+    }
+
+    pub fn user_ids(mut self, value: Vec<Option<String>>) -> Self {
+        self.user_ids = Some(value);
         self
     }
 
@@ -126,11 +135,16 @@ impl MembersListQueryRequestBuilder {
     }
 
     /// Consumes the builder and constructs a [`MembersListQueryRequest`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`user_ids`](MembersListQueryRequestBuilder::user_ids)
     pub fn build(self) -> Result<MembersListQueryRequest, BuildError> {
         Ok(MembersListQueryRequest {
             account_id: self.account_id,
             access_level: self.access_level,
             status: self.status,
+            user_ids: self
+                .user_ids
+                .ok_or_else(|| BuildError::missing_field("user_ids"))?,
             query: self.query,
             created_after: self.created_after,
             created_before: self.created_before,

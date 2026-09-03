@@ -75,7 +75,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -127,7 +127,20 @@ impl PayoutsClient {
     ///     client
     ///         .payouts
     ///         .create(
-    ///             &CreatePayoutsRequestBody::Unknown(serde_json::json!({"key":"value"})),
+    ///             &CreatePayoutsRequest {
+    ///                 amount: 50.0,
+    ///                 payout_method_id: "potk_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: None,
+    ///                 acknowledge_bank_warning: None,
+    ///                 currency: None,
+    ///                 metadata: None,
+    ///                 notes: None,
+    ///                 platform_covers_fees: None,
+    ///                 quote_token: None,
+    ///                 speed: None,
+    ///                 statement_descriptor: None,
+    ///                 user_id: None,
+    ///             },
     ///             None,
     ///         )
     ///         .await;
@@ -135,14 +148,14 @@ impl PayoutsClient {
     /// ```
     pub async fn create(
         &self,
-        request: &CreatePayoutsRequestBody,
+        request: &CreatePayoutsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreatePayoutsResponse, ApiError> {
         let options = {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -188,6 +201,7 @@ impl PayoutsClient {
     ///                 currency: None,
     ///                 platform_covers_fees: None,
     ///                 speed: None,
+    ///                 statement_descriptor: None,
     ///                 user_id: None,
     ///             },
     ///             None,
@@ -204,7 +218,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -265,7 +279,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -328,7 +342,7 @@ impl PayoutsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client

@@ -66,6 +66,9 @@ pub struct PostPayoutReversedPayloadData {
     pub source: Option<PostPayoutReversedPayloadDataSource>,
     /// Payout delivery speed.
     pub speed: PostPayoutReversedPayloadDataSpeed,
+    /// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub statement_descriptor: Option<String>,
     /// Current payout status.
     pub status: PostPayoutReversedPayloadDataStatus,
     /// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
@@ -106,6 +109,7 @@ pub struct PostPayoutReversedPayloadDataBuilder {
     payout_request_id: Option<String>,
     source: Option<PostPayoutReversedPayloadDataSource>,
     speed: Option<PostPayoutReversedPayloadDataSpeed>,
+    statement_descriptor: Option<String>,
     status: Option<PostPayoutReversedPayloadDataStatus>,
     status_detail: Option<String>,
     trace_code: Option<String>,
@@ -217,6 +221,11 @@ impl PostPayoutReversedPayloadDataBuilder {
         self
     }
 
+    pub fn statement_descriptor(mut self, value: impl Into<String>) -> Self {
+        self.statement_descriptor = Some(value.into());
+        self
+    }
+
     pub fn status(mut self, value: PostPayoutReversedPayloadDataStatus) -> Self {
         self.status = Some(value);
         self
@@ -290,6 +299,7 @@ impl PostPayoutReversedPayloadDataBuilder {
             speed: self
                 .speed
                 .ok_or_else(|| BuildError::missing_field("speed"))?,
+            statement_descriptor: self.statement_descriptor,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,

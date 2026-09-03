@@ -7,7 +7,6 @@
 //! - **Accounts**
 //! - **Ad Campaigns**
 //! - **Ad Groups**
-//! - **AdReports**
 //! - **Ads**
 //! - **Affiliates**
 //! - **AiChats**
@@ -23,7 +22,6 @@
 //! - **Cards**
 //! - **ChatChannels**
 //! - **Checkout Configurations**
-//! - **Companies**
 //! - **CompanyTokenTransactions**
 //! - **Confirmation Tokens**
 //! - **CourseChapters**
@@ -92,7 +90,6 @@ pub mod account_links;
 pub mod accounts;
 pub mod ad_campaigns;
 pub mod ad_groups;
-pub mod ad_reports;
 pub mod ads;
 pub mod affiliates;
 pub mod ai_chats;
@@ -108,7 +105,6 @@ pub mod card_transactions;
 pub mod cards;
 pub mod chat_channels;
 pub mod checkout_configurations;
-pub mod companies;
 pub mod company_token_transactions;
 pub mod confirmation_tokens;
 pub mod course_chapters;
@@ -176,7 +172,6 @@ pub struct Whop {
     pub accounts: AccountsClient,
     pub ad_campaigns: AdCampaignsClient,
     pub ad_groups: AdGroupsClient,
-    pub ad_reports: AdReportsClient,
     pub ads: AdsClient,
     pub affiliates: AffiliatesClient,
     pub ai_chats: AiChatsClient,
@@ -192,7 +187,6 @@ pub struct Whop {
     pub cards: CardsClient,
     pub chat_channels: ChatChannelsClient,
     pub checkout_configurations: CheckoutConfigurationsClient,
-    pub companies: CompaniesClient,
     pub company_token_transactions: CompanyTokenTransactionsClient,
     pub confirmation_tokens: ConfirmationTokensClient,
     pub course_chapters: CourseChaptersClient,
@@ -264,7 +258,6 @@ impl Whop {
             accounts: AccountsClient::new(config.clone())?,
             ad_campaigns: AdCampaignsClient::new(config.clone())?,
             ad_groups: AdGroupsClient::new(config.clone())?,
-            ad_reports: AdReportsClient::new(config.clone())?,
             ads: AdsClient::new(config.clone())?,
             affiliates: AffiliatesClient::new(config.clone())?,
             ai_chats: AiChatsClient::new(config.clone())?,
@@ -280,7 +273,6 @@ impl Whop {
             cards: CardsClient::new(config.clone())?,
             chat_channels: ChatChannelsClient::new(config.clone())?,
             checkout_configurations: CheckoutConfigurationsClient::new(config.clone())?,
-            companies: CompaniesClient::new(config.clone())?,
             company_token_transactions: CompanyTokenTransactionsClient::new(config.clone())?,
             confirmation_tokens: ConfirmationTokensClient::new(config.clone())?,
             course_chapters: CourseChaptersClient::new(config.clone())?,
@@ -350,7 +342,6 @@ pub use account_links::AccountLinksClient;
 pub use accounts::AccountsClient;
 pub use ad_campaigns::AdCampaignsClient;
 pub use ad_groups::AdGroupsClient;
-pub use ad_reports::AdReportsClient;
 pub use ads::AdsClient;
 pub use affiliates::AffiliatesClient;
 pub use ai_chats::AiChatsClient;
@@ -366,7 +357,6 @@ pub use card_transactions::CardTransactionsClient;
 pub use cards::CardsClient;
 pub use chat_channels::ChatChannelsClient;
 pub use checkout_configurations::CheckoutConfigurationsClient;
-pub use companies::CompaniesClient;
 pub use company_token_transactions::CompanyTokenTransactionsClient;
 pub use confirmation_tokens::ConfirmationTokensClient;
 pub use course_chapters::CourseChaptersClient;

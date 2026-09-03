@@ -4,6 +4,9 @@ pub use crate::prelude::*;
 pub struct ListRecommendedActionsResponse {
     #[serde(default)]
     pub data: Vec<AccountRecommendedActionChain>,
+    /// Whether generation was queued because the account has no available action chains yet.
+    #[serde(default)]
+    pub generation_pending: bool,
 }
 
 impl ListRecommendedActionsResponse {
@@ -16,6 +19,7 @@ impl ListRecommendedActionsResponse {
 #[non_exhaustive]
 pub struct ListRecommendedActionsResponseBuilder {
     data: Option<Vec<AccountRecommendedActionChain>>,
+    generation_pending: Option<bool>,
 }
 
 impl ListRecommendedActionsResponseBuilder {
@@ -24,12 +28,21 @@ impl ListRecommendedActionsResponseBuilder {
         self
     }
 
+    pub fn generation_pending(mut self, value: bool) -> Self {
+        self.generation_pending = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`ListRecommendedActionsResponse`].
     /// This method will fail if any of the following fields are not set:
     /// - [`data`](ListRecommendedActionsResponseBuilder::data)
+    /// - [`generation_pending`](ListRecommendedActionsResponseBuilder::generation_pending)
     pub fn build(self) -> Result<ListRecommendedActionsResponse, BuildError> {
         Ok(ListRecommendedActionsResponse {
             data: self.data.ok_or_else(|| BuildError::missing_field("data"))?,
+            generation_pending: self
+                .generation_pending
+                .ok_or_else(|| BuildError::missing_field("generation_pending"))?,
         })
     }
 }

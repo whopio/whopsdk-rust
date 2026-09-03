@@ -13,22 +13,21 @@ impl RefundsClient {
         })
     }
 
-    /// Returns a paginated list of refunds, with optional filtering by payment, company, user, and creation date.
-    ///
-    /// Required permissions:
-    /// - `payment:basic:read`
+    /// Lists refunds, newest first. Without filters this is every refund the caller can read; narrow it to one payment with `payment_id`, one account with `account_id`, or one buyer with `user_id`.
     ///
     /// # Arguments
     ///
-    /// * `after` - Returns the elements in the list that come after the specified cursor.
-    /// * `before` - Returns the elements in the list that come before the specified cursor.
-    /// * `first` - Returns the first _n_ elements from the list.
-    /// * `last` - Returns the last _n_ elements from the list.
-    /// * `payment_id` - Filter refunds to those associated with this specific payment. Mutually exclusive with company_id and user_id: provide exactly one.
-    /// * `company_id` - Filter refunds to those belonging to this company. Mutually exclusive with payment_id and user_id: provide exactly one.
-    /// * `user_id` - Filter refunds to those associated with this specific user. Mutually exclusive with payment_id and company_id: provide exactly one. Requires a credential belonging to that user; any other credential receives 'You are not authorized'.
-    /// * `created_before` - Only return refunds created before this timestamp.
-    /// * `created_after` - Only return refunds created after this timestamp.
+    /// * `account_id` - Only refunds issued by this account, prefixed `biz_`.
+    /// * `payment_id` - Only refunds of this payment, prefixed `pay_`.
+    /// * `user_id` - Only refunds to this buyer, prefixed `user_`.
+    /// * `created_before` - Only refunds requested before this ISO 8601 timestamp.
+    /// * `created_after` - Only refunds requested after this ISO 8601 timestamp.
+    /// * `order` - The field to sort by.
+    /// * `direction` - The sort direction.
+    /// * `first` - The number of refunds to return.
+    /// * `after` - A cursor; returns refunds after this position.
+    /// * `last` - The number of refunds to return from the end of the range.
+    /// * `before` - A cursor; returns refunds before this position.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -51,13 +50,6 @@ impl RefundsClient {
     ///         .refunds
     ///         .list(
     ///             &RefundsListQueryRequest {
-    ///                 first: Some(42),
-    ///                 last: Some(42),
-    ///                 payment_id: Some("pay_xxxxxxxxxxxxxx".to_string()),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-    ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
-    ///                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -74,7 +66,7 @@ impl RefundsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -83,35 +75,28 @@ impl RefundsClient {
                 "refunds",
                 None,
                 QueryBuilder::new()
-                    .string("after", request.after.clone())
-                    .string("before", request.before.clone())
-                    .int("first", request.first.clone())
-                    .int("last", request.last.clone())
+                    .string("account_id", request.account_id.clone())
                     .string("payment_id", request.payment_id.clone())
-                    .string("company_id", request.company_id.clone())
                     .string("user_id", request.user_id.clone())
-                    .serialize("direction", request.direction.clone())
                     .datetime("created_before", request.created_before.clone())
                     .datetime("created_after", request.created_after.clone())
+                    .serialize("order", request.order.clone())
+                    .serialize("direction", request.direction.clone())
+                    .int("first", request.first.clone())
+                    .string("after", request.after.clone())
+                    .int("last", request.last.clone())
+                    .string("before", request.before.clone())
                     .build(),
                 options,
             )
             .await
     }
 
-    /// Retrieves the details of an existing refund.
-    ///
-    /// Required permissions:
-    /// - `payment:basic:read`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
+    /// Returns one refund.
     ///
     /// # Arguments
     ///
-    /// * `id` - The unique identifier of the refund.
+    /// * `id` - The refund to retrieve, prefixed `rf_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -130,10 +115,7 @@ impl RefundsClient {
     ///         ..Default::default()
     ///     };
     ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .refunds
-    ///         .retrieve(&"rf_xxxxxxxxxxxxxxx".to_string(), None)
-    ///         .await;
+    ///     client.refunds.retrieve(&"id".to_string(), None).await;
     /// }
     /// ```
     pub async fn retrieve(
@@ -145,7 +127,7 @@ impl RefundsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client

@@ -15,10 +15,18 @@ pub struct FinancialReportsBreakdownRetrieveQueryRequest {
     pub currency: String,
     /// Start of the report window as an ISO 8601 timestamp.
     #[serde(default)]
-    pub from_date: String,
+    #[serde(with = "crate::core::flexible_datetime::offset")]
+    pub from: DateTime<FixedOffset>,
     /// Exclusive end of the report window as an ISO 8601 timestamp.
     #[serde(default)]
-    pub to_date: String,
+    #[serde(with = "crate::core::flexible_datetime::offset")]
+    pub to: DateTime<FixedOffset>,
+    /// Period grouping used by the parent report.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub group_by: Option<RetrieveBreakdownRequestGroupBy>,
+    /// IANA timezone used by the parent report to bucket periods. Defaults to UTC.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timezone: Option<String>,
 }
 
 impl FinancialReportsBreakdownRetrieveQueryRequest {
@@ -34,8 +42,10 @@ pub struct FinancialReportsBreakdownRetrieveQueryRequestBuilder {
     bucket: Option<RetrieveBreakdownRequestBucket>,
     direction: Option<RetrieveBreakdownRequestDirection>,
     currency: Option<String>,
-    from_date: Option<String>,
-    to_date: Option<String>,
+    from: Option<DateTime<FixedOffset>>,
+    to: Option<DateTime<FixedOffset>>,
+    group_by: Option<RetrieveBreakdownRequestGroupBy>,
+    timezone: Option<String>,
 }
 
 impl FinancialReportsBreakdownRetrieveQueryRequestBuilder {
@@ -59,13 +69,23 @@ impl FinancialReportsBreakdownRetrieveQueryRequestBuilder {
         self
     }
 
-    pub fn from_date(mut self, value: impl Into<String>) -> Self {
-        self.from_date = Some(value.into());
+    pub fn from(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.from = Some(value);
         self
     }
 
-    pub fn to_date(mut self, value: impl Into<String>) -> Self {
-        self.to_date = Some(value.into());
+    pub fn to(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.to = Some(value);
+        self
+    }
+
+    pub fn group_by(mut self, value: RetrieveBreakdownRequestGroupBy) -> Self {
+        self.group_by = Some(value);
+        self
+    }
+
+    pub fn timezone(mut self, value: impl Into<String>) -> Self {
+        self.timezone = Some(value.into());
         self
     }
 
@@ -75,8 +95,8 @@ impl FinancialReportsBreakdownRetrieveQueryRequestBuilder {
     /// - [`bucket`](FinancialReportsBreakdownRetrieveQueryRequestBuilder::bucket)
     /// - [`direction`](FinancialReportsBreakdownRetrieveQueryRequestBuilder::direction)
     /// - [`currency`](FinancialReportsBreakdownRetrieveQueryRequestBuilder::currency)
-    /// - [`from_date`](FinancialReportsBreakdownRetrieveQueryRequestBuilder::from_date)
-    /// - [`to_date`](FinancialReportsBreakdownRetrieveQueryRequestBuilder::to_date)
+    /// - [`from`](FinancialReportsBreakdownRetrieveQueryRequestBuilder::from)
+    /// - [`to`](FinancialReportsBreakdownRetrieveQueryRequestBuilder::to)
     pub fn build(self) -> Result<FinancialReportsBreakdownRetrieveQueryRequest, BuildError> {
         Ok(FinancialReportsBreakdownRetrieveQueryRequest {
             account_id: self
@@ -91,12 +111,10 @@ impl FinancialReportsBreakdownRetrieveQueryRequestBuilder {
             currency: self
                 .currency
                 .ok_or_else(|| BuildError::missing_field("currency"))?,
-            from_date: self
-                .from_date
-                .ok_or_else(|| BuildError::missing_field("from_date"))?,
-            to_date: self
-                .to_date
-                .ok_or_else(|| BuildError::missing_field("to_date"))?,
+            from: self.from.ok_or_else(|| BuildError::missing_field("from"))?,
+            to: self.to.ok_or_else(|| BuildError::missing_field("to"))?,
+            group_by: self.group_by,
+            timezone: self.timezone,
         })
     }
 }

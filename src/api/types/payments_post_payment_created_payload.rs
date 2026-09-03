@@ -10,7 +10,7 @@ pub struct PostPaymentCreatedPayload {
     /// The dated API version (Api-Version-Date) the payload is serialized to
     #[serde(skip_serializing_if = "Option::is_none")]
     pub api_version_date: Option<String>,
-    pub data: Payment,
+    pub data: PaymentLegacy,
     /// A unique ID for every single webhook request
     #[serde(default)]
     pub id: String,
@@ -37,7 +37,7 @@ pub struct PostPaymentCreatedPayloadBuilder {
     account_id: Option<String>,
     api_version: Option<PostPaymentCreatedPayloadApiVersion>,
     api_version_date: Option<String>,
-    data: Option<Payment>,
+    data: Option<PaymentLegacy>,
     id: Option<String>,
     previous_attributes: Option<HashMap<String, serde_json::Value>>,
     timestamp: Option<DateTime<FixedOffset>>,
@@ -60,7 +60,7 @@ impl PostPaymentCreatedPayloadBuilder {
         self
     }
 
-    pub fn data(mut self, value: Payment) -> Self {
+    pub fn data(mut self, value: PaymentLegacy) -> Self {
         self.data = Some(value);
         self
     }

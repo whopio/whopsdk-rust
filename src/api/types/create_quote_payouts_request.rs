@@ -9,7 +9,7 @@ pub struct CreateQuotePayoutsRequest {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub amount: f64,
-    /// The balance currency to pay out.
+    /// The currency to pay out. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
     /// The saved payout method to quote (a potk_ identifier).
@@ -21,6 +21,9 @@ pub struct CreateQuotePayoutsRequest {
     /// How fast the funds should arrive.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub speed: Option<CreateQuotePayoutsRequestSpeed>,
+    /// Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Omit or pass `null` to use the default descriptor.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub statement_descriptor: Option<String>,
     /// User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
@@ -41,6 +44,7 @@ pub struct CreateQuotePayoutsRequestBuilder {
     payout_method_id: Option<String>,
     platform_covers_fees: Option<bool>,
     speed: Option<CreateQuotePayoutsRequestSpeed>,
+    statement_descriptor: Option<String>,
     user_id: Option<String>,
 }
 
@@ -75,6 +79,11 @@ impl CreateQuotePayoutsRequestBuilder {
         self
     }
 
+    pub fn statement_descriptor(mut self, value: impl Into<String>) -> Self {
+        self.statement_descriptor = Some(value.into());
+        self
+    }
+
     pub fn user_id(mut self, value: impl Into<String>) -> Self {
         self.user_id = Some(value.into());
         self
@@ -96,6 +105,7 @@ impl CreateQuotePayoutsRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("payout_method_id"))?,
             platform_covers_fees: self.platform_covers_fees,
             speed: self.speed,
+            statement_descriptor: self.statement_descriptor,
             user_id: self.user_id,
         })
     }

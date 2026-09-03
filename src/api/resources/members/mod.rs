@@ -24,6 +24,7 @@ impl MembersClient {
     /// * `account_id` - The account to list members for (`biz_` tag). Defaults to the account the credential acts as.
     /// * `access_level` - Filter by what the member can reach on the account.
     /// * `status` - Filter by whether the member is still part of the account.
+    /// * `user_ids` - Only return members whose users match these `user_` identifiers.
     /// * `query` - Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
     /// * `created_after` - Only members who joined after this ISO 8601 timestamp.
     /// * `created_before` - Only members who joined before this ISO 8601 timestamp.
@@ -55,7 +56,19 @@ impl MembersClient {
     ///         .members
     ///         .list(
     ///             &MembersListQueryRequest {
-    ///                 ..Default::default()
+    ///                 user_ids: vec![Some("user_xxxxxxxxxxxxxx".to_string())],
+    ///                 account_id: None,
+    ///                 access_level: None,
+    ///                 status: None,
+    ///                 query: None,
+    ///                 created_after: None,
+    ///                 created_before: None,
+    ///                 order: None,
+    ///                 direction: None,
+    ///                 first: None,
+    ///                 after: None,
+    ///                 last: None,
+    ///                 before: None,
     ///             },
     ///             None,
     ///         )
@@ -71,7 +84,7 @@ impl MembersClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -83,6 +96,7 @@ impl MembersClient {
                     .string("account_id", request.account_id.clone())
                     .serialize("access_level", request.access_level.clone())
                     .serialize("status", request.status.clone())
+                    .string_array("user_ids", request.user_ids.clone())
                     .structured_query("query", request.query.clone())
                     .string("created_after", request.created_after.clone())
                     .string("created_before", request.created_before.clone())
@@ -133,7 +147,7 @@ impl MembersClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client

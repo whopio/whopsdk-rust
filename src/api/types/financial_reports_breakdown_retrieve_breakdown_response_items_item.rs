@@ -4,6 +4,9 @@ pub use crate::prelude::*;
 pub struct RetrieveBreakdownResponseItemsItem {
     #[serde(default)]
     pub amount: Money,
+    /// How to draw the row's icon. `null` when the row has nothing to show (balances, adjustments, ad campaigns), so clients render no icon rather than a placeholder.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub avatar: Option<RetrieveBreakdownResponseItemsItemAvatar>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub image_url: Option<String>,
     /// An opaque identifier for this grouping within the breakdown.
@@ -27,6 +30,7 @@ impl RetrieveBreakdownResponseItemsItem {
 #[non_exhaustive]
 pub struct RetrieveBreakdownResponseItemsItemBuilder {
     amount: Option<Money>,
+    avatar: Option<RetrieveBreakdownResponseItemsItemAvatar>,
     image_url: Option<String>,
     key: Option<String>,
     name: Option<String>,
@@ -37,6 +41,11 @@ pub struct RetrieveBreakdownResponseItemsItemBuilder {
 impl RetrieveBreakdownResponseItemsItemBuilder {
     pub fn amount(mut self, value: Money) -> Self {
         self.amount = Some(value);
+        self
+    }
+
+    pub fn avatar(mut self, value: RetrieveBreakdownResponseItemsItemAvatar) -> Self {
+        self.avatar = Some(value);
         self
     }
 
@@ -76,6 +85,7 @@ impl RetrieveBreakdownResponseItemsItemBuilder {
             amount: self
                 .amount
                 .ok_or_else(|| BuildError::missing_field("amount"))?,
+            avatar: self.avatar,
             image_url: self.image_url,
             key: self.key.ok_or_else(|| BuildError::missing_field("key"))?,
             name: self.name.ok_or_else(|| BuildError::missing_field("name"))?,

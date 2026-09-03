@@ -17,7 +17,7 @@ pub struct User {
     /// When the user was created, as an ISO 8601 timestamp
     #[serde(default)]
     pub created_at: String,
-    /// The user's gross USD income over time. Populated only on single-user self reads for callers with balance-read scope; `null` otherwise.
+    /// The user's gross USD income over time, including a Partner commission breakdown. Populated only on single-user self reads for callers with balance-read scope; `null` otherwise.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub earnings_usd: Option<UserEarnings>,
     /// The user's email address. Populated only on the self view (retrieved with the reserved id `me`) for callers with email-read scope; `null` otherwise, or while the account has no confirmed email yet.

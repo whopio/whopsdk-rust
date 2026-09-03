@@ -1,222 +1,160 @@
 pub use crate::prelude::*;
 
-/// A payment represents a completed or attempted charge. Payments track the amount, status, currency, and payment method used.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Payment {
-    /// How much the payment is for after fees
-    #[serde(default)]
-    #[serde(with = "crate::core::number_serializers")]
-    pub amount_after_fees: f64,
-    /// The application fee charged on this payment.
+    /// The account that received the payment, prefixed `biz_`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub application_fee: Option<PaymentApplicationFee>,
-    /// Whether this payment was auto refunded or not
+    pub account_id: Option<String>,
+    /// What the account keeps: the total less Whop's fees.
+    #[serde(default)]
+    pub amount_after_fees: Money,
+    /// True when Whop refunded the payment automatically, for example on a dispute alert.
     #[serde(default)]
     pub auto_refunded: bool,
-    /// The address of the user who made the payment.
+    /// The billing address the buyer entered, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub billing_address: Option<PaymentBillingAddress>,
-    /// The machine-readable reason this charge was created, such as initial subscription purchase, renewal cycle, or one-time payment.
+    pub billing_address: Option<PaymentAddress>,
+    /// Why the charge was created: a first purchase, a renewal, a one-time payment, or a manual charge.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub billing_reason: Option<BillingReasons>,
-    /// Card network reported by the processor (e.g., 'visa', 'mastercard', 'amex'). Present only when the payment method type is 'card'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub card_brand: Option<CardBrands>,
-    /// The expiration month (1-12) of the card used for this payment. Falls back to the declined card on failed payments with no saved card. Null when the payment was not made with a card or the expiry is unavailable.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub card_exp_month: Option<i64>,
-    /// The four-digit expiration year of the card used for this payment. Falls back to the declined card on failed payments with no saved card. Null when the payment was not made with a card or the expiry is unavailable.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub card_exp_year: Option<i64>,
-    /// The last four digits of the card used to make this payment. Null if the payment was not made with a card.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub card_last4: Option<String>,
-    /// The ID of the checkout session/configuration that produced this payment, if any. Use this to map payments back to the checkout configuration that created them.
+    /// The checkout configuration the buyer paid through, prefixed `ch_`, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub checkout_configuration_id: Option<String>,
-    /// The company for the payment.
+    /// The credential a buyer's surface presents to poll this payment and set its return URL. Only on payments created from a confirmation token, and always null in list responses — retrieve the payment for it.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub company: Option<PaymentCompany>,
-    /// The datetime the payment was created.
+    pub client_secret: Option<String>,
+    /// When the payment was created, as an ISO 8601 timestamp.
     #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset")]
-    pub created_at: DateTime<FixedOffset>,
-    /// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
+    pub created_at: String,
+    /// The currency the payment settles in, lowercase ISO 4217. Every money field below is stated in it unless it says otherwise.
     pub currency: Currencies,
-    /// Phone number the customer provided at checkout, or their verified phone number when your checkout requires phone verification. `null` when no phone number was collected.
+    /// The phone number the buyer gave at checkout, when one was collected.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub customer_phone: Option<String>,
-    /// The reason the payment was declined. Null if the payment did not fail.
+    /// The normalized decline reason of the most recent failed attempt, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub decline_code: Option<PaymentDeclineCodes>,
-    /// When an alert came in that this transaction will be disputed
+    /// When an issuer warned that this payment will be disputed, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub dispute_alerted_at: Option<DateTime<FixedOffset>>,
-    /// The disputes attached to this payment. Null if the actor in context does not have the payment:dispute:read permission.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub disputes: Option<Vec<PaymentDisputesItem>>,
-    /// If the payment failed, the reason for the failure.
+    pub dispute_alerted_at: Option<String>,
+    /// Why the most recent attempt failed, in plain words, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub failure_message: Option<String>,
-    /// The fees associated with this specific payment.
-    #[serde(default)]
-    pub fees: Vec<PaymentFeesItem>,
-    /// The number of financing installments for the payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
+    /// For installment methods, how many payments the charge splits into.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub financing_installments_count: Option<i64>,
-    /// The financing transactions attached to this payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
     #[serde(default)]
-    pub financing_transactions: Vec<PaymentFinancingTransactionsItem>,
-    /// The unique identifier for the payment.
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub financing_installments_count: Option<f64>,
+    /// Payment ID, prefixed `pay_`.
     #[serde(default)]
     pub id: String,
-    /// The time of the last payment attempt.
+    /// When the most recent charge attempt ran, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub last_payment_attempt: Option<DateTime<FixedOffset>>,
-    /// The member attached to this payment.
+    pub last_payment_attempt_at: Option<String>,
+    /// The buyer's member record on the account, prefixed `mber_`. Null without the member:basic:read permission.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub member: Option<PaymentMember>,
-    /// The membership attached to this payment.
+    pub member_id: Option<String>,
+    /// The membership this payment is billed against, prefixed `mem_`. Null for one-off purchases or without the member:basic:read permission.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub membership: Option<PaymentMembership>,
-    /// The custom metadata stored on this payment. This will be copied over to the checkout configuration for which this payment was made
+    pub membership_id: Option<String>,
+    /// Your own key-value data attached when the payment was created.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<HashMap<String, serde_json::Value>>,
-    /// Whether this payment is holding funds until the order ships and has no tracking number yet.
+    /// True when funds are held until the order ships and no tracking number has been added yet. Null without the shipment:basic:read permission.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub needs_tracking: Option<bool>,
-    /// The time of the next schedule payment retry.
+    /// When the next automatic retry is scheduled, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub next_payment_attempt: Option<DateTime<FixedOffset>>,
-    /// The time at which this payment was successfully collected. Null if the payment has not yet succeeded. As a Unix timestamp.
+    pub next_payment_attempt_at: Option<String>,
+    /// When the money was collected, or null while it has not been.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub paid_at: Option<DateTime<FixedOffset>>,
-    /// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
+    pub paid_at: Option<String>,
+    /// The instrument shaped for display: a buyer-facing name, the standard icon set, and the card's brand and last four when it was a card.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_instrument: Option<PaymentPaymentInstrument>,
-    /// The tokenized payment method reference used for this payment. Null if no token was used.
+    pub payment_instrument: Option<PaymentInstrument>,
+    /// The stored payment method that was charged, prefixed `payt_`. Null when the method was not saved.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_method: Option<PaymentPaymentMethod>,
-    /// The type of payment instrument used for this payment (e.g., card, Cash App, iDEAL, Klarna, crypto). Null when the processor does not supply a type.
+    pub payment_method_id: Option<String>,
+    /// The kind of instrument used, for example `card`, `apple_pay`, `klarna`, or `us_bank_account`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_type: Option<PaymentMethodTypes>,
-    /// The number of failed payment attempts for the payment.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub payments_failed: Option<i64>,
-    /// The plan attached to this payment.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan: Option<PaymentPlan>,
-    /// The product this payment was made for
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub product: Option<PaymentProduct>,
-    /// The promo code used for this payment.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub promo_code: Option<PaymentPromoCode>,
-    /// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
-    #[serde(default)]
-    pub refundable: bool,
-    /// The payment refund amount(if applicable).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::number_serializers::option")]
-    pub refunded_amount: Option<f64>,
-    /// When the payment was refunded (if applicable).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub refunded_at: Option<DateTime<FixedOffset>>,
-    /// The refunds issued against this payment, newest first, including failed and canceled refund attempts. Limited to the 100 most recent.
-    #[serde(default)]
-    pub refunds: Vec<PaymentRefundsItem>,
-    /// The resolution center cases opened by the customer on this payment. Null if the actor in context does not have the payment:resolution_center_case:read permission.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub resolutions: Option<Vec<PaymentResolutionsItem>>,
-    /// True when the payment status is `open` and its membership is in one of the retry-eligible states (`active`, `trialing`, `completed`, or `past_due`), or when it is a failed initial billing-engine payment on a `drafted` membership with an unlimited-stock plan; otherwise false. Used to decide if Whop can attempt the charge again.
-    #[serde(default)]
-    pub retryable: bool,
-    /// Whop's in-house fraud risk score for this payment, from 0 (lowest risk) to 100 (highest risk). Null when the payment has not been scored or scoring has not yet completed.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub risk_score: Option<i64>,
-    /// A curated set of factors behind the risk score, grouped by category (business transaction history, buyer, device). Each entry has a key, human-readable label, category, and value. Null when there is no risk assessment for this payment.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub risk_signals: Option<HashMap<String, serde_json::Value>>,
-    /// The total amount charged to the customer for this payment, including taxes and after any discounts. In the currency specified by the currency field.
+    /// How many charge attempts have failed on this payment.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
-    pub settlement_amount: f64,
-    /// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-    pub settlement_currency: Currencies,
-    /// Deprecated. Always returns null.
+    pub payments_failed: f64,
+    /// The plan that was charged, prefixed `plan_`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan_id: Option<String>,
+    /// The product the plan belongs to, prefixed `prod_`. Null for a plan with no product.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_id: Option<String>,
+    /// The promo code applied at checkout, prefixed `promo_`, or null.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub promo_code_id: Option<String>,
+    /// True when the payment is `paid`, not yet fully refunded, and its processor supports refunds.
+    #[serde(default)]
+    pub refundable: bool,
+    /// How much has been refunded so far, as it settled — refunds convert at the rate in force when each one was issued, not the payment's original rate.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refunded_amount: Option<Money>,
+    /// When the payment was refunded, or null.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refunded_at: Option<String>,
+    /// True when the payment is `open` and Whop can attempt the charge again — see `POST /payments/{id}/retry`.
+    #[serde(default)]
+    pub retryable: bool,
+    /// Whop's fraud risk score from 0 (lowest) to 100 (highest), or null when the payment was not scored.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
-    pub settlement_exchange_rate: Option<f64>,
-    /// When this payment's funds post to the company's available balance, at midnight UTC. Known at payment time and never changes. The `ledger_account.funds_available` webhook carries the same `settlement_time_at` when that batch posts — match them to know these funds are now withdrawable.
+    pub risk_score: Option<f64>,
+    /// The factors behind `risk_score`, grouped by category, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub settlement_time_at: Option<DateTime<FixedOffset>>,
-    /// The shipment attached to this payment.
+    pub risk_signals: Option<HashMap<String, serde_json::Value>>,
+    /// When the funds post to the account's available balance, at midnight UTC. The `ledger_account.funds_available` webhook carries the same value. Null until the payment is paid, and always null in list responses — retrieve the payment for it.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub shipment: Option<PaymentShipment>,
-    /// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
+    pub settlement_time_at: Option<String>,
+    /// The shipment fulfilling this payment, prefixed `ship_`. Null when nothing ships or without the shipment:basic:read permission.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub shipping_address: Option<PaymentShippingAddress>,
-    /// The current lifecycle state of this payment (e.g., 'draft', 'open', 'paid', 'void').
+    pub shipment_id: Option<String>,
+    /// The shipping address for physical goods, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub status: Option<ReceiptStatus>,
-    /// The friendly status of the payment.
+    pub shipping_address: Option<PaymentAddress>,
+    /// The lifecycle state of the charge: `open` while collection is outstanding, `paid` once the money moved, `pending` while a settlement rail clears, `void`/`uncollectible` when it ended without collecting.
+    pub status: ReceiptStatus,
+    /// The dashboard's finer-grained reading of the payment, folding in refunds, disputes and Resolution Center cases.
     pub substatus: FriendlyReceiptStatus,
-    /// The subtotal to show to the creator (excluding buyer fees).
+    /// The price before discounts, tax and fees.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::number_serializers::option")]
-    pub subtotal: Option<f64>,
-    /// The calculated amount of the sales/VAT tax (if applicable).
+    pub subtotal: Option<Money>,
+    /// The sales tax or VAT collected. Null when no tax applied.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::number_serializers::option")]
-    pub tax_amount: Option<f64>,
-    /// The type of tax inclusivity applied to the payment, for determining whether the tax is included in the final price, or paid on top.
+    pub tax_amount: Option<Money>,
+    /// Whether `tax_amount` was added on top of the price (`exclusive`) or was already inside it (`inclusive`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_behavior: Option<ReceiptTaxBehaviors>,
-    /// The amount of tax that has been refunded (if applicable).
-    #[serde(skip_serializing_if = "Option::is_none")]
+    /// How much of the collected tax has been returned to the buyer so far. Zero when the payment carried no tax, or when nothing has been refunded.
     #[serde(default)]
-    #[serde(with = "crate::core::number_serializers::option")]
-    pub tax_refunded_amount: Option<f64>,
-    /// Whether 3D Secure authentication was completed for this payment.
+    pub tax_refunded_amount: Money,
+    /// True when the buyer completed 3D Secure for this payment.
     #[serde(default)]
     pub three_ds_verified: bool,
-    /// The total to show to the creator (excluding buyer fees).
+    /// The account-facing total: the price after discounts, plus any tax added on top. Excludes buyer fees, which the buyer pays above this amount — so this is not necessarily what the buyer's statement shows.
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub total: Option<Money>,
+    /// When the payment last changed, as an ISO 8601 timestamp.
     #[serde(default)]
-    #[serde(with = "crate::core::number_serializers::option")]
-    pub total: Option<f64>,
-    /// The datetime the payment was last updated.
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset")]
-    pub updated_at: DateTime<FixedOffset>,
-    /// The total in USD to show to the creator (excluding buyer fees).
+    pub updated_at: String,
+    /// The total converted to USD at the time of the charge, for reporting across currencies. Excludes the adaptive pricing FX markup, which the account does not keep.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::number_serializers::option")]
-    pub usd_total: Option<f64>,
-    /// The user that made this payment.
+    pub usd_total: Option<Money>,
+    /// The buyer. Null when the payment belongs to a company buyer rather than a user.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user: Option<PaymentUser>,
-    /// The issuer's address and card security code check results for this payment. Null when the processor returned none.
+    pub user: Option<UserSummary>,
+    /// The issuer's address and security code check results, or null when the processor returned none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verification_checks: Option<PaymentVerificationChecks>,
-    /// True when the payment is tied to a membership in `past_due`, the payment status is `open`, and the processor allows voiding payments; otherwise false.
+    /// True when the payment is `open` on a past-due membership and its processor supports voiding — see `POST /payments/{id}/void`.
     #[serde(default)]
     pub voidable: bool,
 }
@@ -230,79 +168,67 @@ impl Payment {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct PaymentBuilder {
-    amount_after_fees: Option<f64>,
-    application_fee: Option<PaymentApplicationFee>,
+    account_id: Option<String>,
+    amount_after_fees: Option<Money>,
     auto_refunded: Option<bool>,
-    billing_address: Option<PaymentBillingAddress>,
+    billing_address: Option<PaymentAddress>,
     billing_reason: Option<BillingReasons>,
-    card_brand: Option<CardBrands>,
-    card_exp_month: Option<i64>,
-    card_exp_year: Option<i64>,
-    card_last4: Option<String>,
     checkout_configuration_id: Option<String>,
-    company: Option<PaymentCompany>,
-    created_at: Option<DateTime<FixedOffset>>,
+    client_secret: Option<String>,
+    created_at: Option<String>,
     currency: Option<Currencies>,
     customer_phone: Option<String>,
     decline_code: Option<PaymentDeclineCodes>,
-    dispute_alerted_at: Option<DateTime<FixedOffset>>,
-    disputes: Option<Vec<PaymentDisputesItem>>,
+    dispute_alerted_at: Option<String>,
     failure_message: Option<String>,
-    fees: Option<Vec<PaymentFeesItem>>,
-    financing_installments_count: Option<i64>,
-    financing_transactions: Option<Vec<PaymentFinancingTransactionsItem>>,
+    financing_installments_count: Option<f64>,
     id: Option<String>,
-    last_payment_attempt: Option<DateTime<FixedOffset>>,
-    member: Option<PaymentMember>,
-    membership: Option<PaymentMembership>,
+    last_payment_attempt_at: Option<String>,
+    member_id: Option<String>,
+    membership_id: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
     needs_tracking: Option<bool>,
-    next_payment_attempt: Option<DateTime<FixedOffset>>,
-    paid_at: Option<DateTime<FixedOffset>>,
-    payment_instrument: Option<PaymentPaymentInstrument>,
-    payment_method: Option<PaymentPaymentMethod>,
+    next_payment_attempt_at: Option<String>,
+    paid_at: Option<String>,
+    payment_instrument: Option<PaymentInstrument>,
+    payment_method_id: Option<String>,
     payment_method_type: Option<PaymentMethodTypes>,
-    payments_failed: Option<i64>,
-    plan: Option<PaymentPlan>,
-    product: Option<PaymentProduct>,
-    promo_code: Option<PaymentPromoCode>,
+    payments_failed: Option<f64>,
+    plan_id: Option<String>,
+    product_id: Option<String>,
+    promo_code_id: Option<String>,
     refundable: Option<bool>,
-    refunded_amount: Option<f64>,
-    refunded_at: Option<DateTime<FixedOffset>>,
-    refunds: Option<Vec<PaymentRefundsItem>>,
-    resolutions: Option<Vec<PaymentResolutionsItem>>,
+    refunded_amount: Option<Money>,
+    refunded_at: Option<String>,
     retryable: Option<bool>,
-    risk_score: Option<i64>,
+    risk_score: Option<f64>,
     risk_signals: Option<HashMap<String, serde_json::Value>>,
-    settlement_amount: Option<f64>,
-    settlement_currency: Option<Currencies>,
-    settlement_exchange_rate: Option<f64>,
-    settlement_time_at: Option<DateTime<FixedOffset>>,
-    shipment: Option<PaymentShipment>,
-    shipping_address: Option<PaymentShippingAddress>,
+    settlement_time_at: Option<String>,
+    shipment_id: Option<String>,
+    shipping_address: Option<PaymentAddress>,
     status: Option<ReceiptStatus>,
     substatus: Option<FriendlyReceiptStatus>,
-    subtotal: Option<f64>,
-    tax_amount: Option<f64>,
+    subtotal: Option<Money>,
+    tax_amount: Option<Money>,
     tax_behavior: Option<ReceiptTaxBehaviors>,
-    tax_refunded_amount: Option<f64>,
+    tax_refunded_amount: Option<Money>,
     three_ds_verified: Option<bool>,
-    total: Option<f64>,
-    updated_at: Option<DateTime<FixedOffset>>,
-    usd_total: Option<f64>,
-    user: Option<PaymentUser>,
+    total: Option<Money>,
+    updated_at: Option<String>,
+    usd_total: Option<Money>,
+    user: Option<UserSummary>,
     verification_checks: Option<PaymentVerificationChecks>,
     voidable: Option<bool>,
 }
 
 impl PaymentBuilder {
-    pub fn amount_after_fees(mut self, value: f64) -> Self {
-        self.amount_after_fees = Some(value);
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
-    pub fn application_fee(mut self, value: PaymentApplicationFee) -> Self {
-        self.application_fee = Some(value);
+    pub fn amount_after_fees(mut self, value: Money) -> Self {
+        self.amount_after_fees = Some(value);
         self
     }
 
@@ -311,7 +237,7 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn billing_address(mut self, value: PaymentBillingAddress) -> Self {
+    pub fn billing_address(mut self, value: PaymentAddress) -> Self {
         self.billing_address = Some(value);
         self
     }
@@ -321,38 +247,18 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn card_brand(mut self, value: CardBrands) -> Self {
-        self.card_brand = Some(value);
-        self
-    }
-
-    pub fn card_exp_month(mut self, value: i64) -> Self {
-        self.card_exp_month = Some(value);
-        self
-    }
-
-    pub fn card_exp_year(mut self, value: i64) -> Self {
-        self.card_exp_year = Some(value);
-        self
-    }
-
-    pub fn card_last4(mut self, value: impl Into<String>) -> Self {
-        self.card_last4 = Some(value.into());
-        self
-    }
-
     pub fn checkout_configuration_id(mut self, value: impl Into<String>) -> Self {
         self.checkout_configuration_id = Some(value.into());
         self
     }
 
-    pub fn company(mut self, value: PaymentCompany) -> Self {
-        self.company = Some(value);
+    pub fn client_secret(mut self, value: impl Into<String>) -> Self {
+        self.client_secret = Some(value.into());
         self
     }
 
-    pub fn created_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.created_at = Some(value);
+    pub fn created_at(mut self, value: impl Into<String>) -> Self {
+        self.created_at = Some(value.into());
         self
     }
 
@@ -371,13 +277,8 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn dispute_alerted_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.dispute_alerted_at = Some(value);
-        self
-    }
-
-    pub fn disputes(mut self, value: Vec<PaymentDisputesItem>) -> Self {
-        self.disputes = Some(value);
+    pub fn dispute_alerted_at(mut self, value: impl Into<String>) -> Self {
+        self.dispute_alerted_at = Some(value.into());
         self
     }
 
@@ -386,18 +287,8 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn fees(mut self, value: Vec<PaymentFeesItem>) -> Self {
-        self.fees = Some(value);
-        self
-    }
-
-    pub fn financing_installments_count(mut self, value: i64) -> Self {
+    pub fn financing_installments_count(mut self, value: f64) -> Self {
         self.financing_installments_count = Some(value);
-        self
-    }
-
-    pub fn financing_transactions(mut self, value: Vec<PaymentFinancingTransactionsItem>) -> Self {
-        self.financing_transactions = Some(value);
         self
     }
 
@@ -406,18 +297,18 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn last_payment_attempt(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.last_payment_attempt = Some(value);
+    pub fn last_payment_attempt_at(mut self, value: impl Into<String>) -> Self {
+        self.last_payment_attempt_at = Some(value.into());
         self
     }
 
-    pub fn member(mut self, value: PaymentMember) -> Self {
-        self.member = Some(value);
+    pub fn member_id(mut self, value: impl Into<String>) -> Self {
+        self.member_id = Some(value.into());
         self
     }
 
-    pub fn membership(mut self, value: PaymentMembership) -> Self {
-        self.membership = Some(value);
+    pub fn membership_id(mut self, value: impl Into<String>) -> Self {
+        self.membership_id = Some(value.into());
         self
     }
 
@@ -431,23 +322,23 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn next_payment_attempt(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.next_payment_attempt = Some(value);
+    pub fn next_payment_attempt_at(mut self, value: impl Into<String>) -> Self {
+        self.next_payment_attempt_at = Some(value.into());
         self
     }
 
-    pub fn paid_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.paid_at = Some(value);
+    pub fn paid_at(mut self, value: impl Into<String>) -> Self {
+        self.paid_at = Some(value.into());
         self
     }
 
-    pub fn payment_instrument(mut self, value: PaymentPaymentInstrument) -> Self {
+    pub fn payment_instrument(mut self, value: PaymentInstrument) -> Self {
         self.payment_instrument = Some(value);
         self
     }
 
-    pub fn payment_method(mut self, value: PaymentPaymentMethod) -> Self {
-        self.payment_method = Some(value);
+    pub fn payment_method_id(mut self, value: impl Into<String>) -> Self {
+        self.payment_method_id = Some(value.into());
         self
     }
 
@@ -456,23 +347,23 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn payments_failed(mut self, value: i64) -> Self {
+    pub fn payments_failed(mut self, value: f64) -> Self {
         self.payments_failed = Some(value);
         self
     }
 
-    pub fn plan(mut self, value: PaymentPlan) -> Self {
-        self.plan = Some(value);
+    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
+        self.plan_id = Some(value.into());
         self
     }
 
-    pub fn product(mut self, value: PaymentProduct) -> Self {
-        self.product = Some(value);
+    pub fn product_id(mut self, value: impl Into<String>) -> Self {
+        self.product_id = Some(value.into());
         self
     }
 
-    pub fn promo_code(mut self, value: PaymentPromoCode) -> Self {
-        self.promo_code = Some(value);
+    pub fn promo_code_id(mut self, value: impl Into<String>) -> Self {
+        self.promo_code_id = Some(value.into());
         self
     }
 
@@ -481,23 +372,13 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn refunded_amount(mut self, value: f64) -> Self {
+    pub fn refunded_amount(mut self, value: Money) -> Self {
         self.refunded_amount = Some(value);
         self
     }
 
-    pub fn refunded_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.refunded_at = Some(value);
-        self
-    }
-
-    pub fn refunds(mut self, value: Vec<PaymentRefundsItem>) -> Self {
-        self.refunds = Some(value);
-        self
-    }
-
-    pub fn resolutions(mut self, value: Vec<PaymentResolutionsItem>) -> Self {
-        self.resolutions = Some(value);
+    pub fn refunded_at(mut self, value: impl Into<String>) -> Self {
+        self.refunded_at = Some(value.into());
         self
     }
 
@@ -506,7 +387,7 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn risk_score(mut self, value: i64) -> Self {
+    pub fn risk_score(mut self, value: f64) -> Self {
         self.risk_score = Some(value);
         self
     }
@@ -516,32 +397,17 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn settlement_amount(mut self, value: f64) -> Self {
-        self.settlement_amount = Some(value);
+    pub fn settlement_time_at(mut self, value: impl Into<String>) -> Self {
+        self.settlement_time_at = Some(value.into());
         self
     }
 
-    pub fn settlement_currency(mut self, value: Currencies) -> Self {
-        self.settlement_currency = Some(value);
+    pub fn shipment_id(mut self, value: impl Into<String>) -> Self {
+        self.shipment_id = Some(value.into());
         self
     }
 
-    pub fn settlement_exchange_rate(mut self, value: f64) -> Self {
-        self.settlement_exchange_rate = Some(value);
-        self
-    }
-
-    pub fn settlement_time_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.settlement_time_at = Some(value);
-        self
-    }
-
-    pub fn shipment(mut self, value: PaymentShipment) -> Self {
-        self.shipment = Some(value);
-        self
-    }
-
-    pub fn shipping_address(mut self, value: PaymentShippingAddress) -> Self {
+    pub fn shipping_address(mut self, value: PaymentAddress) -> Self {
         self.shipping_address = Some(value);
         self
     }
@@ -556,12 +422,12 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn subtotal(mut self, value: f64) -> Self {
+    pub fn subtotal(mut self, value: Money) -> Self {
         self.subtotal = Some(value);
         self
     }
 
-    pub fn tax_amount(mut self, value: f64) -> Self {
+    pub fn tax_amount(mut self, value: Money) -> Self {
         self.tax_amount = Some(value);
         self
     }
@@ -571,7 +437,7 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn tax_refunded_amount(mut self, value: f64) -> Self {
+    pub fn tax_refunded_amount(mut self, value: Money) -> Self {
         self.tax_refunded_amount = Some(value);
         self
     }
@@ -581,22 +447,22 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn total(mut self, value: f64) -> Self {
+    pub fn total(mut self, value: Money) -> Self {
         self.total = Some(value);
         self
     }
 
-    pub fn updated_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.updated_at = Some(value);
+    pub fn updated_at(mut self, value: impl Into<String>) -> Self {
+        self.updated_at = Some(value.into());
         self
     }
 
-    pub fn usd_total(mut self, value: f64) -> Self {
+    pub fn usd_total(mut self, value: Money) -> Self {
         self.usd_total = Some(value);
         self
     }
 
-    pub fn user(mut self, value: PaymentUser) -> Self {
+    pub fn user(mut self, value: UserSummary) -> Self {
         self.user = Some(value);
         self
     }
@@ -617,35 +483,29 @@ impl PaymentBuilder {
     /// - [`auto_refunded`](PaymentBuilder::auto_refunded)
     /// - [`created_at`](PaymentBuilder::created_at)
     /// - [`currency`](PaymentBuilder::currency)
-    /// - [`fees`](PaymentBuilder::fees)
-    /// - [`financing_transactions`](PaymentBuilder::financing_transactions)
     /// - [`id`](PaymentBuilder::id)
+    /// - [`payments_failed`](PaymentBuilder::payments_failed)
     /// - [`refundable`](PaymentBuilder::refundable)
-    /// - [`refunds`](PaymentBuilder::refunds)
     /// - [`retryable`](PaymentBuilder::retryable)
-    /// - [`settlement_amount`](PaymentBuilder::settlement_amount)
-    /// - [`settlement_currency`](PaymentBuilder::settlement_currency)
+    /// - [`status`](PaymentBuilder::status)
     /// - [`substatus`](PaymentBuilder::substatus)
+    /// - [`tax_refunded_amount`](PaymentBuilder::tax_refunded_amount)
     /// - [`three_ds_verified`](PaymentBuilder::three_ds_verified)
     /// - [`updated_at`](PaymentBuilder::updated_at)
     /// - [`voidable`](PaymentBuilder::voidable)
     pub fn build(self) -> Result<Payment, BuildError> {
         Ok(Payment {
+            account_id: self.account_id,
             amount_after_fees: self
                 .amount_after_fees
                 .ok_or_else(|| BuildError::missing_field("amount_after_fees"))?,
-            application_fee: self.application_fee,
             auto_refunded: self
                 .auto_refunded
                 .ok_or_else(|| BuildError::missing_field("auto_refunded"))?,
             billing_address: self.billing_address,
             billing_reason: self.billing_reason,
-            card_brand: self.card_brand,
-            card_exp_month: self.card_exp_month,
-            card_exp_year: self.card_exp_year,
-            card_last4: self.card_last4,
             checkout_configuration_id: self.checkout_configuration_id,
-            company: self.company,
+            client_secret: self.client_secret,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
@@ -655,60 +515,50 @@ impl PaymentBuilder {
             customer_phone: self.customer_phone,
             decline_code: self.decline_code,
             dispute_alerted_at: self.dispute_alerted_at,
-            disputes: self.disputes,
             failure_message: self.failure_message,
-            fees: self.fees.ok_or_else(|| BuildError::missing_field("fees"))?,
             financing_installments_count: self.financing_installments_count,
-            financing_transactions: self
-                .financing_transactions
-                .ok_or_else(|| BuildError::missing_field("financing_transactions"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
-            last_payment_attempt: self.last_payment_attempt,
-            member: self.member,
-            membership: self.membership,
+            last_payment_attempt_at: self.last_payment_attempt_at,
+            member_id: self.member_id,
+            membership_id: self.membership_id,
             metadata: self.metadata,
             needs_tracking: self.needs_tracking,
-            next_payment_attempt: self.next_payment_attempt,
+            next_payment_attempt_at: self.next_payment_attempt_at,
             paid_at: self.paid_at,
             payment_instrument: self.payment_instrument,
-            payment_method: self.payment_method,
+            payment_method_id: self.payment_method_id,
             payment_method_type: self.payment_method_type,
-            payments_failed: self.payments_failed,
-            plan: self.plan,
-            product: self.product,
-            promo_code: self.promo_code,
+            payments_failed: self
+                .payments_failed
+                .ok_or_else(|| BuildError::missing_field("payments_failed"))?,
+            plan_id: self.plan_id,
+            product_id: self.product_id,
+            promo_code_id: self.promo_code_id,
             refundable: self
                 .refundable
                 .ok_or_else(|| BuildError::missing_field("refundable"))?,
             refunded_amount: self.refunded_amount,
             refunded_at: self.refunded_at,
-            refunds: self
-                .refunds
-                .ok_or_else(|| BuildError::missing_field("refunds"))?,
-            resolutions: self.resolutions,
             retryable: self
                 .retryable
                 .ok_or_else(|| BuildError::missing_field("retryable"))?,
             risk_score: self.risk_score,
             risk_signals: self.risk_signals,
-            settlement_amount: self
-                .settlement_amount
-                .ok_or_else(|| BuildError::missing_field("settlement_amount"))?,
-            settlement_currency: self
-                .settlement_currency
-                .ok_or_else(|| BuildError::missing_field("settlement_currency"))?,
-            settlement_exchange_rate: self.settlement_exchange_rate,
             settlement_time_at: self.settlement_time_at,
-            shipment: self.shipment,
+            shipment_id: self.shipment_id,
             shipping_address: self.shipping_address,
-            status: self.status,
+            status: self
+                .status
+                .ok_or_else(|| BuildError::missing_field("status"))?,
             substatus: self
                 .substatus
                 .ok_or_else(|| BuildError::missing_field("substatus"))?,
             subtotal: self.subtotal,
             tax_amount: self.tax_amount,
             tax_behavior: self.tax_behavior,
-            tax_refunded_amount: self.tax_refunded_amount,
+            tax_refunded_amount: self
+                .tax_refunded_amount
+                .ok_or_else(|| BuildError::missing_field("tax_refunded_amount"))?,
             three_ds_verified: self
                 .three_ds_verified
                 .ok_or_else(|| BuildError::missing_field("three_ds_verified"))?,

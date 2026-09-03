@@ -53,6 +53,9 @@ pub struct LedgerActivity {
     /// Source of this ledger activity.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<LedgerActivitySource>,
+    /// Dollar value of this movement as a decimal string, signed like `amount`. Converted from the posted amount at the rate that was live when the line posted — the same pricing the wallet balance chart and the financial reports use — so a crypto row carries its dollar value too. `null` for a currency Whop holds no exchange rate for.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub usd_amount: Option<String>,
     /// Email of the customer associated with the payment. Requires member:email:read.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_email: Option<String>,
@@ -90,6 +93,7 @@ pub struct LedgerActivityBuilder {
     product_name: Option<String>,
     resource: Option<LedgerActivityResource>,
     source: Option<LedgerActivitySource>,
+    usd_amount: Option<String>,
     user_email: Option<String>,
     user_id: Option<String>,
     user_name: Option<String>,
@@ -181,6 +185,11 @@ impl LedgerActivityBuilder {
         self
     }
 
+    pub fn usd_amount(mut self, value: impl Into<String>) -> Self {
+        self.usd_amount = Some(value.into());
+        self
+    }
+
     pub fn user_email(mut self, value: impl Into<String>) -> Self {
         self.user_email = Some(value.into());
         self
@@ -233,6 +242,7 @@ impl LedgerActivityBuilder {
             product_name: self.product_name,
             resource: self.resource,
             source: self.source,
+            usd_amount: self.usd_amount,
             user_email: self.user_email,
             user_id: self.user_id,
             user_name: self.user_name,
