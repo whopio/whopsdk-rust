@@ -11,6 +11,8 @@ pub struct RetrieveBreakdownResponse {
     pub items: Vec<RetrieveBreakdownResponseItemsItem>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub other_amount: Option<Money>,
+    #[serde(default)]
+    pub other_name: String,
 }
 
 impl RetrieveBreakdownResponse {
@@ -28,6 +30,7 @@ pub struct RetrieveBreakdownResponseBuilder {
     direction: Option<RetrieveBreakdownResponseDirection>,
     items: Option<Vec<RetrieveBreakdownResponseItemsItem>>,
     other_amount: Option<Money>,
+    other_name: Option<String>,
 }
 
 impl RetrieveBreakdownResponseBuilder {
@@ -61,6 +64,11 @@ impl RetrieveBreakdownResponseBuilder {
         self
     }
 
+    pub fn other_name(mut self, value: impl Into<String>) -> Self {
+        self.other_name = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`RetrieveBreakdownResponse`].
     /// This method will fail if any of the following fields are not set:
     /// - [`activity_filters`](RetrieveBreakdownResponseBuilder::activity_filters)
@@ -68,6 +76,7 @@ impl RetrieveBreakdownResponseBuilder {
     /// - [`currency`](RetrieveBreakdownResponseBuilder::currency)
     /// - [`direction`](RetrieveBreakdownResponseBuilder::direction)
     /// - [`items`](RetrieveBreakdownResponseBuilder::items)
+    /// - [`other_name`](RetrieveBreakdownResponseBuilder::other_name)
     pub fn build(self) -> Result<RetrieveBreakdownResponse, BuildError> {
         Ok(RetrieveBreakdownResponse {
             activity_filters: self
@@ -86,6 +95,9 @@ impl RetrieveBreakdownResponseBuilder {
                 .items
                 .ok_or_else(|| BuildError::missing_field("items"))?,
             other_amount: self.other_amount,
+            other_name: self
+                .other_name
+                .ok_or_else(|| BuildError::missing_field("other_name"))?,
         })
     }
 }

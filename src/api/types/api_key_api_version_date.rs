@@ -33,6 +33,9 @@ pub enum ApiKeyApiVersionDate {
     TwoThousandTwentySix0825,
     TwoThousandTwentySix08251,
     TwoThousandTwentySix08252,
+    TwoThousandTwentySix0831,
+    TwoThousandTwentySix0902,
+    TwoThousandTwentySix09021,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -70,6 +73,9 @@ impl Serialize for ApiKeyApiVersionDate {
             Self::TwoThousandTwentySix0825 => serializer.serialize_str("2026-08-25"),
             Self::TwoThousandTwentySix08251 => serializer.serialize_str("2026-08-25-1"),
             Self::TwoThousandTwentySix08252 => serializer.serialize_str("2026-08-25-2"),
+            Self::TwoThousandTwentySix0831 => serializer.serialize_str("2026-08-31"),
+            Self::TwoThousandTwentySix0902 => serializer.serialize_str("2026-09-02"),
+            Self::TwoThousandTwentySix09021 => serializer.serialize_str("2026-09-02-1"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -108,6 +114,9 @@ impl<'de> Deserialize<'de> for ApiKeyApiVersionDate {
             "2026-08-25" => Ok(Self::TwoThousandTwentySix0825),
             "2026-08-25-1" => Ok(Self::TwoThousandTwentySix08251),
             "2026-08-25-2" => Ok(Self::TwoThousandTwentySix08252),
+            "2026-08-31" => Ok(Self::TwoThousandTwentySix0831),
+            "2026-09-02" => Ok(Self::TwoThousandTwentySix0902),
+            "2026-09-02-1" => Ok(Self::TwoThousandTwentySix09021),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -145,6 +154,9 @@ impl fmt::Display for ApiKeyApiVersionDate {
             Self::TwoThousandTwentySix0825 => write!(f, "2026-08-25"),
             Self::TwoThousandTwentySix08251 => write!(f, "2026-08-25-1"),
             Self::TwoThousandTwentySix08252 => write!(f, "2026-08-25-2"),
+            Self::TwoThousandTwentySix0831 => write!(f, "2026-08-31"),
+            Self::TwoThousandTwentySix0902 => write!(f, "2026-09-02"),
+            Self::TwoThousandTwentySix09021 => write!(f, "2026-09-02-1"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

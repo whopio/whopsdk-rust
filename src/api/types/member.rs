@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Member {
     /// What the member can reach on the account: `customer` for paying members, `admin` for team members, `no_access` once every grant has lapsed.
     pub access_level: MemberAccessLevel,
@@ -24,6 +24,10 @@ pub struct Member {
     pub phone_number: Option<String>,
     /// `joined` while the member is part of the account, `left` after they leave.
     pub status: MemberStatus,
+    /// The member's current token balance for this account, computed from token transactions.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub token_balance: f64,
     /// The user behind this member. `null` when the buyer is another business rather than a person.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user: Option<UserSummary>,
@@ -46,6 +50,7 @@ pub struct MemberBuilder {
     last_accessed_at: Option<String>,
     phone_number: Option<String>,
     status: Option<MemberStatus>,
+    token_balance: Option<f64>,
     user: Option<UserSummary>,
 }
 
@@ -90,6 +95,11 @@ impl MemberBuilder {
         self
     }
 
+    pub fn token_balance(mut self, value: f64) -> Self {
+        self.token_balance = Some(value);
+        self
+    }
+
     pub fn user(mut self, value: UserSummary) -> Self {
         self.user = Some(value);
         self
@@ -103,6 +113,7 @@ impl MemberBuilder {
     /// - [`id`](MemberBuilder::id)
     /// - [`joined_at`](MemberBuilder::joined_at)
     /// - [`status`](MemberBuilder::status)
+    /// - [`token_balance`](MemberBuilder::token_balance)
     pub fn build(self) -> Result<Member, BuildError> {
         Ok(Member {
             access_level: self
@@ -123,6 +134,9 @@ impl MemberBuilder {
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
+            token_balance: self
+                .token_balance
+                .ok_or_else(|| BuildError::missing_field("token_balance"))?,
             user: self.user,
         })
     }

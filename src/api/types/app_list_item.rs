@@ -54,6 +54,8 @@ pub struct AppListItem {
     /// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub origin: Option<String>,
+    #[serde(default)]
+    pub previous_hosted_urls: Vec<String>,
     /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
@@ -94,6 +96,7 @@ pub struct AppListItemBuilder {
     name: Option<String>,
     openapi_path: Option<String>,
     origin: Option<String>,
+    previous_hosted_urls: Option<Vec<String>>,
     route: Option<String>,
     skills_path: Option<String>,
     status: Option<AppListItemStatus>,
@@ -191,6 +194,11 @@ impl AppListItemBuilder {
         self
     }
 
+    pub fn previous_hosted_urls(mut self, value: Vec<String>) -> Self {
+        self.previous_hosted_urls = Some(value);
+        self
+    }
+
     pub fn route(mut self, value: impl Into<String>) -> Self {
         self.route = Some(value.into());
         self
@@ -222,6 +230,7 @@ impl AppListItemBuilder {
     /// - [`icon`](AppListItemBuilder::icon)
     /// - [`id`](AppListItemBuilder::id)
     /// - [`name`](AppListItemBuilder::name)
+    /// - [`previous_hosted_urls`](AppListItemBuilder::previous_hosted_urls)
     /// - [`status`](AppListItemBuilder::status)
     /// - [`verified`](AppListItemBuilder::verified)
     pub fn build(self) -> Result<AppListItem, BuildError> {
@@ -256,6 +265,9 @@ impl AppListItemBuilder {
             name: self.name.ok_or_else(|| BuildError::missing_field("name"))?,
             openapi_path: self.openapi_path,
             origin: self.origin,
+            previous_hosted_urls: self
+                .previous_hosted_urls
+                .ok_or_else(|| BuildError::missing_field("previous_hosted_urls"))?,
             route: self.route,
             skills_path: self.skills_path,
             status: self

@@ -3,72 +3,64 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct PaymentsListQueryRequest {
-    /// Returns the elements in the list that come after the specified cursor.
+    /// Only payments charged by this account, prefixed `biz_`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub after: Option<String>,
-    /// Returns the elements in the list that come before the specified cursor.
+    pub account_id: Option<String>,
+    /// Only payments in this lifecycle state.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub before: Option<String>,
-    /// Returns the first _n_ elements from the list.
+    pub status: Option<ListPaymentsRequestStatus>,
+    /// Only payments charged for this reason.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub first: Option<i64>,
-    /// Returns the last _n_ elements from the list.
+    pub billing_reason: Option<ListPaymentsRequestBillingReason>,
+    /// Only payments presented in this three-letter currency, such as `usd`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub last: Option<i64>,
-    /// The unique identifier of the company to list payments for.
+    pub currency: Option<String>,
+    /// Only payments made by this buyer, prefixed `user_`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
+    pub user_id: Option<String>,
+    /// Search payments by user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub direction: Option<Direction>,
+    pub query: Option<String>,
+    /// Only payments made by this member, prefixed `mber_`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub order: Option<ReceiptV2Order>,
-    /// Filter payments to only those associated with these specific product identifiers.
-    #[serde(default)]
-    pub product_ids: Vec<Option<String>>,
-    /// Filter payments by their billing reason.
-    #[serde(default)]
-    pub billing_reasons: Vec<Option<BillingReasons>>,
-    /// Filter payments by their currency code.
-    #[serde(default)]
-    pub currencies: Vec<Option<Currencies>>,
-    /// Filter payments to only those associated with these specific plan identifiers.
-    #[serde(default)]
-    pub plan_ids: Vec<Option<String>>,
-    /// Filter payments by their current status.
-    #[serde(default)]
-    pub statuses: Vec<Option<ReceiptStatus>>,
-    /// Filter payments by their current substatus for more granular filtering.
-    #[serde(default)]
-    pub substatuses: Vec<Option<FriendlyReceiptStatus>>,
-    /// Whether to include payments with a zero amount. Defaults to false, so zero-amount payments are omitted unless you set this to true — a company whose sales are all free plans returns an empty list without it.
+    pub member_id: Option<String>,
+    /// Only payments billed under this membership, prefixed `mem_`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub include_free: Option<bool>,
-    /// Only return payments created before this timestamp.
+    pub membership_id: Option<String>,
+    /// Only payments for this product, prefixed `prod_`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_id: Option<String>,
+    /// Only payments priced by this plan, prefixed `plan_`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan_id: Option<String>,
+    /// Only payments created before this ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub created_before: Option<DateTime<FixedOffset>>,
-    /// Only return payments created after this timestamp.
+    /// Only payments created after this ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub created_after: Option<DateTime<FixedOffset>>,
-    /// Only return payments last updated before this timestamp.
+    /// The field to sort by.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub updated_before: Option<DateTime<FixedOffset>>,
-    /// Only return payments last updated after this timestamp.
+    pub order: Option<ListPaymentsRequestOrder>,
+    /// The sort direction.
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub updated_after: Option<DateTime<FixedOffset>>,
-    /// Search payments by user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
+    pub direction: Option<ListPaymentsRequestDirection>,
+    /// The number of payments to return.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub query: Option<String>,
-    /// Only return payments from these checkout configurations.
-    #[serde(default)]
-    pub checkout_configuration_ids: Vec<Option<String>>,
+    pub first: Option<i64>,
+    /// A cursor; returns payments after this position.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub after: Option<String>,
+    /// The number of payments to return from the end of the range.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last: Option<i64>,
+    /// A cursor; returns payments before this position.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub before: Option<String>,
 }
 
 impl PaymentsListQueryRequest {
@@ -80,96 +72,74 @@ impl PaymentsListQueryRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct PaymentsListQueryRequestBuilder {
-    after: Option<String>,
-    before: Option<String>,
-    first: Option<i64>,
-    last: Option<i64>,
-    company_id: Option<String>,
-    direction: Option<Direction>,
-    order: Option<ReceiptV2Order>,
-    product_ids: Option<Vec<Option<String>>>,
-    billing_reasons: Option<Vec<Option<BillingReasons>>>,
-    currencies: Option<Vec<Option<Currencies>>>,
-    plan_ids: Option<Vec<Option<String>>>,
-    statuses: Option<Vec<Option<ReceiptStatus>>>,
-    substatuses: Option<Vec<Option<FriendlyReceiptStatus>>>,
-    include_free: Option<bool>,
+    account_id: Option<String>,
+    status: Option<ListPaymentsRequestStatus>,
+    billing_reason: Option<ListPaymentsRequestBillingReason>,
+    currency: Option<String>,
+    user_id: Option<String>,
+    query: Option<String>,
+    member_id: Option<String>,
+    membership_id: Option<String>,
+    product_id: Option<String>,
+    plan_id: Option<String>,
     created_before: Option<DateTime<FixedOffset>>,
     created_after: Option<DateTime<FixedOffset>>,
-    updated_before: Option<DateTime<FixedOffset>>,
-    updated_after: Option<DateTime<FixedOffset>>,
-    query: Option<String>,
-    checkout_configuration_ids: Option<Vec<Option<String>>>,
+    order: Option<ListPaymentsRequestOrder>,
+    direction: Option<ListPaymentsRequestDirection>,
+    first: Option<i64>,
+    after: Option<String>,
+    last: Option<i64>,
+    before: Option<String>,
 }
 
 impl PaymentsListQueryRequestBuilder {
-    pub fn after(mut self, value: impl Into<String>) -> Self {
-        self.after = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
-    pub fn before(mut self, value: impl Into<String>) -> Self {
-        self.before = Some(value.into());
+    pub fn status(mut self, value: ListPaymentsRequestStatus) -> Self {
+        self.status = Some(value);
         self
     }
 
-    pub fn first(mut self, value: i64) -> Self {
-        self.first = Some(value);
+    pub fn billing_reason(mut self, value: ListPaymentsRequestBillingReason) -> Self {
+        self.billing_reason = Some(value);
         self
     }
 
-    pub fn last(mut self, value: i64) -> Self {
-        self.last = Some(value);
+    pub fn currency(mut self, value: impl Into<String>) -> Self {
+        self.currency = Some(value.into());
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
         self
     }
 
-    pub fn direction(mut self, value: Direction) -> Self {
-        self.direction = Some(value);
+    pub fn query(mut self, value: impl Into<String>) -> Self {
+        self.query = Some(value.into());
         self
     }
 
-    pub fn order(mut self, value: ReceiptV2Order) -> Self {
-        self.order = Some(value);
+    pub fn member_id(mut self, value: impl Into<String>) -> Self {
+        self.member_id = Some(value.into());
         self
     }
 
-    pub fn product_ids(mut self, value: Vec<Option<String>>) -> Self {
-        self.product_ids = Some(value);
+    pub fn membership_id(mut self, value: impl Into<String>) -> Self {
+        self.membership_id = Some(value.into());
         self
     }
 
-    pub fn billing_reasons(mut self, value: Vec<Option<BillingReasons>>) -> Self {
-        self.billing_reasons = Some(value);
+    pub fn product_id(mut self, value: impl Into<String>) -> Self {
+        self.product_id = Some(value.into());
         self
     }
 
-    pub fn currencies(mut self, value: Vec<Option<Currencies>>) -> Self {
-        self.currencies = Some(value);
-        self
-    }
-
-    pub fn plan_ids(mut self, value: Vec<Option<String>>) -> Self {
-        self.plan_ids = Some(value);
-        self
-    }
-
-    pub fn statuses(mut self, value: Vec<Option<ReceiptStatus>>) -> Self {
-        self.statuses = Some(value);
-        self
-    }
-
-    pub fn substatuses(mut self, value: Vec<Option<FriendlyReceiptStatus>>) -> Self {
-        self.substatuses = Some(value);
-        self
-    }
-
-    pub fn include_free(mut self, value: bool) -> Self {
-        self.include_free = Some(value);
+    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
+        self.plan_id = Some(value.into());
         self
     }
 
@@ -183,71 +153,57 @@ impl PaymentsListQueryRequestBuilder {
         self
     }
 
-    pub fn updated_before(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.updated_before = Some(value);
+    pub fn order(mut self, value: ListPaymentsRequestOrder) -> Self {
+        self.order = Some(value);
         self
     }
 
-    pub fn updated_after(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.updated_after = Some(value);
+    pub fn direction(mut self, value: ListPaymentsRequestDirection) -> Self {
+        self.direction = Some(value);
         self
     }
 
-    pub fn query(mut self, value: impl Into<String>) -> Self {
-        self.query = Some(value.into());
+    pub fn first(mut self, value: i64) -> Self {
+        self.first = Some(value);
         self
     }
 
-    pub fn checkout_configuration_ids(mut self, value: Vec<Option<String>>) -> Self {
-        self.checkout_configuration_ids = Some(value);
+    pub fn after(mut self, value: impl Into<String>) -> Self {
+        self.after = Some(value.into());
+        self
+    }
+
+    pub fn last(mut self, value: i64) -> Self {
+        self.last = Some(value);
+        self
+    }
+
+    pub fn before(mut self, value: impl Into<String>) -> Self {
+        self.before = Some(value.into());
         self
     }
 
     /// Consumes the builder and constructs a [`PaymentsListQueryRequest`].
-    /// This method will fail if any of the following fields are not set:
-    /// - [`product_ids`](PaymentsListQueryRequestBuilder::product_ids)
-    /// - [`billing_reasons`](PaymentsListQueryRequestBuilder::billing_reasons)
-    /// - [`currencies`](PaymentsListQueryRequestBuilder::currencies)
-    /// - [`plan_ids`](PaymentsListQueryRequestBuilder::plan_ids)
-    /// - [`statuses`](PaymentsListQueryRequestBuilder::statuses)
-    /// - [`substatuses`](PaymentsListQueryRequestBuilder::substatuses)
-    /// - [`checkout_configuration_ids`](PaymentsListQueryRequestBuilder::checkout_configuration_ids)
     pub fn build(self) -> Result<PaymentsListQueryRequest, BuildError> {
         Ok(PaymentsListQueryRequest {
-            after: self.after,
-            before: self.before,
-            first: self.first,
-            last: self.last,
-            company_id: self.company_id,
-            direction: self.direction,
-            order: self.order,
-            product_ids: self
-                .product_ids
-                .ok_or_else(|| BuildError::missing_field("product_ids"))?,
-            billing_reasons: self
-                .billing_reasons
-                .ok_or_else(|| BuildError::missing_field("billing_reasons"))?,
-            currencies: self
-                .currencies
-                .ok_or_else(|| BuildError::missing_field("currencies"))?,
-            plan_ids: self
-                .plan_ids
-                .ok_or_else(|| BuildError::missing_field("plan_ids"))?,
-            statuses: self
-                .statuses
-                .ok_or_else(|| BuildError::missing_field("statuses"))?,
-            substatuses: self
-                .substatuses
-                .ok_or_else(|| BuildError::missing_field("substatuses"))?,
-            include_free: self.include_free,
+            account_id: self.account_id,
+            status: self.status,
+            billing_reason: self.billing_reason,
+            currency: self.currency,
+            user_id: self.user_id,
+            query: self.query,
+            member_id: self.member_id,
+            membership_id: self.membership_id,
+            product_id: self.product_id,
+            plan_id: self.plan_id,
             created_before: self.created_before,
             created_after: self.created_after,
-            updated_before: self.updated_before,
-            updated_after: self.updated_after,
-            query: self.query,
-            checkout_configuration_ids: self
-                .checkout_configuration_ids
-                .ok_or_else(|| BuildError::missing_field("checkout_configuration_ids"))?,
+            order: self.order,
+            direction: self.direction,
+            first: self.first,
+            after: self.after,
+            last: self.last,
+            before: self.before,
         })
     }
 }

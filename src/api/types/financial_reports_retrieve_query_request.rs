@@ -14,16 +14,20 @@ pub struct FinancialReportsRetrieveQueryRequest {
     /// Aggregate all activity into this display currency via FX conversion.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub in_currency: Option<String>,
-    /// Start of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
+    /// Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub from_date: Option<String>,
-    /// End of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub from: Option<DateTime<FixedOffset>>,
+    /// Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub to_date: Option<String>,
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub to: Option<DateTime<FixedOffset>>,
     /// Grouping granularity for report rows.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub group_by: Option<RetrieveFinancialReportsRequestGroupBy>,
-    /// IANA timezone (for example `America/New_York`) used to bucket report periods and to interpret calendar-day boundaries for balance snapshots. Defaults to UTC. from_date/to_date remain exact instants regardless of this setting.
+    /// IANA timezone (for example `America/New_York`) used to bucket report periods. Defaults to UTC. `from` and `to` remain exact instants.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
     /// Account-level balance activity only: ledger line categories to include.
@@ -32,7 +36,7 @@ pub struct FinancialReportsRetrieveQueryRequest {
     /// Account-level balance activity only: include money moving in or money moving out.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<RetrieveFinancialReportsRequestDirection>,
-    /// Platform-wide (global) reports only: when true, return cumulative balances as of to_date (all history, no lower bound) instead of activity within the period.
+    /// Platform-wide (global) reports only: when true, return cumulative balances as of to (all history, no lower bound) instead of activity within the period.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cumulative: Option<bool>,
     /// Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
@@ -56,8 +60,8 @@ pub struct FinancialReportsRetrieveQueryRequestBuilder {
     report_type: Option<RetrieveFinancialReportsRequestReportType>,
     currency: Option<String>,
     in_currency: Option<String>,
-    from_date: Option<String>,
-    to_date: Option<String>,
+    from: Option<DateTime<FixedOffset>>,
+    to: Option<DateTime<FixedOffset>>,
     group_by: Option<RetrieveFinancialReportsRequestGroupBy>,
     timezone: Option<String>,
     line_types: Option<Vec<Option<RetrieveFinancialReportsRequestLineTypesItem>>>,
@@ -88,13 +92,13 @@ impl FinancialReportsRetrieveQueryRequestBuilder {
         self
     }
 
-    pub fn from_date(mut self, value: impl Into<String>) -> Self {
-        self.from_date = Some(value.into());
+    pub fn from(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.from = Some(value);
         self
     }
 
-    pub fn to_date(mut self, value: impl Into<String>) -> Self {
-        self.to_date = Some(value.into());
+    pub fn to(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.to = Some(value);
         self
     }
 
@@ -151,8 +155,8 @@ impl FinancialReportsRetrieveQueryRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("report_type"))?,
             currency: self.currency,
             in_currency: self.in_currency,
-            from_date: self.from_date,
-            to_date: self.to_date,
+            from: self.from,
+            to: self.to,
             group_by: self.group_by,
             timezone: self.timezone,
             line_types: self

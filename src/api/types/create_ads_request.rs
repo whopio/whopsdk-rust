@@ -11,7 +11,7 @@ pub struct CreateAdsRequest {
     /// The call-to-action button shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub call_to_action: Option<CreateAdsRequestCallToAction>,
-    /// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Two or more entries with no format become a carousel (2-10 attachments), in order, sharing the ad's copy.
+    /// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub creatives: Option<Vec<CreateAdsRequestCreativesItem>>,
     /// The description variants shown on the ad.
@@ -35,6 +35,9 @@ pub struct CreateAdsRequest {
     /// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_advertiser_ads: Option<bool>,
+    /// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub music: Option<CreateAdsRequestMusic>,
     /// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_source: Option<CreateAdsRequestPostSource>,
@@ -75,6 +78,7 @@ pub struct CreateAdsRequestBuilder {
     lead_form_id: Option<String>,
     messaging_config: Option<CreateAdsRequestMessagingConfig>,
     multi_advertiser_ads: Option<bool>,
+    music: Option<CreateAdsRequestMusic>,
     post_source: Option<CreateAdsRequestPostSource>,
     primary_texts: Option<Vec<String>>,
     social_accounts: Option<Vec<CreateAdsRequestSocialAccountsItem>>,
@@ -139,6 +143,11 @@ impl CreateAdsRequestBuilder {
         self
     }
 
+    pub fn music(mut self, value: CreateAdsRequestMusic) -> Self {
+        self.music = Some(value);
+        self
+    }
+
     pub fn post_source(mut self, value: CreateAdsRequestPostSource) -> Self {
         self.post_source = Some(value);
         self
@@ -183,6 +192,7 @@ impl CreateAdsRequestBuilder {
             lead_form_id: self.lead_form_id,
             messaging_config: self.messaging_config,
             multi_advertiser_ads: self.multi_advertiser_ads,
+            music: self.music,
             post_source: self.post_source,
             primary_texts: self.primary_texts,
             social_accounts: self.social_accounts,

@@ -1,18 +1,17 @@
 pub use crate::prelude::*;
 
-/// The issuer's address and card security code check results for this payment. Null when the processor returned none.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct PaymentVerificationChecks {
-    /// Whether the billing street address the customer entered matched the address the issuer has on file.
+    /// Whether the billing street address the customer entered matched the issuer's records.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub address_line1: Option<String>,
-    /// Whether the cardholder name the customer entered matched the name the issuer has on file.
+    /// Whether the cardholder name matched the issuer's records.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub card_holder_name: Option<String>,
-    /// Whether the CVV / CVC the customer entered matched the card.
+    /// Whether the CVV / CVC matched the card.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub card_security_code: Option<String>,
-    /// Whether the billing postal code the customer entered matched the postal code the issuer has on file.
+    /// Whether the billing postal code matched the issuer's records.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub zip_code: Option<String>,
 }

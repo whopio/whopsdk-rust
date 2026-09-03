@@ -8,6 +8,9 @@ pub struct UserEarnings {
     /// Gross income from accounts the user owns or is owner-authorized on.
     #[serde(default)]
     pub owned_accounts: UserEarningsAmount,
+    /// Partner commissions posted to the user's wallet. Pending Partner payouts are excluded until they post; later reversals do not reduce gross income.
+    #[serde(default)]
+    pub partners: UserEarningsAmount,
     /// Gross income from the user's personal wallet.
     #[serde(default)]
     pub personal: UserEarningsAmount,
@@ -27,6 +30,7 @@ impl UserEarnings {
 pub struct UserEarningsBuilder {
     first_earned_at: Option<String>,
     owned_accounts: Option<UserEarningsAmount>,
+    partners: Option<UserEarningsAmount>,
     personal: Option<UserEarningsAmount>,
     total: Option<UserEarningsAmount>,
 }
@@ -39,6 +43,11 @@ impl UserEarningsBuilder {
 
     pub fn owned_accounts(mut self, value: UserEarningsAmount) -> Self {
         self.owned_accounts = Some(value);
+        self
+    }
+
+    pub fn partners(mut self, value: UserEarningsAmount) -> Self {
+        self.partners = Some(value);
         self
     }
 
@@ -55,6 +64,7 @@ impl UserEarningsBuilder {
     /// Consumes the builder and constructs a [`UserEarnings`].
     /// This method will fail if any of the following fields are not set:
     /// - [`owned_accounts`](UserEarningsBuilder::owned_accounts)
+    /// - [`partners`](UserEarningsBuilder::partners)
     /// - [`personal`](UserEarningsBuilder::personal)
     /// - [`total`](UserEarningsBuilder::total)
     pub fn build(self) -> Result<UserEarnings, BuildError> {
@@ -63,6 +73,9 @@ impl UserEarningsBuilder {
             owned_accounts: self
                 .owned_accounts
                 .ok_or_else(|| BuildError::missing_field("owned_accounts"))?,
+            partners: self
+                .partners
+                .ok_or_else(|| BuildError::missing_field("partners"))?,
             personal: self
                 .personal
                 .ok_or_else(|| BuildError::missing_field("personal"))?,

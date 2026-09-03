@@ -8,6 +8,8 @@ pub enum RetrieveBreakdownResponseItemsItemObject {
     Merchant,
     PayoutDestination,
     Balance,
+    WithdrawalAdjustment,
+    AdCampaign,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -21,6 +23,8 @@ impl Serialize for RetrieveBreakdownResponseItemsItemObject {
             Self::Merchant => serializer.serialize_str("merchant"),
             Self::PayoutDestination => serializer.serialize_str("payout_destination"),
             Self::Balance => serializer.serialize_str("balance"),
+            Self::WithdrawalAdjustment => serializer.serialize_str("withdrawal_adjustment"),
+            Self::AdCampaign => serializer.serialize_str("ad_campaign"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -35,6 +39,8 @@ impl<'de> Deserialize<'de> for RetrieveBreakdownResponseItemsItemObject {
             "merchant" => Ok(Self::Merchant),
             "payout_destination" => Ok(Self::PayoutDestination),
             "balance" => Ok(Self::Balance),
+            "withdrawal_adjustment" => Ok(Self::WithdrawalAdjustment),
+            "ad_campaign" => Ok(Self::AdCampaign),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -48,6 +54,8 @@ impl fmt::Display for RetrieveBreakdownResponseItemsItemObject {
             Self::Merchant => write!(f, "merchant"),
             Self::PayoutDestination => write!(f, "payout_destination"),
             Self::Balance => write!(f, "balance"),
+            Self::WithdrawalAdjustment => write!(f, "withdrawal_adjustment"),
+            Self::AdCampaign => write!(f, "ad_campaign"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

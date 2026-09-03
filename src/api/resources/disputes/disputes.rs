@@ -76,7 +76,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -155,7 +155,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -211,7 +211,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -270,7 +270,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -319,7 +319,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -376,12 +376,12 @@ impl DisputesClient {
         &self,
         id: &str,
         options: Option<RequestOptions>,
-    ) -> Result<Dispute, ApiError> {
+    ) -> Result<DisputeLegacy, ApiError> {
         let options = {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -445,12 +445,12 @@ impl DisputesClient {
         id: &str,
         request: &UpdateEvidenceDisputeRequest,
         options: Option<RequestOptions>,
-    ) -> Result<Dispute, ApiError> {
+    ) -> Result<DisputeLegacy, ApiError> {
         let options = {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -515,7 +515,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client

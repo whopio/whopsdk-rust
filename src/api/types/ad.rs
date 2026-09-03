@@ -163,6 +163,9 @@ pub struct Ad {
     /// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_advertiser_ads: Option<bool>,
+    /// The advertiser-uploaded MP3 a TikTok carousel ad plays. TikTok-only; `null` elsewhere and for non-carousel ads.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub music: Option<AdMusic>,
     /// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_id: Option<String>,
@@ -311,6 +314,7 @@ pub struct AdBuilder {
     link_clicks: Option<f64>,
     messaging_config: Option<AdMessagingConfig>,
     multi_advertiser_ads: Option<bool>,
+    music: Option<AdMusic>,
     post_id: Option<String>,
     post_source: Option<AdPostSource>,
     post_thumbnail_url: Option<String>,
@@ -553,6 +557,11 @@ impl AdBuilder {
 
     pub fn multi_advertiser_ads(mut self, value: bool) -> Self {
         self.multi_advertiser_ads = Some(value);
+        self
+    }
+
+    pub fn music(mut self, value: AdMusic) -> Self {
+        self.music = Some(value);
         self
     }
 
@@ -831,6 +840,7 @@ impl AdBuilder {
                 .ok_or_else(|| BuildError::missing_field("link_clicks"))?,
             messaging_config: self.messaging_config,
             multi_advertiser_ads: self.multi_advertiser_ads,
+            music: self.music,
             post_id: self.post_id,
             post_source: self.post_source,
             post_thumbnail_url: self.post_thumbnail_url,

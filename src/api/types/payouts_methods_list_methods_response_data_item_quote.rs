@@ -17,6 +17,10 @@ pub struct ListMethodsResponseDataItemQuote {
     /// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub instant: Option<ListMethodsResponseDataItemQuoteInstant>,
+    /// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub instant_unavailable_reason:
+        Option<ListMethodsResponseDataItemQuoteInstantUnavailableReason>,
     /// Maximum payout amount for this method, in the payout currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -44,6 +48,7 @@ pub struct ListMethodsResponseDataItemQuoteBuilder {
     currency: Option<String>,
     exchange_rate: Option<f64>,
     instant: Option<ListMethodsResponseDataItemQuoteInstant>,
+    instant_unavailable_reason: Option<ListMethodsResponseDataItemQuoteInstantUnavailableReason>,
     max_limit: Option<f64>,
     min_limit: Option<f64>,
     standard: Option<ListMethodsResponseDataItemQuoteStandard>,
@@ -67,6 +72,14 @@ impl ListMethodsResponseDataItemQuoteBuilder {
 
     pub fn instant(mut self, value: ListMethodsResponseDataItemQuoteInstant) -> Self {
         self.instant = Some(value);
+        self
+    }
+
+    pub fn instant_unavailable_reason(
+        mut self,
+        value: ListMethodsResponseDataItemQuoteInstantUnavailableReason,
+    ) -> Self {
+        self.instant_unavailable_reason = Some(value);
         self
     }
 
@@ -103,6 +116,7 @@ impl ListMethodsResponseDataItemQuoteBuilder {
                 .exchange_rate
                 .ok_or_else(|| BuildError::missing_field("exchange_rate"))?,
             instant: self.instant,
+            instant_unavailable_reason: self.instant_unavailable_reason,
             max_limit: self.max_limit,
             min_limit: self
                 .min_limit

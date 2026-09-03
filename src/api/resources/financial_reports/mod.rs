@@ -25,13 +25,13 @@ impl FinancialReportsClient {
     /// * `report_type` - The type of financial report to generate.
     /// * `currency` - Filter rows to this currency, for example `usd`. Defaults to `usd` unless `in_currency` is provided.
     /// * `in_currency` - Aggregate all activity into this display currency via FX conversion.
-    /// * `from_date` - Start of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
-    /// * `to_date` - End of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
+    /// * `from` - Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+    /// * `to` - Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
     /// * `group_by` - Grouping granularity for report rows.
-    /// * `timezone` - IANA timezone (for example `America/New_York`) used to bucket report periods and to interpret calendar-day boundaries for balance snapshots. Defaults to UTC. from_date/to_date remain exact instants regardless of this setting.
+    /// * `timezone` - IANA timezone (for example `America/New_York`) used to bucket report periods. Defaults to UTC. `from` and `to` remain exact instants.
     /// * `line_types` - Account-level balance activity only: ledger line categories to include.
     /// * `direction` - Account-level balance activity only: include money moving in or money moving out.
-    /// * `cumulative` - Platform-wide (global) reports only: when true, return cumulative balances as of to_date (all history, no lower bound) instead of activity within the period.
+    /// * `cumulative` - Platform-wide (global) reports only: when true, return cumulative balances as of to (all history, no lower bound) instead of activity within the period.
     /// * `scope_account_id` - Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
     /// * `include_payment_fee_breakdown` - Balance activity only: include payment costs grouped by payment method and provider.
     /// * `options` - Additional request options such as headers, timeout, etc.
@@ -60,8 +60,8 @@ impl FinancialReportsClient {
     ///                 report_type: RetrieveFinancialReportsRequestReportType::BalanceSummary,
     ///                 currency: None,
     ///                 in_currency: None,
-    ///                 from_date: None,
-    ///                 to_date: None,
+    ///                 from: None,
+    ///                 to: None,
     ///                 group_by: None,
     ///                 timezone: None,
     ///                 line_types: vec![],
@@ -84,7 +84,7 @@ impl FinancialReportsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-08-25-2".to_string());
+                .or_insert_with(|| "2026-09-02-1".to_string());
             Some(o)
         };
         self.http_client
@@ -97,8 +97,8 @@ impl FinancialReportsClient {
                     .serialize("report_type", Some(request.report_type.clone()))
                     .string("currency", request.currency.clone())
                     .string("in_currency", request.in_currency.clone())
-                    .string("from_date", request.from_date.clone())
-                    .string("to_date", request.to_date.clone())
+                    .datetime("from", request.from.clone())
+                    .datetime("to", request.to.clone())
                     .serialize("group_by", request.group_by.clone())
                     .string("timezone", request.timezone.clone())
                     .serialize_array("line_types", request.line_types.clone())

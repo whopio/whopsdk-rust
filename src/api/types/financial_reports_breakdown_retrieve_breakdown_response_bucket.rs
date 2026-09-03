@@ -5,7 +5,10 @@ pub use crate::prelude::*;
 pub enum RetrieveBreakdownResponseBucket {
     Transfers,
     Payments,
+    Refunds,
+    Ads,
     CardSpend,
+    CardAuthorizationReleases,
     Withdrawals,
     Swaps,
     /// This variant is used for forward compatibility.
@@ -18,7 +21,12 @@ impl Serialize for RetrieveBreakdownResponseBucket {
         match self {
             Self::Transfers => serializer.serialize_str("transfers"),
             Self::Payments => serializer.serialize_str("payments"),
+            Self::Refunds => serializer.serialize_str("refunds"),
+            Self::Ads => serializer.serialize_str("ads"),
             Self::CardSpend => serializer.serialize_str("card_spend"),
+            Self::CardAuthorizationReleases => {
+                serializer.serialize_str("card_authorization_releases")
+            }
             Self::Withdrawals => serializer.serialize_str("withdrawals"),
             Self::Swaps => serializer.serialize_str("swaps"),
             Self::__Unknown(val) => serializer.serialize_str(val),
@@ -32,7 +40,10 @@ impl<'de> Deserialize<'de> for RetrieveBreakdownResponseBucket {
         match value.as_str() {
             "transfers" => Ok(Self::Transfers),
             "payments" => Ok(Self::Payments),
+            "refunds" => Ok(Self::Refunds),
+            "ads" => Ok(Self::Ads),
             "card_spend" => Ok(Self::CardSpend),
+            "card_authorization_releases" => Ok(Self::CardAuthorizationReleases),
             "withdrawals" => Ok(Self::Withdrawals),
             "swaps" => Ok(Self::Swaps),
             _ => Ok(Self::__Unknown(value)),
@@ -45,7 +56,10 @@ impl fmt::Display for RetrieveBreakdownResponseBucket {
         match self {
             Self::Transfers => write!(f, "transfers"),
             Self::Payments => write!(f, "payments"),
+            Self::Refunds => write!(f, "refunds"),
+            Self::Ads => write!(f, "ads"),
             Self::CardSpend => write!(f, "card_spend"),
+            Self::CardAuthorizationReleases => write!(f, "card_authorization_releases"),
             Self::Withdrawals => write!(f, "withdrawals"),
             Self::Swaps => write!(f, "swaps"),
             Self::__Unknown(val) => write!(f, "{}", val),

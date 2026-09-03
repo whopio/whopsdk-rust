@@ -76,6 +76,8 @@ pub struct App {
     /// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub preview_token: Option<String>,
+    #[serde(default)]
+    pub previous_hosted_urls: Vec<String>,
     /// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
@@ -145,6 +147,7 @@ pub struct AppBuilder {
     openapi_path: Option<String>,
     origin: Option<String>,
     preview_token: Option<String>,
+    previous_hosted_urls: Option<Vec<String>>,
     product_id: Option<String>,
     production_android_build: Option<AppProductionBuild>,
     production_ios_build: Option<AppProductionBuild>,
@@ -290,6 +293,11 @@ impl AppBuilder {
         self
     }
 
+    pub fn previous_hosted_urls(mut self, value: Vec<String>) -> Self {
+        self.previous_hosted_urls = Some(value);
+        self
+    }
+
     pub fn product_id(mut self, value: impl Into<String>) -> Self {
         self.product_id = Some(value.into());
         self
@@ -363,6 +371,7 @@ impl AppBuilder {
     /// - [`id`](AppBuilder::id)
     /// - [`name`](AppBuilder::name)
     /// - [`oauth_client_type`](AppBuilder::oauth_client_type)
+    /// - [`previous_hosted_urls`](AppBuilder::previous_hosted_urls)
     /// - [`redirect_uris`](AppBuilder::redirect_uris)
     /// - [`requested_permissions`](AppBuilder::requested_permissions)
     /// - [`required_scopes`](AppBuilder::required_scopes)
@@ -412,6 +421,9 @@ impl AppBuilder {
             openapi_path: self.openapi_path,
             origin: self.origin,
             preview_token: self.preview_token,
+            previous_hosted_urls: self
+                .previous_hosted_urls
+                .ok_or_else(|| BuildError::missing_field("previous_hosted_urls"))?,
             product_id: self.product_id,
             production_android_build: self.production_android_build,
             production_ios_build: self.production_ios_build,
