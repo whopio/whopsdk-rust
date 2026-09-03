@@ -60,7 +60,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<Option<String>>` — The unique identifier of the company to generate the token for, starting with 'biz_'. The API key must have permission to access this company.
+**account_id:** `Option<Option<String>>` — The unique identifier of the company to generate the token for, starting with 'biz_'. The API key must have permission to access this company.
     
 </dd>
 </dl>
@@ -137,7 +137,7 @@ async fn main() {
         .account_links
         .create(
             &CreateAccountLinksRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 refresh_url: "refresh_url".to_string(),
                 return_url: "return_url".to_string(),
                 use_case: AccountLinkUseCases::AccountOnboarding,
@@ -160,7 +160,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
+**account_id:** `String` — The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
     
 </dd>
 </dl>
@@ -4769,7 +4769,7 @@ async fn main() {
 </details>
 
 ## Affiliates
-<details><summary><code>client.affiliates.<a href="/src/api/resources/affiliates/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;AffiliatesSortableColumns&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;Status&gt;&gt;) -> Result&lt;ListAffiliatesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.affiliates.<a href="/src/api/resources/affiliates/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;AffiliatesSortableColumns&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;Status&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListAffiliatesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -4814,7 +4814,7 @@ async fn main() {
             &AffiliatesListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 direction: None,
@@ -4872,14 +4872,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list affiliates for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **direction:** `Option<Direction>` 
     
 </dd>
@@ -4905,6 +4897,14 @@ async fn main() {
 <dd>
 
 **status:** `Option<Status>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list affiliates for.
     
 </dd>
 </dl>
@@ -4959,7 +4959,7 @@ async fn main() {
         .affiliates
         .create(
             &CreateAffiliatesRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 user_identifier: "user_identifier".to_string(),
             },
             None,
@@ -4980,7 +4980,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The ID of the company to create the affiliate for.
+**account_id:** `String` — The ID of the company to create the affiliate for.
     
 </dd>
 </dl>
@@ -8420,7 +8420,7 @@ async fn main() {
 </details>
 
 ## AuthorizedUsers
-<details><summary><code>client.authorized_users.<a href="/src/api/resources/authorized_users/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, role: Option&lt;Option&lt;AuthorizedUserRoles&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAuthorizedUsersResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.authorized_users.<a href="/src/api/resources/authorized_users/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, role: Option&lt;Option&lt;AuthorizedUserRoles&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAuthorizedUsersResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -8466,10 +8466,10 @@ async fn main() {
             &AuthorizedUsersListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -8522,14 +8522,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to list authorized users for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **user_id:** `Option<String>` — Filter results to a specific user to check if they are an authorized team member.
     
 </dd>
@@ -8555,6 +8547,14 @@ async fn main() {
 <dd>
 
 **created_after:** `Option<String>` — Only return authorized users created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company to list authorized users for.
     
 </dd>
 </dl>
@@ -8610,7 +8610,7 @@ async fn main() {
         .authorized_users
         .create(
             &CreateAuthorizedUsersRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 role: GrantableAuthorizedUserRoles::Owner,
                 user_id: "user_xxxxxxxxxxxxx".to_string(),
                 elevation: None,
@@ -8634,7 +8634,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The ID of the company to add the authorized user to.
+**account_id:** `String` — The ID of the company to add the authorized user to.
     
 </dd>
 </dl>
@@ -8749,7 +8749,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.authorized_users.<a href="/src/api/resources/authorized_users/client.rs">delete</a>(id: String, company_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;bool, ApiError&gt;</code></summary>
+<details><summary><code>client.authorized_users.<a href="/src/api/resources/authorized_users/client.rs">delete</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;bool, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -8793,7 +8793,7 @@ async fn main() {
         .delete(
             &"ausr_xxxxxxxxxxxxx".to_string(),
             &AuthorizedUsersDeleteQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -8822,7 +8822,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
+**account_id:** `Option<String>` — The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
     
 </dd>
 </dl>
@@ -10669,7 +10669,7 @@ async fn main() {
 </details>
 
 ## ChatChannels
-<details><summary><code>client.chat_channels.<a href="/src/api/resources/chat_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListChatChannelsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.chat_channels.<a href="/src/api/resources/chat_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListChatChannelsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -10714,8 +10714,8 @@ async fn main() {
             &ChatChannelsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 product_id: Some("prod_xxxxxxxxxxxxx".to_string()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -10769,7 +10769,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list chat channels for.
+**product_id:** `Option<String>` — The unique identifier of a product to filter by. When set, only chat channels connected to this product are returned.
     
 </dd>
 </dl>
@@ -10777,7 +10777,7 @@ async fn main() {
 <dl>
 <dd>
 
-**product_id:** `Option<String>` — The unique identifier of a product to filter by. When set, only chat channels connected to this product are returned.
+**account_id:** `String` — The unique identifier of the company to list chat channels for.
     
 </dd>
 </dl>
@@ -11397,7 +11397,7 @@ async fn main() {
 </details>
 
 ## CompanyTokenTransactions
-<details><summary><code>client.company_token_transactions.<a href="/src/api/resources/company_token_transactions/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, transaction_type: Option&lt;Option&lt;CompanyTokenTransactionTypes&gt;&gt;) -> Result&lt;ListCompanyTokenTransactionsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.company_token_transactions.<a href="/src/api/resources/company_token_transactions/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, transaction_type: Option&lt;Option&lt;CompanyTokenTransactionTypes&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListCompanyTokenTransactionsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -11444,8 +11444,8 @@ async fn main() {
             &CompanyTokenTransactionsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 transaction_type: None,
@@ -11500,14 +11500,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list token transactions for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **user_id:** `Option<String>` — Filter transactions to only those involving this specific user.
     
 </dd>
@@ -11517,6 +11509,14 @@ async fn main() {
 <dd>
 
 **transaction_type:** `Option<CompanyTokenTransactionTypes>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list token transactions for.
     
 </dd>
 </dl>
@@ -11574,8 +11574,8 @@ async fn main() {
         .create(
             &CreateCompanyTokenTransactionsRequestBody::Transfer {
                 data: CreateCompanyTokenTransactionsRequestBodyTransfer {
+                    account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     amount: 6.9,
-                    company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     destination_user_id: "destination_user_id".to_string(),
                     user_id: "user_xxxxxxxxxxxxx".to_string(),
                     ..Default::default()
@@ -13521,7 +13521,7 @@ async fn main() {
 </details>
 
 ## Courses
-<details><summary><code>client.courses.<a href="/src/api/resources/courses/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, experience_id: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListCoursesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.courses.<a href="/src/api/resources/courses/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, experience_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListCoursesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -13567,7 +13567,7 @@ async fn main() {
                 first: Some(42),
                 last: Some(42),
                 experience_id: Some("exp_xxxxxxxxxxxxxx".to_string()),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -13628,7 +13628,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to list courses for.
+**account_id:** `Option<String>` — The unique identifier of the company to list courses for.
     
 </dd>
 </dl>
@@ -14115,10 +14115,8 @@ async fn main() {
         .deposits
         .create(
             &CreateDepositsRequest {
-                destination: CreateDepositsRequestDestination::String("destination".to_string()),
+                destination: "biz_xxxxxxxxxxxxxx".to_string(),
                 amount: None,
-                metadata: None,
-                network: None,
             },
             None,
         )
@@ -14146,23 +14144,7 @@ async fn main() {
 <dl>
 <dd>
 
-**destination:** `CreateDepositsRequestDestination` — Destination account ID or wallet address. Object form is supported for compatibility. Any business resolves by its account ID without authentication; a user account resolves only for that same authenticated user.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Metadata to include with the deposit response.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**network:** `Option<Option<CreateDepositsRequestNetwork>>` — Destination network override. Defaults to the destination wallet's own network.
+**destination:** `String` — Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
     
 </dd>
 </dl>
@@ -15243,7 +15225,7 @@ async fn main() {
 </details>
 
 ## DmChannels
-<details><summary><code>client.dm_channels.<a href="/src/api/resources/dm_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListDmChannelsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.dm_channels.<a href="/src/api/resources/dm_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListDmChannelsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -15288,7 +15270,7 @@ async fn main() {
             &DmChannelsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -15341,7 +15323,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
+**account_id:** `Option<String>` — The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
     
 </dd>
 </dl>
@@ -15397,7 +15379,7 @@ async fn main() {
         .create(
             &CreateDmChannelsRequest {
                 with_user_ids: vec!["with_user_ids".to_string()],
-                company_id: None,
+                account_id: None,
                 custom_name: None,
                 notifications_enabled: None,
             },
@@ -15419,7 +15401,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<Option<String>>` — The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
+**account_id:** `Option<Option<String>>` — The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
     
 </dd>
 </dl>
@@ -16104,7 +16086,7 @@ async fn main() {
 </details>
 
 ## Entries
-<details><summary><code>client.entries.<a href="/src/api/resources/entries/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;EntriesSortableColumns&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListEntriesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.entries.<a href="/src/api/resources/entries/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;EntriesSortableColumns&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListEntriesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -16150,9 +16132,9 @@ async fn main() {
             &EntriesListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 direction: None,
@@ -16211,14 +16193,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list waitlist entries for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **direction:** `Option<Direction>` 
     
 </dd>
@@ -16268,6 +16242,14 @@ async fn main() {
 <dd>
 
 **created_after:** `Option<String>` — Only return entries created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list waitlist entries for.
     
 </dd>
 </dl>
@@ -17133,7 +17115,7 @@ async fn main() {
 </details>
 
 ## Experiences
-<details><summary><code>client.experiences.<a href="/src/api/resources/experiences/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, app_id: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListExperiencesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.experiences.<a href="/src/api/resources/experiences/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, app_id: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListExperiencesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -17175,11 +17157,11 @@ async fn main() {
             &ExperiencesListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 product_id: Some("prod_xxxxxxxxxxxxx".to_string()),
                 app_id: Some("app_xxxxxxxxxxxxxx".to_string()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -17233,14 +17215,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list experiences for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **product_id:** `Option<String>` — Filter to only experiences attached to this product identifier.
     
 </dd>
@@ -17266,6 +17240,14 @@ async fn main() {
 <dd>
 
 **created_after:** `Option<String>` — Only return experiences created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list experiences for.
     
 </dd>
 </dl>
@@ -17318,8 +17300,8 @@ async fn main() {
         .experiences
         .create(
             &CreateExperiencesRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 app_id: "app_xxxxxxxxxxxxxx".to_string(),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 is_public: None,
                 logo: None,
                 name: None,
@@ -17344,7 +17326,7 @@ async fn main() {
 <dl>
 <dd>
 
-**app_id:** `String` — The unique identifier of the app that powers this experience.
+**account_id:** `String` — The unique identifier of the company to create this experience for.
     
 </dd>
 </dl>
@@ -17352,7 +17334,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to create this experience for.
+**app_id:** `String` — The unique identifier of the app that powers this experience.
     
 </dd>
 </dl>
@@ -18218,7 +18200,7 @@ async fn main() {
 </details>
 
 ## FeeMarkups
-<details><summary><code>client.fee_markups.<a href="/src/api/resources/fee_markups/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;) -> Result&lt;ListFeeMarkupsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.fee_markups.<a href="/src/api/resources/fee_markups/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListFeeMarkupsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -18263,7 +18245,7 @@ async fn main() {
             &FeeMarkupsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -18317,7 +18299,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
+**account_id:** `String` — The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
     
 </dd>
 </dl>
@@ -18372,7 +18354,7 @@ async fn main() {
         .fee_markups
         .create(
             &CreateFeeMarkupsRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 fee_type: FeeMarkupTypes::CryptoWithdrawalMarkup,
                 fixed_fee_usd: None,
                 metadata: None,
@@ -18397,7 +18379,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to create or update the fee markup for.
+**account_id:** `String` — The unique identifier of the company to create or update the fee markup for.
     
 </dd>
 </dl>
@@ -18901,7 +18883,7 @@ async fn main() {
 </details>
 
 ## FinancialActivity
-<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;ListFinancialActivityRequestDirection&gt;&gt;, resource_id: Option&lt;Option&lt;String&gt;&gt;, activity_id: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;ListFinancialActivityRequestDirection&gt;&gt;, resource_id: Option&lt;Option&lt;String&gt;&gt;, activity_id: Option&lt;Option&lt;String&gt;&gt;, exclude_internal_movements: Option&lt;Option&lt;bool&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -18949,6 +18931,7 @@ async fn main() {
                 direction: None,
                 resource_id: None,
                 activity_id: None,
+                exclude_internal_movements: None,
                 currency: None,
                 posted_after: None,
                 posted_before: None,
@@ -19032,6 +19015,14 @@ async fn main() {
 <dd>
 
 **activity_id:** `Option<String>` — Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**exclude_internal_movements:** `Option<bool>` — Whether to exclude balance reservations and balanced movements between the account's own balances.
     
 </dd>
 </dl>
@@ -19463,8 +19454,8 @@ async fn main() {
         .create(
             &CreateForumPostsRequest {
                 experience_id: "exp_xxxxxxxxxxxxxx".to_string(),
+                account_id: None,
                 attachments: None,
-                company_id: None,
                 content: None,
                 is_mention: None,
                 parent_id: None,
@@ -19494,7 +19485,7 @@ async fn main() {
 <dl>
 <dd>
 
-**attachments:** `Option<Option<Vec<CreateForumPostsRequestAttachmentsItem>>>` — A list of file attachments to include with the post, such as images or videos.
+**account_id:** `Option<Option<String>>` — The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
     
 </dd>
 </dl>
@@ -19502,7 +19493,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<Option<String>>` — The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
+**attachments:** `Option<Option<Vec<CreateForumPostsRequestAttachmentsItem>>>` — A list of file attachments to include with the post, such as images or videos.
     
 </dd>
 </dl>
@@ -19783,7 +19774,7 @@ async fn main() {
 </details>
 
 ## Forums
-<details><summary><code>client.forums.<a href="/src/api/resources/forums/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListForumsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.forums.<a href="/src/api/resources/forums/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListForumsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -19828,8 +19819,8 @@ async fn main() {
             &ForumsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 product_id: Some("prod_xxxxxxxxxxxxx".to_string()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -19883,7 +19874,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list forums for.
+**product_id:** `Option<String>` — The unique identifier of a product to filter by. When set, only forums connected to this product are returned.
     
 </dd>
 </dl>
@@ -19891,7 +19882,7 @@ async fn main() {
 <dl>
 <dd>
 
-**product_id:** `Option<String>` — The unique identifier of a product to filter by. When set, only forums connected to this product are returned.
+**account_id:** `String` — The unique identifier of the company to list forums for.
     
 </dd>
 </dl>
@@ -20087,7 +20078,7 @@ async fn main() {
 </details>
 
 ## IdentityProfiles
-<details><summary><code>client.identity_profiles.<a href="/src/api/resources/identity_profiles/client.rs">list_identity_profile</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, profile_type: Option&lt;Option&lt;IdentityProfileKinds&gt;&gt;, status: Option&lt;Option&lt;IdentityProfileStatuses&gt;&gt;) -> Result&lt;ListIdentityProfileResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.identity_profiles.<a href="/src/api/resources/identity_profiles/client.rs">list_identity_profile</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, profile_type: Option&lt;Option&lt;IdentityProfileKinds&gt;&gt;, status: Option&lt;Option&lt;IdentityProfileStatuses&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListIdentityProfileResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -20132,7 +20123,7 @@ async fn main() {
             &ListIdentityProfileQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -20185,14 +20176,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **profile_type:** `Option<IdentityProfileKinds>` 
     
 </dd>
@@ -20202,6 +20185,14 @@ async fn main() {
 <dd>
 
 **status:** `Option<IdentityProfileStatuses>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
     
 </dd>
 </dl>
@@ -20475,7 +20466,7 @@ async fn main() {
 </details>
 
 ## Invoices
-<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;InvoicesSortableColumns&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListInvoicesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;InvoicesSortableColumns&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListInvoicesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -20520,9 +20511,9 @@ async fn main() {
             &InvoicesListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 after: None,
                 before: None,
                 direction: None,
@@ -20574,14 +20565,6 @@ async fn main() {
 <dd>
 
 **last:** `Option<i64>` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `Option<String>` — The unique identifier of the company to list invoices for.
     
 </dd>
 </dl>
@@ -20641,6 +20624,14 @@ async fn main() {
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company to list invoices for.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -20696,11 +20687,11 @@ async fn main() {
         .create(
             &CreateInvoicesRequestBody::CreateInvoicesRequestBodyProduct(
                 CreateInvoicesRequestBodyProduct {
+                    account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     automatically_finalizes_at: None,
                     billing_address: None,
                     charge_buyer_fee: None,
                     collection_method: InvoiceCollectionMethods::SendInvoice,
-                    company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     customer_name: None,
                     due_date: None,
                     email_address: None,
@@ -21350,7 +21341,7 @@ async fn main() {
 </details>
 
 ## Leads
-<details><summary><code>client.leads.<a href="/src/api/resources/leads/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListLeadsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.leads.<a href="/src/api/resources/leads/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListLeadsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -21398,9 +21389,9 @@ async fn main() {
             &LeadsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 product_ids: vec![],
@@ -21455,14 +21446,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list leads for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **created_after:** `Option<String>` — Only return leads created after this timestamp.
     
 </dd>
@@ -21480,6 +21463,14 @@ async fn main() {
 <dd>
 
 **product_ids:** `Option<String>` — Filter leads to only those associated with these specific product identifiers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list leads for.
     
 </dd>
 </dl>
@@ -21537,7 +21528,7 @@ async fn main() {
         .leads
         .create(
             &CreateLeadsRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 metadata: None,
                 product_id: None,
                 referrer: None,
@@ -21561,7 +21552,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to create the lead for, starting with 'biz_'.
+**account_id:** `String` — The unique identifier of the company to create the lead for, starting with 'biz_'.
     
 </dd>
 </dl>
@@ -24901,7 +24892,7 @@ async fn main() {
 </details>
 
 ## PaymentMethods
-<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, future_usage: Option&lt;Option&lt;FutureUsageTypes&gt;&gt;, has_payer_document: Option&lt;Option&lt;bool&gt;&gt;, expired: Option&lt;Option&lt;bool&gt;&gt;, broken: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;ListPaymentMethodsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, future_usage: Option&lt;Option&lt;FutureUsageTypes&gt;&gt;, has_payer_document: Option&lt;Option&lt;bool&gt;&gt;, expired: Option&lt;Option&lt;bool&gt;&gt;, broken: Option&lt;Option&lt;bool&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPaymentMethodsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -24947,9 +24938,9 @@ async fn main() {
                 first: Some(42),
                 last: Some(42),
                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 after: None,
                 before: None,
                 direction: None,
@@ -25012,14 +25003,6 @@ async fn main() {
 <dd>
 
 **member_id:** `Option<String>` — The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -25103,6 +25086,14 @@ async fn main() {
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -25111,7 +25102,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">retrieve</a>(id: String, company_id: Option&lt;Option&lt;String&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;PaymentMethod, ApiError&gt;</code></summary>
+<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">retrieve</a>(id: String, member_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;PaymentMethod, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -25155,8 +25146,8 @@ async fn main() {
         .retrieve(
             &"payt_xxxxxxxxxxxxx".to_string(),
             &PaymentMethodsRetrieveQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -25185,7 +25176,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+**member_id:** `Option<String>` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -25193,7 +25184,7 @@ async fn main() {
 <dl>
 <dd>
 
-**member_id:** `Option<String>` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+**account_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -25205,7 +25196,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">delete_payment_method</a>(id: String, company_id: Option&lt;Option&lt;String&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;bool, ApiError&gt;</code></summary>
+<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">delete_payment_method</a>(id: String, member_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;bool, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -25249,8 +25240,8 @@ async fn main() {
         .delete_payment_method(
             &"payt_xxxxxxxxxxxxx".to_string(),
             &DeletePaymentMethodQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -25279,7 +25270,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+**member_id:** `Option<String>` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -25287,7 +25278,7 @@ async fn main() {
 <dl>
 <dd>
 
-**member_id:** `Option<String>` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+**account_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -26282,7 +26273,7 @@ async fn main() {
 </details>
 
 ## PayoutMethods
-<details><summary><code>client.payout_methods.<a href="/src/api/resources/payout_methods/client.rs">list_payout_method</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;) -> Result&lt;ListPayoutMethodResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.payout_methods.<a href="/src/api/resources/payout_methods/client.rs">list_payout_method</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListPayoutMethodResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -26327,7 +26318,7 @@ async fn main() {
             &ListPayoutMethodQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -26381,7 +26372,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list payout methods for.
+**account_id:** `String` — The unique identifier of the company to list payout methods for.
     
 </dd>
 </dl>
@@ -32229,7 +32220,7 @@ async fn main() {
 </details>
 
 ## Setup Intents
-<details><summary><code>client.setup_intents.<a href="/src/api/resources/setup_intents/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListSetupIntentsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.setup_intents.<a href="/src/api/resources/setup_intents/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListSetupIntentsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -32276,9 +32267,9 @@ async fn main() {
             &SetupIntentsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 direction: None,
@@ -32333,14 +32324,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list setup intents for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **direction:** `Option<Direction>` 
     
 </dd>
@@ -32358,6 +32341,14 @@ async fn main() {
 <dd>
 
 **created_after:** `Option<String>` — Only return setup intents created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list setup intents for.
     
 </dd>
 </dl>
@@ -32415,7 +32406,7 @@ async fn main() {
         .create(
             &CreateSetupIntentsRequestBody::CreateSetupIntentsRequestBodyConfirmationToken(
                 CreateSetupIntentsRequestBodyConfirmationToken {
-                    company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                    account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     confirmation_token: "ctok_xxxxxxxxxxxxxx".to_string(),
                     ..Default::default()
                 },
@@ -33724,7 +33715,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">describe_stats</a>(resource: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;DescribeStatsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">describe_stats</a>(resource: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;DescribeStatsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -33767,8 +33758,8 @@ async fn main() {
         .stats
         .describe_stats(
             &DescribeStatsQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -33797,7 +33788,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — Scope query to a specific company.
+**user_id:** `Option<String>` — Scope query to a specific user.
     
 </dd>
 </dl>
@@ -33805,7 +33796,7 @@ async fn main() {
 <dl>
 <dd>
 
-**user_id:** `Option<String>` — Scope query to a specific user.
+**account_id:** `Option<String>` — Scope query to a specific company.
     
 </dd>
 </dl>
@@ -33817,7 +33808,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">metric_stats</a>(resource: Option&lt;String&gt;, granularity: Option&lt;Option&lt;String&gt;&gt;, filters: Option&lt;Option&lt;std::collections::HashMap&lt;String, serde_json::Value&gt;&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;MetricStatsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">metric_stats</a>(resource: Option&lt;String&gt;, granularity: Option&lt;Option&lt;String&gt;&gt;, filters: Option&lt;Option&lt;std::collections::HashMap&lt;String, serde_json::Value&gt;&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;MetricStatsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -33863,8 +33854,8 @@ async fn main() {
                 resource: "resource".to_string(),
                 from: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 to: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 granularity: None,
                 breakdowns: vec![],
                 filters: None,
@@ -33944,7 +33935,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — Scope query to a specific company.
+**user_id:** `Option<String>` — Scope query to a specific user.
     
 </dd>
 </dl>
@@ -33952,7 +33943,7 @@ async fn main() {
 <dl>
 <dd>
 
-**user_id:** `Option<String>` — Scope query to a specific user.
+**account_id:** `Option<String>` — Scope query to a specific company.
     
 </dd>
 </dl>
@@ -33964,7 +33955,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">raw_stats</a>(resource: Option&lt;String&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;, sort: Option&lt;Option&lt;String&gt;&gt;, sort_direction: Option&lt;Option&lt;Direction&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;RawStatsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">raw_stats</a>(resource: Option&lt;String&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;, sort: Option&lt;Option&lt;String&gt;&gt;, sort_direction: Option&lt;Option&lt;Direction&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;RawStatsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -34011,8 +34002,8 @@ async fn main() {
                 from: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 to: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 limit: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 cursor: None,
                 sort: None,
                 sort_direction: None,
@@ -34091,7 +34082,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — Scope query to a specific company.
+**user_id:** `Option<String>` — Scope query to a specific user.
     
 </dd>
 </dl>
@@ -34099,7 +34090,7 @@ async fn main() {
 <dl>
 <dd>
 
-**user_id:** `Option<String>` — Scope query to a specific user.
+**account_id:** `Option<String>` — Scope query to a specific company.
     
 </dd>
 </dl>
@@ -34490,7 +34481,7 @@ async fn main() {
 </details>
 
 ## SupportChannels
-<details><summary><code>client.support_channels.<a href="/src/api/resources/support_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, view: Option&lt;Option&lt;SupportChannelView&gt;&gt;, open: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;MessageChannelOrder&gt;&gt;) -> Result&lt;ListSupportChannelsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.support_channels.<a href="/src/api/resources/support_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, view: Option&lt;Option&lt;SupportChannelView&gt;&gt;, open: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;MessageChannelOrder&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListSupportChannelsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -34535,7 +34526,7 @@ async fn main() {
             &SupportChannelsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -34588,14 +34579,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **view:** `Option<SupportChannelView>` 
     
 </dd>
@@ -34621,6 +34604,14 @@ async fn main() {
 <dd>
 
 **order:** `Option<MessageChannelOrder>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
     
 </dd>
 </dl>
@@ -34675,7 +34666,7 @@ async fn main() {
         .support_channels
         .create(
             &CreateSupportChannelsRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 user_id: "user_xxxxxxxxxxxxx".to_string(),
                 custom_name: None,
                 notifications_enabled: None,
@@ -34698,7 +34689,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to create the support channel in.
+**account_id:** `String` — The unique identifier of the company to create the support channel in.
     
 </dd>
 </dl>
@@ -35744,8 +35735,8 @@ async fn main() {
         .topups
         .create(
             &CreateTopupsRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 amount: 6.9,
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 currency: Currencies::Usd,
                 payment_method_id: "pmt_xxxxxxxxxxxxxx".to_string(),
             },
@@ -35767,7 +35758,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `f64` — The amount to add to the balance in the specified currency. For example, 50.00 for $50.00 USD.
+**account_id:** `String` — The unique identifier of the company to add funds to, starting with 'biz_'.
     
 </dd>
 </dl>
@@ -35775,7 +35766,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to add funds to, starting with 'biz_'.
+**amount:** `f64` — The amount to add to the balance in the specified currency. For example, 50.00 for $50.00 USD.
     
 </dd>
 </dl>

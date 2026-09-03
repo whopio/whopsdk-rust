@@ -2,12 +2,12 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreateForumPostsRequest {
+    /// The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
     /// A list of file attachments to include with the post, such as images or videos.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attachments: Option<Vec<CreateForumPostsRequestAttachmentsItem>>,
-    /// The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
     /// The main body of the post in Markdown format. For example, 'Check out this **update**'. Hidden if the post is paywalled and the viewer has not purchased access.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<String>,
@@ -52,8 +52,8 @@ impl CreateForumPostsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateForumPostsRequestBuilder {
+    account_id: Option<String>,
     attachments: Option<Vec<CreateForumPostsRequestAttachmentsItem>>,
-    company_id: Option<String>,
     content: Option<String>,
     experience_id: Option<String>,
     is_mention: Option<bool>,
@@ -68,13 +68,13 @@ pub struct CreateForumPostsRequestBuilder {
 }
 
 impl CreateForumPostsRequestBuilder {
-    pub fn attachments(mut self, value: Vec<CreateForumPostsRequestAttachmentsItem>) -> Self {
-        self.attachments = Some(value);
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn attachments(mut self, value: Vec<CreateForumPostsRequestAttachmentsItem>) -> Self {
+        self.attachments = Some(value);
         self
     }
 
@@ -138,8 +138,8 @@ impl CreateForumPostsRequestBuilder {
     /// - [`experience_id`](CreateForumPostsRequestBuilder::experience_id)
     pub fn build(self) -> Result<CreateForumPostsRequest, BuildError> {
         Ok(CreateForumPostsRequest {
+            account_id: self.account_id,
             attachments: self.attachments,
-            company_id: self.company_id,
             content: self.content,
             experience_id: self
                 .experience_id

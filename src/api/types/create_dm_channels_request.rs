@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct CreateDmChannelsRequest {
     /// The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
+    pub account_id: Option<String>,
     /// A custom display name for the DM channel. For example, 'Project Discussion'.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_name: Option<String>,
@@ -25,15 +25,15 @@ impl CreateDmChannelsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateDmChannelsRequestBuilder {
-    company_id: Option<String>,
+    account_id: Option<String>,
     custom_name: Option<String>,
     notifications_enabled: Option<bool>,
     with_user_ids: Option<Vec<String>>,
 }
 
 impl CreateDmChannelsRequestBuilder {
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -57,7 +57,7 @@ impl CreateDmChannelsRequestBuilder {
     /// - [`with_user_ids`](CreateDmChannelsRequestBuilder::with_user_ids)
     pub fn build(self) -> Result<CreateDmChannelsRequest, BuildError> {
         Ok(CreateDmChannelsRequest {
-            company_id: self.company_id,
+            account_id: self.account_id,
             custom_name: self.custom_name,
             notifications_enabled: self.notifications_enabled,
             with_user_ids: self

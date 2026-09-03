@@ -27,12 +27,12 @@ pub struct RawStatsQueryRequest {
     pub sort: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sort_direction: Option<Direction>,
-    /// Scope query to a specific company.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
     /// Scope query to a specific user.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
+    /// Scope query to a specific company.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
 }
 
 impl RawStatsQueryRequest {
@@ -51,8 +51,8 @@ pub struct RawStatsQueryRequestBuilder {
     cursor: Option<String>,
     sort: Option<String>,
     sort_direction: Option<Direction>,
-    company_id: Option<String>,
     user_id: Option<String>,
+    account_id: Option<String>,
 }
 
 impl RawStatsQueryRequestBuilder {
@@ -91,13 +91,13 @@ impl RawStatsQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
         self
     }
 
-    pub fn user_id(mut self, value: impl Into<String>) -> Self {
-        self.user_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -115,8 +115,8 @@ impl RawStatsQueryRequestBuilder {
             cursor: self.cursor,
             sort: self.sort,
             sort_direction: self.sort_direction,
-            company_id: self.company_id,
             user_id: self.user_id,
+            account_id: self.account_id,
         })
     }
 }

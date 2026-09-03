@@ -25,10 +25,10 @@ impl AuthorizedUsersClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list authorized users for.
     /// * `user_id` - Filter results to a specific user to check if they are an authorized team member.
     /// * `created_before` - Only return authorized users created before this timestamp.
     /// * `created_after` - Only return authorized users created after this timestamp.
+    /// * `account_id` - The unique identifier of the company to list authorized users for.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -53,10 +53,10 @@ impl AuthorizedUsersClient {
     ///             &AuthorizedUsersListQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
     ///                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
     ///                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -73,7 +73,7 @@ impl AuthorizedUsersClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -86,11 +86,11 @@ impl AuthorizedUsersClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .string("user_id", request.user_id.clone())
                     .serialize("role", request.role.clone())
                     .datetime("created_before", request.created_before.clone())
                     .datetime("created_after", request.created_after.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -127,7 +127,7 @@ impl AuthorizedUsersClient {
     ///         .authorized_users
     ///         .create(
     ///             &CreateAuthorizedUsersRequest {
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 role: GrantableAuthorizedUserRoles::Owner,
     ///                 user_id: "user_xxxxxxxxxxxxx".to_string(),
     ///                 elevation: None,
@@ -147,7 +147,7 @@ impl AuthorizedUsersClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -203,7 +203,7 @@ impl AuthorizedUsersClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -225,7 +225,7 @@ impl AuthorizedUsersClient {
     /// # Arguments
     ///
     /// * `id` - The ID of the authorized user or user to remove.
-    /// * `company_id` - The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
+    /// * `account_id` - The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -249,7 +249,7 @@ impl AuthorizedUsersClient {
     ///         .delete(
     ///             &"ausr_xxxxxxxxxxxxx".to_string(),
     ///             &AuthorizedUsersDeleteQueryRequest {
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -267,7 +267,7 @@ impl AuthorizedUsersClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -276,7 +276,7 @@ impl AuthorizedUsersClient {
                 &format!("authorized_users/{}", id),
                 None,
                 QueryBuilder::new()
-                    .string("company_id", request.company_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )

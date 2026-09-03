@@ -5,7 +5,7 @@ pub use crate::prelude::*;
 pub struct CreateSetupIntentsRequestBodyConfirmationToken {
     /// The ID of the company to save the payment method for.
     #[serde(default)]
-    pub company_id: String,
+    pub account_id: String,
     /// A confirmation token ID (ctok_) describing a payment method the buyer just supplied. Provide this or payment_method_id, not both.
     #[serde(default)]
     pub confirmation_token: String,
@@ -32,7 +32,7 @@ impl CreateSetupIntentsRequestBodyConfirmationToken {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateSetupIntentsRequestBodyConfirmationTokenBuilder {
-    company_id: Option<String>,
+    account_id: Option<String>,
     confirmation_token: Option<String>,
     currency: Option<Currencies>,
     email: Option<String>,
@@ -41,8 +41,8 @@ pub struct CreateSetupIntentsRequestBodyConfirmationTokenBuilder {
 }
 
 impl CreateSetupIntentsRequestBodyConfirmationTokenBuilder {
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -73,13 +73,13 @@ impl CreateSetupIntentsRequestBodyConfirmationTokenBuilder {
 
     /// Consumes the builder and constructs a [`CreateSetupIntentsRequestBodyConfirmationToken`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](CreateSetupIntentsRequestBodyConfirmationTokenBuilder::company_id)
+    /// - [`account_id`](CreateSetupIntentsRequestBodyConfirmationTokenBuilder::account_id)
     /// - [`confirmation_token`](CreateSetupIntentsRequestBodyConfirmationTokenBuilder::confirmation_token)
     pub fn build(self) -> Result<CreateSetupIntentsRequestBodyConfirmationToken, BuildError> {
         Ok(CreateSetupIntentsRequestBodyConfirmationToken {
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
             confirmation_token: self
                 .confirmation_token
                 .ok_or_else(|| BuildError::missing_field("confirmation_token"))?,

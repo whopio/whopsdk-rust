@@ -24,7 +24,7 @@ impl IdentityProfilesClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
+    /// * `account_id` - The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -49,7 +49,7 @@ impl IdentityProfilesClient {
     ///             &ListIdentityProfileQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -66,7 +66,7 @@ impl IdentityProfilesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -79,9 +79,9 @@ impl IdentityProfilesClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .serialize("profile_type", request.profile_type.clone())
                     .serialize("status", request.status.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -129,7 +129,7 @@ impl IdentityProfilesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -189,7 +189,7 @@ impl IdentityProfilesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -259,7 +259,7 @@ impl IdentityProfilesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

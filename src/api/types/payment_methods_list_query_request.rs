@@ -18,9 +18,6 @@ pub struct PaymentMethodsListQueryRequest {
     /// The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_id: Option<String>,
-    /// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<Direction>,
     /// Only return payment methods created before this timestamp.
@@ -53,6 +50,9 @@ pub struct PaymentMethodsListQueryRequest {
     /// Filter by whether the stored credential has permanently stopped charging, such as a vault entry its provider closed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub broken: Option<bool>,
+    /// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
 }
 
 impl PaymentMethodsListQueryRequest {
@@ -69,7 +69,6 @@ pub struct PaymentMethodsListQueryRequestBuilder {
     first: Option<i64>,
     last: Option<i64>,
     member_id: Option<String>,
-    company_id: Option<String>,
     direction: Option<Direction>,
     created_before: Option<DateTime<FixedOffset>>,
     created_after: Option<DateTime<FixedOffset>>,
@@ -80,6 +79,7 @@ pub struct PaymentMethodsListQueryRequestBuilder {
     has_payer_document: Option<bool>,
     expired: Option<bool>,
     broken: Option<bool>,
+    account_id: Option<String>,
 }
 
 impl PaymentMethodsListQueryRequestBuilder {
@@ -105,11 +105,6 @@ impl PaymentMethodsListQueryRequestBuilder {
 
     pub fn member_id(mut self, value: impl Into<String>) -> Self {
         self.member_id = Some(value.into());
-        self
-    }
-
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
         self
     }
 
@@ -163,6 +158,11 @@ impl PaymentMethodsListQueryRequestBuilder {
         self
     }
 
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`PaymentMethodsListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`payment_method_types`](PaymentMethodsListQueryRequestBuilder::payment_method_types)
@@ -175,7 +175,6 @@ impl PaymentMethodsListQueryRequestBuilder {
             first: self.first,
             last: self.last,
             member_id: self.member_id,
-            company_id: self.company_id,
             direction: self.direction,
             created_before: self.created_before,
             created_after: self.created_after,
@@ -192,6 +191,7 @@ impl PaymentMethodsListQueryRequestBuilder {
             has_payer_document: self.has_payer_document,
             expired: self.expired,
             broken: self.broken,
+            account_id: self.account_id,
         })
     }
 }

@@ -25,7 +25,6 @@ impl PaymentMethodsClient {
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
     /// * `member_id` - The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
-    /// * `company_id` - The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     /// * `created_before` - Only return payment methods created before this timestamp.
     /// * `created_after` - Only return payment methods created after this timestamp.
     /// * `payment_method_types` - Only return payment methods of these types. Pass the eligible `type` values from the payment method types catalogue so the list holds nothing the purchase cannot take. An empty list returns no payment methods.
@@ -34,6 +33,7 @@ impl PaymentMethodsClient {
     /// * `has_payer_document` - Filter cards by whether they carry the payer identity document their payment provider requires. Payment methods that are not cards are unaffected.
     /// * `expired` - Filter by expiry. Only a card can expire, so `false` keeps every payment method that is not past its expiration month and `true` returns expired cards alone.
     /// * `broken` - Filter by whether the stored credential has permanently stopped charging, such as a vault entry its provider closed.
+    /// * `account_id` - The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -59,9 +59,9 @@ impl PaymentMethodsClient {
     ///                 first: Some(42),
     ///                 last: Some(42),
     ///                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
     ///                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 after: None,
     ///                 before: None,
     ///                 direction: None,
@@ -87,7 +87,7 @@ impl PaymentMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -101,7 +101,6 @@ impl PaymentMethodsClient {
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
                     .string("member_id", request.member_id.clone())
-                    .string("company_id", request.company_id.clone())
                     .serialize("direction", request.direction.clone())
                     .datetime("created_before", request.created_before.clone())
                     .datetime("created_after", request.created_after.clone())
@@ -112,6 +111,7 @@ impl PaymentMethodsClient {
                     .bool("has_payer_document", request.has_payer_document.clone())
                     .bool("expired", request.expired.clone())
                     .bool("broken", request.broken.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -126,8 +126,8 @@ impl PaymentMethodsClient {
     /// # Arguments
     ///
     /// * `id` - The unique identifier of the payment method.
-    /// * `company_id` - The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     /// * `member_id` - The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+    /// * `account_id` - The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -151,8 +151,8 @@ impl PaymentMethodsClient {
     ///         .retrieve(
     ///             &"payt_xxxxxxxxxxxxx".to_string(),
     ///             &PaymentMethodsRetrieveQueryRequest {
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -170,7 +170,7 @@ impl PaymentMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -179,8 +179,8 @@ impl PaymentMethodsClient {
                 &format!("payment_methods/{}", id),
                 None,
                 QueryBuilder::new()
-                    .string("company_id", request.company_id.clone())
                     .string("member_id", request.member_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -195,8 +195,8 @@ impl PaymentMethodsClient {
     /// # Arguments
     ///
     /// * `id` - The unique identifier of the payment method to delete.
-    /// * `company_id` - The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     /// * `member_id` - The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+    /// * `account_id` - The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -220,8 +220,8 @@ impl PaymentMethodsClient {
     ///         .delete_payment_method(
     ///             &"payt_xxxxxxxxxxxxx".to_string(),
     ///             &DeletePaymentMethodQueryRequest {
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -239,7 +239,7 @@ impl PaymentMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -248,8 +248,8 @@ impl PaymentMethodsClient {
                 &format!("payment_methods/{}", id),
                 None,
                 QueryBuilder::new()
-                    .string("company_id", request.company_id.clone())
                     .string("member_id", request.member_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )

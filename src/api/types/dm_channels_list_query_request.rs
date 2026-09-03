@@ -17,7 +17,7 @@ pub struct DmChannelsListQueryRequest {
     pub last: Option<i64>,
     /// The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
+    pub account_id: Option<String>,
 }
 
 impl DmChannelsListQueryRequest {
@@ -33,7 +33,7 @@ pub struct DmChannelsListQueryRequestBuilder {
     before: Option<String>,
     first: Option<i64>,
     last: Option<i64>,
-    company_id: Option<String>,
+    account_id: Option<String>,
 }
 
 impl DmChannelsListQueryRequestBuilder {
@@ -57,8 +57,8 @@ impl DmChannelsListQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -69,7 +69,7 @@ impl DmChannelsListQueryRequestBuilder {
             before: self.before,
             first: self.first,
             last: self.last,
-            company_id: self.company_id,
+            account_id: self.account_id,
         })
     }
 }

@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct CreateSupportChannelsRequest {
     /// The unique identifier of the company to create the support channel in.
     #[serde(default)]
-    pub company_id: String,
+    pub account_id: String,
     /// Optional custom display name for the support channel.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_name: Option<String>,
@@ -25,15 +25,15 @@ impl CreateSupportChannelsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateSupportChannelsRequestBuilder {
-    company_id: Option<String>,
+    account_id: Option<String>,
     custom_name: Option<String>,
     notifications_enabled: Option<bool>,
     user_id: Option<String>,
 }
 
 impl CreateSupportChannelsRequestBuilder {
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -54,13 +54,13 @@ impl CreateSupportChannelsRequestBuilder {
 
     /// Consumes the builder and constructs a [`CreateSupportChannelsRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](CreateSupportChannelsRequestBuilder::company_id)
+    /// - [`account_id`](CreateSupportChannelsRequestBuilder::account_id)
     /// - [`user_id`](CreateSupportChannelsRequestBuilder::user_id)
     pub fn build(self) -> Result<CreateSupportChannelsRequest, BuildError> {
         Ok(CreateSupportChannelsRequest {
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
             custom_name: self.custom_name,
             notifications_enabled: self.notifications_enabled,
             user_id: self

@@ -70,7 +70,7 @@ impl CheckoutConfigurationsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -137,7 +137,7 @@ impl CheckoutConfigurationsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -189,7 +189,7 @@ impl CheckoutConfigurationsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -241,7 +241,7 @@ impl CheckoutConfigurationsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

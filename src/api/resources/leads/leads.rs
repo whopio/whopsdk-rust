@@ -27,10 +27,10 @@ impl LeadsClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list leads for.
     /// * `created_after` - Only return leads created after this timestamp.
     /// * `created_before` - Only return leads created before this timestamp.
     /// * `product_ids` - Filter leads to only those associated with these specific product identifiers.
+    /// * `account_id` - The unique identifier of the company to list leads for.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -55,9 +55,9 @@ impl LeadsClient {
     ///             &LeadsListQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
     ///                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 after: None,
     ///                 before: None,
     ///                 product_ids: vec![],
@@ -76,7 +76,7 @@ impl LeadsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -89,10 +89,10 @@ impl LeadsClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .datetime("created_after", request.created_after.clone())
                     .datetime("created_before", request.created_before.clone())
                     .string_array("product_ids", request.product_ids.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -131,7 +131,7 @@ impl LeadsClient {
     ///         .leads
     ///         .create(
     ///             &CreateLeadsRequest {
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 metadata: None,
     ///                 product_id: None,
     ///                 referrer: None,
@@ -151,7 +151,7 @@ impl LeadsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -209,7 +209,7 @@ impl LeadsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -268,7 +268,7 @@ impl LeadsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

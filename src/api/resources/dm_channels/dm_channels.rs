@@ -24,7 +24,7 @@ impl DmChannelsClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
+    /// * `account_id` - The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -49,7 +49,7 @@ impl DmChannelsClient {
     ///             &DmChannelsListQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -66,7 +66,7 @@ impl DmChannelsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -79,7 +79,7 @@ impl DmChannelsClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -116,7 +116,7 @@ impl DmChannelsClient {
     ///         .create(
     ///             &CreateDmChannelsRequest {
     ///                 with_user_ids: vec!["with_user_ids".to_string()],
-    ///                 company_id: None,
+    ///                 account_id: None,
     ///                 custom_name: None,
     ///                 notifications_enabled: None,
     ///             },
@@ -134,7 +134,7 @@ impl DmChannelsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -187,7 +187,7 @@ impl DmChannelsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -240,7 +240,7 @@ impl DmChannelsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -303,7 +303,7 @@ impl DmChannelsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

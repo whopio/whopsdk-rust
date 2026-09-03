@@ -28,12 +28,12 @@ pub struct MetricStatsQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub to: Option<DateTime<FixedOffset>>,
-    /// Scope query to a specific company.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
     /// Scope query to a specific user.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
+    /// Scope query to a specific company.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
 }
 
 impl MetricStatsQueryRequest {
@@ -52,8 +52,8 @@ pub struct MetricStatsQueryRequestBuilder {
     time_zone: Option<String>,
     from: Option<DateTime<FixedOffset>>,
     to: Option<DateTime<FixedOffset>>,
-    company_id: Option<String>,
     user_id: Option<String>,
+    account_id: Option<String>,
 }
 
 impl MetricStatsQueryRequestBuilder {
@@ -92,13 +92,13 @@ impl MetricStatsQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
         self
     }
 
-    pub fn user_id(mut self, value: impl Into<String>) -> Self {
-        self.user_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -119,8 +119,8 @@ impl MetricStatsQueryRequestBuilder {
             time_zone: self.time_zone,
             from: self.from,
             to: self.to,
-            company_id: self.company_id,
             user_id: self.user_id,
+            account_id: self.account_id,
         })
     }
 }

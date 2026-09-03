@@ -24,7 +24,7 @@ impl PayoutMethodsClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list payout methods for.
+    /// * `account_id` - The unique identifier of the company to list payout methods for.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -49,7 +49,7 @@ impl PayoutMethodsClient {
     ///             &ListPayoutMethodQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 after: None,
     ///                 before: None,
     ///             },
@@ -67,7 +67,7 @@ impl PayoutMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client
@@ -80,7 +80,7 @@ impl PayoutMethodsClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -128,7 +128,7 @@ impl PayoutMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-1".to_string());
+                .or_insert_with(|| "2026-09-02-2".to_string());
             Some(o)
         };
         self.http_client

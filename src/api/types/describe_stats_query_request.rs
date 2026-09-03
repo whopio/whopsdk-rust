@@ -6,12 +6,12 @@ pub struct DescribeStatsQueryRequest {
     /// Resource path using : as separator (e.g., 'receipts', 'payments:membership', 'receipts:gross_revenue').
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resource: Option<String>,
-    /// Scope query to a specific company.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
     /// Scope query to a specific user.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
+    /// Scope query to a specific company.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
 }
 
 impl DescribeStatsQueryRequest {
@@ -24,8 +24,8 @@ impl DescribeStatsQueryRequest {
 #[non_exhaustive]
 pub struct DescribeStatsQueryRequestBuilder {
     resource: Option<String>,
-    company_id: Option<String>,
     user_id: Option<String>,
+    account_id: Option<String>,
 }
 
 impl DescribeStatsQueryRequestBuilder {
@@ -34,13 +34,13 @@ impl DescribeStatsQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
         self
     }
 
-    pub fn user_id(mut self, value: impl Into<String>) -> Self {
-        self.user_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -48,8 +48,8 @@ impl DescribeStatsQueryRequestBuilder {
     pub fn build(self) -> Result<DescribeStatsQueryRequest, BuildError> {
         Ok(DescribeStatsQueryRequest {
             resource: self.resource,
-            company_id: self.company_id,
             user_id: self.user_id,
+            account_id: self.account_id,
         })
     }
 }
