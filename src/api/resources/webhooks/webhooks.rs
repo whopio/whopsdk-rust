@@ -70,7 +70,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -140,7 +140,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -189,7 +189,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -238,7 +238,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -297,7 +297,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -358,7 +358,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -423,7 +423,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -486,7 +486,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -545,7 +545,7 @@ impl WebhooksClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -554,79 +554,6 @@ impl WebhooksClient {
                 &format!("webhooks/{}/test", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
                 None,
-                options,
-            )
-            .await
-    }
-
-    /// Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
-    ///
-    /// Required permissions:
-    /// - `developer:manage_webhook`
-    ///
-    /// # Arguments
-    ///
-    /// * `webhook_id` - The unique identifier of the webhook to list deliveries for.
-    /// * `after` - Returns the elements in the list that come after the specified cursor.
-    /// * `before` - Returns the elements in the list that come before the specified cursor.
-    /// * `first` - Returns the first _n_ elements from the list.
-    /// * `last` - Returns the last _n_ elements from the list.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .webhooks
-    ///         .deliveries_webhook(
-    ///             &"webhook_id".to_string(),
-    ///             &DeliveriesWebhookQueryRequest {
-    ///                 first: Some(42),
-    ///                 last: Some(42),
-    ///                 ..Default::default()
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn deliveries_webhook(
-        &self,
-        webhook_id: &str,
-        request: &DeliveriesWebhookQueryRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<DeliveriesWebhookResponse, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::GET,
-                &format!("webhooks/{}/deliveries", webhook_id),
-                None,
-                QueryBuilder::new()
-                    .string("after", request.after.clone())
-                    .string("before", request.before.clone())
-                    .int("first", request.first.clone())
-                    .int("last", request.last.clone())
-                    .build(),
                 options,
             )
             .await

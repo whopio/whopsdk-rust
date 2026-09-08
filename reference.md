@@ -465,6 +465,14 @@ async fn main() {
 <dl>
 <dd>
 
+**send_customer_emails:** `Option<bool>` — Whether Whop sends transactional emails to customers on behalf of the connected account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **title:** `Option<String>` — The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
     
 </dd>
@@ -2264,7 +2272,7 @@ async fn main() {
 <dl>
 <dd>
 
-Resumes a paused ad campaign.
+Resumes a paused ad campaign. Requires an ads payment method on the account.
 </dd>
 </dl>
 </dd>
@@ -3977,7 +3985,7 @@ async fn main() {
 <dl>
 <dd>
 
-Creates an ad in an ad group.
+Creates an ad in an ad group. Any campaign status other than `draft` launches the campaign, which requires an ads payment method on the account.
 </dd>
 </dl>
 </dd>
@@ -5211,7 +5219,7 @@ async fn main() {
 </details>
 
 ## AiChats
-<details><summary><code>client.ai_chats.<a href="/src/api/resources/ai_chats/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, only_active_crons: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;ListAiChatsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.ai_chats.<a href="/src/api/resources/ai_chats/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, agent_identifier: Option&lt;Option&lt;AiChatAgentIdentifiers&gt;&gt;, only_active_crons: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;ListAiChatsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -5305,6 +5313,14 @@ async fn main() {
 <dl>
 <dd>
 
+**agent_identifier:** `Option<AiChatAgentIdentifiers>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **only_active_crons:** `Option<bool>` — When true, returns only chats with an active cron schedule
     
 </dd>
@@ -5361,6 +5377,7 @@ async fn main() {
         .create(
             &CreateAiChatsRequest {
                 message_text: "message_text".to_string(),
+                agent_identifier: None,
                 current_account_id: None,
                 message_attachments: None,
                 message_source: None,
@@ -5381,6 +5398,14 @@ async fn main() {
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**agent_identifier:** `Option<Option<AiChatAgentIdentifiers>>` — The AI agent that handles the chat. Defaults to `support`.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -7159,95 +7184,6 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.apps.<a href="/src/api/resources/apps/client.rs">update_permissions_app</a>(app_id: String, request: UpdatePermissionsAppRequest) -> Result&lt;bool, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Updates the permission requirements for an app
-
-Required permissions:
- - `developer:update_app_authorization`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .apps
-        .update_permissions_app(
-            &"app_id".to_string(),
-            &UpdatePermissionsAppRequest {
-                requested_permissions: vec![UpdatePermissionsAppRequestRequestedPermissionsItem {
-                    action: "action".to_string(),
-                    is_required: true,
-                    justification: "justification".to_string(),
-                    ..Default::default()
-                }],
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**app_id:** `String` — The ID of the app the permission requirements are being updated for
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requested_permissions:** `Vec<UpdatePermissionsAppRequestRequestedPermissionsItem>` — The permissions that the app will request off of users when a user installs the app.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.apps.<a href="/src/api/resources/apps/client.rs">retrieve</a>(id: String) -> Result&lt;App, ApiError&gt;</code></summary>
 <dl>
 <dd>
@@ -7927,7 +7863,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists uploaded customer-list audiences for an account. Pass `audience_id` to return a specific audience.
+List custom and lookalike audiences for an account. Pass `audience_id` to return a specific audience.
 </dd>
 </dl>
 </dd>
@@ -7996,7 +7932,7 @@ async fn main() {
 <dl>
 <dd>
 
-**audience_type:** `Option<ListAudiencesRequestAudienceType>` — Filter by audience type: `custom` (uploaded lists) or `lookalike`.
+**audience_type:** `Option<ListAudiencesRequestAudienceType>` — Filter by custom or lookalike audiences.
     
 </dd>
 </dl>
@@ -8004,7 +7940,7 @@ async fn main() {
 <dl>
 <dd>
 
-**source_type:** `Option<ListAudiencesRequestSourceType>` — Filter by member source: `csv_upload` (uploaded lists) or `people_filter` (automatic audiences built from saved People filters).
+**source_type:** `Option<ListAudiencesRequestSourceType>` — Filter by uploaded customer lists, Whop People filters, or social engagement.
     
 </dd>
 </dl>
@@ -8044,7 +7980,7 @@ async fn main() {
 <dl>
 <dd>
 
-Creates an audience. Default (`audience_type` omitted or `custom`): creates one audience from an uploaded customer identity CSV file (`name`, `column_mapping`, and `file_id` required) and starts processing it; responds with the audience object. With `filters`: creates an audience from saved People filters (`name` required) — membership is built from the account's People data, and `auto_refresh` decides whether it keeps tracking the filters or keeps whoever matched at creation. With `audience_type: lookalike`: creates a ladder of Meta lookalike audiences from an existing ready custom audience (`source_audience_id`, `count`, and `percentage` required) — `count` equal similarity bands slicing the top `percentage`% (3 audiences at 6% = 0–2%, 2–4%, 4–6%), each returned as its own audience in a `{ data: [...] }` envelope.
+Create an audience from a customer list, your account's Whop People data, or engagement with videos, lead forms, Instagram profiles, or Facebook pages. Create lookalike audiences to reach people similar to an existing audience. Processing runs asynchronously. Custom creation returns one audience; lookalike creation returns the requested similarity bands in `data`.
 </dd>
 </dl>
 </dd>
@@ -8073,13 +8009,25 @@ async fn main() {
         .create(
             &CreateAudiencesRequest {
                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                engagement: Some(CreateAudiencesRequestEngagement {
+                    exclude: None,
+                    include: vec![AudienceEngagementRule::FacebookPage {
+                        data: AudienceEngagementFacebookPageRule {
+                            event: AudienceEngagementFacebookPageRuleEvent::Engaged,
+                            retention_days: 30,
+                            social_account_id: "sacc_xxxxxxxxxxxxxx".to_string(),
+                        },
+                    }],
+                    platform: CreateAudiencesRequestEngagementPlatform::Meta,
+                }),
+                name: Some("Page engagers".to_string()),
+                source_type: Some(CreateAudiencesRequestSourceType::Engagement),
                 audience_type: None,
                 auto_refresh: None,
                 column_mapping: None,
                 count: None,
                 file_id: None,
                 filters: None,
-                name: None,
                 percentage: None,
                 source_audience_id: None,
             },
@@ -8109,7 +8057,7 @@ async fn main() {
 <dl>
 <dd>
 
-**audience_type:** `Option<CreateAudiencesRequestAudienceType>` — What to create. Defaults to `custom` (CSV upload).
+**audience_type:** `Option<CreateAudiencesRequestAudienceType>` — Audience type. Defaults to `custom`.
     
 </dd>
 </dl>
@@ -8125,7 +8073,7 @@ async fn main() {
 <dl>
 <dd>
 
-**column_mapping:** `Option<CreateAudiencesRequestColumnMapping>` — Custom audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+**column_mapping:** `Option<CreateAudiencesRequestColumnMapping>` — CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
     
 </dd>
 </dl>
@@ -8141,7 +8089,15 @@ async fn main() {
 <dl>
 <dd>
 
-**file_id:** `Option<String>` — Custom audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
+**engagement:** `Option<CreateAudiencesRequestEngagement>` — Rules for membership based on social engagement. Requires a connected social account with advertising access.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**file_id:** `Option<String>` — CSV audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
     
 </dd>
 </dl>
@@ -8165,7 +8121,7 @@ async fn main() {
 <dl>
 <dd>
 
-**percentage:** `Option<i64>` — Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`.
+**percentage:** `Option<i64>` — Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`. For example, 3 audiences at 6% creates 0–2%, 2–4%, and 4–6% bands.
     
 </dd>
 </dl>
@@ -8173,7 +8129,15 @@ async fn main() {
 <dl>
 <dd>
 
-**source_audience_id:** `Option<String>` — Lookalikes only. The ready custom audience (`adaud_`) to build from; it needs at least 100 matched people.
+**source_audience_id:** `Option<String>` — Lookalikes only. The ready custom audience (`adaud_`) to build from; uploaded and People audiences need at least 100 matched people. Meta validates engagement audience eligibility when creating the lookalike.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_type:** `Option<CreateAudiencesRequestSourceType>` — Custom audience source. Inferred from `engagement`, then `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
     
 </dd>
 </dl>
@@ -10584,7 +10548,7 @@ async fn main() {
 <dl>
 <dd>
 
-**billing:** `Option<UpdateCardsRequestBilling>` — New billing address. Requires line1, city, region, postal_code, and country_code. On an invited card, passing billing alone (as the invited user) completes onboarding and starts card provisioning.
+**billing:** `Option<UpdateCardsRequestBilling>` — The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
     
 </dd>
 </dl>
@@ -10593,6 +10557,14 @@ async fn main() {
 <dd>
 
 **canceled:** `Option<bool>` — Pass `true` to permanently cancel the card. A canceled card cannot be uncanceled. Cannot be combined with other fields.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cardholder:** `Option<UpdateCardsRequestCardholder>` — Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
     
 </dd>
 </dl>
@@ -11734,6 +11706,7 @@ async fn main() {
                     category: CreateConfirmationTokensRequestPaymentMethodCategory::Card,
                     google_pay: None,
                     payer_document: None,
+                    redirect: None,
                     saved: None,
                     r#type: Some("card".to_string()),
                 },
@@ -14087,7 +14060,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retrieve the deposit methods for an account, including crypto and bank transfer.
+Retrieve the deposit methods for an account, including crypto and bank transfer. Crypto deposits require a $10 minimum.
 </dd>
 </dl>
 </dd>
@@ -14136,7 +14109,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `Option<f64>` — Amount to prefill on hosted deposit page.
+**amount:** `Option<f64>` — Amount to prefill on hosted deposit page. Crypto deposits require a $10 minimum.
     
 </dd>
 </dl>
@@ -14854,278 +14827,6 @@ async fn main() {
 <dd>
 
 **id:** `String` — The dispute ID (`dspt_` tag).
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.disputes.<a href="/src/api/resources/disputes/client.rs">submit_evidence_dispute</a>(id: String) -> Result&lt;DisputeLegacy, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Submit a payment dispute to the payment processor for review. Once submitted, no further edits can be made.
-
-Required permissions:
- - `payment:dispute`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `company:basic:read`
- - `payment:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .disputes
-        .submit_evidence_dispute(&"dspt_xxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the dispute to submit to the payment processor for review.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.disputes.<a href="/src/api/resources/disputes/client.rs">update_evidence_dispute</a>(id: String, request: UpdateEvidenceDisputeRequest) -> Result&lt;DisputeLegacy, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Update a dispute with evidence data to attempt to win the dispute.
-
-Required permissions:
- - `payment:dispute`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `company:basic:read`
- - `payment:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .disputes
-        .update_evidence_dispute(
-            &"dspt_xxxxxxxxxxxxx".to_string(),
-            &UpdateEvidenceDisputeRequest {
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the dispute to update.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**access_activity_log:** `Option<Option<String>>` — An IP access activity log showing the customer used the service.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**billing_address:** `Option<Option<String>>` — The billing address associated with the customer's payment method.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cancellation_policy_attachment:** `Option<Option<UpdateEvidenceDisputeRequestCancellationPolicyAttachment>>` — A file upload containing the company's cancellation policy document.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cancellation_policy_disclosure:** `Option<Option<String>>` — The company's cancellation policy text to submit as evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customer_communication_attachment:** `Option<Option<UpdateEvidenceDisputeRequestCustomerCommunicationAttachment>>` — A file upload containing evidence of customer communication. Must be a JPEG, PNG, GIF, or PDF.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customer_email_address:** `Option<Option<String>>` — The email address of the customer associated with the disputed payment.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customer_name:** `Option<Option<String>>` — The full name of the customer associated with the disputed payment.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**notes:** `Option<Option<String>>` — Additional notes or context to submit as part of the dispute evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**product_description:** `Option<Option<String>>` — A description of the product or service that was provided to the customer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refund_policy_attachment:** `Option<Option<UpdateEvidenceDisputeRequestRefundPolicyAttachment>>` — A file upload containing the company's refund policy document.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refund_policy_disclosure:** `Option<Option<String>>` — The company's refund policy text to submit as evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refund_refusal_explanation:** `Option<Option<String>>` — An explanation of why the refund request was refused.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**service_date:** `Option<Option<String>>` — The date when the product or service was delivered to the customer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**uncategorized_attachment:** `Option<Option<UpdateEvidenceDisputeRequestUncategorizedAttachment>>` — A file upload for evidence that does not fit into the other categories.
     
 </dd>
 </dl>
@@ -22646,90 +22347,6 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">add_free_days_membership</a>(id: String, request: AddFreeDaysMembershipRequest) -> Result&lt;MembershipLegacy, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add free days to extend a membership's current billing period, expiration date, or Stripe trial.
-
-Required permissions:
- - `member:manage`
- - `member:email:read`
- - `member:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .memberships
-        .add_free_days_membership(
-            &"mem_xxxxxxxxxxxxxx".to_string(),
-            &AddFreeDaysMembershipRequest { free_days: 42 },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the membership.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**free_days:** `i64` — The number of free days to add (1-1095). Extends the billing period, expiration date, or Stripe trial depending on plan type.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">cancel</a>(id: String, request: CancelMembershipsRequest) -> Result&lt;Membership, ApiError&gt;</code></summary>
 <dl>
 <dd>
@@ -23043,7 +22660,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">resync_access_membership</a>(id: String) -> Result&lt;MembershipLegacy, ApiError&gt;</code></summary>
+<details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">resync_access</a>(id: String) -> Result&lt;Membership, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -23055,12 +22672,7 @@ async fn main() {
 <dl>
 <dd>
 
-Re-run access fulfillment for a membership. Recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and cannot be resynced here. The outcome is written to the membership's logs.
-
-Required permissions:
- - `membership:resync_access`
- - `member:email:read`
- - `member:basic:read`
+Re-runs access fulfillment for a membership: recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and is not resynced. The work runs in the background and the outcome is written to the membership's logs.
 </dd>
 </dl>
 </dd>
@@ -23086,7 +22698,7 @@ async fn main() {
     let client = Whop::new(config).expect("Failed to build client");
     client
         .memberships
-        .resync_access_membership(&"mem_xxxxxxxxxxxxxx".to_string(), None)
+        .resync_access(&"id".to_string(), None)
         .await;
 }
 ```
@@ -23103,7 +22715,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the membership to resync access for.
+**id:** `String` — Membership ID (`mem_` tag).
     
 </dd>
 </dl>
@@ -23168,78 +22780,6 @@ async fn main() {
 <dd>
 
 **id:** `String` — Membership ID (`mem_` tag).
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">uncancel_membership</a>(id: String) -> Result&lt;MembershipLegacy, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Reverse a pending cancellation for a membership that was scheduled to cancel at period end.
-
-Required permissions:
- - `member:manage`
- - `member:email:read`
- - `member:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .memberships
-        .uncancel_membership(&"mem_xxxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the membership to uncancel.
     
 </dd>
 </dl>
@@ -24336,6 +23876,87 @@ async fn main() {
 </dl>
 </details>
 
+<details><summary><code>client.partners.<a href="/src/api/resources/partners/client.rs">retrieve_link</a>(partner_username: Option&lt;String&gt;, reward_slug: Option&lt;String&gt;) -> Result&lt;OnboardingReward, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Resolves the public reward terms and whether redemption capacity remains. Immediate rewards claim capacity at business creation; qualified rewards claim it when the business reaches the threshold.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .partners
+        .retrieve_link(
+            &RetrieveLinkQueryRequest {
+                partner_username: "partner_username".to_string(),
+                reward_slug: "reward_slug".to_string(),
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**partner_username:** `String` — Username from the partner link's `a` query parameter.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reward_slug:** `String` — Reward slug from the partner link's `reward` query parameter.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.partners.<a href="/src/api/resources/partners/client.rs">referred_users</a>(has_businesses: Option&lt;Option&lt;bool&gt;&gt;, has_earning_businesses: Option&lt;Option&lt;bool&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ReferredUsersPartnersResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
@@ -24670,7 +24291,7 @@ async fn main() {
 <dl>
 <dd>
 
-**account_id:** `Option<String>` — Account to register the domain for (`biz_` tag). Defaults to the caller's account.
+**account_id:** `Option<String>` — Account to register the domain for (`biz_` tag). Required when authenticating as a user; an account API key supplies its own account.
     
 </dd>
 </dl>
@@ -26042,6 +25663,73 @@ async fn main() {
 <dd>
 
 **id:** `String` — The payment to void, prefixed `pay_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">resume</a>(payment_id: String) -> Result&lt;PaymentStatus, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts a fresh on-session attempt with the saved card for a subscription renewal that is waiting on the customer to authenticate; the bank's step then arrives in `next_action` on the following status reads. Only the payment's own customer may call it — with the payment's `client_secret` or their own session — and it is a no-op for any payment that is not a parked renewal.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payments
+        .resume(&"payment_id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**payment_id:** `String` 
     
 </dd>
 </dl>
@@ -27793,7 +27481,7 @@ async fn main() {
 <dl>
 <dd>
 
-**account_id:** `Option<String>` — The unique identifier of the account to create this plan for. Defaults to the caller's account.
+**account_id:** `Option<String>` — The unique identifier of the account to create this plan for. Required when authenticating as a user; an account API key supplies its own account.
     
 </dd>
 </dl>
@@ -27865,7 +27553,7 @@ async fn main() {
 <dl>
 <dd>
 
-**initial_price:** `Option<Option<f64>>` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+**initial_price:** `Option<Option<f64>>` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
     
 </dd>
 </dl>
@@ -27929,7 +27617,7 @@ async fn main() {
 <dl>
 <dd>
 
-**renewal_price:** `Option<Option<f64>>` — The amount charged each billing period for recurring plans, in the plan's currency.
+**renewal_price:** `Option<Option<f64>>` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
     
 </dd>
 </dl>
@@ -28274,7 +27962,7 @@ async fn main() {
 <dl>
 <dd>
 
-**initial_price:** `Option<Option<f64>>` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+**initial_price:** `Option<Option<f64>>` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
     
 </dd>
 </dl>
@@ -28330,7 +28018,7 @@ async fn main() {
 <dl>
 <dd>
 
-**renewal_price:** `Option<Option<f64>>` — The amount charged each billing period for recurring plans, in the plan's currency.
+**renewal_price:** `Option<Option<f64>>` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
     
 </dd>
 </dl>
@@ -29244,7 +28932,7 @@ async fn main() {
 <dl>
 <dd>
 
-Submits a product to the whop.com marketplace for review. The product moves to `pending_review`; a Whop reviewer approves it before it goes live.
+Submits a product to the whop.com marketplace for review. The product moves to `pending_review`; a Whop reviewer approves it before it goes live. Requires a logo, a headline, and at least one gallery image or video; the request fails naming whichever is missing.
 </dd>
 </dl>
 </dd>
@@ -35984,6 +35672,8 @@ async fn main() {
                 currency: None,
                 destination_id: None,
                 expires_at: None,
+                feed_id: None,
+                feed_type: None,
                 idempotence_key: None,
                 metadata: None,
                 notes: None,
@@ -36033,6 +35723,22 @@ async fn main() {
 <dd>
 
 **expires_at:** `Option<Option<String>>` — claim_link only. Link expiry as an ISO 8601 timestamp. Defaults to 24 hours from creation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**feed_id:** `Option<Option<String>>` — Ledger transfers only. The feed the transfer was initiated from. Given with `feed_type`, the payment receipt posts into that feed instead of a direct message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**feed_type:** `Option<Option<CreateTransfersRequestFeedType>>` — Ledger transfers only. The type of the feed named by `feed_id`.
     
 </dd>
 </dl>
@@ -38117,116 +37823,6 @@ async fn main() {
 <dd>
 
 **event:** `String` — The event to test the webhook for, in dot form (for example `payment.succeeded`).
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.webhooks.<a href="/src/api/resources/webhooks/client.rs">deliveries_webhook</a>(webhook_id: String, after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;) -> Result&lt;DeliveriesWebhookResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
-
-Required permissions:
- - `developer:manage_webhook`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .webhooks
-        .deliveries_webhook(
-            &"webhook_id".to_string(),
-            &DeliveriesWebhookQueryRequest {
-                first: Some(42),
-                last: Some(42),
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**webhook_id:** `String` — The unique identifier of the webhook to list deliveries for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
     
 </dd>
 </dl>
@@ -41351,7 +40947,7 @@ async fn main() {
 
 Sets the authenticated user's notification preferences. Each preference is addressed by `scope`, not by id, so a scope read back from either list endpoint can be sent straight here.
 
-A scope naming an experience with no topic sets that experience's level, and accepts all three levels. Any other scope sets a topic override, which is binary — `all` or `nothing` — and requires a `channel`.
+A scope naming an experience with no topic sets that experience's level, and accepts all three levels. Any other scope sets a topic override, which is binary — `all` or `nothing`. A topic override with no `channel` applies to every delivery channel.
 
 `level: null` clears the preference. Preferences are stored as overrides, so clearing one means the scope inherits its default again rather than being switched off.
 

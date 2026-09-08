@@ -13,7 +13,7 @@ impl DepositsClient {
         })
     }
 
-    /// Retrieve the deposit methods for an account, including crypto and bank transfer.
+    /// Retrieve the deposit methods for an account, including crypto and bank transfer. Crypto deposits require a $10 minimum.
     ///
     /// # Arguments
     ///
@@ -56,7 +56,7 @@ impl DepositsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client

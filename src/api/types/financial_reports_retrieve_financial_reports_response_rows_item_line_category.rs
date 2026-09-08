@@ -255,6 +255,7 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     SalesTaxRemittanceReversal,
     SalesTaxRemitted,
     SettlementRoundingVariance,
+    SettlementShortfallLoss,
     SoftwareRentalRevshare,
     SoftwareRentalTransaction,
     StripeDomesticProcessingFee,
@@ -689,6 +690,7 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::SettlementRoundingVariance => {
                 serializer.serialize_str("settlement_rounding_variance")
             }
+            Self::SettlementShortfallLoss => serializer.serialize_str("settlement_shortfall_loss"),
             Self::SoftwareRentalRevshare => serializer.serialize_str("software_rental_revshare"),
             Self::SoftwareRentalTransaction => {
                 serializer.serialize_str("software_rental_transaction")
@@ -1016,6 +1018,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "sales_tax_remittance_reversal" => Ok(Self::SalesTaxRemittanceReversal),
             "sales_tax_remitted" => Ok(Self::SalesTaxRemitted),
             "settlement_rounding_variance" => Ok(Self::SettlementRoundingVariance),
+            "settlement_shortfall_loss" => Ok(Self::SettlementShortfallLoss),
             "software_rental_revshare" => Ok(Self::SoftwareRentalRevshare),
             "software_rental_transaction" => Ok(Self::SoftwareRentalTransaction),
             "stripe_domestic_processing_fee" => Ok(Self::StripeDomesticProcessingFee),
@@ -1340,6 +1343,7 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::SalesTaxRemittanceReversal => write!(f, "sales_tax_remittance_reversal"),
             Self::SalesTaxRemitted => write!(f, "sales_tax_remitted"),
             Self::SettlementRoundingVariance => write!(f, "settlement_rounding_variance"),
+            Self::SettlementShortfallLoss => write!(f, "settlement_shortfall_loss"),
             Self::SoftwareRentalRevshare => write!(f, "software_rental_revshare"),
             Self::SoftwareRentalTransaction => write!(f, "software_rental_transaction"),
             Self::StripeDomesticProcessingFee => write!(f, "stripe_domestic_processing_fee"),

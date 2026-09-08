@@ -91,6 +91,9 @@ pub struct Payment {
     /// The promo code applied at checkout, prefixed `promo_`, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub promo_code_id: Option<String>,
+    /// Whop-hosted URL where the buyer can sign in and complete 3D Secure for a failed subscription renewal. Null when recovery is unavailable, you lack `member:basic:read`, or in list responses. Retrieve the payment for it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recovery_url: Option<String>,
     /// True when the payment is `paid`, not yet fully refunded, and its processor supports refunds.
     #[serde(default)]
     pub refundable: bool,
@@ -197,6 +200,7 @@ pub struct PaymentBuilder {
     plan_id: Option<String>,
     product_id: Option<String>,
     promo_code_id: Option<String>,
+    recovery_url: Option<String>,
     refundable: Option<bool>,
     refunded_amount: Option<Money>,
     refunded_at: Option<String>,
@@ -367,6 +371,11 @@ impl PaymentBuilder {
         self
     }
 
+    pub fn recovery_url(mut self, value: impl Into<String>) -> Self {
+        self.recovery_url = Some(value.into());
+        self
+    }
+
     pub fn refundable(mut self, value: bool) -> Self {
         self.refundable = Some(value);
         self
@@ -534,6 +543,7 @@ impl PaymentBuilder {
             plan_id: self.plan_id,
             product_id: self.product_id,
             promo_code_id: self.promo_code_id,
+            recovery_url: self.recovery_url,
             refundable: self
                 .refundable
                 .ok_or_else(|| BuildError::missing_field("refundable"))?,

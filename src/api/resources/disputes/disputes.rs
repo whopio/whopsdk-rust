@@ -76,7 +76,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -155,7 +155,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -211,7 +211,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -270,7 +270,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -319,7 +319,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -327,137 +327,6 @@ impl DisputesClient {
                 Method::POST,
                 &format!("disputes/{}/submit", id),
                 None,
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Submit a payment dispute to the payment processor for review. Once submitted, no further edits can be made.
-    ///
-    /// Required permissions:
-    /// - `payment:dispute`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `company:basic:read`
-    /// - `payment:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - The unique identifier of the dispute to submit to the payment processor for review.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .disputes
-    ///         .submit_evidence_dispute(&"dspt_xxxxxxxxxxxxx".to_string(), None)
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn submit_evidence_dispute(
-        &self,
-        id: &str,
-        options: Option<RequestOptions>,
-    ) -> Result<DisputeLegacy, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::POST,
-                &format!("disputes/{}/submit_evidence", id),
-                None,
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Update a dispute with evidence data to attempt to win the dispute.
-    ///
-    /// Required permissions:
-    /// - `payment:dispute`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `company:basic:read`
-    /// - `payment:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - The unique identifier of the dispute to update.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .disputes
-    ///         .update_evidence_dispute(
-    ///             &"dspt_xxxxxxxxxxxxx".to_string(),
-    ///             &UpdateEvidenceDisputeRequest {
-    ///                 ..Default::default()
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn update_evidence_dispute(
-        &self,
-        id: &str,
-        request: &UpdateEvidenceDisputeRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<DisputeLegacy, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::POST,
-                &format!("disputes/{}/update_evidence", id),
-                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
                 None,
                 options,
             )
@@ -515,7 +384,7 @@ impl DisputesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client

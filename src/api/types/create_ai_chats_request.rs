@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateAiChatsRequest {
+    /// The AI agent that handles the chat. Defaults to `support`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub agent_identifier: Option<AiChatAgentIdentifiers>,
     /// The unique identifier of the account to set as context for the AI chat (e.g., "biz_XXXXX").
     #[serde(skip_serializing_if = "Option::is_none")]
     pub current_account_id: Option<String>,
@@ -31,6 +34,7 @@ impl CreateAiChatsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateAiChatsRequestBuilder {
+    agent_identifier: Option<AiChatAgentIdentifiers>,
     current_account_id: Option<String>,
     message_attachments: Option<Vec<CreateAiChatsRequestMessageAttachmentsItem>>,
     message_source: Option<AiChatMessageSourceTypes>,
@@ -40,6 +44,11 @@ pub struct CreateAiChatsRequestBuilder {
 }
 
 impl CreateAiChatsRequestBuilder {
+    pub fn agent_identifier(mut self, value: AiChatAgentIdentifiers) -> Self {
+        self.agent_identifier = Some(value);
+        self
+    }
+
     pub fn current_account_id(mut self, value: impl Into<String>) -> Self {
         self.current_account_id = Some(value.into());
         self
@@ -78,6 +87,7 @@ impl CreateAiChatsRequestBuilder {
     /// - [`message_text`](CreateAiChatsRequestBuilder::message_text)
     pub fn build(self) -> Result<CreateAiChatsRequest, BuildError> {
         Ok(CreateAiChatsRequest {
+            agent_identifier: self.agent_identifier,
             current_account_id: self.current_account_id,
             message_attachments: self.message_attachments,
             message_source: self.message_source,

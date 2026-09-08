@@ -5,6 +5,9 @@ pub struct SocialAccountPost {
     /// The post's call-to-action button, for example shop_now (Facebook only; null for Instagram and TikTok).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub call_to_action: Option<SocialAccountPostCallToAction>,
+    /// The text accompanying the post, when available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub caption: Option<String>,
     /// The URL the post's call-to-action drives to (Facebook only; null for Instagram and TikTok).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_url: Option<String>,
@@ -22,6 +25,9 @@ pub struct SocialAccountPost {
     /// Poster image for video posts (always set for TikTok, which is video-only); null for image posts, where media_url is already the image.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub thumbnail_url: Option<String>,
+    /// The platform video identifier for engagement audience rules. Null for non-video posts or when unavailable. Facebook video identifiers differ from post identifiers.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub video_id: Option<String>,
 }
 
 impl SocialAccountPost {
@@ -34,17 +40,24 @@ impl SocialAccountPost {
 #[non_exhaustive]
 pub struct SocialAccountPostBuilder {
     call_to_action: Option<SocialAccountPostCallToAction>,
+    caption: Option<String>,
     destination_url: Option<String>,
     embed_url: Option<String>,
     id: Option<String>,
     media_url: Option<String>,
     restrictions: Option<Vec<SocialAccountPostRestrictionsItem>>,
     thumbnail_url: Option<String>,
+    video_id: Option<String>,
 }
 
 impl SocialAccountPostBuilder {
     pub fn call_to_action(mut self, value: SocialAccountPostCallToAction) -> Self {
         self.call_to_action = Some(value);
+        self
+    }
+
+    pub fn caption(mut self, value: impl Into<String>) -> Self {
+        self.caption = Some(value.into());
         self
     }
 
@@ -78,6 +91,11 @@ impl SocialAccountPostBuilder {
         self
     }
 
+    pub fn video_id(mut self, value: impl Into<String>) -> Self {
+        self.video_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`SocialAccountPost`].
     /// This method will fail if any of the following fields are not set:
     /// - [`id`](SocialAccountPostBuilder::id)
@@ -85,6 +103,7 @@ impl SocialAccountPostBuilder {
     pub fn build(self) -> Result<SocialAccountPost, BuildError> {
         Ok(SocialAccountPost {
             call_to_action: self.call_to_action,
+            caption: self.caption,
             destination_url: self.destination_url,
             embed_url: self.embed_url,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
@@ -93,6 +112,7 @@ impl SocialAccountPostBuilder {
                 .restrictions
                 .ok_or_else(|| BuildError::missing_field("restrictions"))?,
             thumbnail_url: self.thumbnail_url,
+            video_id: self.video_id,
         })
     }
 }

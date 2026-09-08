@@ -23,6 +23,9 @@ pub struct CreateConfirmationTokensRequestPaymentMethod {
     /// The buyer's identity document when the charge currency has a payer_document_requirements entry for this method, such as ARS card, MODO, or Rapipago. This is independent of the method category.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payer_document: Option<CreateConfirmationTokensRequestPaymentMethodPayerDocument>,
+    /// Category `redirect` only. Empty unless the method declares redirect-specific fields.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub redirect: Option<CreateConfirmationTokensRequestPaymentMethodRedirect>,
     /// Category `saved` only. Names one of the buyer's own stored payment methods. Requires a buyer credential — the wallet read is scoped to that account, so another user's id reads as not found.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub saved: Option<CreateConfirmationTokensRequestPaymentMethodSaved>,
@@ -47,6 +50,7 @@ pub struct CreateConfirmationTokensRequestPaymentMethodBuilder {
     category: Option<CreateConfirmationTokensRequestPaymentMethodCategory>,
     google_pay: Option<CreateConfirmationTokensRequestPaymentMethodGooglePay>,
     payer_document: Option<CreateConfirmationTokensRequestPaymentMethodPayerDocument>,
+    redirect: Option<CreateConfirmationTokensRequestPaymentMethodRedirect>,
     saved: Option<CreateConfirmationTokensRequestPaymentMethodSaved>,
     r#type: Option<String>,
 }
@@ -99,6 +103,11 @@ impl CreateConfirmationTokensRequestPaymentMethodBuilder {
         self
     }
 
+    pub fn redirect(mut self, value: CreateConfirmationTokensRequestPaymentMethodRedirect) -> Self {
+        self.redirect = Some(value);
+        self
+    }
+
     pub fn saved(mut self, value: CreateConfirmationTokensRequestPaymentMethodSaved) -> Self {
         self.saved = Some(value);
         self
@@ -123,6 +132,7 @@ impl CreateConfirmationTokensRequestPaymentMethodBuilder {
                 .ok_or_else(|| BuildError::missing_field("category"))?,
             google_pay: self.google_pay,
             payer_document: self.payer_document,
+            redirect: self.redirect,
             saved: self.saved,
             r#type: self.r#type,
         })

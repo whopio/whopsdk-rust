@@ -68,7 +68,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -144,80 +144,13 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
             .execute_request(
                 Method::POST,
                 "apps",
-                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Updates the permission requirements for an app
-    ///
-    /// Required permissions:
-    /// - `developer:update_app_authorization`
-    ///
-    /// # Arguments
-    ///
-    /// * `app_id` - The ID of the app the permission requirements are being updated for
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .apps
-    ///         .update_permissions_app(
-    ///             &"app_id".to_string(),
-    ///             &UpdatePermissionsAppRequest {
-    ///                 requested_permissions: vec![UpdatePermissionsAppRequestRequestedPermissionsItem {
-    ///                     action: "action".to_string(),
-    ///                     is_required: true,
-    ///                     justification: "justification".to_string(),
-    ///                     ..Default::default()
-    ///                 }],
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn update_permissions_app(
-        &self,
-        app_id: &str,
-        request: &UpdatePermissionsAppRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<bool, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::PATCH,
-                &format!("apps/{}/permissions", app_id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
                 None,
                 options,
@@ -260,7 +193,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -303,7 +236,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -356,7 +289,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -415,7 +348,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -482,7 +415,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -556,7 +489,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client

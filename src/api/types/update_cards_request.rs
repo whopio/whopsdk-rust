@@ -5,12 +5,15 @@ pub struct UpdateCardsRequest {
     /// The owning account ID (a biz_ identifier). Provide this or user_id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// New billing address. Requires line1, city, region, postal_code, and country_code. On an invited card, passing billing alone (as the invited user) completes onboarding and starts card provisioning.
+    /// The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub billing: Option<UpdateCardsRequestBilling>,
     /// Pass `true` to permanently cancel the card. A canceled card cannot be uncanceled. Cannot be combined with other fields.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub canceled: Option<bool>,
+    /// Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cardholder: Option<UpdateCardsRequestCardholder>,
     /// Pass `true` to freeze the card, `false` to unfreeze it. The assigned cardholder may freeze their own card without the payout:account:update scope.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub frozen: Option<bool>,
@@ -53,6 +56,7 @@ pub struct UpdateCardsRequestBuilder {
     account_id: Option<String>,
     billing: Option<UpdateCardsRequestBilling>,
     canceled: Option<bool>,
+    cardholder: Option<UpdateCardsRequestCardholder>,
     frozen: Option<bool>,
     name: Option<String>,
     pin: Option<String>,
@@ -76,6 +80,11 @@ impl UpdateCardsRequestBuilder {
 
     pub fn canceled(mut self, value: bool) -> Self {
         self.canceled = Some(value);
+        self
+    }
+
+    pub fn cardholder(mut self, value: UpdateCardsRequestCardholder) -> Self {
+        self.cardholder = Some(value);
         self
     }
 
@@ -125,6 +134,7 @@ impl UpdateCardsRequestBuilder {
             account_id: self.account_id,
             billing: self.billing,
             canceled: self.canceled,
+            cardholder: self.cardholder,
             frozen: self.frozen,
             name: self.name,
             pin: self.pin,

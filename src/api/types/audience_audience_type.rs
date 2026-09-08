@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// `custom` = a customer list (uploaded, or built from saved People filters); `lookalike` = Meta lookalike built from a custom audience.
+/// Whether the audience targets a defined group of people or people similar to an existing audience.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AudienceAudienceType {

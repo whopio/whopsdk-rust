@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreateDepositsRequest {
-    /// Amount to prefill on hosted deposit page.
+    /// Amount to prefill on hosted deposit page. Crypto deposits require a $10 minimum.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]

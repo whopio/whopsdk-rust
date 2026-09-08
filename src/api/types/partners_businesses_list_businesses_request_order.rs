@@ -8,6 +8,7 @@ pub enum ListBusinessesRequestOrder {
     ReferralExpiresAt,
     PayoutPercentage,
     VolumeUsd,
+    Volume30DUsd,
     EarningsUsd,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -22,6 +23,7 @@ impl Serialize for ListBusinessesRequestOrder {
             Self::ReferralExpiresAt => serializer.serialize_str("referral_expires_at"),
             Self::PayoutPercentage => serializer.serialize_str("payout_percentage"),
             Self::VolumeUsd => serializer.serialize_str("volume_usd"),
+            Self::Volume30DUsd => serializer.serialize_str("volume_30d_usd"),
             Self::EarningsUsd => serializer.serialize_str("earnings_usd"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
@@ -37,6 +39,7 @@ impl<'de> Deserialize<'de> for ListBusinessesRequestOrder {
             "referral_expires_at" => Ok(Self::ReferralExpiresAt),
             "payout_percentage" => Ok(Self::PayoutPercentage),
             "volume_usd" => Ok(Self::VolumeUsd),
+            "volume_30d_usd" => Ok(Self::Volume30DUsd),
             "earnings_usd" => Ok(Self::EarningsUsd),
             _ => Ok(Self::__Unknown(value)),
         }
@@ -51,6 +54,7 @@ impl fmt::Display for ListBusinessesRequestOrder {
             Self::ReferralExpiresAt => write!(f, "referral_expires_at"),
             Self::PayoutPercentage => write!(f, "payout_percentage"),
             Self::VolumeUsd => write!(f, "volume_usd"),
+            Self::Volume30DUsd => write!(f, "volume_30d_usd"),
             Self::EarningsUsd => write!(f, "earnings_usd"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }

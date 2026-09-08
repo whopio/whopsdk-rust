@@ -62,7 +62,7 @@ impl AiChatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -75,6 +75,7 @@ impl AiChatsClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
+                    .serialize("agent_identifier", request.agent_identifier.clone())
                     .bool("only_active_crons", request.only_active_crons.clone())
                     .build(),
                 options,
@@ -112,6 +113,7 @@ impl AiChatsClient {
     ///         .create(
     ///             &CreateAiChatsRequest {
     ///                 message_text: "message_text".to_string(),
+    ///                 agent_identifier: None,
     ///                 current_account_id: None,
     ///                 message_attachments: None,
     ///                 message_source: None,
@@ -132,7 +134,7 @@ impl AiChatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -184,7 +186,7 @@ impl AiChatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -239,7 +241,7 @@ impl AiChatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -301,7 +303,7 @@ impl AiChatsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client

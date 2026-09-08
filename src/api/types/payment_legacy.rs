@@ -120,6 +120,9 @@ pub struct PaymentLegacy {
     /// The promo code used for this payment.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub promo_code: Option<PaymentLegacyPromoCode>,
+    /// Whop-hosted URL where the buyer can sign in and complete 3D Secure for a failed subscription renewal. `null` when recovery is unavailable or you lack `member:basic:read`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recovery_url: Option<String>,
     /// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
     #[serde(default)]
     pub refundable: bool,
@@ -266,6 +269,7 @@ pub struct PaymentLegacyBuilder {
     plan: Option<PaymentLegacyPlan>,
     product: Option<PaymentLegacyProduct>,
     promo_code: Option<PaymentLegacyPromoCode>,
+    recovery_url: Option<String>,
     refundable: Option<bool>,
     refunded_amount: Option<f64>,
     refunded_at: Option<DateTime<FixedOffset>>,
@@ -479,6 +483,11 @@ impl PaymentLegacyBuilder {
         self
     }
 
+    pub fn recovery_url(mut self, value: impl Into<String>) -> Self {
+        self.recovery_url = Some(value.into());
+        self
+    }
+
     pub fn refundable(mut self, value: bool) -> Self {
         self.refundable = Some(value);
         self
@@ -680,6 +689,7 @@ impl PaymentLegacyBuilder {
             plan: self.plan,
             product: self.product,
             promo_code: self.promo_code,
+            recovery_url: self.recovery_url,
             refundable: self
                 .refundable
                 .ok_or_else(|| BuildError::missing_field("refundable"))?,
