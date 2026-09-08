@@ -221,6 +221,7 @@ pub enum PermissionAction {
     WebhookReceiveChat,
     WebhookReceiveEntries,
     WebhookReceiveAdCampaigns,
+    WebhookReceiveAds,
     WebhookReceiveProducts,
     WebhookReceivePlans,
     WebhookReceiveShipments,
@@ -548,6 +549,7 @@ impl Serialize for PermissionAction {
             Self::WebhookReceiveAdCampaigns => {
                 serializer.serialize_str("webhook_receive:ad_campaigns")
             }
+            Self::WebhookReceiveAds => serializer.serialize_str("webhook_receive:ads"),
             Self::WebhookReceiveProducts => serializer.serialize_str("webhook_receive:products"),
             Self::WebhookReceivePlans => serializer.serialize_str("webhook_receive:plans"),
             Self::WebhookReceiveShipments => serializer.serialize_str("webhook_receive:shipments"),
@@ -830,6 +832,7 @@ impl<'de> Deserialize<'de> for PermissionAction {
             "webhook_receive:chat" => Ok(Self::WebhookReceiveChat),
             "webhook_receive:entries" => Ok(Self::WebhookReceiveEntries),
             "webhook_receive:ad_campaigns" => Ok(Self::WebhookReceiveAdCampaigns),
+            "webhook_receive:ads" => Ok(Self::WebhookReceiveAds),
             "webhook_receive:products" => Ok(Self::WebhookReceiveProducts),
             "webhook_receive:plans" => Ok(Self::WebhookReceivePlans),
             "webhook_receive:shipments" => Ok(Self::WebhookReceiveShipments),
@@ -1105,6 +1108,7 @@ impl fmt::Display for PermissionAction {
             Self::WebhookReceiveChat => write!(f, "webhook_receive:chat"),
             Self::WebhookReceiveEntries => write!(f, "webhook_receive:entries"),
             Self::WebhookReceiveAdCampaigns => write!(f, "webhook_receive:ad_campaigns"),
+            Self::WebhookReceiveAds => write!(f, "webhook_receive:ads"),
             Self::WebhookReceiveProducts => write!(f, "webhook_receive:products"),
             Self::WebhookReceivePlans => write!(f, "webhook_receive:plans"),
             Self::WebhookReceiveShipments => write!(f, "webhook_receive:shipments"),

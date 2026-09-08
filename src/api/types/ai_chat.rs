@@ -3,6 +3,8 @@ pub use crate::prelude::*;
 /// An AI-powered chat conversation belonging to a user, with optional scheduled automation.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct AiChat {
+    /// The AI agent that handles this chat. Set when the chat is created and fixed for its lifetime.
+    pub agent_identifier: AiChatAgentIdentifiers,
     /// The total number of tokens consumed across all messages in this conversation.
     #[serde(default)]
     pub blended_token_usage: String,
@@ -44,6 +46,7 @@ impl AiChat {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct AiChatBuilder {
+    agent_identifier: Option<AiChatAgentIdentifiers>,
     blended_token_usage: Option<String>,
     created_at: Option<DateTime<FixedOffset>>,
     id: Option<String>,
@@ -56,6 +59,11 @@ pub struct AiChatBuilder {
 }
 
 impl AiChatBuilder {
+    pub fn agent_identifier(mut self, value: AiChatAgentIdentifiers) -> Self {
+        self.agent_identifier = Some(value);
+        self
+    }
+
     pub fn blended_token_usage(mut self, value: impl Into<String>) -> Self {
         self.blended_token_usage = Some(value.into());
         self
@@ -103,6 +111,7 @@ impl AiChatBuilder {
 
     /// Consumes the builder and constructs a [`AiChat`].
     /// This method will fail if any of the following fields are not set:
+    /// - [`agent_identifier`](AiChatBuilder::agent_identifier)
     /// - [`blended_token_usage`](AiChatBuilder::blended_token_usage)
     /// - [`created_at`](AiChatBuilder::created_at)
     /// - [`id`](AiChatBuilder::id)
@@ -112,6 +121,9 @@ impl AiChatBuilder {
     /// - [`user`](AiChatBuilder::user)
     pub fn build(self) -> Result<AiChat, BuildError> {
         Ok(AiChat {
+            agent_identifier: self
+                .agent_identifier
+                .ok_or_else(|| BuildError::missing_field("agent_identifier"))?,
             blended_token_usage: self
                 .blended_token_usage
                 .ok_or_else(|| BuildError::missing_field("blended_token_usage"))?,

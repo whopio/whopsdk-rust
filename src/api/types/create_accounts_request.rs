@@ -17,6 +17,9 @@ pub struct CreateAccountsRequest {
     /// Arbitrary key/value metadata to store on the account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<HashMap<String, serde_json::Value>>,
+    /// Whether Whop sends transactional emails to customers on behalf of the connected account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub send_customer_emails: Option<bool>,
     /// The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
@@ -36,6 +39,7 @@ pub struct CreateAccountsRequestBuilder {
     country: Option<String>,
     email: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
+    send_customer_emails: Option<bool>,
     title: Option<String>,
 }
 
@@ -65,6 +69,11 @@ impl CreateAccountsRequestBuilder {
         self
     }
 
+    pub fn send_customer_emails(mut self, value: bool) -> Self {
+        self.send_customer_emails = Some(value);
+        self
+    }
+
     pub fn title(mut self, value: impl Into<String>) -> Self {
         self.title = Some(value.into());
         self
@@ -78,6 +87,7 @@ impl CreateAccountsRequestBuilder {
             country: self.country,
             email: self.email,
             metadata: self.metadata,
+            send_customer_emails: self.send_customer_emails,
             title: self.title,
         })
     }

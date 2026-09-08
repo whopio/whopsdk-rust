@@ -9,10 +9,10 @@ pub struct AudiencesListQueryRequest {
     /// Audience ID, prefixed `adaud_`, used to filter the response to one audience.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub audience_id: Option<String>,
-    /// Filter by audience type: `custom` (uploaded lists) or `lookalike`.
+    /// Filter by custom or lookalike audiences.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub audience_type: Option<ListAudiencesRequestAudienceType>,
-    /// Filter by member source: `csv_upload` (uploaded lists) or `people_filter` (automatic audiences built from saved People filters).
+    /// Filter by uploaded customer lists, Whop People filters, or social engagement.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_type: Option<ListAudiencesRequestSourceType>,
     /// Number of audiences to return. Defaults to 20; maximum 100.

@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreatePaymentMethodDomainsRequest {
-    /// Account to register the domain for (`biz_` tag). Defaults to the caller's account.
+    /// Account to register the domain for (`biz_` tag). Required when authenticating as a user; an account API key supplies its own account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
     /// Hostname to register (e.g. `checkout.shinetime.example`).

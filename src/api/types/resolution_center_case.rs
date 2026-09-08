@@ -29,6 +29,8 @@ pub struct ResolutionCenterCase {
     /// Resolution center case ID, prefixed `reso_`.
     #[serde(default)]
     pub id: String,
+    #[serde(default)]
+    pub line_items: Vec<ResolutionLineItem>,
     /// Who prevailed on the claim. `null` until the case closes. Read `refund` for whether any money actually moved.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub outcome: Option<ResolutionCenterCaseOutcome>,
@@ -74,6 +76,7 @@ pub struct ResolutionCenterCaseBuilder {
     customer_appealed: Option<bool>,
     escalated: Option<bool>,
     id: Option<String>,
+    line_items: Option<Vec<ResolutionLineItem>>,
     outcome: Option<ResolutionCenterCaseOutcome>,
     payment: Option<ResolutionPayment>,
     plan_id: Option<String>,
@@ -134,6 +137,11 @@ impl ResolutionCenterCaseBuilder {
         self
     }
 
+    pub fn line_items(mut self, value: Vec<ResolutionLineItem>) -> Self {
+        self.line_items = Some(value);
+        self
+    }
+
     pub fn outcome(mut self, value: ResolutionCenterCaseOutcome) -> Self {
         self.outcome = Some(value);
         self
@@ -188,6 +196,7 @@ impl ResolutionCenterCaseBuilder {
     /// - [`customer_appealed`](ResolutionCenterCaseBuilder::customer_appealed)
     /// - [`escalated`](ResolutionCenterCaseBuilder::escalated)
     /// - [`id`](ResolutionCenterCaseBuilder::id)
+    /// - [`line_items`](ResolutionCenterCaseBuilder::line_items)
     /// - [`payment`](ResolutionCenterCaseBuilder::payment)
     /// - [`reason`](ResolutionCenterCaseBuilder::reason)
     /// - [`status`](ResolutionCenterCaseBuilder::status)
@@ -215,6 +224,9 @@ impl ResolutionCenterCaseBuilder {
                 .escalated
                 .ok_or_else(|| BuildError::missing_field("escalated"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            line_items: self
+                .line_items
+                .ok_or_else(|| BuildError::missing_field("line_items"))?,
             outcome: self.outcome,
             payment: self
                 .payment

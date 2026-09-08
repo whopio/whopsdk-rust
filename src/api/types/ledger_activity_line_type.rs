@@ -132,6 +132,11 @@ pub enum LedgerActivityLineType {
     WithdrawalReclassification,
     WithdrawalReversal,
     WithdrawalTopupAdjustment,
+    Deposit,
+    WalletTransferIncoming,
+    WalletTransferOutgoing,
+    SwapSource,
+    SwapTarget,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -348,6 +353,11 @@ impl Serialize for LedgerActivityLineType {
             Self::WithdrawalTopupAdjustment => {
                 serializer.serialize_str("withdrawal_topup_adjustment")
             }
+            Self::Deposit => serializer.serialize_str("deposit"),
+            Self::WalletTransferIncoming => serializer.serialize_str("wallet_transfer_incoming"),
+            Self::WalletTransferOutgoing => serializer.serialize_str("wallet_transfer_outgoing"),
+            Self::SwapSource => serializer.serialize_str("swap_source"),
+            Self::SwapTarget => serializer.serialize_str("swap_target"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -491,6 +501,11 @@ impl<'de> Deserialize<'de> for LedgerActivityLineType {
             "withdrawal_reclassification" => Ok(Self::WithdrawalReclassification),
             "withdrawal_reversal" => Ok(Self::WithdrawalReversal),
             "withdrawal_topup_adjustment" => Ok(Self::WithdrawalTopupAdjustment),
+            "deposit" => Ok(Self::Deposit),
+            "wallet_transfer_incoming" => Ok(Self::WalletTransferIncoming),
+            "wallet_transfer_outgoing" => Ok(Self::WalletTransferOutgoing),
+            "swap_source" => Ok(Self::SwapSource),
+            "swap_target" => Ok(Self::SwapTarget),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -651,6 +666,11 @@ impl fmt::Display for LedgerActivityLineType {
             Self::WithdrawalReclassification => write!(f, "withdrawal_reclassification"),
             Self::WithdrawalReversal => write!(f, "withdrawal_reversal"),
             Self::WithdrawalTopupAdjustment => write!(f, "withdrawal_topup_adjustment"),
+            Self::Deposit => write!(f, "deposit"),
+            Self::WalletTransferIncoming => write!(f, "wallet_transfer_incoming"),
+            Self::WalletTransferOutgoing => write!(f, "wallet_transfer_outgoing"),
+            Self::SwapSource => write!(f, "swap_source"),
+            Self::SwapTarget => write!(f, "swap_target"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

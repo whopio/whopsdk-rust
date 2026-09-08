@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Custom audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+/// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateAudiencesRequestColumnMapping {
     /// CSV header for ISO 3166-1 alpha-2 country codes, such as `US`.

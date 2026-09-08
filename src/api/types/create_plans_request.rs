@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreatePlansRequest {
-    /// The unique identifier of the account to create this plan for. Defaults to the caller's account.
+    /// The unique identifier of the account to create this plan for. Required when authenticating as a user; an account API key supplies its own account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
     /// Whether this plan accepts local currency payments via adaptive pricing.
@@ -29,7 +29,7 @@ pub struct CreatePlansRequest {
     /// An image displayed on the product page to represent this plan.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub image: Option<CreatePlansRequestImage>,
-    /// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+    /// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub initial_price: Option<f64>,
     /// Private notes visible only to the account owner. Not shown to customers.
@@ -53,7 +53,7 @@ pub struct CreatePlansRequest {
     /// Sales method for this plan.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_method: Option<String>,
-    /// The amount charged each billing period for recurring plans, in the plan's currency.
+    /// The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub renewal_price: Option<f64>,
     /// Installment payments required before the subscription pauses.

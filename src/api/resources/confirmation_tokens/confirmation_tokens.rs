@@ -64,6 +64,7 @@ impl ConfirmationTokensClient {
     ///                     category: CreateConfirmationTokensRequestPaymentMethodCategory::Card,
     ///                     google_pay: None,
     ///                     payer_document: None,
+    ///                     redirect: None,
     ///                     saved: None,
     ///                     r#type: Some("card".to_string()),
     ///                 },
@@ -87,7 +88,7 @@ impl ConfirmationTokensClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -147,7 +148,7 @@ impl ConfirmationTokensClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client

@@ -9,6 +9,8 @@ pub struct CreateConfirmationTokensRequestBillingDetails {
     pub email: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phone: Option<String>,
 }
 
 impl CreateConfirmationTokensRequestBillingDetails {
@@ -23,6 +25,7 @@ pub struct CreateConfirmationTokensRequestBillingDetailsBuilder {
     address: Option<HashMap<String, serde_json::Value>>,
     email: Option<String>,
     name: Option<String>,
+    phone: Option<String>,
 }
 
 impl CreateConfirmationTokensRequestBillingDetailsBuilder {
@@ -41,6 +44,11 @@ impl CreateConfirmationTokensRequestBillingDetailsBuilder {
         self
     }
 
+    pub fn phone(mut self, value: impl Into<String>) -> Self {
+        self.phone = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreateConfirmationTokensRequestBillingDetails`].
     /// This method will fail if any of the following fields are not set:
     /// - [`email`](CreateConfirmationTokensRequestBillingDetailsBuilder::email)
@@ -51,6 +59,7 @@ impl CreateConfirmationTokensRequestBillingDetailsBuilder {
                 .email
                 .ok_or_else(|| BuildError::missing_field("email"))?,
             name: self.name,
+            phone: self.phone,
         })
     }
 }

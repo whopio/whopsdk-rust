@@ -6,6 +6,9 @@ pub struct SupportChannel {
     /// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
+    /// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub company_id: Option<String>,
     /// A custom display name assigned to this channel by the user. Null if no custom name has been set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_name: Option<String>,
@@ -37,6 +40,7 @@ impl SupportChannel {
 #[non_exhaustive]
 pub struct SupportChannelBuilder {
     account_id: Option<String>,
+    company_id: Option<String>,
     custom_name: Option<String>,
     customer_user: Option<SupportChannelCustomerUser>,
     id: Option<String>,
@@ -47,6 +51,11 @@ pub struct SupportChannelBuilder {
 impl SupportChannelBuilder {
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
+        self
+    }
+
+    pub fn company_id(mut self, value: impl Into<String>) -> Self {
+        self.company_id = Some(value.into());
         self
     }
 
@@ -81,6 +90,7 @@ impl SupportChannelBuilder {
     pub fn build(self) -> Result<SupportChannel, BuildError> {
         Ok(SupportChannel {
             account_id: self.account_id,
+            company_id: self.company_id,
             custom_name: self.custom_name,
             customer_user: self.customer_user,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,

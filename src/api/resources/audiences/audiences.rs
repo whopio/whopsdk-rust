@@ -13,14 +13,14 @@ impl AudiencesClient {
         })
     }
 
-    /// Lists uploaded customer-list audiences for an account. Pass `audience_id` to return a specific audience.
+    /// List custom and lookalike audiences for an account. Pass `audience_id` to return a specific audience.
     ///
     /// # Arguments
     ///
     /// * `account_id` - Account ID, prefixed `biz_`.
     /// * `audience_id` - Audience ID, prefixed `adaud_`, used to filter the response to one audience.
-    /// * `audience_type` - Filter by audience type: `custom` (uploaded lists) or `lookalike`.
-    /// * `source_type` - Filter by member source: `csv_upload` (uploaded lists) or `people_filter` (automatic audiences built from saved People filters).
+    /// * `audience_type` - Filter by custom or lookalike audiences.
+    /// * `source_type` - Filter by uploaded customer lists, Whop People filters, or social engagement.
     /// * `first` - Number of audiences to return. Defaults to 20; maximum 100.
     /// * `after` - Cursor for the next page of audiences.
     /// * `options` - Additional request options such as headers, timeout, etc.
@@ -66,7 +66,7 @@ impl AudiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -87,7 +87,7 @@ impl AudiencesClient {
             .await
     }
 
-    /// Creates an audience. Default (`audience_type` omitted or `custom`): creates one audience from an uploaded customer identity CSV file (`name`, `column_mapping`, and `file_id` required) and starts processing it; responds with the audience object. With `filters`: creates an audience from saved People filters (`name` required) — membership is built from the account's People data, and `auto_refresh` decides whether it keeps tracking the filters or keeps whoever matched at creation. With `audience_type: lookalike`: creates a ladder of Meta lookalike audiences from an existing ready custom audience (`source_audience_id`, `count`, and `percentage` required) — `count` equal similarity bands slicing the top `percentage`% (3 audiences at 6% = 0–2%, 2–4%, 4–6%), each returned as its own audience in a `{ data: [...] }` envelope.
+    /// Create an audience from a customer list, your account's Whop People data, or engagement with videos, lead forms, Instagram profiles, or Facebook pages. Create lookalike audiences to reach people similar to an existing audience. Processing runs asynchronously. Custom creation returns one audience; lookalike creation returns the requested similarity bands in `data`.
     ///
     /// # Arguments
     ///
@@ -114,13 +114,25 @@ impl AudiencesClient {
     ///         .create(
     ///             &CreateAudiencesRequest {
     ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 engagement: Some(CreateAudiencesRequestEngagement {
+    ///                     exclude: None,
+    ///                     include: vec![AudienceEngagementRule::FacebookPage {
+    ///                         data: AudienceEngagementFacebookPageRule {
+    ///                             event: AudienceEngagementFacebookPageRuleEvent::Engaged,
+    ///                             retention_days: 30,
+    ///                             social_account_id: "sacc_xxxxxxxxxxxxxx".to_string(),
+    ///                         },
+    ///                     }],
+    ///                     platform: CreateAudiencesRequestEngagementPlatform::Meta,
+    ///                 }),
+    ///                 name: Some("Page engagers".to_string()),
+    ///                 source_type: Some(CreateAudiencesRequestSourceType::Engagement),
     ///                 audience_type: None,
     ///                 auto_refresh: None,
     ///                 column_mapping: None,
     ///                 count: None,
     ///                 file_id: None,
     ///                 filters: None,
-    ///                 name: None,
     ///                 percentage: None,
     ///                 source_audience_id: None,
     ///             },
@@ -138,7 +150,7 @@ impl AudiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -187,7 +199,7 @@ impl AudiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -246,7 +258,7 @@ impl AudiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -304,7 +316,7 @@ impl AudiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client

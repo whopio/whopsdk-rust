@@ -6,6 +6,7 @@ pub use crate::prelude::*;
 pub enum AccountRequiredActionAction {
     DepositFunds,
     SubmitInformationRequest,
+    UpdateAutomaticWithdrawalMethod,
     ReauthorizePayoutMethods,
     UpdatePayoutProfile,
     CardUsageReview,
@@ -26,6 +27,9 @@ impl Serialize for AccountRequiredActionAction {
             Self::DepositFunds => serializer.serialize_str("deposit_funds"),
             Self::SubmitInformationRequest => {
                 serializer.serialize_str("submit_information_request")
+            }
+            Self::UpdateAutomaticWithdrawalMethod => {
+                serializer.serialize_str("update_automatic_withdrawal_method")
             }
             Self::ReauthorizePayoutMethods => {
                 serializer.serialize_str("reauthorize_payout_methods")
@@ -51,6 +55,7 @@ impl<'de> Deserialize<'de> for AccountRequiredActionAction {
         match value.as_str() {
             "deposit_funds" => Ok(Self::DepositFunds),
             "submit_information_request" => Ok(Self::SubmitInformationRequest),
+            "update_automatic_withdrawal_method" => Ok(Self::UpdateAutomaticWithdrawalMethod),
             "reauthorize_payout_methods" => Ok(Self::ReauthorizePayoutMethods),
             "update_payout_profile" => Ok(Self::UpdatePayoutProfile),
             "card_usage_review" => Ok(Self::CardUsageReview),
@@ -70,6 +75,9 @@ impl fmt::Display for AccountRequiredActionAction {
         match self {
             Self::DepositFunds => write!(f, "deposit_funds"),
             Self::SubmitInformationRequest => write!(f, "submit_information_request"),
+            Self::UpdateAutomaticWithdrawalMethod => {
+                write!(f, "update_automatic_withdrawal_method")
+            }
             Self::ReauthorizePayoutMethods => write!(f, "reauthorize_payout_methods"),
             Self::UpdatePayoutProfile => write!(f, "update_payout_profile"),
             Self::CardUsageReview => write!(f, "card_usage_review"),

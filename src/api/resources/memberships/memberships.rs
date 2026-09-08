@@ -68,7 +68,7 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -142,7 +142,7 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -191,7 +191,7 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -250,75 +250,13 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
             .execute_request(
                 Method::PATCH,
                 &format!("memberships/{}", id),
-                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Add free days to extend a membership's current billing period, expiration date, or Stripe trial.
-    ///
-    /// Required permissions:
-    /// - `member:manage`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - The unique identifier of the membership.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .memberships
-    ///         .add_free_days_membership(
-    ///             &"mem_xxxxxxxxxxxxxx".to_string(),
-    ///             &AddFreeDaysMembershipRequest { free_days: 42 },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn add_free_days_membership(
-        &self,
-        id: &str,
-        request: &AddFreeDaysMembershipRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<MembershipLegacy, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::POST,
-                &format!("memberships/{}/add_free_days", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
                 None,
                 options,
@@ -371,7 +309,7 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -428,7 +366,7 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -487,7 +425,7 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -536,7 +474,7 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -550,16 +488,11 @@ impl MembershipsClient {
             .await
     }
 
-    /// Re-run access fulfillment for a membership. Recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and cannot be resynced here. The outcome is written to the membership's logs.
-    ///
-    /// Required permissions:
-    /// - `membership:resync_access`
-    /// - `member:email:read`
-    /// - `member:basic:read`
+    /// Re-runs access fulfillment for a membership: recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and is not resynced. The work runs in the background and the outcome is written to the membership's logs.
     ///
     /// # Arguments
     ///
-    /// * `id` - The unique identifier of the membership to resync access for.
+    /// * `id` - Membership ID (`mem_` tag).
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -580,20 +513,20 @@ impl MembershipsClient {
     ///     let client = Whop::new(config).expect("Failed to build client");
     ///     client
     ///         .memberships
-    ///         .resync_access_membership(&"mem_xxxxxxxxxxxxxx".to_string(), None)
+    ///         .resync_access(&"id".to_string(), None)
     ///         .await;
     /// }
     /// ```
-    pub async fn resync_access_membership(
+    pub async fn resync_access(
         &self,
         id: &str,
         options: Option<RequestOptions>,
-    ) -> Result<MembershipLegacy, ApiError> {
+    ) -> Result<Membership, ApiError> {
         let options = {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
@@ -642,70 +575,13 @@ impl MembershipsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
+                .or_insert_with(|| "2026-09-06".to_string());
             Some(o)
         };
         self.http_client
             .execute_request(
                 Method::POST,
                 &format!("memberships/{}/transfer", id),
-                None,
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Reverse a pending cancellation for a membership that was scheduled to cancel at period end.
-    ///
-    /// Required permissions:
-    /// - `member:manage`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - The unique identifier of the membership to uncancel.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .memberships
-    ///         .uncancel_membership(&"mem_xxxxxxxxxxxxxx".to_string(), None)
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn uncancel_membership(
-        &self,
-        id: &str,
-        options: Option<RequestOptions>,
-    ) -> Result<MembershipLegacy, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-02-2".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::POST,
-                &format!("memberships/{}/uncancel", id),
                 None,
                 None,
                 options,

@@ -37,6 +37,8 @@ pub enum CreateApiKeysRequestApiVersionDate {
     TwoThousandTwentySix0902,
     TwoThousandTwentySix09021,
     TwoThousandTwentySix09022,
+    TwoThousandTwentySix0904,
+    TwoThousandTwentySix0906,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -78,6 +80,8 @@ impl Serialize for CreateApiKeysRequestApiVersionDate {
             Self::TwoThousandTwentySix0902 => serializer.serialize_str("2026-09-02"),
             Self::TwoThousandTwentySix09021 => serializer.serialize_str("2026-09-02-1"),
             Self::TwoThousandTwentySix09022 => serializer.serialize_str("2026-09-02-2"),
+            Self::TwoThousandTwentySix0904 => serializer.serialize_str("2026-09-04"),
+            Self::TwoThousandTwentySix0906 => serializer.serialize_str("2026-09-06"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -120,6 +124,8 @@ impl<'de> Deserialize<'de> for CreateApiKeysRequestApiVersionDate {
             "2026-09-02" => Ok(Self::TwoThousandTwentySix0902),
             "2026-09-02-1" => Ok(Self::TwoThousandTwentySix09021),
             "2026-09-02-2" => Ok(Self::TwoThousandTwentySix09022),
+            "2026-09-04" => Ok(Self::TwoThousandTwentySix0904),
+            "2026-09-06" => Ok(Self::TwoThousandTwentySix0906),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -161,6 +167,8 @@ impl fmt::Display for CreateApiKeysRequestApiVersionDate {
             Self::TwoThousandTwentySix0902 => write!(f, "2026-09-02"),
             Self::TwoThousandTwentySix09021 => write!(f, "2026-09-02-1"),
             Self::TwoThousandTwentySix09022 => write!(f, "2026-09-02-2"),
+            Self::TwoThousandTwentySix0904 => write!(f, "2026-09-04"),
+            Self::TwoThousandTwentySix0906 => write!(f, "2026-09-06"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }
