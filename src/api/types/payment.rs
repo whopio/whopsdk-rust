@@ -28,6 +28,9 @@ pub struct Payment {
     pub created_at: String,
     /// The currency the payment settles in, lowercase ISO 4217. Every money field below is stated in it unless it says otherwise.
     pub currency: Currencies,
+    /// The buyer's email address. Null without `member:email:read` on the account or when the buyer has no assigned email.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_email: Option<String>,
     /// The phone number the buyer gave at checkout, when one was collected.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub customer_phone: Option<String>,
@@ -85,6 +88,9 @@ pub struct Payment {
     /// The plan that was charged, prefixed `plan_`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub plan_id: Option<String>,
+    /// The account-facing total in the currency presented to the buyer, before conversion into the settlement currency. Excludes buyer fees.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub presentment_total: Option<Money>,
     /// The product the plan belongs to, prefixed `prod_`. Null for a plan with no product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
@@ -180,6 +186,7 @@ pub struct PaymentBuilder {
     client_secret: Option<String>,
     created_at: Option<String>,
     currency: Option<Currencies>,
+    customer_email: Option<String>,
     customer_phone: Option<String>,
     decline_code: Option<PaymentDeclineCodes>,
     dispute_alerted_at: Option<String>,
@@ -198,6 +205,7 @@ pub struct PaymentBuilder {
     payment_method_type: Option<PaymentMethodTypes>,
     payments_failed: Option<f64>,
     plan_id: Option<String>,
+    presentment_total: Option<Money>,
     product_id: Option<String>,
     promo_code_id: Option<String>,
     recovery_url: Option<String>,
@@ -268,6 +276,11 @@ impl PaymentBuilder {
 
     pub fn currency(mut self, value: Currencies) -> Self {
         self.currency = Some(value);
+        self
+    }
+
+    pub fn customer_email(mut self, value: impl Into<String>) -> Self {
+        self.customer_email = Some(value.into());
         self
     }
 
@@ -358,6 +371,11 @@ impl PaymentBuilder {
 
     pub fn plan_id(mut self, value: impl Into<String>) -> Self {
         self.plan_id = Some(value.into());
+        self
+    }
+
+    pub fn presentment_total(mut self, value: Money) -> Self {
+        self.presentment_total = Some(value);
         self
     }
 
@@ -521,6 +539,7 @@ impl PaymentBuilder {
             currency: self
                 .currency
                 .ok_or_else(|| BuildError::missing_field("currency"))?,
+            customer_email: self.customer_email,
             customer_phone: self.customer_phone,
             decline_code: self.decline_code,
             dispute_alerted_at: self.dispute_alerted_at,
@@ -541,6 +560,7 @@ impl PaymentBuilder {
                 .payments_failed
                 .ok_or_else(|| BuildError::missing_field("payments_failed"))?,
             plan_id: self.plan_id,
+            presentment_total: self.presentment_total,
             product_id: self.product_id,
             promo_code_id: self.promo_code_id,
             recovery_url: self.recovery_url,
