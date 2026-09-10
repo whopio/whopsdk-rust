@@ -120,5 +120,11 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-rust-sdk: 0.46.0
-current_generation: 0ab5a4b1ad5f1154ae00cc52f838a557f3101773
+  - commit_sha: af1b70cbc1998f411bf44af0981ffb5553c05242
+    tree_hash: f5a75a9dbeff9ce156c45f4084be5fbfaafcaf28
+    timestamp: 2026-09-10T18:19:00.936Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+current_generation: af1b70cbc1998f411bf44af0981ffb5553c05242
 patches: []
