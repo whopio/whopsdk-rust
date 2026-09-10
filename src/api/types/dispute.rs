@@ -44,6 +44,8 @@ pub struct Dispute {
     pub inquiry: bool,
     #[serde(default)]
     pub issuer_comments: Vec<DisputeIssuerComment>,
+    #[serde(default)]
+    pub line_items: Vec<ReceiptLineItem>,
     /// The payment being disputed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment: Option<DisputePayment>,
@@ -56,9 +58,9 @@ pub struct Dispute {
     /// Whether Visa Rapid Dispute Resolution settled this automatically. These refund the customer without an evidence round.
     #[serde(default)]
     pub rapid_dispute_resolution: bool,
-    /// Why the customer says they are disputing, normalized across card networks. `other` covers a code Whop has not categorized yet — read `reason_code` for the raw value.
+    /// Why the customer says they are disputing, normalized across processors and card networks. `other` covers a processor reason Whop has not categorized yet.
     pub reason: DisputeReason,
-    /// The raw card-network or processor reason code, such as `10.4`.
+    /// The raw card-network or processor reason code, such as `10.4`. Informational only — `reason` is not derived from it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reason_code: Option<String>,
     /// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
@@ -91,6 +93,7 @@ pub struct DisputeBuilder {
     id: Option<String>,
     inquiry: Option<bool>,
     issuer_comments: Option<Vec<DisputeIssuerComment>>,
+    line_items: Option<Vec<ReceiptLineItem>>,
     payment: Option<DisputePayment>,
     plan_id: Option<String>,
     product_id: Option<String>,
@@ -172,6 +175,11 @@ impl DisputeBuilder {
         self
     }
 
+    pub fn line_items(mut self, value: Vec<ReceiptLineItem>) -> Self {
+        self.line_items = Some(value);
+        self
+    }
+
     pub fn payment(mut self, value: DisputePayment) -> Self {
         self.payment = Some(value);
         self
@@ -222,6 +230,7 @@ impl DisputeBuilder {
     /// - [`id`](DisputeBuilder::id)
     /// - [`inquiry`](DisputeBuilder::inquiry)
     /// - [`issuer_comments`](DisputeBuilder::issuer_comments)
+    /// - [`line_items`](DisputeBuilder::line_items)
     /// - [`rapid_dispute_resolution`](DisputeBuilder::rapid_dispute_resolution)
     /// - [`reason`](DisputeBuilder::reason)
     /// - [`status`](DisputeBuilder::status)
@@ -256,6 +265,9 @@ impl DisputeBuilder {
             issuer_comments: self
                 .issuer_comments
                 .ok_or_else(|| BuildError::missing_field("issuer_comments"))?,
+            line_items: self
+                .line_items
+                .ok_or_else(|| BuildError::missing_field("line_items"))?,
             payment: self.payment,
             plan_id: self.plan_id,
             product_id: self.product_id,

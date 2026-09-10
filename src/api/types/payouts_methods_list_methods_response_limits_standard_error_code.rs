@@ -7,13 +7,13 @@ pub enum ListMethodsResponseLimitsStandardErrorCode {
     AccountSuspended,
     BlockMoveMoneyOutBecauseClawback,
     SupportabilityCheckPayoutStatusHold,
+    CardUsageReviewPayoutStatusHold,
     KycCompleted,
     RmiClear,
     IdentityRfiClear,
     EcommerceFulfillmentConnected,
     BlockMoveMoneyOut,
     BlockMoveMoneyOutSetByParent,
-    CardUsageReviewPayoutStatusHold,
     NoAvailableBalance,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -30,6 +30,9 @@ impl Serialize for ListMethodsResponseLimitsStandardErrorCode {
             Self::SupportabilityCheckPayoutStatusHold => {
                 serializer.serialize_str("supportability_check_payout_status_hold")
             }
+            Self::CardUsageReviewPayoutStatusHold => {
+                serializer.serialize_str("card_usage_review_payout_status_hold")
+            }
             Self::KycCompleted => serializer.serialize_str("kyc_completed"),
             Self::RmiClear => serializer.serialize_str("rmi_clear"),
             Self::IdentityRfiClear => serializer.serialize_str("identity_rfi_clear"),
@@ -39,9 +42,6 @@ impl Serialize for ListMethodsResponseLimitsStandardErrorCode {
             Self::BlockMoveMoneyOut => serializer.serialize_str("block_move_money_out"),
             Self::BlockMoveMoneyOutSetByParent => {
                 serializer.serialize_str("block_move_money_out_set_by_parent")
-            }
-            Self::CardUsageReviewPayoutStatusHold => {
-                serializer.serialize_str("card_usage_review_payout_status_hold")
             }
             Self::NoAvailableBalance => serializer.serialize_str("no_available_balance"),
             Self::__Unknown(val) => serializer.serialize_str(val),
@@ -58,13 +58,13 @@ impl<'de> Deserialize<'de> for ListMethodsResponseLimitsStandardErrorCode {
             "supportability_check_payout_status_hold" => {
                 Ok(Self::SupportabilityCheckPayoutStatusHold)
             }
+            "card_usage_review_payout_status_hold" => Ok(Self::CardUsageReviewPayoutStatusHold),
             "kyc_completed" => Ok(Self::KycCompleted),
             "rmi_clear" => Ok(Self::RmiClear),
             "identity_rfi_clear" => Ok(Self::IdentityRfiClear),
             "ecommerce_fulfillment_connected" => Ok(Self::EcommerceFulfillmentConnected),
             "block_move_money_out" => Ok(Self::BlockMoveMoneyOut),
             "block_move_money_out_set_by_parent" => Ok(Self::BlockMoveMoneyOutSetByParent),
-            "card_usage_review_payout_status_hold" => Ok(Self::CardUsageReviewPayoutStatusHold),
             "no_available_balance" => Ok(Self::NoAvailableBalance),
             _ => Ok(Self::__Unknown(value)),
         }
@@ -81,15 +81,15 @@ impl fmt::Display for ListMethodsResponseLimitsStandardErrorCode {
             Self::SupportabilityCheckPayoutStatusHold => {
                 write!(f, "supportability_check_payout_status_hold")
             }
+            Self::CardUsageReviewPayoutStatusHold => {
+                write!(f, "card_usage_review_payout_status_hold")
+            }
             Self::KycCompleted => write!(f, "kyc_completed"),
             Self::RmiClear => write!(f, "rmi_clear"),
             Self::IdentityRfiClear => write!(f, "identity_rfi_clear"),
             Self::EcommerceFulfillmentConnected => write!(f, "ecommerce_fulfillment_connected"),
             Self::BlockMoveMoneyOut => write!(f, "block_move_money_out"),
             Self::BlockMoveMoneyOutSetByParent => write!(f, "block_move_money_out_set_by_parent"),
-            Self::CardUsageReviewPayoutStatusHold => {
-                write!(f, "card_usage_review_payout_status_hold")
-            }
             Self::NoAvailableBalance => write!(f, "no_available_balance"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }

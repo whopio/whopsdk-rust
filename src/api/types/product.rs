@@ -5,6 +5,10 @@ pub struct Product {
     /// Account that sells this product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account: Option<HashMap<String, serde_json::Value>>,
+    /// Average star rating across published reviews for this product, from `1.0` to `5.0`. Returns `0.0` when no published-review rating is available.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub average_review_rating: f64,
     /// When the product was created, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
@@ -98,6 +102,7 @@ impl Product {
 #[non_exhaustive]
 pub struct ProductBuilder {
     account: Option<HashMap<String, serde_json::Value>>,
+    average_review_rating: Option<f64>,
     created_at: Option<String>,
     custom_cta: Option<ProductCustomCta>,
     custom_cta_url: Option<String>,
@@ -129,6 +134,11 @@ pub struct ProductBuilder {
 impl ProductBuilder {
     pub fn account(mut self, value: HashMap<String, serde_json::Value>) -> Self {
         self.account = Some(value);
+        self
+    }
+
+    pub fn average_review_rating(mut self, value: f64) -> Self {
+        self.average_review_rating = Some(value);
         self
     }
 
@@ -264,6 +274,7 @@ impl ProductBuilder {
 
     /// Consumes the builder and constructs a [`Product`].
     /// This method will fail if any of the following fields are not set:
+    /// - [`average_review_rating`](ProductBuilder::average_review_rating)
     /// - [`created_at`](ProductBuilder::created_at)
     /// - [`gallery_images`](ProductBuilder::gallery_images)
     /// - [`id`](ProductBuilder::id)
@@ -278,6 +289,9 @@ impl ProductBuilder {
     pub fn build(self) -> Result<Product, BuildError> {
         Ok(Product {
             account: self.account,
+            average_review_rating: self
+                .average_review_rating
+                .ok_or_else(|| BuildError::missing_field("average_review_rating"))?,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,

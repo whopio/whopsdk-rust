@@ -68,7 +68,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -144,7 +144,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -158,11 +158,11 @@ impl AppsClient {
             .await
     }
 
-    /// Retrieves an app by ID, claimed route, or proxy domain id. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
+    /// Retrieves an app by ID, claimed route, active verified custom hostname, or proxy domain id. Custom hostnames return 404 for inactive assignments, suspended accounts, or deleted apps. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
     ///
     /// # Arguments
     ///
-    /// * `id` - App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+    /// * `id` - App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -193,7 +193,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -205,7 +205,7 @@ impl AppsClient {
     ///
     /// # Arguments
     ///
-    /// * `id` - App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+    /// * `id` - App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -236,7 +236,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -248,7 +248,7 @@ impl AppsClient {
     ///
     /// # Arguments
     ///
-    /// * `id` - App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+    /// * `id` - App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -289,7 +289,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -348,7 +348,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -415,7 +415,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -489,7 +489,7 @@ impl AppsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client

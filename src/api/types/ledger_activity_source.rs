@@ -29,7 +29,7 @@ pub struct LedgerActivitySource {
     pub from_currency: Option<String>,
     #[serde(default)]
     pub id: String,
-    /// Memo attached to the transfer source, or null when none was provided.
+    /// Memo attached to the transfer or payout source, or null when none was provided (on payout sources requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
     #[serde(default)]

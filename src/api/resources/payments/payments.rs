@@ -73,7 +73,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -142,6 +142,7 @@ impl PaymentsClient {
     ///                 payment_method_id: None,
     ///                 promo_code_id: None,
     ///                 return_url: None,
+    ///                 statement_descriptor: None,
     ///             },
     ///             None,
     ///         )
@@ -157,7 +158,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -206,7 +207,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -254,7 +255,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -303,7 +304,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -362,7 +363,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -411,7 +412,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -460,7 +461,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -511,7 +512,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -570,7 +571,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -622,7 +623,7 @@ impl PaymentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client

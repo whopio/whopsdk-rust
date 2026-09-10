@@ -17,6 +17,9 @@ pub struct UpdatePreferencesRequest {
     /// Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cards_auto_top_up: Option<bool>,
+    /// Whether Whop Card notifications reach this account's team. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected. Requires a cards balance on the account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cards_notifications: Option<bool>,
     /// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dispute_fighter_enabled: Option<bool>,
@@ -36,6 +39,7 @@ pub struct UpdatePreferencesRequestBuilder {
     ads_scheduling_timezone: Option<String>,
     ads_triple_whale_integration: Option<UpdatePreferencesRequestAdsTripleWhaleIntegration>,
     cards_auto_top_up: Option<bool>,
+    cards_notifications: Option<bool>,
     dispute_fighter_enabled: Option<bool>,
 }
 
@@ -68,6 +72,11 @@ impl UpdatePreferencesRequestBuilder {
         self
     }
 
+    pub fn cards_notifications(mut self, value: bool) -> Self {
+        self.cards_notifications = Some(value);
+        self
+    }
+
     pub fn dispute_fighter_enabled(mut self, value: bool) -> Self {
         self.dispute_fighter_enabled = Some(value);
         self
@@ -81,6 +90,7 @@ impl UpdatePreferencesRequestBuilder {
             ads_scheduling_timezone: self.ads_scheduling_timezone,
             ads_triple_whale_integration: self.ads_triple_whale_integration,
             cards_auto_top_up: self.cards_auto_top_up,
+            cards_notifications: self.cards_notifications,
             dispute_fighter_enabled: self.dispute_fighter_enabled,
         })
     }

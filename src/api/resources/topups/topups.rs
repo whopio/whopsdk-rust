@@ -61,7 +61,7 @@ impl TopupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client

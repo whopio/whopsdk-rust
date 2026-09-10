@@ -5,7 +5,7 @@ pub struct CreateSocialAccountsRequest {
     /// The Account (biz_ identifier) to create the social account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account).
+    /// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
     pub platform: CreateSocialAccountsRequestPlatform,
 }
 

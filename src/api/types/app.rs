@@ -45,6 +45,8 @@ pub struct App {
     /// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
     #[serde(default)]
     pub domain_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub domains: Option<Vec<AppDomain>>,
     #[serde(default)]
     pub elements_used: Vec<AppElementsUsedItem>,
     /// URL path for the member-facing hub view, or `null` when not configured.
@@ -136,6 +138,7 @@ pub struct AppBuilder {
     description: Option<String>,
     discover_path: Option<String>,
     domain_id: Option<String>,
+    domains: Option<Vec<AppDomain>>,
     elements_used: Option<Vec<AppElementsUsedItem>>,
     experience_path: Option<String>,
     hosted_url: Option<String>,
@@ -235,6 +238,11 @@ impl AppBuilder {
 
     pub fn domain_id(mut self, value: impl Into<String>) -> Self {
         self.domain_id = Some(value.into());
+        self
+    }
+
+    pub fn domains(mut self, value: Vec<AppDomain>) -> Self {
+        self.domains = Some(value);
         self
     }
 
@@ -406,6 +414,7 @@ impl AppBuilder {
             domain_id: self
                 .domain_id
                 .ok_or_else(|| BuildError::missing_field("domain_id"))?,
+            domains: self.domains,
             elements_used: self
                 .elements_used
                 .ok_or_else(|| BuildError::missing_field("elements_used"))?,

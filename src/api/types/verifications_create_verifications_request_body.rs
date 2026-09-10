@@ -35,6 +35,8 @@ pub enum CreateVerificationsRequestBody {
         share_token: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         tax_identification_number: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        verification_id: Option<String>,
     },
 
     #[serde(rename = "business")]
@@ -64,6 +66,8 @@ pub enum CreateVerificationsRequestBody {
         share_token: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         tax_identification_number: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        verification_id: Option<String>,
     },
 
     /// Catch-all variant for unrecognized discriminant values.
@@ -90,6 +94,7 @@ impl CreateVerificationsRequestBody {
             phone: None,
             share_token: None,
             tax_identification_number: None,
+            verification_id: None,
         }
     }
 
@@ -107,6 +112,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation: None,
             share_token: None,
             tax_identification_number: None,
+            verification_id: None,
         }
     }
 
@@ -125,6 +131,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address: Some(address),
@@ -141,6 +148,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -159,6 +167,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -175,6 +184,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -193,6 +203,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -209,6 +220,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -227,6 +239,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -243,6 +256,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -261,6 +275,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -277,6 +292,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -295,6 +311,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -311,6 +328,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -329,6 +347,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -345,6 +364,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -363,6 +383,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -379,6 +400,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -397,6 +419,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -413,6 +436,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -431,6 +455,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -447,6 +472,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -465,6 +491,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -481,6 +508,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -499,6 +527,7 @@ impl CreateVerificationsRequestBody {
         phone: String,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -515,6 +544,7 @@ impl CreateVerificationsRequestBody {
             phone: Some(phone),
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -533,6 +563,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: String,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -549,6 +580,7 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token: Some(share_token),
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -567,6 +599,7 @@ impl CreateVerificationsRequestBody {
         phone: Option<String>,
         share_token: Option<String>,
         tax_identification_number: String,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Individual {
             address,
@@ -583,6 +616,43 @@ impl CreateVerificationsRequestBody {
             phone,
             share_token,
             tax_identification_number: Some(tax_identification_number),
+            verification_id,
+        }
+    }
+
+    pub fn individual_with_verification_id(
+        address: Option<CreateVerificationsRequestBodyIndividualAddress>,
+        business_name: Option<String>,
+        business_structure: Option<String>,
+        business_tax_identification_number: Option<String>,
+        business_website: Option<String>,
+        country: Option<String>,
+        date_of_birth: Option<String>,
+        document_type: Option<CreateVerificationsRequestBodyIndividualDocumentType>,
+        documents: Option<CreateVerificationsRequestBodyIndividualDocuments>,
+        first_name: Option<String>,
+        last_name: Option<String>,
+        phone: Option<String>,
+        share_token: Option<String>,
+        tax_identification_number: Option<String>,
+        verification_id: String,
+    ) -> Self {
+        Self::Individual {
+            address,
+            business_name,
+            business_structure,
+            business_tax_identification_number,
+            business_website,
+            country,
+            date_of_birth,
+            document_type,
+            documents,
+            first_name,
+            last_name,
+            phone,
+            share_token,
+            tax_identification_number,
+            verification_id: Some(verification_id),
         }
     }
 
@@ -599,6 +669,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address: Some(address),
@@ -613,6 +684,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -629,6 +701,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -643,6 +716,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -659,6 +733,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -673,6 +748,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -689,6 +765,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -703,6 +780,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -719,6 +797,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -733,6 +812,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -749,6 +829,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -763,6 +844,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -779,6 +861,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -793,6 +876,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -809,6 +893,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -823,6 +908,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -839,6 +925,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -853,6 +940,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -869,6 +957,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: String,
         share_token: Option<String>,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -883,6 +972,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation: Some(place_of_incorporation),
             share_token,
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -899,6 +989,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: String,
         tax_identification_number: Option<String>,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -913,6 +1004,7 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token: Some(share_token),
             tax_identification_number,
+            verification_id,
         }
     }
 
@@ -929,6 +1021,7 @@ impl CreateVerificationsRequestBody {
         place_of_incorporation: Option<String>,
         share_token: Option<String>,
         tax_identification_number: String,
+        verification_id: Option<String>,
     ) -> Self {
         Self::Business {
             address,
@@ -943,6 +1036,39 @@ impl CreateVerificationsRequestBody {
             place_of_incorporation,
             share_token,
             tax_identification_number: Some(tax_identification_number),
+            verification_id,
+        }
+    }
+
+    pub fn business_with_verification_id(
+        address: Option<CreateVerificationsRequestBodyBusinessAddress>,
+        business_name: Option<String>,
+        business_structure: Option<String>,
+        business_tax_identification_number: Option<String>,
+        business_website: Option<String>,
+        country: Option<String>,
+        date_of_birth: Option<String>,
+        first_name: Option<String>,
+        last_name: Option<String>,
+        place_of_incorporation: Option<String>,
+        share_token: Option<String>,
+        tax_identification_number: Option<String>,
+        verification_id: String,
+    ) -> Self {
+        Self::Business {
+            address,
+            business_name,
+            business_structure,
+            business_tax_identification_number,
+            business_website,
+            country,
+            date_of_birth,
+            first_name,
+            last_name,
+            place_of_incorporation,
+            share_token,
+            tax_identification_number,
+            verification_id: Some(verification_id),
         }
     }
 

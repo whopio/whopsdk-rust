@@ -5,6 +5,8 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum WebhookEvent {
     AccountUpdated,
+    AccountFinancingApproved,
+    AccountFinancingDenied,
     InvoiceCreated,
     InvoiceMarkedUncollectible,
     InvoicePaid,
@@ -95,6 +97,10 @@ impl Serialize for WebhookEvent {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::AccountUpdated => serializer.serialize_str("account.updated"),
+            Self::AccountFinancingApproved => {
+                serializer.serialize_str("account.financing_approved")
+            }
+            Self::AccountFinancingDenied => serializer.serialize_str("account.financing_denied"),
             Self::InvoiceCreated => serializer.serialize_str("invoice.created"),
             Self::InvoiceMarkedUncollectible => {
                 serializer.serialize_str("invoice.marked_uncollectible")
@@ -210,6 +216,8 @@ impl<'de> Deserialize<'de> for WebhookEvent {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
             "account.updated" => Ok(Self::AccountUpdated),
+            "account.financing_approved" => Ok(Self::AccountFinancingApproved),
+            "account.financing_denied" => Ok(Self::AccountFinancingDenied),
             "invoice.created" => Ok(Self::InvoiceCreated),
             "invoice.marked_uncollectible" => Ok(Self::InvoiceMarkedUncollectible),
             "invoice.paid" => Ok(Self::InvoicePaid),
@@ -302,6 +310,8 @@ impl fmt::Display for WebhookEvent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::AccountUpdated => write!(f, "account.updated"),
+            Self::AccountFinancingApproved => write!(f, "account.financing_approved"),
+            Self::AccountFinancingDenied => write!(f, "account.financing_denied"),
             Self::InvoiceCreated => write!(f, "invoice.created"),
             Self::InvoiceMarkedUncollectible => write!(f, "invoice.marked_uncollectible"),
             Self::InvoicePaid => write!(f, "invoice.paid"),

@@ -18,6 +18,9 @@ pub struct RetrievePreferencesResponse {
     /// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
     #[serde(default)]
     pub cards_auto_top_up: bool,
+    /// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
+    #[serde(default)]
+    pub cards_notifications: bool,
     /// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
     #[serde(default)]
     pub dispute_fighter_enabled: bool,
@@ -38,6 +41,7 @@ pub struct RetrievePreferencesResponseBuilder {
     ads_scheduling_timezone: Option<String>,
     ads_triple_whale_integration: Option<RetrievePreferencesResponseAdsTripleWhaleIntegration>,
     cards_auto_top_up: Option<bool>,
+    cards_notifications: Option<bool>,
     dispute_fighter_enabled: Option<bool>,
 }
 
@@ -78,6 +82,11 @@ impl RetrievePreferencesResponseBuilder {
         self
     }
 
+    pub fn cards_notifications(mut self, value: bool) -> Self {
+        self.cards_notifications = Some(value);
+        self
+    }
+
     pub fn dispute_fighter_enabled(mut self, value: bool) -> Self {
         self.dispute_fighter_enabled = Some(value);
         self
@@ -90,6 +99,7 @@ impl RetrievePreferencesResponseBuilder {
     /// - [`ads_scheduling_timezone`](RetrievePreferencesResponseBuilder::ads_scheduling_timezone)
     /// - [`ads_triple_whale_integration`](RetrievePreferencesResponseBuilder::ads_triple_whale_integration)
     /// - [`cards_auto_top_up`](RetrievePreferencesResponseBuilder::cards_auto_top_up)
+    /// - [`cards_notifications`](RetrievePreferencesResponseBuilder::cards_notifications)
     /// - [`dispute_fighter_enabled`](RetrievePreferencesResponseBuilder::dispute_fighter_enabled)
     pub fn build(self) -> Result<RetrievePreferencesResponse, BuildError> {
         Ok(RetrievePreferencesResponse {
@@ -109,6 +119,9 @@ impl RetrievePreferencesResponseBuilder {
             cards_auto_top_up: self
                 .cards_auto_top_up
                 .ok_or_else(|| BuildError::missing_field("cards_auto_top_up"))?,
+            cards_notifications: self
+                .cards_notifications
+                .ok_or_else(|| BuildError::missing_field("cards_notifications"))?,
             dispute_fighter_enabled: self
                 .dispute_fighter_enabled
                 .ok_or_else(|| BuildError::missing_field("dispute_fighter_enabled"))?,

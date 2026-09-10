@@ -36,7 +36,7 @@ pub struct AccountPaymentControls {
     pub resolution_center_auto_refund: AccountResolutionCenterAutoRefundControl,
     #[serde(default)]
     pub restricted_payment_methods: Vec<AccountPaymentControlsRestrictedPaymentMethodsItem>,
-    /// Why pending funds without a settlement date aren't moving yet, when it's something the merchant can act on. `null` when there's no reason to show (still clearing, or the account is held for a reason that isn't merchant-actionable).
+    /// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete` and `pending_information_request` are things the merchant can act on. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub undated_pending_reason: Option<AccountPaymentControlsUndatedPendingReason>,
     /// How the account's balance automatically withdraws.

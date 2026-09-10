@@ -2,16 +2,16 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct PaymentVerificationChecks {
-    /// Whether the billing street address the customer entered matched the issuer's records.
+    /// The Address Verification Service (AVS) result for the billing street address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub address_line1: Option<String>,
     /// Whether the cardholder name matched the issuer's records.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub card_holder_name: Option<String>,
-    /// Whether the CVV / CVC matched the card.
+    /// The Card Verification Value (CVV/CVC) result.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub card_security_code: Option<String>,
-    /// Whether the billing postal code matched the issuer's records.
+    /// The Address Verification Service (AVS) result for the billing postal code.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub zip_code: Option<String>,
 }
