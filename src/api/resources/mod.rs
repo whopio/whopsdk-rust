@@ -20,6 +20,7 @@
 //! - **Bounty Submissions**
 //! - **CardTransactions**
 //! - **Cards**
+//! - **Cashback Rules**
 //! - **ChatChannels**
 //! - **Checkout Configurations**
 //! - **CompanyTokenTransactions**
@@ -104,6 +105,7 @@ pub mod bounties;
 pub mod bounty_submissions;
 pub mod card_transactions;
 pub mod cards;
+pub mod cashback_rules;
 pub mod chat_channels;
 pub mod checkout_configurations;
 pub mod company_token_transactions;
@@ -187,6 +189,7 @@ pub struct Whop {
     pub bounty_submissions: BountySubmissionsClient,
     pub card_transactions: CardTransactionsClient,
     pub cards: CardsClient,
+    pub cashback_rules: CashbackRulesClient,
     pub chat_channels: ChatChannelsClient,
     pub checkout_configurations: CheckoutConfigurationsClient,
     pub company_token_transactions: CompanyTokenTransactionsClient,
@@ -274,6 +277,7 @@ impl Whop {
             bounty_submissions: BountySubmissionsClient::new(config.clone())?,
             card_transactions: CardTransactionsClient::new(config.clone())?,
             cards: CardsClient::new(config.clone())?,
+            cashback_rules: CashbackRulesClient::new(config.clone())?,
             chat_channels: ChatChannelsClient::new(config.clone())?,
             checkout_configurations: CheckoutConfigurationsClient::new(config.clone())?,
             company_token_transactions: CompanyTokenTransactionsClient::new(config.clone())?,
@@ -359,6 +363,7 @@ pub use bounties::BountiesClient;
 pub use bounty_submissions::BountySubmissionsClient;
 pub use card_transactions::CardTransactionsClient;
 pub use cards::CardsClient;
+pub use cashback_rules::CashbackRulesClient;
 pub use chat_channels::ChatChannelsClient;
 pub use checkout_configurations::CheckoutConfigurationsClient;
 pub use company_token_transactions::CompanyTokenTransactionsClient;
