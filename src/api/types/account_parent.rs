@@ -1,7 +1,10 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct AccountParent {
+    /// Markup rates this parent charges the connected account being read, keyed by fee type (for example `crypto_deposit_markup`), each with `percentage_fee` and `fixed_fee_usd`. Resolved with the connected account's own overrides winning over the platform default.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fees: Option<HashMap<String, AccountParentFeesValue>>,
     /// Account ID, prefixed `biz_`.
     #[serde(default)]
     pub id: String,
@@ -25,6 +28,7 @@ impl AccountParent {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct AccountParentBuilder {
+    fees: Option<HashMap<String, AccountParentFeesValue>>,
     id: Option<String>,
     logo_url: Option<String>,
     route: Option<String>,
@@ -32,6 +36,11 @@ pub struct AccountParentBuilder {
 }
 
 impl AccountParentBuilder {
+    pub fn fees(mut self, value: HashMap<String, AccountParentFeesValue>) -> Self {
+        self.fees = Some(value);
+        self
+    }
+
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
         self
@@ -59,6 +68,7 @@ impl AccountParentBuilder {
     /// - [`title`](AccountParentBuilder::title)
     pub fn build(self) -> Result<AccountParent, BuildError> {
         Ok(AccountParent {
+            fees: self.fees,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             logo_url: self.logo_url,
             route: self
