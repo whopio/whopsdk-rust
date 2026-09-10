@@ -33,6 +33,8 @@ pub struct AppListItem {
     /// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
     #[serde(default)]
     pub domain_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub domains: Option<Vec<AppDomain>>,
     /// URL path for the member-facing hub view, or `null` when not configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub experience_path: Option<String>,
@@ -89,6 +91,7 @@ pub struct AppListItemBuilder {
     description: Option<String>,
     discover_path: Option<String>,
     domain_id: Option<String>,
+    domains: Option<Vec<AppDomain>>,
     experience_path: Option<String>,
     hosted_url: Option<String>,
     icon: Option<AppIcon>,
@@ -156,6 +159,11 @@ impl AppListItemBuilder {
 
     pub fn domain_id(mut self, value: impl Into<String>) -> Self {
         self.domain_id = Some(value.into());
+        self
+    }
+
+    pub fn domains(mut self, value: Vec<AppDomain>) -> Self {
+        self.domains = Some(value);
         self
     }
 
@@ -258,6 +266,7 @@ impl AppListItemBuilder {
             domain_id: self
                 .domain_id
                 .ok_or_else(|| BuildError::missing_field("domain_id"))?,
+            domains: self.domains,
             experience_path: self.experience_path,
             hosted_url: self.hosted_url,
             icon: self.icon.ok_or_else(|| BuildError::missing_field("icon"))?,

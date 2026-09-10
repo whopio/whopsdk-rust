@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct PaymentStatus {
+    /// The account receiving this payment, or `null` when the payment has no associated account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account: Option<AccountSummary>,
     /// When the card authorization must be captured, as an ISO 8601 timestamp. `null` when this payment was not authorized for later capture.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub capture_expires_at: Option<String>,
@@ -17,13 +20,13 @@ pub struct PaymentStatus {
     /// Always `payment_status`.
     #[serde(default)]
     pub object: String,
-    /// Present while `status` is `processing` on a settlement rail, otherwise `null`.
+    /// Present while `status` is `processing` on a settlement rail, otherwise `null`. A `processing` status without it has not been decided yet — keep polling.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub processing_details: Option<PaymentProcessingDetails>,
     /// Where to send the buyer once the payment reaches a resting state, or `null` to leave them where they are. Editable until they return — see the return_url operation.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_url: Option<String>,
-    /// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+    /// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — with `processing_details`, the money is moving; without them, the charge is still being decided and the status should be read again. `succeeded` — collected. `canceled` — voided or written off.
     pub status: PaymentStatusStatus,
 }
 
@@ -36,6 +39,7 @@ impl PaymentStatus {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct PaymentStatusBuilder {
+    account: Option<AccountSummary>,
     capture_expires_at: Option<String>,
     id: Option<String>,
     last_payment_error: Option<PaymentLastPaymentError>,
@@ -47,6 +51,11 @@ pub struct PaymentStatusBuilder {
 }
 
 impl PaymentStatusBuilder {
+    pub fn account(mut self, value: AccountSummary) -> Self {
+        self.account = Some(value);
+        self
+    }
+
     pub fn capture_expires_at(mut self, value: impl Into<String>) -> Self {
         self.capture_expires_at = Some(value.into());
         self
@@ -94,6 +103,7 @@ impl PaymentStatusBuilder {
     /// - [`status`](PaymentStatusBuilder::status)
     pub fn build(self) -> Result<PaymentStatus, BuildError> {
         Ok(PaymentStatus {
+            account: self.account,
             capture_expires_at: self.capture_expires_at,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             last_payment_error: self.last_payment_error,

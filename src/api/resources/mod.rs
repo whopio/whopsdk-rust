@@ -34,6 +34,7 @@
 //! - **Disputes**
 //! - **DmChannels**
 //! - **DmMembers**
+//! - **Domains**
 //! - **Entries**
 //! - **Events**
 //! - **Experiences**
@@ -117,6 +118,7 @@ pub mod dispute_alerts;
 pub mod disputes;
 pub mod dm_channels;
 pub mod dm_members;
+pub mod domains;
 pub mod entries;
 pub mod events;
 pub mod experiences;
@@ -199,6 +201,7 @@ pub struct Whop {
     pub disputes: DisputesClient,
     pub dm_channels: DmChannelsClient,
     pub dm_members: DmMembersClient,
+    pub domains: DomainsClient,
     pub entries: EntriesClient,
     pub events: EventsClient,
     pub experiences: ExperiencesClient,
@@ -285,6 +288,7 @@ impl Whop {
             disputes: DisputesClient::new(config.clone())?,
             dm_channels: DmChannelsClient::new(config.clone())?,
             dm_members: DmMembersClient::new(config.clone())?,
+            domains: DomainsClient::new(config.clone())?,
             entries: EntriesClient::new(config.clone())?,
             events: EventsClient::new(config.clone())?,
             experiences: ExperiencesClient::new(config.clone())?,
@@ -369,6 +373,7 @@ pub use dispute_alerts::DisputeAlertsClient;
 pub use disputes::DisputesClient;
 pub use dm_channels::DmChannelsClient;
 pub use dm_members::DmMembersClient;
+pub use domains::DomainsClient;
 pub use entries::EntriesClient;
 pub use events::EventsClient;
 pub use experiences::ExperiencesClient;

@@ -171,6 +171,8 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     PlatformEarning,
     PlatformEarningSettlement,
     PlatformEarningUnreconciledClearing,
+    PlatformMarkupFee,
+    PlatformMarkupFeePayout,
     PromoReversal,
     PspAcceleratedSettlementFee,
     PspAccountDebit,
@@ -568,6 +570,8 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::PlatformEarningUnreconciledClearing => {
                 serializer.serialize_str("platform_earning_unreconciled_clearing")
             }
+            Self::PlatformMarkupFee => serializer.serialize_str("platform_markup_fee"),
+            Self::PlatformMarkupFeePayout => serializer.serialize_str("platform_markup_fee_payout"),
             Self::PromoReversal => serializer.serialize_str("promo_reversal"),
             Self::PspAcceleratedSettlementFee => {
                 serializer.serialize_str("psp_accelerated_settlement_fee")
@@ -932,6 +936,8 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "platform_earning_unreconciled_clearing" => {
                 Ok(Self::PlatformEarningUnreconciledClearing)
             }
+            "platform_markup_fee" => Ok(Self::PlatformMarkupFee),
+            "platform_markup_fee_payout" => Ok(Self::PlatformMarkupFeePayout),
             "promo_reversal" => Ok(Self::PromoReversal),
             "psp_accelerated_settlement_fee" => Ok(Self::PspAcceleratedSettlementFee),
             "psp_account_debit" => Ok(Self::PspAccountDebit),
@@ -1253,6 +1259,8 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::PlatformEarningUnreconciledClearing => {
                 write!(f, "platform_earning_unreconciled_clearing")
             }
+            Self::PlatformMarkupFee => write!(f, "platform_markup_fee"),
+            Self::PlatformMarkupFeePayout => write!(f, "platform_markup_fee_payout"),
             Self::PromoReversal => write!(f, "promo_reversal"),
             Self::PspAcceleratedSettlementFee => write!(f, "psp_accelerated_settlement_fee"),
             Self::PspAccountDebit => write!(f, "psp_account_debit"),

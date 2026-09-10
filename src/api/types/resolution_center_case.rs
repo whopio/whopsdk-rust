@@ -30,7 +30,7 @@ pub struct ResolutionCenterCase {
     #[serde(default)]
     pub id: String,
     #[serde(default)]
-    pub line_items: Vec<ResolutionLineItem>,
+    pub line_items: Vec<ReceiptLineItem>,
     /// Who prevailed on the claim. `null` until the case closes. Read `refund` for whether any money actually moved.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub outcome: Option<ResolutionCenterCaseOutcome>,
@@ -76,7 +76,7 @@ pub struct ResolutionCenterCaseBuilder {
     customer_appealed: Option<bool>,
     escalated: Option<bool>,
     id: Option<String>,
-    line_items: Option<Vec<ResolutionLineItem>>,
+    line_items: Option<Vec<ReceiptLineItem>>,
     outcome: Option<ResolutionCenterCaseOutcome>,
     payment: Option<ResolutionPayment>,
     plan_id: Option<String>,
@@ -137,7 +137,7 @@ impl ResolutionCenterCaseBuilder {
         self
     }
 
-    pub fn line_items(mut self, value: Vec<ResolutionLineItem>) -> Self {
+    pub fn line_items(mut self, value: Vec<ReceiptLineItem>) -> Self {
         self.line_items = Some(value);
         self
     }

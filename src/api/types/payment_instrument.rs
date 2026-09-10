@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct PaymentInstrument {
-    /// Card payments only: the card's network and last four.
+    /// Card payments only: the card's network, last four, and issuer identification number.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub card: Option<PaymentInstrumentCard>,
     /// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").

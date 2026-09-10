@@ -69,7 +69,7 @@ pub struct Payment {
     /// When the money was collected, or null while it has not been.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub paid_at: Option<String>,
-    /// The instrument shaped for display: a buyer-facing name, the standard icon set, and the card's brand and last four when it was a card.
+    /// The instrument shaped for display: a buyer-facing name, the standard icon set, and the card's brand, last four and issuer identification number when it was a card.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_instrument: Option<PaymentInstrument>,
     /// The stored payment method that was charged, prefixed `payt_`. Null when the method was not saved.
@@ -154,7 +154,7 @@ pub struct Payment {
     /// The buyer. Null when the payment belongs to a company buyer rather than a user.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user: Option<UserSummary>,
-    /// The issuer's address and security code check results, or null when the processor returned none.
+    /// The Address Verification Service (AVS), cardholder name, and Card Verification Value (CVV/CVC) results, or null when the processor returned none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verification_checks: Option<PaymentVerificationChecks>,
     /// True when the payment is `open` on a past-due membership and its processor supports voiding — see `POST /payments/{id}/void`.

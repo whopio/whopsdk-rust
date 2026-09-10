@@ -60,7 +60,7 @@ impl VerificationsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -78,7 +78,7 @@ impl VerificationsClient {
             .await
     }
 
-    /// Starts a hosted verification session for an account or user, or returns the active session when one already exists. Any fields you include in the request body are used to prefill the session. Send `documents` (with `document_type`) to instead verify the person from identity documents included in this request — no hosted session involved. Send `share_token` to reuse a verification another Sumsub account has already completed for this person, instead of verifying them again. If the account already has an `approved` verification the request is rejected; unlink it first to start a new one.
+    /// Starts a hosted verification session for an account or user, or returns the active session when one already exists. Any fields you include in the request body are used to prefill the session. Send `documents` (with `document_type`) to instead verify the person from identity documents included in this request — no hosted session involved. Send `share_token` to reuse a verification another Sumsub account has already completed for this person, instead of verifying them again. Send `verification_id` to reuse a verification the signed-in user already completed on Whop. Every mode except `verification_id` is rejected once the account has an `approved` verification — unlink it first to start a new one — while `verification_id` replaces whichever verification of that kind the account currently has.
     ///
     /// # Arguments
     ///
@@ -122,7 +122,7 @@ impl VerificationsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -171,7 +171,7 @@ impl VerificationsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -232,7 +232,7 @@ impl VerificationsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client

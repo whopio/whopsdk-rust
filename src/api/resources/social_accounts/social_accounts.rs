@@ -76,7 +76,7 @@ impl SocialAccountsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -102,7 +102,7 @@ impl SocialAccountsClient {
             .await
     }
 
-    /// Creates or returns a Whop-managed Facebook page for an account.
+    /// Creates or returns a Whop-managed Facebook page or TikTok account for an account.
     ///
     /// # Arguments
     ///
@@ -145,7 +145,7 @@ impl SocialAccountsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -204,7 +204,7 @@ impl SocialAccountsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -265,7 +265,7 @@ impl SocialAccountsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -328,7 +328,7 @@ impl SocialAccountsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client
@@ -396,7 +396,7 @@ impl SocialAccountsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-06".to_string());
+                .or_insert_with(|| "2026-09-09".to_string());
             Some(o)
         };
         self.http_client

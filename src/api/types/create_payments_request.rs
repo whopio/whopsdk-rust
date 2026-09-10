@@ -32,6 +32,9 @@ pub struct CreatePaymentsRequest {
     /// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_url: Option<String>,
+    /// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub statement_descriptor: Option<String>,
 }
 
 impl CreatePaymentsRequest {
@@ -53,6 +56,7 @@ pub struct CreatePaymentsRequestBuilder {
     plan_id: Option<String>,
     promo_code_id: Option<String>,
     return_url: Option<String>,
+    statement_descriptor: Option<String>,
 }
 
 impl CreatePaymentsRequestBuilder {
@@ -106,6 +110,11 @@ impl CreatePaymentsRequestBuilder {
         self
     }
 
+    pub fn statement_descriptor(mut self, value: impl Into<String>) -> Self {
+        self.statement_descriptor = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreatePaymentsRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](CreatePaymentsRequestBuilder::account_id)
@@ -126,6 +135,7 @@ impl CreatePaymentsRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("plan_id"))?,
             promo_code_id: self.promo_code_id,
             return_url: self.return_url,
+            statement_descriptor: self.statement_descriptor,
         })
     }
 }
