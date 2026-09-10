@@ -23,9 +23,12 @@ pub struct CreatePaymentsRequest {
     /// The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_id: Option<String>,
-    /// The plan to charge for, prefixed `plan_`. It must belong to the account.
-    #[serde(default)]
-    pub plan_id: String,
+    /// Find or create a plan for this payment. Mutually exclusive with `plan_id`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan: Option<CreatePaymentsRequestPlan>,
+    /// The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan_id: Option<String>,
     /// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub promo_code_id: Option<String>,
@@ -53,6 +56,7 @@ pub struct CreatePaymentsRequestBuilder {
     member_id: Option<String>,
     metadata: Option<HashMap<String, Option<String>>>,
     payment_method_id: Option<String>,
+    plan: Option<CreatePaymentsRequestPlan>,
     plan_id: Option<String>,
     promo_code_id: Option<String>,
     return_url: Option<String>,
@@ -95,6 +99,11 @@ impl CreatePaymentsRequestBuilder {
         self
     }
 
+    pub fn plan(mut self, value: CreatePaymentsRequestPlan) -> Self {
+        self.plan = Some(value);
+        self
+    }
+
     pub fn plan_id(mut self, value: impl Into<String>) -> Self {
         self.plan_id = Some(value.into());
         self
@@ -118,7 +127,6 @@ impl CreatePaymentsRequestBuilder {
     /// Consumes the builder and constructs a [`CreatePaymentsRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](CreatePaymentsRequestBuilder::account_id)
-    /// - [`plan_id`](CreatePaymentsRequestBuilder::plan_id)
     pub fn build(self) -> Result<CreatePaymentsRequest, BuildError> {
         Ok(CreatePaymentsRequest {
             account_id: self
@@ -130,9 +138,8 @@ impl CreatePaymentsRequestBuilder {
             member_id: self.member_id,
             metadata: self.metadata,
             payment_method_id: self.payment_method_id,
-            plan_id: self
-                .plan_id
-                .ok_or_else(|| BuildError::missing_field("plan_id"))?,
+            plan: self.plan,
+            plan_id: self.plan_id,
             promo_code_id: self.promo_code_id,
             return_url: self.return_url,
             statement_descriptor: self.statement_descriptor,
