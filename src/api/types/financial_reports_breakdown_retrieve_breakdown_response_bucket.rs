@@ -13,6 +13,7 @@ pub enum RetrieveBreakdownResponseBucket {
     Withdrawals,
     WithdrawalMarkup,
     Swaps,
+    CardLoads,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -33,6 +34,7 @@ impl Serialize for RetrieveBreakdownResponseBucket {
             Self::Withdrawals => serializer.serialize_str("withdrawals"),
             Self::WithdrawalMarkup => serializer.serialize_str("withdrawal_markup"),
             Self::Swaps => serializer.serialize_str("swaps"),
+            Self::CardLoads => serializer.serialize_str("card_loads"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -52,6 +54,7 @@ impl<'de> Deserialize<'de> for RetrieveBreakdownResponseBucket {
             "withdrawals" => Ok(Self::Withdrawals),
             "withdrawal_markup" => Ok(Self::WithdrawalMarkup),
             "swaps" => Ok(Self::Swaps),
+            "card_loads" => Ok(Self::CardLoads),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -70,6 +73,7 @@ impl fmt::Display for RetrieveBreakdownResponseBucket {
             Self::Withdrawals => write!(f, "withdrawals"),
             Self::WithdrawalMarkup => write!(f, "withdrawal_markup"),
             Self::Swaps => write!(f, "swaps"),
+            Self::CardLoads => write!(f, "card_loads"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }
