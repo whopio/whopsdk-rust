@@ -199,6 +199,7 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     PspDisputePayable,
     PspExternalAccountConnectionFee,
     PspFixedFee,
+    PspFxAdjustment,
     PspGatewayFee,
     PspIdentityVerificationFee,
     PspInterchangeFee,
@@ -614,6 +615,7 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
                 serializer.serialize_str("psp_external_account_connection_fee")
             }
             Self::PspFixedFee => serializer.serialize_str("psp_fixed_fee"),
+            Self::PspFxAdjustment => serializer.serialize_str("psp_fx_adjustment"),
             Self::PspGatewayFee => serializer.serialize_str("psp_gateway_fee"),
             Self::PspIdentityVerificationFee => {
                 serializer.serialize_str("psp_identity_verification_fee")
@@ -966,6 +968,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "psp_dispute_payable" => Ok(Self::PspDisputePayable),
             "psp_external_account_connection_fee" => Ok(Self::PspExternalAccountConnectionFee),
             "psp_fixed_fee" => Ok(Self::PspFixedFee),
+            "psp_fx_adjustment" => Ok(Self::PspFxAdjustment),
             "psp_gateway_fee" => Ok(Self::PspGatewayFee),
             "psp_identity_verification_fee" => Ok(Self::PspIdentityVerificationFee),
             "psp_interchange_fee" => Ok(Self::PspInterchangeFee),
@@ -1293,6 +1296,7 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
                 write!(f, "psp_external_account_connection_fee")
             }
             Self::PspFixedFee => write!(f, "psp_fixed_fee"),
+            Self::PspFxAdjustment => write!(f, "psp_fx_adjustment"),
             Self::PspGatewayFee => write!(f, "psp_gateway_fee"),
             Self::PspIdentityVerificationFee => write!(f, "psp_identity_verification_fee"),
             Self::PspInterchangeFee => write!(f, "psp_interchange_fee"),
