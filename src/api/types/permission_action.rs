@@ -4,6 +4,8 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PermissionAction {
+    ExperimentManage,
+    ExperimentRead,
     AiPromptCreate,
     AccessPassBasicExport,
     AccessPassBasicRead,
@@ -271,6 +273,8 @@ pub enum PermissionAction {
 impl Serialize for PermissionAction {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::ExperimentManage => serializer.serialize_str("experiment:manage"),
+            Self::ExperimentRead => serializer.serialize_str("experiment:read"),
             Self::AiPromptCreate => serializer.serialize_str("ai_prompt:create"),
             Self::AccessPassBasicExport => serializer.serialize_str("access_pass:basic:export"),
             Self::AccessPassBasicRead => serializer.serialize_str("access_pass:basic:read"),
@@ -617,6 +621,8 @@ impl<'de> Deserialize<'de> for PermissionAction {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "experiment:manage" => Ok(Self::ExperimentManage),
+            "experiment:read" => Ok(Self::ExperimentRead),
             "ai_prompt:create" => Ok(Self::AiPromptCreate),
             "access_pass:basic:export" => Ok(Self::AccessPassBasicExport),
             "access_pass:basic:read" => Ok(Self::AccessPassBasicRead),
@@ -884,6 +890,8 @@ impl<'de> Deserialize<'de> for PermissionAction {
 impl fmt::Display for PermissionAction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::ExperimentManage => write!(f, "experiment:manage"),
+            Self::ExperimentRead => write!(f, "experiment:read"),
             Self::AiPromptCreate => write!(f, "ai_prompt:create"),
             Self::AccessPassBasicExport => write!(f, "access_pass:basic:export"),
             Self::AccessPassBasicRead => write!(f, "access_pass:basic:read"),

@@ -39,6 +39,7 @@
 //! - **Entries**
 //! - **Events**
 //! - **Experiences**
+//! - **Experiments**
 //! - **Exports**
 //! - **FeeMarkups**
 //! - **Files**
@@ -124,6 +125,7 @@ pub mod domains;
 pub mod entries;
 pub mod events;
 pub mod experiences;
+pub mod experiments;
 pub mod exports;
 pub mod fee_markups;
 pub mod files;
@@ -208,6 +210,7 @@ pub struct Whop {
     pub entries: EntriesClient,
     pub events: EventsClient,
     pub experiences: ExperiencesClient,
+    pub experiments: ExperimentsClient,
     pub exports: ExportsClient,
     pub fee_markups: FeeMarkupsClient,
     pub files: FilesClient,
@@ -296,6 +299,7 @@ impl Whop {
             entries: EntriesClient::new(config.clone())?,
             events: EventsClient::new(config.clone())?,
             experiences: ExperiencesClient::new(config.clone())?,
+            experiments: ExperimentsClient::new(config.clone())?,
             exports: ExportsClient::new(config.clone())?,
             fee_markups: FeeMarkupsClient::new(config.clone())?,
             files: FilesClient::new(config.clone())?,
@@ -382,6 +386,7 @@ pub use domains::DomainsClient;
 pub use entries::EntriesClient;
 pub use events::EventsClient;
 pub use experiences::ExperiencesClient;
+pub use experiments::ExperimentsClient;
 pub use exports::ExportsClient;
 pub use fee_markups::FeeMarkupsClient;
 pub use files::FilesClient;
