@@ -39598,6 +39598,14 @@ async fn main() {
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**economic_intelligence:** `Option<bool>` — Whether economic intelligence is enabled for the account. Requires company:update permission and an existing ledger account.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
