@@ -96,7 +96,7 @@ pub struct Account {
     /// Tax classification code applied by default to the account's products, with `id`, `name`, and `product_type`. `null` when no default is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_tax_code: Option<HashMap<String, serde_json::Value>>,
-    /// DEPRECATED: Use the `GET /recommended_actions?account_id={account_id}` endpoint instead.
+    /// DEPRECATED: Use the `GET /economic_intelligence?account_id={account_id}` endpoint instead.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recommended_actions: Option<Vec<AccountRecommendedAction>>,
     /// Whether authorized users must enable two-factor authentication.
