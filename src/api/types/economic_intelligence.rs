@@ -16,18 +16,9 @@ pub struct EconomicIntelligence {
     pub executed_at: Option<String>,
     /// How the card runs. `whop_ai` means `prompt` is sent to Whop AI, which carries out every step.
     pub execution_type: EconomicIntelligenceExecutionType,
-    /// Expected change in that ledger line over the evaluation window, in USD, negative when the action reduces it, or `null`
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expected_delta: Option<Money>,
-    /// The ledger line the action is expected to move, or `null` when the card carries no expectation
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expected_ledger_line: Option<String>,
     /// Economic intelligence ID, prefixed `reca_`
     #[serde(default)]
     pub id: String,
-    /// The engine that generated the card, e.g. `whop-ai-v5`
-    #[serde(default)]
-    pub inference_version: String,
     /// What the owner asked for, in their own words, when this recommendation was requested, or `null` when the engine chose the action on its own
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input: Option<String>,
@@ -61,10 +52,7 @@ pub struct EconomicIntelligenceBuilder {
     created_at: Option<String>,
     executed_at: Option<String>,
     execution_type: Option<EconomicIntelligenceExecutionType>,
-    expected_delta: Option<Money>,
-    expected_ledger_line: Option<String>,
     id: Option<String>,
-    inference_version: Option<String>,
     input: Option<String>,
     prompt: Option<String>,
     reasoning: Option<String>,
@@ -99,23 +87,8 @@ impl EconomicIntelligenceBuilder {
         self
     }
 
-    pub fn expected_delta(mut self, value: Money) -> Self {
-        self.expected_delta = Some(value);
-        self
-    }
-
-    pub fn expected_ledger_line(mut self, value: impl Into<String>) -> Self {
-        self.expected_ledger_line = Some(value.into());
-        self
-    }
-
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
-        self
-    }
-
-    pub fn inference_version(mut self, value: impl Into<String>) -> Self {
-        self.inference_version = Some(value.into());
         self
     }
 
@@ -155,7 +128,6 @@ impl EconomicIntelligenceBuilder {
     /// - [`created_at`](EconomicIntelligenceBuilder::created_at)
     /// - [`execution_type`](EconomicIntelligenceBuilder::execution_type)
     /// - [`id`](EconomicIntelligenceBuilder::id)
-    /// - [`inference_version`](EconomicIntelligenceBuilder::inference_version)
     /// - [`status`](EconomicIntelligenceBuilder::status)
     pub fn build(self) -> Result<EconomicIntelligence, BuildError> {
         Ok(EconomicIntelligence {
@@ -170,12 +142,7 @@ impl EconomicIntelligenceBuilder {
             execution_type: self
                 .execution_type
                 .ok_or_else(|| BuildError::missing_field("execution_type"))?,
-            expected_delta: self.expected_delta,
-            expected_ledger_line: self.expected_ledger_line,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
-            inference_version: self
-                .inference_version
-                .ok_or_else(|| BuildError::missing_field("inference_version"))?,
             input: self.input,
             prompt: self.prompt,
             reasoning: self.reasoning,
