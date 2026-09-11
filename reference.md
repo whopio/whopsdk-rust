@@ -10879,6 +10879,111 @@ async fn main() {
 </dl>
 </details>
 
+<details><summary><code>client.cashback_rules.<a href="/src/api/resources/cashback_rules/client.rs">update</a>(id: String, request: UpdateCashbackRulesRequest) -> Result&lt;CashbackRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates a cashback rule funded by the authenticated platform account. Requires payout:transfer_funds. Only merchant_name, merchant_category_code, description, and expires_at can change; starts_at, rate_bps, funding_account_id, and scoped_account_id are immutable. Omitted fields stay unchanged. Scheduled, active, and expired rules can be updated; discarded rules cannot. Updating a rule does not transfer funds.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .cashback_rules
+        .update(
+            &"id".to_string(),
+            &UpdateCashbackRulesRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — ID of the cashback rule, prefixed cicbr_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Option<Option<String>>` — Description of the rule. Set null to clear it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expires_at:** `Option<Option<String>>` — Exclusive end as an ISO 8601 timestamp, strictly later than the original starts_at. May be in the past to end an active rule. Set null to remove the expiration.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchant_category_code:** `Option<String>` — Four-digit MCC, including leading zeros. Must match together with merchant_name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchant_name:** `Option<String>` — Raw merchant name reported by the card provider. Must contain a non-whitespace character. Matched with the MCC; not a substring or wildcard.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## ChatChannels
 <details><summary><code>client.chat_channels.<a href="/src/api/resources/chat_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListChatChannelsResponse, ApiError&gt;</code></summary>
 <dl>
