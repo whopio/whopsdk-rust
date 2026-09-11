@@ -2,13 +2,13 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct PaymentMethodDisplayPreview {
-    /// Lowercase card brand, e.g. `visa`. Absent when the method carries no brand.
+    /// Lowercase card brand, such as `visa` or `mastercard`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub brand: Option<String>,
-    /// A stable identifier for the collected card. Matches the `fingerprint` on any payment method saved from this token. Absent when the method is not a card or no fingerprint was returned.
+    /// Uniquely identifies this particular card number. Matches the `fingerprint` on any payment method saved from this token, so you can recognize a card across attempts. For a wallet, this identifies the network token rather than the underlying card.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fingerprint: Option<String>,
-    /// Last four digits of the instrument. Absent when the method carries none.
+    /// The last four digits of the card.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last4: Option<String>,
 }
