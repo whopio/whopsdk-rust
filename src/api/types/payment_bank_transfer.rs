@@ -20,9 +20,12 @@ pub struct PaymentBankTransfer {
     /// The receiving branch, where the local system routes by branch.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bank_branch: Option<String>,
-    /// The receiving bank's code in the local clearing system.
+    /// The code that identifies the receiving bank — its code in the local clearing system, or its SWIFT/BIC on a transfer that crosses borders.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bank_code: Option<String>,
+    /// What to call `bank_code` when showing it, in the scheme's own terms — `SWIFT / BIC` on an international wire, for example.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bank_code_label: Option<String>,
     /// The receiving bank's name.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bank_name: Option<String>,
@@ -74,6 +77,7 @@ pub struct PaymentBankTransferBuilder {
     bank_address: Option<String>,
     bank_branch: Option<String>,
     bank_code: Option<String>,
+    bank_code_label: Option<String>,
     bank_name: Option<String>,
     beneficiary_document: Option<String>,
     beneficiary_document_type: Option<String>,
@@ -120,6 +124,11 @@ impl PaymentBankTransferBuilder {
 
     pub fn bank_code(mut self, value: impl Into<String>) -> Self {
         self.bank_code = Some(value.into());
+        self
+    }
+
+    pub fn bank_code_label(mut self, value: impl Into<String>) -> Self {
+        self.bank_code_label = Some(value.into());
         self
     }
 
@@ -188,6 +197,7 @@ impl PaymentBankTransferBuilder {
             bank_address: self.bank_address,
             bank_branch: self.bank_branch,
             bank_code: self.bank_code,
+            bank_code_label: self.bank_code_label,
             bank_name: self.bank_name,
             beneficiary_document: self.beneficiary_document,
             beneficiary_document_type: self.beneficiary_document_type,
