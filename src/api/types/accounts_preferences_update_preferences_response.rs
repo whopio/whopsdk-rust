@@ -24,6 +24,9 @@ pub struct UpdatePreferencesResponse {
     /// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
     #[serde(default)]
     pub dispute_fighter_enabled: bool,
+    /// Whether economic intelligence is enabled for the account.
+    #[serde(default)]
+    pub economic_intelligence: bool,
 }
 
 impl UpdatePreferencesResponse {
@@ -43,6 +46,7 @@ pub struct UpdatePreferencesResponseBuilder {
     cards_auto_top_up: Option<bool>,
     cards_notifications: Option<bool>,
     dispute_fighter_enabled: Option<bool>,
+    economic_intelligence: Option<bool>,
 }
 
 impl UpdatePreferencesResponseBuilder {
@@ -92,6 +96,11 @@ impl UpdatePreferencesResponseBuilder {
         self
     }
 
+    pub fn economic_intelligence(mut self, value: bool) -> Self {
+        self.economic_intelligence = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`UpdatePreferencesResponse`].
     /// This method will fail if any of the following fields are not set:
     /// - [`ads_agreement`](UpdatePreferencesResponseBuilder::ads_agreement)
@@ -101,6 +110,7 @@ impl UpdatePreferencesResponseBuilder {
     /// - [`cards_auto_top_up`](UpdatePreferencesResponseBuilder::cards_auto_top_up)
     /// - [`cards_notifications`](UpdatePreferencesResponseBuilder::cards_notifications)
     /// - [`dispute_fighter_enabled`](UpdatePreferencesResponseBuilder::dispute_fighter_enabled)
+    /// - [`economic_intelligence`](UpdatePreferencesResponseBuilder::economic_intelligence)
     pub fn build(self) -> Result<UpdatePreferencesResponse, BuildError> {
         Ok(UpdatePreferencesResponse {
             ads_agreement: self
@@ -125,6 +135,9 @@ impl UpdatePreferencesResponseBuilder {
             dispute_fighter_enabled: self
                 .dispute_fighter_enabled
                 .ok_or_else(|| BuildError::missing_field("dispute_fighter_enabled"))?,
+            economic_intelligence: self
+                .economic_intelligence
+                .ok_or_else(|| BuildError::missing_field("economic_intelligence"))?,
         })
     }
 }

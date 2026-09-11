@@ -23,6 +23,9 @@ pub struct UpdatePreferencesRequest {
     /// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dispute_fighter_enabled: Option<bool>,
+    /// Whether economic intelligence is enabled for the account. Requires company:update permission and an existing ledger account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub economic_intelligence: Option<bool>,
 }
 
 impl UpdatePreferencesRequest {
@@ -41,6 +44,7 @@ pub struct UpdatePreferencesRequestBuilder {
     cards_auto_top_up: Option<bool>,
     cards_notifications: Option<bool>,
     dispute_fighter_enabled: Option<bool>,
+    economic_intelligence: Option<bool>,
 }
 
 impl UpdatePreferencesRequestBuilder {
@@ -82,6 +86,11 @@ impl UpdatePreferencesRequestBuilder {
         self
     }
 
+    pub fn economic_intelligence(mut self, value: bool) -> Self {
+        self.economic_intelligence = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`UpdatePreferencesRequest`].
     pub fn build(self) -> Result<UpdatePreferencesRequest, BuildError> {
         Ok(UpdatePreferencesRequest {
@@ -92,6 +101,7 @@ impl UpdatePreferencesRequestBuilder {
             cards_auto_top_up: self.cards_auto_top_up,
             cards_notifications: self.cards_notifications,
             dispute_fighter_enabled: self.dispute_fighter_enabled,
+            economic_intelligence: self.economic_intelligence,
         })
     }
 }
