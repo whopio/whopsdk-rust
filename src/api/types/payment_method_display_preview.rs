@@ -5,6 +5,9 @@ pub struct PaymentMethodDisplayPreview {
     /// Lowercase card brand, e.g. `visa`. Absent when the method carries no brand.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub brand: Option<String>,
+    /// A stable identifier for the collected card. Matches the `fingerprint` on any payment method saved from this token. Absent when the method is not a card or no fingerprint was returned.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fingerprint: Option<String>,
     /// Last four digits of the instrument. Absent when the method carries none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last4: Option<String>,
@@ -20,12 +23,18 @@ impl PaymentMethodDisplayPreview {
 #[non_exhaustive]
 pub struct PaymentMethodDisplayPreviewBuilder {
     brand: Option<String>,
+    fingerprint: Option<String>,
     last4: Option<String>,
 }
 
 impl PaymentMethodDisplayPreviewBuilder {
     pub fn brand(mut self, value: impl Into<String>) -> Self {
         self.brand = Some(value.into());
+        self
+    }
+
+    pub fn fingerprint(mut self, value: impl Into<String>) -> Self {
+        self.fingerprint = Some(value.into());
         self
     }
 
@@ -38,6 +47,7 @@ impl PaymentMethodDisplayPreviewBuilder {
     pub fn build(self) -> Result<PaymentMethodDisplayPreview, BuildError> {
         Ok(PaymentMethodDisplayPreview {
             brand: self.brand,
+            fingerprint: self.fingerprint,
             last4: self.last4,
         })
     }
