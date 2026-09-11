@@ -707,7 +707,7 @@ async fn main() {
 <dl>
 <dd>
 
-**business_type:** `Option<Option<UpdateAccountsRequestBusinessType>>` — High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+**business_type:** `Option<Option<String>>` — High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     
 </dd>
 </dl>
@@ -755,7 +755,7 @@ async fn main() {
 <dl>
 <dd>
 
-**industry_group:** `Option<Option<UpdateAccountsRequestIndustryGroup>>` — Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+**industry_group:** `Option<Option<String>>` — Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     
 </dd>
 </dl>

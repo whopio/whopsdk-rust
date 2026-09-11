@@ -15,7 +15,7 @@ pub struct Account {
     pub business_name: Option<String>,
     /// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub business_type: Option<AccountBusinessType>,
+    pub business_type: Option<String>,
     /// Whether pending funds may be transferred from this platform account to its connected accounts.
     #[serde(default)]
     pub can_transfer_pending_balance_to_children: bool,
@@ -53,7 +53,7 @@ pub struct Account {
     pub id: String,
     /// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub industry_group: Option<AccountIndustryGroup>,
+    pub industry_group: Option<String>,
     /// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub industry_type: Option<String>,
@@ -196,7 +196,7 @@ pub struct AccountBuilder {
     banner_image_url: Option<String>,
     business_address: Option<HashMap<String, serde_json::Value>>,
     business_name: Option<String>,
-    business_type: Option<AccountBusinessType>,
+    business_type: Option<String>,
     can_transfer_pending_balance_to_children: Option<bool>,
     capabilities: Option<AccountCapabilities>,
     cards: Option<AccountCards>,
@@ -209,7 +209,7 @@ pub struct AccountBuilder {
     eula: Option<File>,
     home_preferences: Option<Vec<AccountHomePreferencesItem>>,
     id: Option<String>,
-    industry_group: Option<AccountIndustryGroup>,
+    industry_group: Option<String>,
     industry_type: Option<String>,
     invoice_prefix: Option<String>,
     logo_url: Option<String>,
@@ -275,8 +275,8 @@ impl AccountBuilder {
         self
     }
 
-    pub fn business_type(mut self, value: AccountBusinessType) -> Self {
-        self.business_type = Some(value);
+    pub fn business_type(mut self, value: impl Into<String>) -> Self {
+        self.business_type = Some(value.into());
         self
     }
 
@@ -340,8 +340,8 @@ impl AccountBuilder {
         self
     }
 
-    pub fn industry_group(mut self, value: AccountIndustryGroup) -> Self {
-        self.industry_group = Some(value);
+    pub fn industry_group(mut self, value: impl Into<String>) -> Self {
+        self.industry_group = Some(value.into());
         self
     }
 
