@@ -11,6 +11,7 @@ pub enum ListMethodsResponseLimitsStandardErrorCode {
     KycCompleted,
     RmiClear,
     IdentityRfiClear,
+    GuardianIdClear,
     EcommerceFulfillmentConnected,
     BlockMoveMoneyOut,
     BlockMoveMoneyOutSetByParent,
@@ -36,6 +37,7 @@ impl Serialize for ListMethodsResponseLimitsStandardErrorCode {
             Self::KycCompleted => serializer.serialize_str("kyc_completed"),
             Self::RmiClear => serializer.serialize_str("rmi_clear"),
             Self::IdentityRfiClear => serializer.serialize_str("identity_rfi_clear"),
+            Self::GuardianIdClear => serializer.serialize_str("guardian_id_clear"),
             Self::EcommerceFulfillmentConnected => {
                 serializer.serialize_str("ecommerce_fulfillment_connected")
             }
@@ -62,6 +64,7 @@ impl<'de> Deserialize<'de> for ListMethodsResponseLimitsStandardErrorCode {
             "kyc_completed" => Ok(Self::KycCompleted),
             "rmi_clear" => Ok(Self::RmiClear),
             "identity_rfi_clear" => Ok(Self::IdentityRfiClear),
+            "guardian_id_clear" => Ok(Self::GuardianIdClear),
             "ecommerce_fulfillment_connected" => Ok(Self::EcommerceFulfillmentConnected),
             "block_move_money_out" => Ok(Self::BlockMoveMoneyOut),
             "block_move_money_out_set_by_parent" => Ok(Self::BlockMoveMoneyOutSetByParent),
@@ -87,6 +90,7 @@ impl fmt::Display for ListMethodsResponseLimitsStandardErrorCode {
             Self::KycCompleted => write!(f, "kyc_completed"),
             Self::RmiClear => write!(f, "rmi_clear"),
             Self::IdentityRfiClear => write!(f, "identity_rfi_clear"),
+            Self::GuardianIdClear => write!(f, "guardian_id_clear"),
             Self::EcommerceFulfillmentConnected => write!(f, "ecommerce_fulfillment_connected"),
             Self::BlockMoveMoneyOut => write!(f, "block_move_money_out"),
             Self::BlockMoveMoneyOutSetByParent => write!(f, "block_move_money_out_set_by_parent"),
