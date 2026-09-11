@@ -11,7 +11,7 @@ pub struct UpdatePreferencesRequest {
     /// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Cannot be cleared once set — pass a new value to change it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ads_scheduling_timezone: Option<String>,
-    /// Connects or disconnects the Triple Whale integration. Requires a connected Shopify store, since Triple Whale keys spend records by Shopify shop.
+    /// Connects or disconnects the Triple Whale integration. Requires the `ad_campaign:create` scope. Connecting requires a shop domain to report spend against — either an explicit `shop_domain` (required for any merchant without a connected Shopify store, e.g. WooCommerce, a custom checkout, or a white-label platform's merchant) or a Shopify store connected on the Fulfillment page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ads_triple_whale_integration: Option<UpdatePreferencesRequestAdsTripleWhaleIntegration>,
     /// Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account.

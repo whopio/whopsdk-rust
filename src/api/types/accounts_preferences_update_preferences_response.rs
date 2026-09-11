@@ -13,7 +13,7 @@ pub struct UpdatePreferencesResponse {
     /// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Defaults to `America/New_York` until explicitly overridden.
     #[serde(default)]
     pub ads_scheduling_timezone: String,
-    /// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
+    /// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
     pub ads_triple_whale_integration: UpdatePreferencesResponseAdsTripleWhaleIntegration,
     /// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
     #[serde(default)]
