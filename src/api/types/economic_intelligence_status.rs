@@ -1,53 +1,57 @@
 pub use crate::prelude::*;
 
-/// Where the step currently stands
+/// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it; `failed` when the engine had nothing to recommend for the request
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum RecommendedActionExecutionStatus {
+pub enum EconomicIntelligenceStatus {
+    Queued,
     Pending,
-    Redirected,
-    Running,
-    Succeeded,
+    Ready,
+    Executed,
+    Superseded,
     Failed,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
     __Unknown(String),
 }
-impl Serialize for RecommendedActionExecutionStatus {
+impl Serialize for EconomicIntelligenceStatus {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::Queued => serializer.serialize_str("queued"),
             Self::Pending => serializer.serialize_str("pending"),
-            Self::Redirected => serializer.serialize_str("redirected"),
-            Self::Running => serializer.serialize_str("running"),
-            Self::Succeeded => serializer.serialize_str("succeeded"),
+            Self::Ready => serializer.serialize_str("ready"),
+            Self::Executed => serializer.serialize_str("executed"),
+            Self::Superseded => serializer.serialize_str("superseded"),
             Self::Failed => serializer.serialize_str("failed"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
 }
 
-impl<'de> Deserialize<'de> for RecommendedActionExecutionStatus {
+impl<'de> Deserialize<'de> for EconomicIntelligenceStatus {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "queued" => Ok(Self::Queued),
             "pending" => Ok(Self::Pending),
-            "redirected" => Ok(Self::Redirected),
-            "running" => Ok(Self::Running),
-            "succeeded" => Ok(Self::Succeeded),
+            "ready" => Ok(Self::Ready),
+            "executed" => Ok(Self::Executed),
+            "superseded" => Ok(Self::Superseded),
             "failed" => Ok(Self::Failed),
             _ => Ok(Self::__Unknown(value)),
         }
     }
 }
 
-impl fmt::Display for RecommendedActionExecutionStatus {
+impl fmt::Display for EconomicIntelligenceStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Queued => write!(f, "queued"),
             Self::Pending => write!(f, "pending"),
-            Self::Redirected => write!(f, "redirected"),
-            Self::Running => write!(f, "running"),
-            Self::Succeeded => write!(f, "succeeded"),
+            Self::Ready => write!(f, "ready"),
+            Self::Executed => write!(f, "executed"),
+            Self::Superseded => write!(f, "superseded"),
             Self::Failed => write!(f, "failed"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }

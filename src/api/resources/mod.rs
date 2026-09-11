@@ -36,6 +36,7 @@
 //! - **DmChannels**
 //! - **DmMembers**
 //! - **Domains**
+//! - **Economic Intelligence**
 //! - **Entries**
 //! - **Events**
 //! - **Experiences**
@@ -69,7 +70,6 @@
 //! - **Products**
 //! - **Promo Codes**
 //! - **Reactions**
-//! - **Recommended Actions**
 //! - **Refunds**
 //! - **Resolution Center Cases**
 //! - **Reviews**
@@ -122,6 +122,7 @@ pub mod disputes;
 pub mod dm_channels;
 pub mod dm_members;
 pub mod domains;
+pub mod economic_intelligence;
 pub mod entries;
 pub mod events;
 pub mod experiences;
@@ -155,7 +156,6 @@ pub mod plans;
 pub mod products;
 pub mod promo_codes;
 pub mod reactions;
-pub mod recommended_actions;
 pub mod refunds;
 pub mod resolution_center_cases;
 pub mod reviews;
@@ -207,6 +207,7 @@ pub struct Whop {
     pub dm_channels: DmChannelsClient,
     pub dm_members: DmMembersClient,
     pub domains: DomainsClient,
+    pub economic_intelligence: EconomicIntelligenceClient,
     pub entries: EntriesClient,
     pub events: EventsClient,
     pub experiences: ExperiencesClient,
@@ -240,7 +241,6 @@ pub struct Whop {
     pub products: ProductsClient,
     pub promo_codes: PromoCodesClient,
     pub reactions: ReactionsClient,
-    pub recommended_actions: RecommendedActionsClient,
     pub refunds: RefundsClient,
     pub resolution_center_cases: ResolutionCenterCasesClient,
     pub reviews: ReviewsClient,
@@ -296,6 +296,7 @@ impl Whop {
             dm_channels: DmChannelsClient::new(config.clone())?,
             dm_members: DmMembersClient::new(config.clone())?,
             domains: DomainsClient::new(config.clone())?,
+            economic_intelligence: EconomicIntelligenceClient::new(config.clone())?,
             entries: EntriesClient::new(config.clone())?,
             events: EventsClient::new(config.clone())?,
             experiences: ExperiencesClient::new(config.clone())?,
@@ -329,7 +330,6 @@ impl Whop {
             products: ProductsClient::new(config.clone())?,
             promo_codes: PromoCodesClient::new(config.clone())?,
             reactions: ReactionsClient::new(config.clone())?,
-            recommended_actions: RecommendedActionsClient::new(config.clone())?,
             refunds: RefundsClient::new(config.clone())?,
             resolution_center_cases: ResolutionCenterCasesClient::new(config.clone())?,
             reviews: ReviewsClient::new(config.clone())?,
@@ -383,6 +383,7 @@ pub use disputes::DisputesClient;
 pub use dm_channels::DmChannelsClient;
 pub use dm_members::DmMembersClient;
 pub use domains::DomainsClient;
+pub use economic_intelligence::EconomicIntelligenceClient;
 pub use entries::EntriesClient;
 pub use events::EventsClient;
 pub use experiences::ExperiencesClient;
@@ -416,7 +417,6 @@ pub use plans::PlansClient;
 pub use products::ProductsClient;
 pub use promo_codes::PromoCodesClient;
 pub use reactions::ReactionsClient;
-pub use recommended_actions::RecommendedActionsClient;
 pub use refunds::RefundsClient;
 pub use resolution_center_cases::ResolutionCenterCasesClient;
 pub use reviews::ReviewsClient;
