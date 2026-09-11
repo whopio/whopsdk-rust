@@ -40,6 +40,9 @@ pub struct Account {
     /// Account promotional description.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    /// Whether economic intelligence is enabled for the account.
+    #[serde(default)]
+    pub economic_intelligence: bool,
     /// Account owner email address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
@@ -205,6 +208,7 @@ pub struct AccountBuilder {
     country: Option<String>,
     created_at: Option<String>,
     description: Option<String>,
+    economic_intelligence: Option<bool>,
     email: Option<String>,
     eula: Option<File>,
     home_preferences: Option<Vec<AccountHomePreferencesItem>>,
@@ -317,6 +321,11 @@ impl AccountBuilder {
 
     pub fn description(mut self, value: impl Into<String>) -> Self {
         self.description = Some(value.into());
+        self
+    }
+
+    pub fn economic_intelligence(mut self, value: bool) -> Self {
+        self.economic_intelligence = Some(value);
         self
     }
 
@@ -562,6 +571,7 @@ impl AccountBuilder {
     /// - [`collect_vat_id`](AccountBuilder::collect_vat_id)
     /// - [`company_formation`](AccountBuilder::company_formation)
     /// - [`created_at`](AccountBuilder::created_at)
+    /// - [`economic_intelligence`](AccountBuilder::economic_intelligence)
     /// - [`home_preferences`](AccountBuilder::home_preferences)
     /// - [`id`](AccountBuilder::id)
     /// - [`metadata`](AccountBuilder::metadata)
@@ -607,6 +617,9 @@ impl AccountBuilder {
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
             description: self.description,
+            economic_intelligence: self
+                .economic_intelligence
+                .ok_or_else(|| BuildError::missing_field("economic_intelligence"))?,
             email: self.email,
             eula: self.eula,
             home_preferences: self
