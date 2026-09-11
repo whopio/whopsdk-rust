@@ -1,12 +1,12 @@
 pub use crate::prelude::*;
 
-/// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+/// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` explicitly, or connect a Shopify store, before spend can be reported.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus {
     Connected,
     NotConnected,
-    RequiresShopifyStore,
+    RequiresShopDomain,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -17,7 +17,7 @@ impl Serialize for UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus {
         match self {
             Self::Connected => serializer.serialize_str("connected"),
             Self::NotConnected => serializer.serialize_str("not_connected"),
-            Self::RequiresShopifyStore => serializer.serialize_str("requires_shopify_store"),
+            Self::RequiresShopDomain => serializer.serialize_str("requires_shop_domain"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -29,7 +29,7 @@ impl<'de> Deserialize<'de> for UpdatePreferencesResponseAdsTripleWhaleIntegratio
         match value.as_str() {
             "connected" => Ok(Self::Connected),
             "not_connected" => Ok(Self::NotConnected),
-            "requires_shopify_store" => Ok(Self::RequiresShopifyStore),
+            "requires_shop_domain" => Ok(Self::RequiresShopDomain),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -40,7 +40,7 @@ impl fmt::Display for UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus {
         match self {
             Self::Connected => write!(f, "connected"),
             Self::NotConnected => write!(f, "not_connected"),
-            Self::RequiresShopifyStore => write!(f, "requires_shopify_store"),
+            Self::RequiresShopDomain => write!(f, "requires_shop_domain"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }
