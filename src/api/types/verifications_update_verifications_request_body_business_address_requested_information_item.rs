@@ -23,6 +23,9 @@ pub struct UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value_type:
         Option<UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemValueType>,
+    /// Every chosen option for a `select` item that accepts more than one answer, such as the countries an advertising certification covers. Use `value` for every other item.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub values: Option<Vec<String>>,
 }
 
 impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem {
@@ -43,6 +46,7 @@ pub struct UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem
     value: Option<String>,
     value_type:
         Option<UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemValueType>,
+    values: Option<Vec<String>>,
 }
 
 impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilder {
@@ -85,6 +89,11 @@ impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilde
         self
     }
 
+    pub fn values(mut self, value: Vec<String>) -> Self {
+        self.values = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem`].
     /// This method will fail if any of the following fields are not set:
     /// - [`id`](UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilder::id)
@@ -100,6 +109,7 @@ impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilde
                 id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
                 value: self.value,
                 value_type: self.value_type,
+                values: self.values,
             },
         )
     }
