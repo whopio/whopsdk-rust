@@ -1474,6 +1474,7 @@ pub mod ledger_activity_resource_owner_owner_name_object;
 pub mod ledger_activity_resource_two;
 pub mod ledger_activity_resource_two_object;
 pub mod ledger_activity_source;
+pub mod ledger_activity_source_fee_kind;
 pub mod ledger_activity_source_payout_destination;
 pub mod ledger_types;
 pub mod lesson_types;
@@ -4937,6 +4938,7 @@ pub use ledger_activity_resource_account_reference::{LedgerActivityResourceAccou
 pub use ledger_activity_resource_authorized_at_object::{LedgerActivityResourceAuthorizedAtObject};
 pub use ledger_activity_resource_authorized_at::{LedgerActivityResourceAuthorizedAt};
 pub use ledger_activity_resource::{LedgerActivityResource};
+pub use ledger_activity_source_fee_kind::{LedgerActivitySourceFeeKind};
 pub use ledger_activity_source_payout_destination::{LedgerActivitySourcePayoutDestination};
 pub use ledger_activity_source::{LedgerActivitySource};
 pub use ledger_activity::{LedgerActivity};
