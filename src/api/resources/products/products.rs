@@ -156,6 +156,7 @@ impl ProductsClient {
     ///                 custom_cta_url: None,
     ///                 custom_statement_descriptor: None,
     ///                 description: None,
+    ///                 gallery_images: None,
     ///                 global_affiliate_percentage: None,
     ///                 global_affiliate_status: None,
     ///                 headline: None,
