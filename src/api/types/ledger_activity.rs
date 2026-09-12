@@ -50,7 +50,7 @@ pub struct LedgerActivity {
     /// Resource associated with this ledger activity.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resource: Option<LedgerActivityResource>,
-    /// Source of this ledger activity.
+    /// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<LedgerActivitySource>,
     /// Dollar value of this movement as a decimal string, signed like `amount`. Converted from the posted amount at the rate that was live when the line posted — the same pricing the wallet balance chart and the financial reports use — so a crypto row carries its dollar value too. `null` for a currency Whop holds no exchange rate for.

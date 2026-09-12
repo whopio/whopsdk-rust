@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Source of this ledger activity.
+/// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct LedgerActivitySource {
     /// Payout amount as a decimal number in the destination currency (payout sources only; requires payout:withdrawal:read).
@@ -21,6 +21,9 @@ pub struct LedgerActivitySource {
     /// Estimated arrival as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub estimated_arrival: Option<DateTime<FixedOffset>>,
+    /// Action that generated a platform markup fee: deposit, swap, transfer, card_spend, or payout. Present for platform_markup_fee and platform_markup_fee_payout, including when include_resource is false. Null when the originating action is unavailable; omitted on other source types.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fee_kind: Option<LedgerActivitySourceFeeKind>,
     /// Amount converted out of from_currency as a decimal string (swap sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub from_amount: Option<String>,
@@ -93,6 +96,7 @@ pub struct LedgerActivitySourceBuilder {
     claim_url: Option<String>,
     created_at: Option<DateTime<FixedOffset>>,
     estimated_arrival: Option<DateTime<FixedOffset>>,
+    fee_kind: Option<LedgerActivitySourceFeeKind>,
     from_amount: Option<String>,
     from_currency: Option<String>,
     id: Option<String>,
@@ -141,6 +145,11 @@ impl LedgerActivitySourceBuilder {
 
     pub fn estimated_arrival(mut self, value: DateTime<FixedOffset>) -> Self {
         self.estimated_arrival = Some(value);
+        self
+    }
+
+    pub fn fee_kind(mut self, value: LedgerActivitySourceFeeKind) -> Self {
+        self.fee_kind = Some(value);
         self
     }
 
@@ -246,6 +255,7 @@ impl LedgerActivitySourceBuilder {
             claim_url: self.claim_url,
             created_at: self.created_at,
             estimated_arrival: self.estimated_arrival,
+            fee_kind: self.fee_kind,
             from_amount: self.from_amount,
             from_currency: self.from_currency,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
