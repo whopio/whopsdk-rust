@@ -39563,6 +39563,14 @@ async fn main() {
 <dl>
 <dd>
 
+**ads_certifications:** `Option<std::collections::HashMap<String, UpdatePreferencesRequestAdsCertificationsValue>>` — Opens an advertising certification application. Keyed by certification type (`prescription_drug_ads`); set the entry's `status` to `pending_information` to start, then answer the requested fields via `PATCH /verifications/{id}`. Only one application per type can be open at a time; every other status is set by Whop's review.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **ads_payment_methods:** `Option<UpdatePreferencesRequestAdsPaymentMethods>` — How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
     
 </dd>

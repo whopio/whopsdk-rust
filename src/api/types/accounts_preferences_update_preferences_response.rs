@@ -4,6 +4,9 @@ pub use crate::prelude::*;
 pub struct UpdatePreferencesResponse {
     /// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
     pub ads_agreement: UpdatePreferencesResponseAdsAgreement,
+    /// The account's advertising certifications, one entry per certification type Whop offers. Start an application by setting a type's `status` to `pending_information` via `PATCH`, then answer the fields it requests via `GET`/`PATCH /verifications/{id}`.
+    #[serde(default)]
+    pub ads_certifications: Vec<UpdatePreferencesResponseAdsCertificationsItem>,
     /// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ads_payment_methods: Option<UpdatePreferencesResponseAdsPaymentMethods>,
@@ -39,6 +42,7 @@ impl UpdatePreferencesResponse {
 #[non_exhaustive]
 pub struct UpdatePreferencesResponseBuilder {
     ads_agreement: Option<UpdatePreferencesResponseAdsAgreement>,
+    ads_certifications: Option<Vec<UpdatePreferencesResponseAdsCertificationsItem>>,
     ads_payment_methods: Option<UpdatePreferencesResponseAdsPaymentMethods>,
     ads_reporting_currency: Option<String>,
     ads_scheduling_timezone: Option<String>,
@@ -52,6 +56,14 @@ pub struct UpdatePreferencesResponseBuilder {
 impl UpdatePreferencesResponseBuilder {
     pub fn ads_agreement(mut self, value: UpdatePreferencesResponseAdsAgreement) -> Self {
         self.ads_agreement = Some(value);
+        self
+    }
+
+    pub fn ads_certifications(
+        mut self,
+        value: Vec<UpdatePreferencesResponseAdsCertificationsItem>,
+    ) -> Self {
+        self.ads_certifications = Some(value);
         self
     }
 
@@ -104,6 +116,7 @@ impl UpdatePreferencesResponseBuilder {
     /// Consumes the builder and constructs a [`UpdatePreferencesResponse`].
     /// This method will fail if any of the following fields are not set:
     /// - [`ads_agreement`](UpdatePreferencesResponseBuilder::ads_agreement)
+    /// - [`ads_certifications`](UpdatePreferencesResponseBuilder::ads_certifications)
     /// - [`ads_reporting_currency`](UpdatePreferencesResponseBuilder::ads_reporting_currency)
     /// - [`ads_scheduling_timezone`](UpdatePreferencesResponseBuilder::ads_scheduling_timezone)
     /// - [`ads_triple_whale_integration`](UpdatePreferencesResponseBuilder::ads_triple_whale_integration)
@@ -116,6 +129,9 @@ impl UpdatePreferencesResponseBuilder {
             ads_agreement: self
                 .ads_agreement
                 .ok_or_else(|| BuildError::missing_field("ads_agreement"))?,
+            ads_certifications: self
+                .ads_certifications
+                .ok_or_else(|| BuildError::missing_field("ads_certifications"))?,
             ads_payment_methods: self.ads_payment_methods,
             ads_reporting_currency: self
                 .ads_reporting_currency

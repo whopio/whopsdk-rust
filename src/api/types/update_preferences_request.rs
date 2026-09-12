@@ -1,7 +1,10 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct UpdatePreferencesRequest {
+    /// Opens an advertising certification application. Keyed by certification type (`prescription_drug_ads`); set the entry's `status` to `pending_information` to start, then answer the requested fields via `PATCH /verifications/{id}`. Only one application per type can be open at a time; every other status is set by Whop's review.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ads_certifications: Option<HashMap<String, UpdatePreferencesRequestAdsCertificationsValue>>,
     /// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ads_payment_methods: Option<UpdatePreferencesRequestAdsPaymentMethods>,
@@ -37,6 +40,7 @@ impl UpdatePreferencesRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct UpdatePreferencesRequestBuilder {
+    ads_certifications: Option<HashMap<String, UpdatePreferencesRequestAdsCertificationsValue>>,
     ads_payment_methods: Option<UpdatePreferencesRequestAdsPaymentMethods>,
     ads_reporting_currency: Option<String>,
     ads_scheduling_timezone: Option<String>,
@@ -48,6 +52,14 @@ pub struct UpdatePreferencesRequestBuilder {
 }
 
 impl UpdatePreferencesRequestBuilder {
+    pub fn ads_certifications(
+        mut self,
+        value: HashMap<String, UpdatePreferencesRequestAdsCertificationsValue>,
+    ) -> Self {
+        self.ads_certifications = Some(value);
+        self
+    }
+
     pub fn ads_payment_methods(mut self, value: UpdatePreferencesRequestAdsPaymentMethods) -> Self {
         self.ads_payment_methods = Some(value);
         self
@@ -94,6 +106,7 @@ impl UpdatePreferencesRequestBuilder {
     /// Consumes the builder and constructs a [`UpdatePreferencesRequest`].
     pub fn build(self) -> Result<UpdatePreferencesRequest, BuildError> {
         Ok(UpdatePreferencesRequest {
+            ads_certifications: self.ads_certifications,
             ads_payment_methods: self.ads_payment_methods,
             ads_reporting_currency: self.ads_reporting_currency,
             ads_scheduling_timezone: self.ads_scheduling_timezone,

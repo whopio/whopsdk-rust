@@ -5,6 +5,8 @@ pub struct AccountPreferences {
     /// The account's Whop Ads services and payment authorization agreement. `status` is `not_required`, `pending_signature` (a signature has been requested and campaign launch is blocked until it is provided), or `signed`. While pending, read the fields to answer from `GET /verifications/{id}` and sign by submitting them via `PATCH /verifications/{id}`.
     #[serde(default)]
     pub ads_agreement: HashMap<String, serde_json::Value>,
+    #[serde(default)]
+    pub ads_certifications: Vec<HashMap<String, serde_json::Value>>,
     /// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when it fails. Each entry has a `type` of `platform_balance` (id `ldgr_`) or `card` (id `payt_`), plus display fields so the configured source renders even for a viewer who doesn't own it. `backup` is `null` when only one method is configured. `null` until ads billing has been configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ads_payment_methods: Option<HashMap<String, serde_json::Value>>,
@@ -41,6 +43,7 @@ impl AccountPreferences {
 #[non_exhaustive]
 pub struct AccountPreferencesBuilder {
     ads_agreement: Option<HashMap<String, serde_json::Value>>,
+    ads_certifications: Option<Vec<HashMap<String, serde_json::Value>>>,
     ads_payment_methods: Option<HashMap<String, serde_json::Value>>,
     ads_reporting_currency: Option<String>,
     ads_scheduling_timezone: Option<String>,
@@ -54,6 +57,11 @@ pub struct AccountPreferencesBuilder {
 impl AccountPreferencesBuilder {
     pub fn ads_agreement(mut self, value: HashMap<String, serde_json::Value>) -> Self {
         self.ads_agreement = Some(value);
+        self
+    }
+
+    pub fn ads_certifications(mut self, value: Vec<HashMap<String, serde_json::Value>>) -> Self {
+        self.ads_certifications = Some(value);
         self
     }
 
@@ -103,6 +111,7 @@ impl AccountPreferencesBuilder {
     /// Consumes the builder and constructs a [`AccountPreferences`].
     /// This method will fail if any of the following fields are not set:
     /// - [`ads_agreement`](AccountPreferencesBuilder::ads_agreement)
+    /// - [`ads_certifications`](AccountPreferencesBuilder::ads_certifications)
     /// - [`ads_reporting_currency`](AccountPreferencesBuilder::ads_reporting_currency)
     /// - [`ads_scheduling_timezone`](AccountPreferencesBuilder::ads_scheduling_timezone)
     /// - [`ads_triple_whale_integration`](AccountPreferencesBuilder::ads_triple_whale_integration)
@@ -115,6 +124,9 @@ impl AccountPreferencesBuilder {
             ads_agreement: self
                 .ads_agreement
                 .ok_or_else(|| BuildError::missing_field("ads_agreement"))?,
+            ads_certifications: self
+                .ads_certifications
+                .ok_or_else(|| BuildError::missing_field("ads_certifications"))?,
             ads_payment_methods: self.ads_payment_methods,
             ads_reporting_currency: self
                 .ads_reporting_currency
