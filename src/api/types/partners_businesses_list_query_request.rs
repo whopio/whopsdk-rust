@@ -42,6 +42,9 @@ pub struct PartnersBusinessesListQueryRequest {
     /// Filter to referrals from a single tier: first, second, or blueprint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tier: Option<ListBusinessesRequestTier>,
+    /// Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub business_prefix_query: Option<String>,
 }
 
 impl PartnersBusinessesListQueryRequest {
@@ -66,6 +69,7 @@ pub struct PartnersBusinessesListQueryRequestBuilder {
     referred_user_id: Option<String>,
     referred_username: Option<String>,
     tier: Option<ListBusinessesRequestTier>,
+    business_prefix_query: Option<String>,
 }
 
 impl PartnersBusinessesListQueryRequestBuilder {
@@ -134,6 +138,11 @@ impl PartnersBusinessesListQueryRequestBuilder {
         self
     }
 
+    pub fn business_prefix_query(mut self, value: impl Into<String>) -> Self {
+        self.business_prefix_query = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`PartnersBusinessesListQueryRequest`].
     pub fn build(self) -> Result<PartnersBusinessesListQueryRequest, BuildError> {
         Ok(PartnersBusinessesListQueryRequest {
@@ -150,6 +159,7 @@ impl PartnersBusinessesListQueryRequestBuilder {
             referred_user_id: self.referred_user_id,
             referred_username: self.referred_username,
             tier: self.tier,
+            business_prefix_query: self.business_prefix_query,
         })
     }
 }

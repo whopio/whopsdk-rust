@@ -34,6 +34,7 @@ impl BusinessesClient {
     /// * `referred_user_id` - Filter to referrals attributed to this user. For first-tier referrals, this is the referred account owner; for second-tier referrals, this is the partner you recruited.
     /// * `referred_username` - Filter by the referred user's exact username. Ignored when `referred_user_id` is present.
     /// * `tier` - Filter to referrals from a single tier: first, second, or blueprint.
+    /// * `business_prefix_query` - Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -95,6 +96,10 @@ impl BusinessesClient {
                     .string("referred_user_id", request.referred_user_id.clone())
                     .string("referred_username", request.referred_username.clone())
                     .serialize("tier", request.tier.clone())
+                    .string(
+                        "business_prefix_query",
+                        request.business_prefix_query.clone(),
+                    )
                     .build(),
                 options,
             )

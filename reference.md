@@ -40744,7 +40744,7 @@ async fn main() {
 </details>
 
 ## Partners Businesses
-<details><summary><code>client.partners().businesses.<a href="/src/api/resources/partners/businesses/client.rs">list</a>(status: Option&lt;Option&lt;ListBusinessesRequestStatus&gt;&gt;, has_earnings: Option&lt;Option&lt;bool&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListBusinessesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListBusinessesRequestDirection&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, referred_user_id: Option&lt;Option&lt;String&gt;&gt;, referred_username: Option&lt;Option&lt;String&gt;&gt;, tier: Option&lt;Option&lt;ListBusinessesRequestTier&gt;&gt;) -> Result&lt;ListBusinessesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.partners().businesses.<a href="/src/api/resources/partners/businesses/client.rs">list</a>(status: Option&lt;Option&lt;ListBusinessesRequestStatus&gt;&gt;, has_earnings: Option&lt;Option&lt;bool&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListBusinessesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListBusinessesRequestDirection&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, referred_user_id: Option&lt;Option&lt;String&gt;&gt;, referred_username: Option&lt;Option&lt;String&gt;&gt;, tier: Option&lt;Option&lt;ListBusinessesRequestTier&gt;&gt;, business_prefix_query: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListBusinessesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -40902,6 +40902,14 @@ async fn main() {
 <dd>
 
 **tier:** `Option<ListBusinessesRequestTier>` — Filter to referrals from a single tier: first, second, or blueprint.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**business_prefix_query:** `Option<String>` — Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
     
 </dd>
 </dl>
