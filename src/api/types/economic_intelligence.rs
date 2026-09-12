@@ -14,8 +14,6 @@ pub struct EconomicIntelligence {
     /// When the card was run, as an ISO 8601 timestamp, or `null`
     #[serde(skip_serializing_if = "Option::is_none")]
     pub executed_at: Option<String>,
-    /// How the card runs. `whop_ai` means `prompt` is sent to Whop AI, which carries out every step.
-    pub execution_type: EconomicIntelligenceExecutionType,
     /// Economic intelligence ID, prefixed `reca_`
     #[serde(default)]
     pub id: String,
@@ -51,7 +49,6 @@ pub struct EconomicIntelligenceBuilder {
     action_type: Option<String>,
     created_at: Option<String>,
     executed_at: Option<String>,
-    execution_type: Option<EconomicIntelligenceExecutionType>,
     id: Option<String>,
     input: Option<String>,
     prompt: Option<String>,
@@ -79,11 +76,6 @@ impl EconomicIntelligenceBuilder {
 
     pub fn executed_at(mut self, value: impl Into<String>) -> Self {
         self.executed_at = Some(value.into());
-        self
-    }
-
-    pub fn execution_type(mut self, value: EconomicIntelligenceExecutionType) -> Self {
-        self.execution_type = Some(value);
         self
     }
 
@@ -126,7 +118,6 @@ impl EconomicIntelligenceBuilder {
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](EconomicIntelligenceBuilder::account_id)
     /// - [`created_at`](EconomicIntelligenceBuilder::created_at)
-    /// - [`execution_type`](EconomicIntelligenceBuilder::execution_type)
     /// - [`id`](EconomicIntelligenceBuilder::id)
     /// - [`status`](EconomicIntelligenceBuilder::status)
     pub fn build(self) -> Result<EconomicIntelligence, BuildError> {
@@ -139,9 +130,6 @@ impl EconomicIntelligenceBuilder {
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
             executed_at: self.executed_at,
-            execution_type: self
-                .execution_type
-                .ok_or_else(|| BuildError::missing_field("execution_type"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             input: self.input,
             prompt: self.prompt,
