@@ -120,7 +120,7 @@ pub struct PaymentLegacy {
     /// The promo code used for this payment.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub promo_code: Option<PaymentLegacyPromoCode>,
-    /// Whop-hosted URL where the buyer can sign in and complete 3D Secure for a failed subscription renewal. `null` when recovery is unavailable or you lack `member:basic:read`.
+    /// Whop-hosted URL where the buyer can sign in and complete 3D Secure for an off-session charge the bank challenged — a subscription renewal or a saved-card payment. `null` when recovery is unavailable or you lack `member:basic:read`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recovery_url: Option<String>,
     /// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
