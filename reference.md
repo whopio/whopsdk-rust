@@ -30349,6 +30349,7 @@ async fn main() {
                 custom_cta_url: None,
                 custom_statement_descriptor: None,
                 description: None,
+                gallery_images: None,
                 global_affiliate_percentage: None,
                 global_affiliate_status: None,
                 headline: None,
@@ -30421,6 +30422,14 @@ async fn main() {
 <dd>
 
 **description:** `Option<Option<String>>` — A written description displayed on the product page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**gallery_images:** `Option<Option<Vec<CreateProductsRequestGalleryImagesItem>>>` — Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
     
 </dd>
 </dl>
@@ -30742,6 +30751,14 @@ async fn main() {
 <dd>
 
 **description:** `Option<Option<String>>` — A written description displayed on the product page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**gallery_images:** `Option<Option<Vec<UpdateProductsRequestGalleryImagesItem>>>` — Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
     
 </dd>
 </dl>

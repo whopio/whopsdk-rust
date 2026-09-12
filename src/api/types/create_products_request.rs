@@ -20,6 +20,9 @@ pub struct CreateProductsRequest {
     /// A written description displayed on the product page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    /// Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gallery_images: Option<Vec<CreateProductsRequestGalleryImagesItem>>,
     /// The commission rate affiliates earn.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub global_affiliate_percentage: Option<f64>,
@@ -76,6 +79,7 @@ pub struct CreateProductsRequestBuilder {
     custom_cta_url: Option<String>,
     custom_statement_descriptor: Option<String>,
     description: Option<String>,
+    gallery_images: Option<Vec<CreateProductsRequestGalleryImagesItem>>,
     global_affiliate_percentage: Option<f64>,
     global_affiliate_status: Option<CreateProductsRequestGlobalAffiliateStatus>,
     headline: Option<String>,
@@ -119,6 +123,11 @@ impl CreateProductsRequestBuilder {
 
     pub fn description(mut self, value: impl Into<String>) -> Self {
         self.description = Some(value.into());
+        self
+    }
+
+    pub fn gallery_images(mut self, value: Vec<CreateProductsRequestGalleryImagesItem>) -> Self {
+        self.gallery_images = Some(value);
         self
     }
 
@@ -204,6 +213,7 @@ impl CreateProductsRequestBuilder {
             custom_cta_url: self.custom_cta_url,
             custom_statement_descriptor: self.custom_statement_descriptor,
             description: self.description,
+            gallery_images: self.gallery_images,
             global_affiliate_percentage: self.global_affiliate_percentage,
             global_affiliate_status: self.global_affiliate_status,
             headline: self.headline,

@@ -8,6 +8,9 @@ pub struct UpdateProductsRequest {
     /// A written description displayed on the product page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    /// Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gallery_images: Option<Vec<UpdateProductsRequestGalleryImagesItem>>,
     /// A short marketing headline for the product page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub headline: Option<String>,
@@ -42,6 +45,7 @@ impl UpdateProductsRequest {
 pub struct UpdateProductsRequestBuilder {
     banner_image: Option<UpdateProductsRequestBannerImage>,
     description: Option<String>,
+    gallery_images: Option<Vec<UpdateProductsRequestGalleryImagesItem>>,
     headline: Option<String>,
     labels: Option<Vec<String>>,
     metadata: Option<HashMap<String, serde_json::Value>>,
@@ -59,6 +63,11 @@ impl UpdateProductsRequestBuilder {
 
     pub fn description(mut self, value: impl Into<String>) -> Self {
         self.description = Some(value.into());
+        self
+    }
+
+    pub fn gallery_images(mut self, value: Vec<UpdateProductsRequestGalleryImagesItem>) -> Self {
+        self.gallery_images = Some(value);
         self
     }
 
@@ -102,6 +111,7 @@ impl UpdateProductsRequestBuilder {
         Ok(UpdateProductsRequest {
             banner_image: self.banner_image,
             description: self.description,
+            gallery_images: self.gallery_images,
             headline: self.headline,
             labels: self.labels,
             metadata: self.metadata,
