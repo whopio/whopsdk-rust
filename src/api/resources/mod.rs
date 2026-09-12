@@ -85,6 +85,7 @@
 //! - **Users**
 //! - **Verifications**
 //! - **Webhooks**
+//! - **Ledgers**
 
 use crate::{ApiError, ClientConfig};
 
@@ -138,6 +139,7 @@ pub mod identity_profiles;
 pub mod invoices;
 pub mod leads;
 pub mod ledger_accounts;
+pub mod ledgers;
 pub mod media;
 pub mod members;
 pub mod memberships;
@@ -399,6 +401,7 @@ pub use identity_profiles::IdentityProfilesClient;
 pub use invoices::InvoicesClient;
 pub use leads::LeadsClient;
 pub use ledger_accounts::LedgerAccountsClient;
+pub use ledgers::LedgersClient;
 pub use media::MediaClient;
 pub use members::MembersClient;
 pub use memberships::MembershipsClient;

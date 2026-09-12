@@ -27,6 +27,7 @@ pub enum WebhookTestableEventsItem {
     LedgerAccountFundsAvailable,
     SwapCompleted,
     DepositSucceeded,
+    FinancialActivityFundsAvailable,
     TransferCreated,
     TransferCompleted,
     TransferFailed,
@@ -145,6 +146,9 @@ impl Serialize for WebhookTestableEventsItem {
             }
             Self::SwapCompleted => serializer.serialize_str("swap.completed"),
             Self::DepositSucceeded => serializer.serialize_str("deposit.succeeded"),
+            Self::FinancialActivityFundsAvailable => {
+                serializer.serialize_str("financial_activity.funds_available")
+            }
             Self::TransferCreated => serializer.serialize_str("transfer.created"),
             Self::TransferCompleted => serializer.serialize_str("transfer.completed"),
             Self::TransferFailed => serializer.serialize_str("transfer.failed"),
@@ -280,6 +284,7 @@ impl<'de> Deserialize<'de> for WebhookTestableEventsItem {
             "ledger_account.funds_available" => Ok(Self::LedgerAccountFundsAvailable),
             "swap.completed" => Ok(Self::SwapCompleted),
             "deposit.succeeded" => Ok(Self::DepositSucceeded),
+            "financial_activity.funds_available" => Ok(Self::FinancialActivityFundsAvailable),
             "transfer.created" => Ok(Self::TransferCreated),
             "transfer.completed" => Ok(Self::TransferCompleted),
             "transfer.failed" => Ok(Self::TransferFailed),
@@ -392,6 +397,9 @@ impl fmt::Display for WebhookTestableEventsItem {
             Self::LedgerAccountFundsAvailable => write!(f, "ledger_account.funds_available"),
             Self::SwapCompleted => write!(f, "swap.completed"),
             Self::DepositSucceeded => write!(f, "deposit.succeeded"),
+            Self::FinancialActivityFundsAvailable => {
+                write!(f, "financial_activity.funds_available")
+            }
             Self::TransferCreated => write!(f, "transfer.created"),
             Self::TransferCompleted => write!(f, "transfer.completed"),
             Self::TransferFailed => write!(f, "transfer.failed"),

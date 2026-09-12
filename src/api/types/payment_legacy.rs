@@ -162,7 +162,7 @@ pub struct PaymentLegacy {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub settlement_exchange_rate: Option<f64>,
-    /// When this payment's funds post to the company's available balance, at midnight UTC. Known at payment time and never changes. The `ledger_account.funds_available` webhook carries the same `settlement_time_at` when that batch posts — match them to know these funds are now withdrawable.
+    /// When this payment's funds post to the company's available balance, at midnight UTC. Known at payment time and never changes. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts — match them to know these funds are now withdrawable.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
