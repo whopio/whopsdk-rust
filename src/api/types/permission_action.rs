@@ -212,6 +212,7 @@ pub enum PermissionAction {
     WebhookReceiveLedgerAccounts,
     WebhookReceiveAccounts,
     WebhookReceiveDeposits,
+    WebhookReceiveFinancialActivity,
     WebhookReceiveTransfers,
     WebhookReceiveCardTransactions,
     WebhookReceiveCards,
@@ -529,6 +530,9 @@ impl Serialize for PermissionAction {
             }
             Self::WebhookReceiveAccounts => serializer.serialize_str("webhook_receive:accounts"),
             Self::WebhookReceiveDeposits => serializer.serialize_str("webhook_receive:deposits"),
+            Self::WebhookReceiveFinancialActivity => {
+                serializer.serialize_str("webhook_receive:financial_activity")
+            }
             Self::WebhookReceiveTransfers => serializer.serialize_str("webhook_receive:transfers"),
             Self::WebhookReceiveCardTransactions => {
                 serializer.serialize_str("webhook_receive:card_transactions")
@@ -829,6 +833,7 @@ impl<'de> Deserialize<'de> for PermissionAction {
             "webhook_receive:ledger_accounts" => Ok(Self::WebhookReceiveLedgerAccounts),
             "webhook_receive:accounts" => Ok(Self::WebhookReceiveAccounts),
             "webhook_receive:deposits" => Ok(Self::WebhookReceiveDeposits),
+            "webhook_receive:financial_activity" => Ok(Self::WebhookReceiveFinancialActivity),
             "webhook_receive:transfers" => Ok(Self::WebhookReceiveTransfers),
             "webhook_receive:card_transactions" => Ok(Self::WebhookReceiveCardTransactions),
             "webhook_receive:cards" => Ok(Self::WebhookReceiveCards),
@@ -1108,6 +1113,9 @@ impl fmt::Display for PermissionAction {
             Self::WebhookReceiveLedgerAccounts => write!(f, "webhook_receive:ledger_accounts"),
             Self::WebhookReceiveAccounts => write!(f, "webhook_receive:accounts"),
             Self::WebhookReceiveDeposits => write!(f, "webhook_receive:deposits"),
+            Self::WebhookReceiveFinancialActivity => {
+                write!(f, "webhook_receive:financial_activity")
+            }
             Self::WebhookReceiveTransfers => write!(f, "webhook_receive:transfers"),
             Self::WebhookReceiveCardTransactions => write!(f, "webhook_receive:card_transactions"),
             Self::WebhookReceiveCards => write!(f, "webhook_receive:cards"),

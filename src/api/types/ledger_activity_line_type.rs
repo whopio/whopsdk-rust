@@ -4,6 +4,7 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum LedgerActivityLineType {
+    AccountSettlement,
     AdBudgetRelease,
     AdCampaignBudget,
     AdPublisherPayout,
@@ -147,6 +148,7 @@ pub enum LedgerActivityLineType {
 impl Serialize for LedgerActivityLineType {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::AccountSettlement => serializer.serialize_str("account_settlement"),
             Self::AdBudgetRelease => serializer.serialize_str("ad_budget_release"),
             Self::AdCampaignBudget => serializer.serialize_str("ad_campaign_budget"),
             Self::AdPublisherPayout => serializer.serialize_str("ad_publisher_payout"),
@@ -371,6 +373,7 @@ impl<'de> Deserialize<'de> for LedgerActivityLineType {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "account_settlement" => Ok(Self::AccountSettlement),
             "ad_budget_release" => Ok(Self::AdBudgetRelease),
             "ad_campaign_budget" => Ok(Self::AdCampaignBudget),
             "ad_publisher_payout" => Ok(Self::AdPublisherPayout),
@@ -520,6 +523,7 @@ impl<'de> Deserialize<'de> for LedgerActivityLineType {
 impl fmt::Display for LedgerActivityLineType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::AccountSettlement => write!(f, "account_settlement"),
             Self::AdBudgetRelease => write!(f, "ad_budget_release"),
             Self::AdCampaignBudget => write!(f, "ad_campaign_budget"),
             Self::AdPublisherPayout => write!(f, "ad_publisher_payout"),
