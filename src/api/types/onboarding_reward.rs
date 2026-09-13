@@ -14,6 +14,9 @@ pub struct OnboardingReward {
     /// Partner whose link attributed this reward.
     #[serde(default)]
     pub partner: UserSummary,
+    /// What the partner earns when a referred business qualifies for this reward. Null when the reward pays the business only.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub partner_reward_amount: Option<Money>,
     /// Required qualifying volume. Null for an immediate reward.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub qualification_amount: Option<Money>,
@@ -54,6 +57,7 @@ pub struct OnboardingRewardBuilder {
     id: Option<String>,
     max_redemptions: Option<i64>,
     partner: Option<UserSummary>,
+    partner_reward_amount: Option<Money>,
     qualification_amount: Option<Money>,
     qualification_income_source: Option<OnboardingRewardQualificationIncomeSource>,
     qualification_met: Option<bool>,
@@ -83,6 +87,11 @@ impl OnboardingRewardBuilder {
 
     pub fn partner(mut self, value: UserSummary) -> Self {
         self.partner = Some(value);
+        self
+    }
+
+    pub fn partner_reward_amount(mut self, value: Money) -> Self {
+        self.partner_reward_amount = Some(value);
         self
     }
 
@@ -149,6 +158,7 @@ impl OnboardingRewardBuilder {
             partner: self
                 .partner
                 .ok_or_else(|| BuildError::missing_field("partner"))?,
+            partner_reward_amount: self.partner_reward_amount,
             qualification_amount: self.qualification_amount,
             qualification_income_source: self.qualification_income_source,
             qualification_met: self.qualification_met,

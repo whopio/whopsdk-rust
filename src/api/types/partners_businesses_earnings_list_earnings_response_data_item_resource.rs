@@ -9,7 +9,9 @@ pub enum ListEarningsResponseDataItemResource {
 
     ListEarningsResponseDataItemResourceOne(ListEarningsResponseDataItemResourceOne),
 
-    ListEarningsResponseDataItemResourceCreatedAt(ListEarningsResponseDataItemResourceCreatedAt),
+    ListEarningsResponseDataItemResourceCurrency(ListEarningsResponseDataItemResourceCurrency),
+
+    ListEarningsResponseDataItemResourceBusinessId(ListEarningsResponseDataItemResourceBusinessId),
 }
 
 impl ListEarningsResponseDataItemResource {
@@ -26,8 +28,15 @@ impl ListEarningsResponseDataItemResource {
         matches!(self, Self::ListEarningsResponseDataItemResourceOne(_))
     }
 
-    pub fn is_list_earnings_response_data_item_resource_created_at(&self) -> bool {
-        matches!(self, Self::ListEarningsResponseDataItemResourceCreatedAt(_))
+    pub fn is_list_earnings_response_data_item_resource_currency(&self) -> bool {
+        matches!(self, Self::ListEarningsResponseDataItemResourceCurrency(_))
+    }
+
+    pub fn is_list_earnings_response_data_item_resource_business_id(&self) -> bool {
+        matches!(
+            self,
+            Self::ListEarningsResponseDataItemResourceBusinessId(_)
+        )
     }
 
     pub fn as_optional_list_earnings_response_data_item_resource_alternative_payment_method(
@@ -70,20 +79,38 @@ impl ListEarningsResponseDataItemResource {
         }
     }
 
-    pub fn as_list_earnings_response_data_item_resource_created_at(
+    pub fn as_list_earnings_response_data_item_resource_currency(
         &self,
-    ) -> Option<&ListEarningsResponseDataItemResourceCreatedAt> {
+    ) -> Option<&ListEarningsResponseDataItemResourceCurrency> {
         match self {
-            Self::ListEarningsResponseDataItemResourceCreatedAt(value) => Some(value),
+            Self::ListEarningsResponseDataItemResourceCurrency(value) => Some(value),
             _ => None,
         }
     }
 
-    pub fn into_list_earnings_response_data_item_resource_created_at(
+    pub fn into_list_earnings_response_data_item_resource_currency(
         self,
-    ) -> Option<ListEarningsResponseDataItemResourceCreatedAt> {
+    ) -> Option<ListEarningsResponseDataItemResourceCurrency> {
         match self {
-            Self::ListEarningsResponseDataItemResourceCreatedAt(value) => Some(value),
+            Self::ListEarningsResponseDataItemResourceCurrency(value) => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn as_list_earnings_response_data_item_resource_business_id(
+        &self,
+    ) -> Option<&ListEarningsResponseDataItemResourceBusinessId> {
+        match self {
+            Self::ListEarningsResponseDataItemResourceBusinessId(value) => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn into_list_earnings_response_data_item_resource_business_id(
+        self,
+    ) -> Option<ListEarningsResponseDataItemResourceBusinessId> {
+        match self {
+            Self::ListEarningsResponseDataItemResourceBusinessId(value) => Some(value),
             _ => None,
         }
     }

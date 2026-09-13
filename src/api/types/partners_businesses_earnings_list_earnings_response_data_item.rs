@@ -19,7 +19,7 @@ pub struct ListEarningsResponseDataItem {
     pub financial_activity: Option<Vec<ListEarningsResponseDataItemFinancialActivityItem>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
-    /// Which income source the commission is on: product-sales gross profit, Whop Ads spend billed to the business, platform balance transfer fees, or Whop Card interchange.
+    /// Which income source the commission is on: product-sales gross profit, Whop Ads spend billed to the business, platform balance transfer fees, Whop Card interchange, or a fixed onboarding reward paid to the partner when a referred business qualifies.
     pub income_source: ListEarningsResponseDataItemIncomeSource,
     pub object: ListEarningsResponseDataItemObject,
     #[serde(skip_serializing_if = "Option::is_none")]
