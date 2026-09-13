@@ -1,7 +1,7 @@
 pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-pub struct ListEarningsResponseDataItemResourceCreatedAt {
+pub struct ListEarningsResponseDataItemResourceCurrency {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
     pub created_at: DateTime<FixedOffset>,
@@ -11,26 +11,26 @@ pub struct ListEarningsResponseDataItemResourceCreatedAt {
     pub id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub merchant_name: Option<String>,
-    pub object: ListEarningsResponseDataItemResourceCreatedAtObject,
+    pub object: ListEarningsResponseDataItemResourceCurrencyObject,
 }
 
-impl ListEarningsResponseDataItemResourceCreatedAt {
-    pub fn builder() -> ListEarningsResponseDataItemResourceCreatedAtBuilder {
-        <ListEarningsResponseDataItemResourceCreatedAtBuilder as Default>::default()
+impl ListEarningsResponseDataItemResourceCurrency {
+    pub fn builder() -> ListEarningsResponseDataItemResourceCurrencyBuilder {
+        <ListEarningsResponseDataItemResourceCurrencyBuilder as Default>::default()
     }
 }
 
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
-pub struct ListEarningsResponseDataItemResourceCreatedAtBuilder {
+pub struct ListEarningsResponseDataItemResourceCurrencyBuilder {
     created_at: Option<DateTime<FixedOffset>>,
     currency: Option<String>,
     id: Option<String>,
     merchant_name: Option<String>,
-    object: Option<ListEarningsResponseDataItemResourceCreatedAtObject>,
+    object: Option<ListEarningsResponseDataItemResourceCurrencyObject>,
 }
 
-impl ListEarningsResponseDataItemResourceCreatedAtBuilder {
+impl ListEarningsResponseDataItemResourceCurrencyBuilder {
     pub fn created_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.created_at = Some(value);
         self
@@ -51,18 +51,18 @@ impl ListEarningsResponseDataItemResourceCreatedAtBuilder {
         self
     }
 
-    pub fn object(mut self, value: ListEarningsResponseDataItemResourceCreatedAtObject) -> Self {
+    pub fn object(mut self, value: ListEarningsResponseDataItemResourceCurrencyObject) -> Self {
         self.object = Some(value);
         self
     }
 
-    /// Consumes the builder and constructs a [`ListEarningsResponseDataItemResourceCreatedAt`].
+    /// Consumes the builder and constructs a [`ListEarningsResponseDataItemResourceCurrency`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`created_at`](ListEarningsResponseDataItemResourceCreatedAtBuilder::created_at)
-    /// - [`id`](ListEarningsResponseDataItemResourceCreatedAtBuilder::id)
-    /// - [`object`](ListEarningsResponseDataItemResourceCreatedAtBuilder::object)
-    pub fn build(self) -> Result<ListEarningsResponseDataItemResourceCreatedAt, BuildError> {
-        Ok(ListEarningsResponseDataItemResourceCreatedAt {
+    /// - [`created_at`](ListEarningsResponseDataItemResourceCurrencyBuilder::created_at)
+    /// - [`id`](ListEarningsResponseDataItemResourceCurrencyBuilder::id)
+    /// - [`object`](ListEarningsResponseDataItemResourceCurrencyBuilder::object)
+    pub fn build(self) -> Result<ListEarningsResponseDataItemResourceCurrency, BuildError> {
+        Ok(ListEarningsResponseDataItemResourceCurrency {
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
