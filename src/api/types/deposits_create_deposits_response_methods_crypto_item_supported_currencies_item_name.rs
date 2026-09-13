@@ -6,6 +6,7 @@ pub use crate::prelude::*;
 pub enum CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName {
     Arb,
     Bnb,
+    Btc,
     Eth,
     Eurc,
     Hype,
@@ -33,6 +34,7 @@ impl Serialize for CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesIte
         match self {
             Self::Arb => serializer.serialize_str("ARB"),
             Self::Bnb => serializer.serialize_str("BNB"),
+            Self::Btc => serializer.serialize_str("BTC"),
             Self::Eth => serializer.serialize_str("ETH"),
             Self::Eurc => serializer.serialize_str("EURC"),
             Self::Hype => serializer.serialize_str("HYPE"),
@@ -61,6 +63,7 @@ impl<'de> Deserialize<'de> for CreateDepositsResponseMethodsCryptoItemSupportedC
         match value.as_str() {
             "ARB" => Ok(Self::Arb),
             "BNB" => Ok(Self::Bnb),
+            "BTC" => Ok(Self::Btc),
             "ETH" => Ok(Self::Eth),
             "EURC" => Ok(Self::Eurc),
             "HYPE" => Ok(Self::Hype),
@@ -88,6 +91,7 @@ impl fmt::Display for CreateDepositsResponseMethodsCryptoItemSupportedCurrencies
         match self {
             Self::Arb => write!(f, "ARB"),
             Self::Bnb => write!(f, "BNB"),
+            Self::Btc => write!(f, "BTC"),
             Self::Eth => write!(f, "ETH"),
             Self::Eurc => write!(f, "EURC"),
             Self::Hype => write!(f, "HYPE"),

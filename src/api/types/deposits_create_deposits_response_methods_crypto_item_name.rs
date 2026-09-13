@@ -6,6 +6,7 @@ pub use crate::prelude::*;
 pub enum CreateDepositsResponseMethodsCryptoItemName {
     Ethereum,
     Solana,
+    Bitcoin,
     Base,
     BnbSmartChain,
     Hyperliquid,
@@ -24,6 +25,7 @@ impl Serialize for CreateDepositsResponseMethodsCryptoItemName {
         match self {
             Self::Ethereum => serializer.serialize_str("Ethereum"),
             Self::Solana => serializer.serialize_str("Solana"),
+            Self::Bitcoin => serializer.serialize_str("Bitcoin"),
             Self::Base => serializer.serialize_str("Base"),
             Self::BnbSmartChain => serializer.serialize_str("BNB Smart Chain"),
             Self::Hyperliquid => serializer.serialize_str("Hyperliquid"),
@@ -43,6 +45,7 @@ impl<'de> Deserialize<'de> for CreateDepositsResponseMethodsCryptoItemName {
         match value.as_str() {
             "Ethereum" => Ok(Self::Ethereum),
             "Solana" => Ok(Self::Solana),
+            "Bitcoin" => Ok(Self::Bitcoin),
             "Base" => Ok(Self::Base),
             "BNB Smart Chain" => Ok(Self::BnbSmartChain),
             "Hyperliquid" => Ok(Self::Hyperliquid),
@@ -61,6 +64,7 @@ impl fmt::Display for CreateDepositsResponseMethodsCryptoItemName {
         match self {
             Self::Ethereum => write!(f, "Ethereum"),
             Self::Solana => write!(f, "Solana"),
+            Self::Bitcoin => write!(f, "Bitcoin"),
             Self::Base => write!(f, "Base"),
             Self::BnbSmartChain => write!(f, "BNB Smart Chain"),
             Self::Hyperliquid => write!(f, "Hyperliquid"),
