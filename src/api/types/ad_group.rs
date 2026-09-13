@@ -24,7 +24,7 @@ pub struct AdGroup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub budget_amount: Option<f64>,
-    /// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+    /// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub budget_type: Option<AdGroupBudgetType>,
     /// Clicks divided by impressions, between 0 and 1.
