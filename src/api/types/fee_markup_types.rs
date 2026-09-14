@@ -13,6 +13,7 @@ pub enum FeeMarkupTypes {
     CryptoDepositMarkup,
     BankDepositMarkup,
     CryptoSwapMarkup,
+    PaymentMarkup,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -36,6 +37,7 @@ impl Serialize for FeeMarkupTypes {
             Self::CryptoDepositMarkup => serializer.serialize_str("crypto_deposit_markup"),
             Self::BankDepositMarkup => serializer.serialize_str("bank_deposit_markup"),
             Self::CryptoSwapMarkup => serializer.serialize_str("crypto_swap_markup"),
+            Self::PaymentMarkup => serializer.serialize_str("payment_markup"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -54,6 +56,7 @@ impl<'de> Deserialize<'de> for FeeMarkupTypes {
             "crypto_deposit_markup" => Ok(Self::CryptoDepositMarkup),
             "bank_deposit_markup" => Ok(Self::BankDepositMarkup),
             "crypto_swap_markup" => Ok(Self::CryptoSwapMarkup),
+            "payment_markup" => Ok(Self::PaymentMarkup),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -71,6 +74,7 @@ impl fmt::Display for FeeMarkupTypes {
             Self::CryptoDepositMarkup => write!(f, "crypto_deposit_markup"),
             Self::BankDepositMarkup => write!(f, "bank_deposit_markup"),
             Self::CryptoSwapMarkup => write!(f, "crypto_swap_markup"),
+            Self::PaymentMarkup => write!(f, "payment_markup"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }
