@@ -16705,7 +16705,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.economic_intelligence.<a href="/src/api/resources/economic_intelligence/client.rs">run</a>(request: RunEconomicIntelligenceRequest) -> Result&lt;EconomicIntelligence, ApiError&gt;</code></summary>
+<details><summary><code>client.economic_intelligence.<a href="/src/api/resources/economic_intelligence/client.rs">create</a>(request: CreateEconomicIntelligenceRequest) -> Result&lt;EconomicIntelligence, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -16741,16 +16741,10 @@ async fn main() {
         ..Default::default()
     };
     let client = Whop::new(config).expect("Failed to build client");
-    client
-        .economic_intelligence
-        .run(
-            &RunEconomicIntelligenceRequest {
-                input: "get more repeat buyers for my taurine supplement".to_string(),
-                account_id: None,
-            },
-            None,
-        )
-        .await;
+    client.economic_intelligence.create(&CreateEconomicIntelligenceRequest {
+        input: "I sell $79 customized gym straps. The number of purchases per day fell from 84 to 66 since June and my ads cost per signup doubled to $38. Half the leads never open the checkout. I want to win back churned visitors and lift conversion without cutting the price, and I can spend up to $500 this month on it.".to_string(),
+        account_id: None
+    }, None).await;
 }
 ```
 </dd>
@@ -16775,6 +16769,96 @@ async fn main() {
 <dd>
 
 **input:** `String` — What the owner wants, in their own words. Up to 1000 characters.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.economic_intelligence.<a href="/src/api/resources/economic_intelligence/client.rs">update</a>(id: String, request: UpdateEconomicIntelligenceRequest, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;EconomicIntelligence, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retires a `ready` recommendation the owner no longer wants by setting its status to `superseded`. It leaves the ready list and stays in the account's history.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .economic_intelligence
+        .update(
+            &"id".to_string(),
+            &UpdateEconomicIntelligenceRequest {
+                status: UpdateEconomicIntelligenceRequestStatus::Superseded,
+                account_id: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Recommendation ID, prefixed `reca_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `UpdateEconomicIntelligenceRequestStatus` — The status to move the recommendation to. Only `superseded` is accepted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
     
 </dd>
 </dl>
