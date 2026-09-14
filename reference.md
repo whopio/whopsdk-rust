@@ -37656,7 +37656,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.users.<a href="/src/api/resources/users/client.rs">me</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, include_balance_history: Option&lt;Option&lt;bool&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, interval: Option&lt;Option&lt;MeUsersRequestInterval&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;User, ApiError&gt;</code></summary>
+<details><summary><code>client.users.<a href="/src/api/resources/users/client.rs">me</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, include_balance: Option&lt;Option&lt;bool&gt;&gt;, include_balance_history: Option&lt;Option&lt;bool&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, interval: Option&lt;Option&lt;MeUsersRequestInterval&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;User, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -37717,6 +37717,14 @@ async fn main() {
 <dd>
 
 **account_id:** `Option<String>` — When set, returns your account-specific profile overrides for this account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_balance:** `Option<bool>` — Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
     
 </dd>
 </dl>
@@ -37880,7 +37888,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.users.<a href="/src/api/resources/users/client.rs">retrieve</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;, include_balance_history: Option&lt;Option&lt;bool&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, interval: Option&lt;Option&lt;RetrieveUsersRequestInterval&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;User, ApiError&gt;</code></summary>
+<details><summary><code>client.users.<a href="/src/api/resources/users/client.rs">retrieve</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;, include_balance: Option&lt;Option&lt;bool&gt;&gt;, include_balance_history: Option&lt;Option&lt;bool&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, interval: Option&lt;Option&lt;RetrieveUsersRequestInterval&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;User, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -37950,6 +37958,14 @@ async fn main() {
 <dd>
 
 **account_id:** `Option<String>` — When set, returns the user's account-specific profile overrides for this account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_balance:** `Option<bool>` — Compute live wallet and owned-account balances on the self view (default true). Set false for identity-only reads. Ignored when the id is not `me` or the caller lacks balance-read scope.
     
 </dd>
 </dl>

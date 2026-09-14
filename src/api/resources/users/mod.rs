@@ -97,6 +97,7 @@ impl UsersClient {
     /// # Arguments
     ///
     /// * `account_id` - When set, returns your account-specific profile overrides for this account.
+    /// * `include_balance` - Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
     /// * `include_balance_history` - Also compute your balance history (opt-in; runs a heavier query). Ignored for callers without balance-read scope.
     /// * `from` - Balance-history window start, ISO 8601 date or datetime. Defaults to 30 days ago. Only used with `include_balance_history`.
     /// * `to` - Balance-history window end, ISO 8601 date or datetime. Defaults to now. Only used with `include_balance_history`.
@@ -150,6 +151,7 @@ impl UsersClient {
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .bool("include_balance", request.include_balance.clone())
                     .bool(
                         "include_balance_history",
                         request.include_balance_history.clone(),
@@ -229,6 +231,7 @@ impl UsersClient {
     ///
     /// * `id` - User ID (prefixed `user_`), username, or `me` for the authenticated user.
     /// * `account_id` - When set, returns the user's account-specific profile overrides for this account.
+    /// * `include_balance` - Compute live wallet and owned-account balances on the self view (default true). Set false for identity-only reads. Ignored when the id is not `me` or the caller lacks balance-read scope.
     /// * `include_balance_history` - Also compute your balance history (opt-in; runs a heavier query). Only applies when the id is `me`; ignored for callers without balance-read scope.
     /// * `from` - Balance-history window start, ISO 8601 date or datetime. Defaults to 30 days ago. Only used with `include_balance_history`.
     /// * `to` - Balance-history window end, ISO 8601 date or datetime. Defaults to now. Only used with `include_balance_history`.
@@ -284,6 +287,7 @@ impl UsersClient {
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .bool("include_balance", request.include_balance.clone())
                     .bool(
                         "include_balance_history",
                         request.include_balance_history.clone(),
