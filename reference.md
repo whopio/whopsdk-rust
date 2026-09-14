@@ -477,6 +477,14 @@ async fn main() {
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**website:** `Option<Option<String>>` — The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -964,6 +972,14 @@ async fn main() {
 <dd>
 
 **use_logo_as_opengraph_image_fallback:** `Option<bool>` — Whether the account uses its logo as the fallback Open Graph image.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**website:** `Option<Option<String>>` — The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
     
 </dd>
 </dl>

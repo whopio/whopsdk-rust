@@ -23,6 +23,9 @@ pub struct CreateAccountsRequest {
     /// The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    /// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub website: Option<String>,
 }
 
 impl CreateAccountsRequest {
@@ -41,6 +44,7 @@ pub struct CreateAccountsRequestBuilder {
     metadata: Option<HashMap<String, serde_json::Value>>,
     send_customer_emails: Option<bool>,
     title: Option<String>,
+    website: Option<String>,
 }
 
 impl CreateAccountsRequestBuilder {
@@ -79,6 +83,11 @@ impl CreateAccountsRequestBuilder {
         self
     }
 
+    pub fn website(mut self, value: impl Into<String>) -> Self {
+        self.website = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreateAccountsRequest`].
     pub fn build(self) -> Result<CreateAccountsRequest, BuildError> {
         Ok(CreateAccountsRequest {
@@ -89,6 +98,7 @@ impl CreateAccountsRequestBuilder {
             metadata: self.metadata,
             send_customer_emails: self.send_customer_emails,
             title: self.title,
+            website: self.website,
         })
     }
 }
