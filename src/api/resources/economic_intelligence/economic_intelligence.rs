@@ -104,21 +104,15 @@ impl EconomicIntelligenceClient {
     ///         ..Default::default()
     ///     };
     ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .economic_intelligence
-    ///         .run(
-    ///             &RunEconomicIntelligenceRequest {
-    ///                 input: "get more repeat buyers for my taurine supplement".to_string(),
-    ///                 account_id: None,
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
+    ///     client.economic_intelligence.create(&CreateEconomicIntelligenceRequest {
+    ///         input: "I sell $79 customized gym straps. The number of purchases per day fell from 84 to 66 since June and my ads cost per signup doubled to $38. Half the leads never open the checkout. I want to win back churned visitors and lift conversion without cutting the price, and I can spend up to $500 this month on it.".to_string(),
+    ///         account_id: None
+    ///     }, None).await;
     /// }
     /// ```
-    pub async fn run(
+    pub async fn create(
         &self,
-        request: &RunEconomicIntelligenceRequest,
+        request: &CreateEconomicIntelligenceRequest,
         options: Option<RequestOptions>,
     ) -> Result<EconomicIntelligence, ApiError> {
         let options = {
@@ -134,6 +128,69 @@ impl EconomicIntelligenceClient {
                 "economic_intelligence",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
                 None,
+                options,
+            )
+            .await
+    }
+
+    /// Retires a `ready` recommendation the owner no longer wants by setting its status to `superseded`. It leaves the ready list and stays in the account's history.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Recommendation ID, prefixed `reca_`.
+    /// * `account_id` - Account ID, prefixed `biz_`. Defaults to the API key's own account.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .economic_intelligence
+    ///         .update(
+    ///             &"id".to_string(),
+    ///             &UpdateEconomicIntelligenceRequest {
+    ///                 status: UpdateEconomicIntelligenceRequestStatus::Superseded,
+    ///                 account_id: None,
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn update(
+        &self,
+        id: &str,
+        request: &UpdateEconomicIntelligenceRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<EconomicIntelligence, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-11-1".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::PATCH,
+                &format!("economic_intelligence/{}", id),
+                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
+                QueryBuilder::new()
+                    .string("account_id", request.account_id.clone())
+                    .build(),
                 options,
             )
             .await

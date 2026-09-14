@@ -1,7 +1,7 @@
 pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
-pub struct RunEconomicIntelligenceRequest {
+pub struct CreateEconomicIntelligenceRequest {
     /// Account ID, prefixed `biz_`. Defaults to the API key's own account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
@@ -10,20 +10,20 @@ pub struct RunEconomicIntelligenceRequest {
     pub input: String,
 }
 
-impl RunEconomicIntelligenceRequest {
-    pub fn builder() -> RunEconomicIntelligenceRequestBuilder {
-        <RunEconomicIntelligenceRequestBuilder as Default>::default()
+impl CreateEconomicIntelligenceRequest {
+    pub fn builder() -> CreateEconomicIntelligenceRequestBuilder {
+        <CreateEconomicIntelligenceRequestBuilder as Default>::default()
     }
 }
 
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
-pub struct RunEconomicIntelligenceRequestBuilder {
+pub struct CreateEconomicIntelligenceRequestBuilder {
     account_id: Option<String>,
     input: Option<String>,
 }
 
-impl RunEconomicIntelligenceRequestBuilder {
+impl CreateEconomicIntelligenceRequestBuilder {
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
         self
@@ -34,11 +34,11 @@ impl RunEconomicIntelligenceRequestBuilder {
         self
     }
 
-    /// Consumes the builder and constructs a [`RunEconomicIntelligenceRequest`].
+    /// Consumes the builder and constructs a [`CreateEconomicIntelligenceRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`input`](RunEconomicIntelligenceRequestBuilder::input)
-    pub fn build(self) -> Result<RunEconomicIntelligenceRequest, BuildError> {
-        Ok(RunEconomicIntelligenceRequest {
+    /// - [`input`](CreateEconomicIntelligenceRequestBuilder::input)
+    pub fn build(self) -> Result<CreateEconomicIntelligenceRequest, BuildError> {
+        Ok(CreateEconomicIntelligenceRequest {
             account_id: self.account_id,
             input: self
                 .input
