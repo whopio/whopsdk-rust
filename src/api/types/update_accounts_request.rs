@@ -118,6 +118,9 @@ pub struct UpdateAccountsRequest {
     /// Whether the account uses its logo as the fallback Open Graph image.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub use_logo_as_opengraph_image_fallback: Option<bool>,
+    /// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub website: Option<String>,
 }
 
 impl UpdateAccountsRequest {
@@ -167,6 +170,7 @@ pub struct UpdateAccountsRequestBuilder {
     three_ds_level: Option<UpdateAccountsRequestThreeDsLevel>,
     title: Option<String>,
     use_logo_as_opengraph_image_fallback: Option<bool>,
+    website: Option<String>,
 }
 
 impl UpdateAccountsRequestBuilder {
@@ -369,6 +373,11 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
+    pub fn website(mut self, value: impl Into<String>) -> Self {
+        self.website = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`UpdateAccountsRequest`].
     pub fn build(self) -> Result<UpdateAccountsRequest, BuildError> {
         Ok(UpdateAccountsRequest {
@@ -410,6 +419,7 @@ impl UpdateAccountsRequestBuilder {
             three_ds_level: self.three_ds_level,
             title: self.title,
             use_logo_as_opengraph_image_fallback: self.use_logo_as_opengraph_image_fallback,
+            website: self.website,
         })
     }
 }

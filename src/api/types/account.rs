@@ -184,6 +184,9 @@ pub struct Account {
     /// Account primary crypto wallet, or `null` if none has been provisioned.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wallet: Option<AccountWallet>,
+    /// The account's business website URL, or `null` if none has been provided. Setting it also adds a `website` entry to `social_links`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub website: Option<String>,
 }
 
 impl Account {
@@ -256,6 +259,7 @@ pub struct AccountBuilder {
     verification: Option<HashMap<String, serde_json::Value>>,
     volume_usd: Option<f64>,
     wallet: Option<AccountWallet>,
+    website: Option<String>,
 }
 
 impl AccountBuilder {
@@ -564,6 +568,11 @@ impl AccountBuilder {
         self
     }
 
+    pub fn website(mut self, value: impl Into<String>) -> Self {
+        self.website = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`Account`].
     /// This method will fail if any of the following fields are not set:
     /// - [`balances`](AccountBuilder::balances)
@@ -701,6 +710,7 @@ impl AccountBuilder {
                 .ok_or_else(|| BuildError::missing_field("verification"))?,
             volume_usd: self.volume_usd,
             wallet: self.wallet,
+            website: self.website,
         })
     }
 }
