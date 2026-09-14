@@ -31,6 +31,8 @@ pub enum LedgerActivityLineType {
     CardSpendRefund,
     CardUnloadDeposit,
     CardUnloadTransfer,
+    Cashback,
+    CashbackFunding,
     CompanyReferral,
     ConnectedAccountNegativeBalance,
     CrossBorderPercentageFee,
@@ -181,6 +183,8 @@ impl Serialize for LedgerActivityLineType {
             Self::CardSpendRefund => serializer.serialize_str("card_spend_refund"),
             Self::CardUnloadDeposit => serializer.serialize_str("card_unload_deposit"),
             Self::CardUnloadTransfer => serializer.serialize_str("card_unload_transfer"),
+            Self::Cashback => serializer.serialize_str("cashback"),
+            Self::CashbackFunding => serializer.serialize_str("cashback_funding"),
             Self::CompanyReferral => serializer.serialize_str("company_referral"),
             Self::ConnectedAccountNegativeBalance => {
                 serializer.serialize_str("connected_account_negative_balance")
@@ -400,6 +404,8 @@ impl<'de> Deserialize<'de> for LedgerActivityLineType {
             "card_spend_refund" => Ok(Self::CardSpendRefund),
             "card_unload_deposit" => Ok(Self::CardUnloadDeposit),
             "card_unload_transfer" => Ok(Self::CardUnloadTransfer),
+            "cashback" => Ok(Self::Cashback),
+            "cashback_funding" => Ok(Self::CashbackFunding),
             "company_referral" => Ok(Self::CompanyReferral),
             "connected_account_negative_balance" => Ok(Self::ConnectedAccountNegativeBalance),
             "cross_border_percentage_fee" => Ok(Self::CrossBorderPercentageFee),
@@ -550,6 +556,8 @@ impl fmt::Display for LedgerActivityLineType {
             Self::CardSpendRefund => write!(f, "card_spend_refund"),
             Self::CardUnloadDeposit => write!(f, "card_unload_deposit"),
             Self::CardUnloadTransfer => write!(f, "card_unload_transfer"),
+            Self::Cashback => write!(f, "cashback"),
+            Self::CashbackFunding => write!(f, "cashback_funding"),
             Self::CompanyReferral => write!(f, "company_referral"),
             Self::ConnectedAccountNegativeBalance => {
                 write!(f, "connected_account_negative_balance")
