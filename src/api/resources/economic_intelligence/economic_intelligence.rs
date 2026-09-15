@@ -133,7 +133,7 @@ impl EconomicIntelligenceClient {
             .await
     }
 
-    /// Retires a `ready` recommendation the owner no longer wants by setting its status to `superseded`. It leaves the ready list and stays in the account's history.
+    /// Records approval with `executed`, or retires an unwanted recommendation with `superseded`. Both replenish the ready inventory. Supplying a rejection reason also allows retiring an executed recommendation.
     ///
     /// # Arguments
     ///
@@ -162,8 +162,9 @@ impl EconomicIntelligenceClient {
     ///         .update(
     ///             &"id".to_string(),
     ///             &UpdateEconomicIntelligenceRequest {
-    ///                 status: UpdateEconomicIntelligenceRequestStatus::Superseded,
+    ///                 status: UpdateEconomicIntelligenceRequestStatus::Executed,
     ///                 account_id: None,
+    ///                 reason: None,
     ///             },
     ///             None,
     ///         )

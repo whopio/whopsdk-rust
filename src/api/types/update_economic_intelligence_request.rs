@@ -2,7 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct UpdateEconomicIntelligenceRequest {
-    /// The status to move the recommendation to. Only `superseded` is accepted.
+    /// Why the recommendation was rejected. Used as feedback when replenishing recommendations.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    /// Use `executed` after approval to start the action, or `superseded` to reject it.
     pub status: UpdateEconomicIntelligenceRequestStatus,
     /// Account ID, prefixed `biz_`. Defaults to the API key's own account.
     #[serde(skip)]
@@ -18,11 +21,17 @@ impl UpdateEconomicIntelligenceRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct UpdateEconomicIntelligenceRequestBuilder {
+    reason: Option<String>,
     status: Option<UpdateEconomicIntelligenceRequestStatus>,
     account_id: Option<String>,
 }
 
 impl UpdateEconomicIntelligenceRequestBuilder {
+    pub fn reason(mut self, value: impl Into<String>) -> Self {
+        self.reason = Some(value.into());
+        self
+    }
+
     pub fn status(mut self, value: UpdateEconomicIntelligenceRequestStatus) -> Self {
         self.status = Some(value);
         self
@@ -38,6 +47,7 @@ impl UpdateEconomicIntelligenceRequestBuilder {
     /// - [`status`](UpdateEconomicIntelligenceRequestBuilder::status)
     pub fn build(self) -> Result<UpdateEconomicIntelligenceRequest, BuildError> {
         Ok(UpdateEconomicIntelligenceRequest {
+            reason: self.reason,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
