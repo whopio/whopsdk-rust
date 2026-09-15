@@ -16808,7 +16808,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retires a `ready` recommendation the owner no longer wants by setting its status to `superseded`. It leaves the ready list and stays in the account's history.
+Records approval with `executed`, or retires an unwanted recommendation with `superseded`. Both replenish the ready inventory. Supplying a rejection reason also allows retiring an executed recommendation.
 </dd>
 </dl>
 </dd>
@@ -16837,8 +16837,9 @@ async fn main() {
         .update(
             &"id".to_string(),
             &UpdateEconomicIntelligenceRequest {
-                status: UpdateEconomicIntelligenceRequestStatus::Superseded,
+                status: UpdateEconomicIntelligenceRequestStatus::Executed,
                 account_id: None,
+                reason: None,
             },
             None,
         )
@@ -16866,7 +16867,15 @@ async fn main() {
 <dl>
 <dd>
 
-**status:** `UpdateEconomicIntelligenceRequestStatus` — The status to move the recommendation to. Only `superseded` is accepted.
+**reason:** `Option<String>` — Why the recommendation was rejected. Used as feedback when replenishing recommendations.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `UpdateEconomicIntelligenceRequestStatus` — Use `executed` after approval to start the action, or `superseded` to reject it.
     
 </dd>
 </dl>
