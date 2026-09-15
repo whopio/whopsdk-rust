@@ -148,7 +148,7 @@ pub struct PaymentLegacy {
     /// Whop's in-house fraud risk score for this payment, from 0 (lowest risk) to 100 (highest risk). Null when the payment has not been scored or scoring has not yet completed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub risk_score: Option<i64>,
-    /// A curated set of factors behind the risk score, grouped by category (business transaction history, buyer, device). Each entry has a key, human-readable label, category, and value. Null when there is no risk assessment for this payment.
+    /// Deprecated. Always null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub risk_signals: Option<HashMap<String, serde_json::Value>>,
     /// The total amount charged to the customer for this payment, including taxes and after any discounts. In the currency specified by the currency field.

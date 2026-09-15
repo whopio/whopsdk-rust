@@ -112,12 +112,13 @@ pub struct Payment {
     /// True when the payment is `open` and Whop can attempt the charge again — see `POST /payments/{id}/retry`.
     #[serde(default)]
     pub retryable: bool,
-    /// Whop's fraud risk score from 0 (lowest) to 100 (highest), or null when the payment was not scored.
+    /// Whop's published risk index from 0 (lowest) to 100 (highest), including enforced decision floors. This is not a fraud probability. Null when no score is available.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub risk_score: Option<f64>,
-    /// The factors behind `risk_score`, grouped by category, or null.
+    /// Deprecated. Risk score explanations are no longer provided; always null.
+    /// DEPRECATED: Risk score explanations are no longer provided. Always null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub risk_signals: Option<HashMap<String, serde_json::Value>>,
     /// When the funds post to the account's available balance, at midnight UTC. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts. Null until the payment is paid, and always null in list responses — retrieve the payment for it.
