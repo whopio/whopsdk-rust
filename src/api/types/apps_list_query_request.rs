@@ -30,16 +30,16 @@ pub struct AppsListQueryRequest {
     /// Sort direction.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<ListAppsRequestDirection>,
-    /// The number of apps to return (default 20, max 100).
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// A cursor; returns apps after this position.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// The number of apps to return from the end of the range.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// A cursor; returns apps before this position.
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
 }

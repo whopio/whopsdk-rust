@@ -33,10 +33,10 @@ impl PayoutsClient {
     /// * `payout_method_id` - Filter to payouts sent to one saved payout method (a pytk_ identifier). An unknown id matches nothing.
     /// * `created_before` - Only payouts created before this ISO 8601 time (exclusive).
     /// * `created_after` - Only payouts created at or after this ISO 8601 time (inclusive).
-    /// * `first` - Number of payouts to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of payouts to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

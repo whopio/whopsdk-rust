@@ -17,7 +17,7 @@ impl NotificationsClient {
         })
     }
 
-    /// Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of.
+    /// Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of. The `after` cursor is a notification `id` from a previous response; subsequent pages contain older notifications.
     ///
     /// # Arguments
     ///
@@ -25,8 +25,8 @@ impl NotificationsClient {
     /// * `experience_id` - Only return notifications from this experience (`exp_` tag).
     /// * `account_id` - Only return team notifications for this account (`biz_` tag).
     /// * `mentions` - Only return notifications that mention the user directly.
-    /// * `first` - The number of notifications to return (default 20, max 100).
-    /// * `after` - A cursor (a notification `id` from a previous page); returns notifications older than it.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

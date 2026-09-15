@@ -12,16 +12,16 @@ pub struct FilesListQueryRequest {
     /// The sort direction.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<ListFilesRequestDirection>,
-    /// The number of files to return.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// A cursor; returns files after this position.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// The number of files to return from the end of the range.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// A cursor; returns files before this position.
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
 }

@@ -23,10 +23,10 @@ impl BusinessesClient {
     ///
     /// * `status` - Filter by referral status.
     /// * `has_earnings` - When true, only businesses with pending or completed earnings paid to the caller.
-    /// * `first` - Number of partner businesses to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of partner businesses to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort partner businesses by.
     /// * `direction` - Sort direction.
     /// * `created_before` - Only return partner businesses created before this timestamp.

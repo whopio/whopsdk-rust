@@ -12,16 +12,16 @@ pub struct DisputeAlertsListQueryRequest {
     /// Only alerts of this kind. `early_fraud_warning` for issuer fraud reports, `dispute_alert` for pre-dispute notices, `rapid_dispute_resolution` for Visa RDR cases the network already closed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub r#type: Option<ListDisputeAlertsRequestType>,
-    /// The number of alerts to return (default 20, max 100).
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// A cursor; returns alerts after this position.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// The number of alerts to return from the end of the range.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// A cursor; returns alerts before this position.
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
     /// The field to sort alerts by.

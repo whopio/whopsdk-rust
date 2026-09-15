@@ -15,10 +15,10 @@ pub struct AudiencesListQueryRequest {
     /// Filter by uploaded customer lists, Whop People filters, or social engagement.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_type: Option<ListAudiencesRequestSourceType>,
-    /// Number of audiences to return. Defaults to 20; maximum 100.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// Cursor for the next page of audiences.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
 }

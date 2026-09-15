@@ -9,12 +9,16 @@ pub struct PartnersBusinessesEarningsListQueryRequest {
     /// Filter to earnings from these income sources. Repeat the parameter for each one (income_source=sales&income_source=ad_spend).
     #[serde(default)]
     pub income_source: Vec<Option<ListEarningsRequestIncomeSourceItem>>,
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
     /// The field to sort earnings by.

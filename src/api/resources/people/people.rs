@@ -38,9 +38,9 @@ impl PeopleClient {
     /// * `first_seen_before` - Only include people first seen before this ISO 8601 timestamp.
     /// * `last_seen_after` - Only include people last seen at or after this ISO 8601 timestamp.
     /// * `last_seen_before` - Only include people last seen before this ISO 8601 timestamp.
-    /// * `first` - The number of people to return (default 100, max 100).
-    /// * `after` - A cursor for fetching people after a previous page.
-    /// * `before` - A cursor for fetching people before a later page.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - Column to sort by. Defaults to last_seen_at.
     /// * `direction` - Sort direction. Defaults to desc.
     /// * `options` - Additional request options such as headers, timeout, etc.

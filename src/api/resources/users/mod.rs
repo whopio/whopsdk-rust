@@ -30,10 +30,10 @@ impl UsersClient {
     /// # Arguments
     ///
     /// * `query` - A search term to filter users by name or username.
-    /// * `first` - The number of users to return (max 50).
-    /// * `after` - A cursor; returns users after this position.
-    /// * `last` - The number of users to return from the end of the range.
-    /// * `before` - A cursor; returns users before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

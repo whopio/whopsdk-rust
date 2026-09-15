@@ -30,10 +30,10 @@ impl MembersClient {
     /// * `created_before` - Only members who joined before this ISO 8601 timestamp.
     /// * `order` - Sort field.
     /// * `direction` - Sort direction.
-    /// * `first` - Number of members to return from the start of the window.
-    /// * `after` - Cursor to paginate forwards from.
-    /// * `last` - Number of members to return from the end of the window.
-    /// * `before` - Cursor to paginate backwards from.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

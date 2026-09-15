@@ -17,10 +17,10 @@ impl PasskeysClient {
     ///
     /// # Arguments
     ///
-    /// * `first` - The number of passkeys to return (default 20, max 100).
-    /// * `after` - A cursor; returns passkeys after this position.
-    /// * `last` - The number of passkeys to return from the end of the range.
-    /// * `before` - A cursor; returns passkeys before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort passkeys by.
     /// * `direction` - Sort direction.
     /// * `options` - Additional request options such as headers, timeout, etc.

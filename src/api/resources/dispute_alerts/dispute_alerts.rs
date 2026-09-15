@@ -20,10 +20,10 @@ impl DisputeAlertsClient {
     /// * `account_id` - Only alerts on this account's payments (`biz_` tag). Omit it to cover every account you can read.
     /// * `payment_id` - Only alerts on this payment (`pay_` tag). A payment can carry several.
     /// * `type_` - Only alerts of this kind. `early_fraud_warning` for issuer fraud reports, `dispute_alert` for pre-dispute notices, `rapid_dispute_resolution` for Visa RDR cases the network already closed.
-    /// * `first` - The number of alerts to return (default 20, max 100).
-    /// * `after` - A cursor; returns alerts after this position.
-    /// * `last` - The number of alerts to return from the end of the range.
-    /// * `before` - A cursor; returns alerts before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort alerts by.
     /// * `direction` - Sort direction.
     /// * `created_before` - Only alerts Whop received before this ISO 8601 timestamp.

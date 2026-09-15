@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Use `executed` after approval to start the action, or `superseded` to reject it.
+/// Use `executed` to record approval, or `superseded` to reject the recommendation.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpdateEconomicIntelligenceRequestStatus {

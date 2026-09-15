@@ -2,36 +2,36 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct EconomicIntelligence {
-    /// The account this recommendation is for, prefixed `biz_`
+    /// ID of the account this recommendation is for, prefixed `biz_`.
     #[serde(default)]
     pub account_id: String,
-    /// The playbook action this card recommends, or `null` for an untyped card; new values may be added, so handle unknown types gracefully
+    /// Type of action recommended, or `null` when no type is assigned. New values may be added; handle unknown types gracefully.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub action_type: Option<String>,
     /// When the recommendation was created, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
-    /// When the card was run, as an ISO 8601 timestamp, or `null`
+    /// When the recommendation was approved, as an ISO 8601 timestamp, or `null` if it has not been approved.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub executed_at: Option<String>,
-    /// Economic intelligence ID, prefixed `reca_`
+    /// Recommendation ID, prefixed `reca_`.
     #[serde(default)]
     pub id: String,
-    /// What the owner asked for, in their own words, when this recommendation was requested, or `null` when the engine chose the action on its own
+    /// What you requested, in your own words, or `null` for recommendations generated without your input.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input: Option<String>,
-    /// The step-by-step brief Whop AI executes when the card is run, or `null`
+    /// Step-by-step instructions for Whop AI, or `null` when no instructions are available.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prompt: Option<String>,
-    /// The signal and number the recommendation rests on, or `null`
+    /// Evidence and metrics supporting the recommendation, or `null` when no reasoning was provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning: Option<String>,
-    /// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it
+    /// `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
     pub status: EconomicIntelligenceStatus,
-    /// When a newer card replaced this one, as an ISO 8601 timestamp, or `null`
+    /// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub superseded_at: Option<String>,
-    /// The recommendation as the owner sees it: one command with the payoff, or `null` until the engine has written the card
+    /// Recommended action and its expected benefit, or `null` until generated.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
 }

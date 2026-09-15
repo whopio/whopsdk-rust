@@ -21,8 +21,8 @@ impl AudiencesClient {
     /// * `audience_id` - Audience ID, prefixed `adaud_`, used to filter the response to one audience.
     /// * `audience_type` - Filter by custom or lookalike audiences.
     /// * `source_type` - Filter by uploaded customer lists, Whop People filters, or social engagement.
-    /// * `first` - Number of audiences to return. Defaults to 20; maximum 100.
-    /// * `after` - Cursor for the next page of audiences.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

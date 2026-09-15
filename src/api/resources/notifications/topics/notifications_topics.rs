@@ -18,8 +18,8 @@ impl TopicsClient {
     /// # Arguments
     ///
     /// * `topic_type` - Only return topics of this scope: `user` (member notifications) or `account_team` (team notifications).
-    /// * `first` - The number of topics to return (default 20, max 100).
-    /// * `after` - A cursor; returns topics after this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

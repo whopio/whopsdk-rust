@@ -26,10 +26,10 @@ impl PlansClient {
     /// * `product_ids` - Filter to only plans belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice plans are returned.
     /// * `created_before` - Only return plans created before this timestamp.
     /// * `created_after` - Only return plans created after this timestamp.
-    /// * `first` - The number of plans to return (default and max 100).
-    /// * `after` - A cursor; returns plans after this position.
-    /// * `last` - The number of plans to return from the end of the range.
-    /// * `before` - A cursor; returns plans before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

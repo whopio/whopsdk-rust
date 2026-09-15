@@ -20,6 +20,10 @@ impl EarningsClient {
     /// * `id` - The partner business ID (a coma_ identifier).
     /// * `status` - Filter by earning status.
     /// * `income_source` - Filter to earnings from these income sources. Repeat the parameter for each one (income_source=sales&income_source=ad_spend).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort earnings by.
     /// * `direction` - Sort direction.
     /// * `created_before` - Only return earnings created before this timestamp.

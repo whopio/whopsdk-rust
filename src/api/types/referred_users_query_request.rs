@@ -9,16 +9,16 @@ pub struct ReferredUsersQueryRequest {
     /// When true, only referred users with at least one business that has generated earnings.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub has_earning_businesses: Option<bool>,
-    /// Number of referred users to return from the start of the window.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// Cursor to fetch the page after (from page_info.end_cursor).
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// Number of referred users to return from the end of the window.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// Cursor to fetch the page before (from page_info.start_cursor).
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
 }

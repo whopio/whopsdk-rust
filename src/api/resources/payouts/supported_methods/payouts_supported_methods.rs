@@ -24,10 +24,10 @@ impl SupportedMethodsClient {
     /// * `currency` - Currency code of the amount, for example `usd`. Only meaningful with amount.
     /// * `supported_payout_method_id` - Narrows the list to one supported payout method (a podst_ identifier) and includes the required_fields needed to save it as a payout method.
     /// * `destination_currency` - Currency the supported payout method would deliver payouts in. Only meaningful with supported_payout_method_id; required fields vary by destination currency.
-    /// * `first` - Number of supported payout methods to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of supported payout methods to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

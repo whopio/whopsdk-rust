@@ -257,7 +257,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of accounts to return (default 10, max 50).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -265,7 +265,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns accounts after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -273,7 +273,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of accounts to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -281,7 +281,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns accounts before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -1535,7 +1535,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of campaigns to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -1543,7 +1543,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -1551,7 +1551,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of campaigns to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -1559,7 +1559,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -2521,7 +2521,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of ad groups to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -2529,7 +2529,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -2537,7 +2537,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of ad groups to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -2545,7 +2545,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -3953,7 +3953,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of ads to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -3961,7 +3961,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -3969,7 +3969,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of ads to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -3977,7 +3977,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -5817,7 +5817,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of API keys to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -5825,7 +5825,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns API keys after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -5833,7 +5833,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of API keys to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -5841,7 +5841,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns API keys before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -6484,7 +6484,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of logs to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -6492,7 +6492,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -6613,7 +6613,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of builds to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -6621,7 +6621,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns builds after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -6629,7 +6629,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of builds to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -6637,7 +6637,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns builds before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -7038,7 +7038,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of apps to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -7046,7 +7046,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns apps after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -7054,7 +7054,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of apps to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -7062,7 +7062,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns apps before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -7751,7 +7751,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of log lines to return (max 500).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -7759,7 +7759,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor for fetching logs after a previous page.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -7767,7 +7767,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor for fetching logs before a later page.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -7964,7 +7964,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of audiences to return. Defaults to 20; maximum 100.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -7972,7 +7972,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor for the next page of audiences.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -8963,7 +8963,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of bounties to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -8971,7 +8971,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -8979,7 +8979,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of bounties to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -8987,7 +8987,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -9571,7 +9571,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of submissions to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -9579,7 +9579,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -9587,7 +9587,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of submissions to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -9595,7 +9595,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -10080,7 +10080,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of card transactions to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -10088,7 +10088,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns card transactions after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -10096,7 +10096,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of card transactions to return, counting back from the end.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -10104,7 +10104,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns card transactions before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -10843,7 +10843,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of rules to return from the start of the page.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -10851,7 +10851,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Return rules after this cursor.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -10859,7 +10859,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of rules to return from the end of the page.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -10867,7 +10867,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Return rules before this cursor.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -11428,7 +11428,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of checkout configurations to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -11436,7 +11436,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor for the next page of results.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -14574,7 +14574,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of alerts to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -14582,7 +14582,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns alerts after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -14590,7 +14590,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of alerts to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -14598,7 +14598,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns alerts before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -14788,7 +14788,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of disputes to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -14796,7 +14796,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns disputes after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -14804,7 +14804,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of disputes to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -14812,7 +14812,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns disputes before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -16247,7 +16247,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of domains from the start of the page.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -16255,7 +16255,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor for the next page.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -16263,7 +16263,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of domains from the end of the page.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -16271,7 +16271,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor for the previous page.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -16621,7 +16621,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists recommended actions and in-progress requests for the account, newest first. Unsuccessful generation requests are omitted. Filter with `status=ready` for current actions. For callers with company:update permission, listing automatically queues generation when no actions are ready or in progress, with a ten-minute cooldown after an unsuccessful request from the current pipeline version.
+Lists an account's recommendations and generation requests, newest first.
 </dd>
 </dl>
 </dd>
@@ -16677,7 +16677,7 @@ async fn main() {
 <dl>
 <dd>
 
-**status:** `Option<ListEconomicIntelligenceRequestStatus>` — Only recommendations in this state. `ready` for the cards the owner can run now.
+**status:** `Option<ListEconomicIntelligenceRequestStatus>` — Filter recommendations by their current status.
     
 </dd>
 </dl>
@@ -16685,7 +16685,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of recommendations to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -16693,7 +16693,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns recommendations after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -16701,7 +16701,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of recommendations to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -16709,7 +16709,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns recommendations before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -16733,7 +16733,7 @@ async fn main() {
 <dl>
 <dd>
 
-Harnesses Economic Intelligence to generate recommended actions that lead the business down the most optimal path to the next dollar. Returns a `queued` recommendation right away. Poll the list endpoint until it is `ready` or disappears.
+Generates a recommendation based on your input. Returns immediately; poll the list endpoint until its `status` is `ready`.
 </dd>
 </dl>
 </dd>
@@ -16808,7 +16808,7 @@ async fn main() {
 <dl>
 <dd>
 
-Records approval with `executed`, or retires an unwanted recommendation with `superseded`. Both replenish the ready inventory. Supplying a rejection reason also allows retiring an executed recommendation.
+Approves or rejects a recommendation and requests replacements.
 </dd>
 </dl>
 </dd>
@@ -16875,7 +16875,7 @@ async fn main() {
 <dl>
 <dd>
 
-**status:** `UpdateEconomicIntelligenceRequestStatus` — Use `executed` after approval to start the action, or `superseded` to reject it.
+**status:** `UpdateEconomicIntelligenceRequestStatus` — Use `executed` to record approval, or `superseded` to reject the recommendation.
     
 </dd>
 </dl>
@@ -17377,7 +17377,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of events to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -17385,7 +17385,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor for fetching events after a previous page.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -17393,7 +17393,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor for fetching events before a later page.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -17816,7 +17816,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of events to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -17824,7 +17824,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor for fetching events after a previous page.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -17832,7 +17832,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor for fetching events before a later page.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -18801,7 +18801,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of experiments to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -18809,7 +18809,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns experiments after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -18817,7 +18817,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of experiments to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -18825,7 +18825,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns experiments before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -20280,7 +20280,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of files to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -20288,7 +20288,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns files after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -20296,7 +20296,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of files to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -20304,7 +20304,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns files before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -23854,7 +23854,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of members to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -23862,7 +23862,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -23870,7 +23870,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of members to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -23878,7 +23878,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -24087,7 +24087,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of memberships to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -24095,7 +24095,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -24103,7 +24103,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of memberships to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -24111,7 +24111,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -25283,7 +25283,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of.
+Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of. The `after` cursor is a notification `id` from a previous response; subsequent pages contain older notifications.
 </dd>
 </dl>
 </dd>
@@ -25363,7 +25363,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of notifications to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -25371,7 +25371,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor (a notification `id` from a previous page); returns notifications older than it.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -25942,7 +25942,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of referred users to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -25950,7 +25950,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -25958,7 +25958,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of referred users to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -25966,7 +25966,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -26167,7 +26167,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of domains to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -26175,7 +26175,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -26183,7 +26183,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of domains to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -26191,7 +26191,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -27057,7 +27057,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of payments to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -27065,7 +27065,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns payments after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -27073,7 +27073,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of payments to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -27081,7 +27081,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns payments before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -28258,7 +28258,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of payouts to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -28266,7 +28266,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -28274,7 +28274,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of payouts to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -28282,7 +28282,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -29024,7 +29024,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of people to return (default 100, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -29032,7 +29032,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor for fetching people after a previous page.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -29040,7 +29040,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor for fetching people before a later page.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -29376,7 +29376,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of plans to return (default and max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -29384,7 +29384,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns plans after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -29392,7 +29392,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of plans to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -29400,7 +29400,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns plans before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -30352,7 +30352,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of products to return (default and max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -30360,7 +30360,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns products after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -30368,7 +30368,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of products to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -30376,7 +30376,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns products before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -31192,7 +31192,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of promo codes to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -31200,7 +31200,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -31208,7 +31208,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of promo codes to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -31216,7 +31216,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -32174,7 +32174,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of refunds to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -32182,7 +32182,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns refunds after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -32190,7 +32190,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of refunds to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -32198,7 +32198,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns refunds before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -32363,7 +32363,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of cases to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -32371,7 +32371,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns cases after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -32379,7 +32379,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of cases to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -32387,7 +32387,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns cases before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -33105,7 +33105,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of events to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -33113,7 +33113,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns events after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -33121,7 +33121,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of events to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -33129,7 +33129,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns events before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -34153,7 +34153,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of shipments to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -34161,7 +34161,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns shipments after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -34169,7 +34169,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of shipments to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -34177,7 +34177,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns shipments before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -34535,7 +34535,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of social accounts to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -34543,7 +34543,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -34551,7 +34551,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of social accounts to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -34559,7 +34559,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -35025,7 +35025,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of posts to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -35033,7 +35033,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36340,7 +36340,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of members to return. Defaults to 20; maximum 100.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36348,7 +36348,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor for the next page of members.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36356,7 +36356,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of members to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36364,7 +36364,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -36896,7 +36896,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of transfers to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36904,7 +36904,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36912,7 +36912,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of transfers to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36920,7 +36920,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -37174,7 +37174,7 @@ async fn main() {
 <dl>
 <dd>
 
-**query:** `Option<String>` — Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches.
+**query:** `Option<String>` — Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches. Search results are limited to 20 recipients.
     
 </dd>
 </dl>
@@ -37182,7 +37182,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of recipients per page. Search queries preserve the dashboard's 20-result maximum.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -37190,7 +37190,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -37335,7 +37335,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of users to return (max 50).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -37343,7 +37343,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns users after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -37351,7 +37351,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of users to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -37359,7 +37359,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns users before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -38384,7 +38384,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of webhooks to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -38392,7 +38392,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns webhooks after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -38400,7 +38400,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of webhooks to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -38408,7 +38408,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns webhooks before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -38847,7 +38847,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of deliveries to return (default 50, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -38855,7 +38855,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns deliveries after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40036,7 +40036,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of submissions to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40044,7 +40044,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40052,7 +40052,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of submissions to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -40060,7 +40060,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -40356,7 +40356,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of log entries to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40364,7 +40364,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40372,7 +40372,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of log entries to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -40380,7 +40380,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -40462,7 +40462,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of topics to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40470,7 +40470,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns topics after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40560,7 +40560,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of partner businesses to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40568,7 +40568,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40576,7 +40576,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of partner businesses to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -40584,7 +40584,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -40802,7 +40802,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of promotion links to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40810,7 +40810,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40818,7 +40818,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of promotion links to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -40826,7 +40826,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -40935,7 +40935,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` 
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40943,7 +40943,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` 
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40951,7 +40951,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` 
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -40959,7 +40959,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` 
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -41113,7 +41113,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of payout methods to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -41121,7 +41121,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -41129,7 +41129,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of payout methods to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -41137,7 +41137,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -41548,7 +41548,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of supported payout methods to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -41556,7 +41556,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -41564,7 +41564,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of supported payout methods to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -41572,7 +41572,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -41654,7 +41654,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of grants to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -41662,7 +41662,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns grants after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -41670,7 +41670,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of grants to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -41678,7 +41678,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns grants before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -41922,7 +41922,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of passkeys to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -41930,7 +41930,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns passkeys after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -41938,7 +41938,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of passkeys to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -41946,7 +41946,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns passkeys before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -42545,7 +42545,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of preferences to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -42553,7 +42553,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns preferences after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -42669,7 +42669,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of preferences to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -42677,7 +42677,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns preferences after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>

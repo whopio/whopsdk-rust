@@ -20,10 +20,10 @@ impl FilesClient {
     /// * `file_ids` - The files to return, each prefixed `file_`. Repeat the parameter to pass several, up to 250 per request. Batches of up to 100 answer in one page by default; larger batches page at up to 100 per response.
     /// * `order` - The field to sort by.
     /// * `direction` - The sort direction.
-    /// * `first` - The number of files to return.
-    /// * `after` - A cursor; returns files after this position.
-    /// * `last` - The number of files to return from the end of the range.
-    /// * `before` - A cursor; returns files before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

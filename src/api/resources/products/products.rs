@@ -28,10 +28,10 @@ impl ProductsClient {
     /// * `labels` - Filter to only products carrying all of these labels. Labels are matched lowercased.
     /// * `direction` - The sort direction for results. Defaults to descending.
     /// * `order` - The field to sort results by. Account lists default to `created_at`. Marketplace lists default to `discoverable_at` and accept `created_at` or `discoverable_at`. Cannot be combined with `query`.
-    /// * `first` - The number of products to return (default and max 100).
-    /// * `after` - A cursor; returns products after this position.
-    /// * `last` - The number of products to return from the end of the range.
-    /// * `before` - A cursor; returns products before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `created_after` - Only return products created after this ISO 8601 timestamp.
     /// * `created_before` - Only return products created before this ISO 8601 timestamp.
     /// * `options` - Additional request options such as headers, timeout, etc.

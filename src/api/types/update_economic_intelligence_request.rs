@@ -5,7 +5,7 @@ pub struct UpdateEconomicIntelligenceRequest {
     /// Why the recommendation was rejected. Used as feedback when replenishing recommendations.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
-    /// Use `executed` after approval to start the action, or `superseded` to reject it.
+    /// Use `executed` to record approval, or `superseded` to reject the recommendation.
     pub status: UpdateEconomicIntelligenceRequestStatus,
     /// Account ID, prefixed `biz_`. Defaults to the API key's own account.
     #[serde(skip)]
