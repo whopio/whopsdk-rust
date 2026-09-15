@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it; `failed` when the engine had nothing to recommend for the request
+/// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum EconomicIntelligenceStatus {
@@ -9,7 +9,6 @@ pub enum EconomicIntelligenceStatus {
     Ready,
     Executed,
     Superseded,
-    Failed,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -23,7 +22,6 @@ impl Serialize for EconomicIntelligenceStatus {
             Self::Ready => serializer.serialize_str("ready"),
             Self::Executed => serializer.serialize_str("executed"),
             Self::Superseded => serializer.serialize_str("superseded"),
-            Self::Failed => serializer.serialize_str("failed"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -38,7 +36,6 @@ impl<'de> Deserialize<'de> for EconomicIntelligenceStatus {
             "ready" => Ok(Self::Ready),
             "executed" => Ok(Self::Executed),
             "superseded" => Ok(Self::Superseded),
-            "failed" => Ok(Self::Failed),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -52,7 +49,6 @@ impl fmt::Display for EconomicIntelligenceStatus {
             Self::Ready => write!(f, "ready"),
             Self::Executed => write!(f, "executed"),
             Self::Superseded => write!(f, "superseded"),
-            Self::Failed => write!(f, "failed"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }
