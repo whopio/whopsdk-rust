@@ -26,7 +26,7 @@ pub struct EconomicIntelligence {
     /// The signal and number the recommendation rests on, or `null`
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning: Option<String>,
-    /// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it; `failed` when the engine had nothing to recommend for the request
+    /// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it
     pub status: EconomicIntelligenceStatus,
     /// When a newer card replaced this one, as an ISO 8601 timestamp, or `null`
     #[serde(skip_serializing_if = "Option::is_none")]
