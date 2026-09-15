@@ -1,16 +1,47 @@
 pub use crate::prelude::*;
 
-/// Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+/// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpdateAccountsRequestThreeDsLevel {
-    #[serde(rename = "mandate_challenge")]
     MandateChallenge,
+    MandateIfRequired,
+    FrictionlessIfRequired,
+    /// This variant is used for forward compatibility.
+    /// If the server sends a value not recognized by the current SDK version,
+    /// it will be captured here with the raw string value.
+    __Unknown(String),
 }
+impl Serialize for UpdateAccountsRequestThreeDsLevel {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        match self {
+            Self::MandateChallenge => serializer.serialize_str("mandate_challenge"),
+            Self::MandateIfRequired => serializer.serialize_str("mandate_if_required"),
+            Self::FrictionlessIfRequired => serializer.serialize_str("frictionless_if_required"),
+            Self::__Unknown(val) => serializer.serialize_str(val),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for UpdateAccountsRequestThreeDsLevel {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = String::deserialize(deserializer)?;
+        match value.as_str() {
+            "mandate_challenge" => Ok(Self::MandateChallenge),
+            "mandate_if_required" => Ok(Self::MandateIfRequired),
+            "frictionless_if_required" => Ok(Self::FrictionlessIfRequired),
+            _ => Ok(Self::__Unknown(value)),
+        }
+    }
+}
+
 impl fmt::Display for UpdateAccountsRequestThreeDsLevel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let s = match self {
-            Self::MandateChallenge => "mandate_challenge",
-        };
-        write!(f, "{}", s)
+        match self {
+            Self::MandateChallenge => write!(f, "mandate_challenge"),
+            Self::MandateIfRequired => write!(f, "mandate_if_required"),
+            Self::FrictionlessIfRequired => write!(f, "frictionless_if_required"),
+            Self::__Unknown(val) => write!(f, "{}", val),
+        }
     }
 }

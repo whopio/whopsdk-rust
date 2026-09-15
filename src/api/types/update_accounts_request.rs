@@ -109,7 +109,7 @@ pub struct UpdateAccountsRequest {
     /// Determines whether tax is included in the listed price or added at checkout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_type: Option<UpdateAccountsRequestTaxType>,
-    /// Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
+    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<UpdateAccountsRequestThreeDsLevel>,
     /// The display name of the account.
