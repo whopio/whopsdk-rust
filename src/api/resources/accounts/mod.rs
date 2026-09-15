@@ -25,10 +25,10 @@ impl AccountsClient {
     ///
     /// # Arguments
     ///
-    /// * `first` - The number of accounts to return (default 10, max 50).
-    /// * `after` - A cursor; returns accounts after this position.
-    /// * `last` - The number of accounts to return from the end of the range.
-    /// * `before` - A cursor; returns accounts before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort accounts by. `volume` requires `stats:read` on the parent account.
     /// * `direction` - Sort direction.
     /// * `status` - Return only accounts with this status: `active` (includes accounts that have not entered payments review) or `suspended`.

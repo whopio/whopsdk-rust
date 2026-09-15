@@ -23,16 +23,16 @@ pub struct PayoutsMethodsListQueryRequest {
     /// When true, the response also carries limits — the live per-speed payout caps the account's payout requests are validated against, in the requested currency. Requires the payout:withdrawal:read scope.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub include_limits: Option<bool>,
-    /// Number of payout methods to return from the start of the window.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// Cursor to fetch the page after (from page_info.end_cursor).
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// Number of payout methods to return from the end of the window.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// Cursor to fetch the page before (from page_info.start_cursor).
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
 }

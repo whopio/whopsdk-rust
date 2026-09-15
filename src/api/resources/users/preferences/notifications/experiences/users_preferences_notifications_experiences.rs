@@ -17,8 +17,8 @@ impl ExperiencesClient2 {
     ///
     /// # Arguments
     ///
-    /// * `first` - The number of preferences to return.
-    /// * `after` - A cursor; returns preferences after this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

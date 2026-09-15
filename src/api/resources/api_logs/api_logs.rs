@@ -26,8 +26,8 @@ impl ApiLogsClient {
     /// * `api_key_id` - Only return requests made with this API key (apik_…).
     /// * `min_duration_ms` - Only return requests that took at least this many milliseconds.
     /// * `max_duration_ms` - Only return requests that took at most this many milliseconds.
-    /// * `first` - Number of logs to return.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

@@ -9,10 +9,10 @@ pub struct PostsQueryRequest {
     /// Return only the single post with this platform id, instead of the full list.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_id: Option<String>,
-    /// The number of posts to return.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// Cursor to fetch the page after (from page_info.end_cursor).
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
 }

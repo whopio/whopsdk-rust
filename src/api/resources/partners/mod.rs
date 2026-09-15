@@ -127,10 +127,10 @@ impl PartnersClient {
     ///
     /// * `has_businesses` - When true, only referred users who brought at least one business onto Whop.
     /// * `has_earning_businesses` - When true, only referred users with at least one business that has generated earnings.
-    /// * `first` - Number of referred users to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of referred users to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

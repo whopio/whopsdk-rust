@@ -22,10 +22,10 @@ impl DomainsClient {
     /// * `status` - Only domains with this lifecycle status.
     /// * `order` - Field to sort by.
     /// * `direction` - Sort direction.
-    /// * `first` - Number of domains from the start of the page.
-    /// * `after` - Cursor for the next page.
-    /// * `last` - Number of domains from the end of the page.
-    /// * `before` - Cursor for the previous page.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

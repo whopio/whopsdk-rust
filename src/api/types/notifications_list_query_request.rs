@@ -15,10 +15,10 @@ pub struct NotificationsListQueryRequest {
     /// Only return notifications that mention the user directly.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mentions: Option<bool>,
-    /// The number of notifications to return (default 20, max 100).
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// A cursor (a notification `id` from a previous page); returns notifications older than it.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
 }

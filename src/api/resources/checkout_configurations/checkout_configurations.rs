@@ -23,8 +23,8 @@ impl CheckoutConfigurationsClient {
     /// * `created_after` - Only return checkout configurations created after this ISO 8601 timestamp.
     /// * `order` - Field used to sort checkout configurations.
     /// * `direction` - Sort direction. Defaults to `desc`.
-    /// * `first` - Number of checkout configurations to return.
-    /// * `after` - Cursor for the next page of results.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

@@ -21,10 +21,10 @@ impl WebhooksClient {
     /// * `app_id` - Only return webhooks attached to this app. Omit to list the account's own webhooks.
     /// * `include_app_webhooks` - Also return webhooks attached to the account's apps, not just the account's own. Cannot be combined with `app_id`.
     /// * `has_failures` - Only return webhooks whose endpoint is currently failing — every delivery since the current failure streak began has been rejected. Clears as soon as a delivery succeeds.
-    /// * `first` - The number of webhooks to return (default 20, max 100).
-    /// * `after` - A cursor; returns webhooks after this position.
-    /// * `last` - The number of webhooks to return from the end of the range.
-    /// * `before` - A cursor; returns webhooks before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -316,8 +316,8 @@ impl WebhooksClient {
     /// # Arguments
     ///
     /// * `id` - Webhook ID, prefixed `hook_`.
-    /// * `first` - The number of deliveries to return (default 50, max 100).
-    /// * `after` - A cursor; returns deliveries after this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

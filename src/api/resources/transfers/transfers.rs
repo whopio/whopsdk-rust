@@ -23,10 +23,10 @@ impl TransfersClient {
     /// * `direction` - Sort direction. Defaults to desc.
     /// * `created_before` - Only transfers created strictly before this ISO 8601 timestamp.
     /// * `created_after` - Only transfers created strictly after this ISO 8601 timestamp.
-    /// * `first` - Number of transfers to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of transfers to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -162,9 +162,9 @@ impl TransfersClient {
     /// # Arguments
     ///
     /// * `origin_id` - The account sending the money: a company account ID (`biz_`), or a user ID (`user_`) for that user's own personal balance.
-    /// * `query` - Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches.
-    /// * `first` - Number of recipients per page. Search queries preserve the dashboard's 20-result maximum.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
+    /// * `query` - Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches. Search results are limited to 20 recipients.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

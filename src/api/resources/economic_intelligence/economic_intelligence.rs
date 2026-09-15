@@ -13,16 +13,16 @@ impl EconomicIntelligenceClient {
         })
     }
 
-    /// Lists recommended actions and in-progress requests for the account, newest first. Unsuccessful generation requests are omitted. Filter with `status=ready` for current actions. For callers with company:update permission, listing automatically queues generation when no actions are ready or in progress, with a ten-minute cooldown after an unsuccessful request from the current pipeline version.
+    /// Lists an account's recommendations and generation requests, newest first.
     ///
     /// # Arguments
     ///
     /// * `account_id` - Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    /// * `status` - Only recommendations in this state. `ready` for the cards the owner can run now.
-    /// * `first` - The number of recommendations to return (default 20, max 100).
-    /// * `after` - A cursor; returns recommendations after this position.
-    /// * `last` - The number of recommendations to return from the end of the range.
-    /// * `before` - A cursor; returns recommendations before this position.
+    /// * `status` - Filter recommendations by their current status.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -82,7 +82,7 @@ impl EconomicIntelligenceClient {
             .await
     }
 
-    /// Harnesses Economic Intelligence to generate recommended actions that lead the business down the most optimal path to the next dollar. Returns a `queued` recommendation right away. Poll the list endpoint until it is `ready` or disappears.
+    /// Generates a recommendation based on your input. Returns immediately; poll the list endpoint until its `status` is `ready`.
     ///
     /// # Arguments
     ///
@@ -133,7 +133,7 @@ impl EconomicIntelligenceClient {
             .await
     }
 
-    /// Records approval with `executed`, or retires an unwanted recommendation with `superseded`. Both replenish the ready inventory. Supplying a rejection reason also allows retiring an executed recommendation.
+    /// Approves or rejects a recommendation and requests replacements.
     ///
     /// # Arguments
     ///

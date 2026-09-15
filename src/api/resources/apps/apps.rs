@@ -26,10 +26,10 @@ impl AppsClient {
     /// * `query` - A search string matched against app names.
     /// * `order` - The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
     /// * `direction` - Sort direction.
-    /// * `first` - The number of apps to return (default 20, max 100).
-    /// * `after` - A cursor; returns apps after this position.
-    /// * `last` - The number of apps to return from the end of the range.
-    /// * `before` - A cursor; returns apps before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -372,9 +372,9 @@ impl AppsClient {
     /// * `query` - Only return logs whose message contains this text (case-insensitive).
     /// * `created_after` - Start of the time window as an ISO 8601 timestamp. Defaults to 7 days before created_before.
     /// * `created_before` - End of the time window as an ISO 8601 timestamp. Defaults to now.
-    /// * `first` - The number of log lines to return (max 500).
-    /// * `after` - A cursor for fetching logs after a previous page.
-    /// * `before` - A cursor for fetching logs before a later page.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

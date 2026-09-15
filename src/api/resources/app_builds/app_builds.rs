@@ -22,10 +22,10 @@ impl AppBuildsClient {
     /// * `status` - Filter builds by review status.
     /// * `created_before` - Only return builds created before this ISO 8601 timestamp.
     /// * `created_after` - Only return builds created after this ISO 8601 timestamp.
-    /// * `first` - The number of builds to return (default 20, max 100).
-    /// * `after` - A cursor; returns builds after this position.
-    /// * `last` - The number of builds to return from the end of the range.
-    /// * `before` - A cursor; returns builds before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns

@@ -18,10 +18,10 @@ impl DisputesClient {
     /// # Arguments
     ///
     /// * `account_id` - Only disputes filed against this account (`biz_` tag). Omit it to cover every account you can read.
-    /// * `first` - The number of disputes to return (default 20, max 100).
-    /// * `after` - A cursor; returns disputes after this position.
-    /// * `last` - The number of disputes to return from the end of the range.
-    /// * `before` - A cursor; returns disputes before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort disputes by.
     /// * `direction` - Sort direction.
     /// * `status` - Only disputes in these statuses. Repeat the parameter to pass several — one paginated list covers all of them. Covers both chargebacks and inquiries at each stage. A `needs_response` dispute whose evidence deadline has passed reports and filters as `under_review` instead.

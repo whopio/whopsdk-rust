@@ -20,10 +20,10 @@ impl ExperimentsClient {
     /// * `account_id` - Owning account ID. Omit or pass internal for Whop internal experiments; internal access is required.
     /// * `related_resource` - Filter by related resource; requires account_id.
     /// * `status` - Only experiments with this status.
-    /// * `first` - The number of experiments to return (default 20, max 100).
-    /// * `after` - A cursor; returns experiments after this position.
-    /// * `last` - The number of experiments to return from the end of the range.
-    /// * `before` - A cursor; returns experiments before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort experiments by.
     /// * `direction` - Sort direction.
     /// * `options` - Additional request options such as headers, timeout, etc.
