@@ -12,7 +12,7 @@ pub struct LedgerActivitySource {
     /// Chain the deposit landed on, for example plasma (onchain_transaction sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub chain: Option<String>,
-    /// Public claim URL for the airdrop link (airdrop_link sources only).
+    /// The airdrop's claim URL. Null unless the caller can manage claim links on the funding company or withdraw from the funding personal balance.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub claim_url: Option<String>,
     /// Payout creation time as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).

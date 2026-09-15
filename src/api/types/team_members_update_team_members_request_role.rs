@@ -1,11 +1,12 @@
 pub use crate::prelude::*;
 
-/// The system role to grant.
+/// The system role to grant. Partners must pass all certification quizzes.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpdateTeamMembersRequestRole {
     Owner,
     Admin,
+    Partner,
     SalesManager,
     Moderator,
     Advertiser,
@@ -20,6 +21,7 @@ impl Serialize for UpdateTeamMembersRequestRole {
         match self {
             Self::Owner => serializer.serialize_str("owner"),
             Self::Admin => serializer.serialize_str("admin"),
+            Self::Partner => serializer.serialize_str("partner"),
             Self::SalesManager => serializer.serialize_str("sales_manager"),
             Self::Moderator => serializer.serialize_str("moderator"),
             Self::Advertiser => serializer.serialize_str("advertiser"),
@@ -35,6 +37,7 @@ impl<'de> Deserialize<'de> for UpdateTeamMembersRequestRole {
         match value.as_str() {
             "owner" => Ok(Self::Owner),
             "admin" => Ok(Self::Admin),
+            "partner" => Ok(Self::Partner),
             "sales_manager" => Ok(Self::SalesManager),
             "moderator" => Ok(Self::Moderator),
             "advertiser" => Ok(Self::Advertiser),
@@ -49,6 +52,7 @@ impl fmt::Display for UpdateTeamMembersRequestRole {
         match self {
             Self::Owner => write!(f, "owner"),
             Self::Admin => write!(f, "admin"),
+            Self::Partner => write!(f, "partner"),
             Self::SalesManager => write!(f, "sales_manager"),
             Self::Moderator => write!(f, "moderator"),
             Self::Advertiser => write!(f, "advertiser"),
