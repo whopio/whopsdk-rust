@@ -36453,7 +36453,7 @@ async fn main() {
 <dl>
 <dd>
 
-**role:** `CreateTeamMembersRequestRole` — The system role to grant.
+**role:** `CreateTeamMembersRequestRole` — The system role to grant. Partners must pass all certification quizzes.
     
 </dd>
 </dl>
@@ -36670,7 +36670,7 @@ async fn main() {
 <dl>
 <dd>
 
-**role:** `UpdateTeamMembersRequestRole` — The system role to grant.
+**role:** `UpdateTeamMembersRequestRole` — The system role to grant. Partners must pass all certification quizzes.
     
 </dd>
 </dl>

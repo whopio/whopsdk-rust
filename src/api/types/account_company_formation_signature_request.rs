@@ -2,12 +2,12 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct AccountCompanyFormationSignatureRequest {
-    /// When the signing URL expires, as an ISO 8601 timestamp. Present while `status` is `pending`.
+    /// When the signing URL expires, as an ISO 8601 timestamp. Present only when the signing URL is included.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<String>,
     /// `pending` when a signing session is ready for the founder; `unknown` when the signature state could not be determined.
     pub status: AccountCompanyFormationSignatureRequestStatus,
-    /// Hosted signing URL where the founder completes the form. Present while `status` is `pending`.
+    /// Hosted signing URL where the founder completes the form. Present while `status` is `pending` and the caller has `incorporation:write`. Omitted from webhooks.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }
