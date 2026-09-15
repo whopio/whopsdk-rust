@@ -119,7 +119,7 @@ pub struct Plan {
     pub strike_through_renewal_price: Option<f64>,
     /// How tax is handled for this plan, including whether tax is included in the price, added at checkout, or not configured.
     pub tax_type: PlanTaxType,
-    /// 3D Secure behavior for this plan; `null` inherits the account default.
+    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<PlanThreeDsLevel>,
     /// Plan display name shown to customers. Maximum 30 characters. `null` if no title has been set.
