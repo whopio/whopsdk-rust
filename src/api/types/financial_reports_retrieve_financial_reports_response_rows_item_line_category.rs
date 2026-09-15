@@ -272,6 +272,10 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     Topup,
     TopupFee,
     TopupReversal,
+    TradingAccountDeposit,
+    TradingAccountDepositOffset,
+    TradingAccountWithdrawal,
+    TradingAccountWithdrawalOffset,
     TreasuryFee,
     TreasuryPayin,
     TreasuryPayinReceivable,
@@ -719,6 +723,16 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::Topup => serializer.serialize_str("topup"),
             Self::TopupFee => serializer.serialize_str("topup_fee"),
             Self::TopupReversal => serializer.serialize_str("topup_reversal"),
+            Self::TradingAccountDeposit => serializer.serialize_str("trading_account_deposit"),
+            Self::TradingAccountDepositOffset => {
+                serializer.serialize_str("trading_account_deposit_offset")
+            }
+            Self::TradingAccountWithdrawal => {
+                serializer.serialize_str("trading_account_withdrawal")
+            }
+            Self::TradingAccountWithdrawalOffset => {
+                serializer.serialize_str("trading_account_withdrawal_offset")
+            }
             Self::TreasuryFee => serializer.serialize_str("treasury_fee"),
             Self::TreasuryPayin => serializer.serialize_str("treasury_payin"),
             Self::TreasuryPayinReceivable => serializer.serialize_str("treasury_payin_receivable"),
@@ -1047,6 +1061,10 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "topup" => Ok(Self::Topup),
             "topup_fee" => Ok(Self::TopupFee),
             "topup_reversal" => Ok(Self::TopupReversal),
+            "trading_account_deposit" => Ok(Self::TradingAccountDeposit),
+            "trading_account_deposit_offset" => Ok(Self::TradingAccountDepositOffset),
+            "trading_account_withdrawal" => Ok(Self::TradingAccountWithdrawal),
+            "trading_account_withdrawal_offset" => Ok(Self::TradingAccountWithdrawalOffset),
             "treasury_fee" => Ok(Self::TreasuryFee),
             "treasury_payin" => Ok(Self::TreasuryPayin),
             "treasury_payin_receivable" => Ok(Self::TreasuryPayinReceivable),
@@ -1380,6 +1398,10 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::Topup => write!(f, "topup"),
             Self::TopupFee => write!(f, "topup_fee"),
             Self::TopupReversal => write!(f, "topup_reversal"),
+            Self::TradingAccountDeposit => write!(f, "trading_account_deposit"),
+            Self::TradingAccountDepositOffset => write!(f, "trading_account_deposit_offset"),
+            Self::TradingAccountWithdrawal => write!(f, "trading_account_withdrawal"),
+            Self::TradingAccountWithdrawalOffset => write!(f, "trading_account_withdrawal_offset"),
             Self::TreasuryFee => write!(f, "treasury_fee"),
             Self::TreasuryPayin => write!(f, "treasury_payin"),
             Self::TreasuryPayinReceivable => write!(f, "treasury_payin_receivable"),
