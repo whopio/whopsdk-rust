@@ -18,6 +18,9 @@ pub struct ExposuresQueryRequest {
     /// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[plan]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub properties: Option<String>,
+    /// Set false to evaluate without recording an exposure. Omitted records it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub log_exposure: Option<bool>,
 }
 
 impl ExposuresQueryRequest {
@@ -34,6 +37,7 @@ pub struct ExposuresQueryRequestBuilder {
     flag_key: Option<String>,
     account_id: Option<String>,
     properties: Option<String>,
+    log_exposure: Option<bool>,
 }
 
 impl ExposuresQueryRequestBuilder {
@@ -62,6 +66,11 @@ impl ExposuresQueryRequestBuilder {
         self
     }
 
+    pub fn log_exposure(mut self, value: bool) -> Self {
+        self.log_exposure = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`ExposuresQueryRequest`].
     pub fn build(self) -> Result<ExposuresQueryRequest, BuildError> {
         Ok(ExposuresQueryRequest {
@@ -70,6 +79,7 @@ impl ExposuresQueryRequestBuilder {
             flag_key: self.flag_key,
             account_id: self.account_id,
             properties: self.properties,
+            log_exposure: self.log_exposure,
         })
     }
 }

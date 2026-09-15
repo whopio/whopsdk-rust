@@ -4,9 +4,12 @@ use reqwest::Method;
 
 pub mod businesses;
 pub use businesses::BusinessesClient;
+pub mod links;
+pub use links::LinksClient;
 pub struct PartnersClient {
     pub http_client: HttpClient,
     pub businesses: BusinessesClient,
+    pub links: LinksClient,
 }
 
 impl PartnersClient {
@@ -14,6 +17,7 @@ impl PartnersClient {
         Ok(Self {
             http_client: HttpClient::new(config.clone())?,
             businesses: BusinessesClient::new(config.clone())?,
+            links: LinksClient::new(config.clone())?,
         })
     }
 
@@ -117,68 +121,6 @@ impl PartnersClient {
             .await
     }
 
-    /// Resolves the public reward terms and whether redemption capacity remains. Immediate rewards claim capacity at business creation; qualified rewards claim it when the business reaches the threshold.
-    ///
-    /// # Arguments
-    ///
-    /// * `partner_username` - Username from the partner link's `a` query parameter.
-    /// * `reward_slug` - Reward slug from the partner link's `reward` query parameter.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .partners
-    ///         .retrieve_link(
-    ///             &RetrieveLinkQueryRequest {
-    ///                 partner_username: "partner_username".to_string(),
-    ///                 reward_slug: "reward_slug".to_string(),
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn retrieve_link(
-        &self,
-        request: &RetrieveLinkQueryRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<OnboardingReward, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-13".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::GET,
-                "partners/links",
-                None,
-                QueryBuilder::new()
-                    .string("partner_username", request.partner_username.clone())
-                    .string("reward_slug", request.reward_slug.clone())
-                    .build(),
-                options,
-            )
-            .await
-    }
-
     /// Lists the users the caller referred onto Whop (newest first), each with the second-tier earnings the caller has made from that user's businesses.
     ///
     /// # Arguments
@@ -246,6 +188,55 @@ impl PartnersClient {
                     .int("last", request.last.clone())
                     .string("before", request.before.clone())
                     .build(),
+                options,
+            )
+            .await
+    }
+
+    /// Retrieves the authenticated user's public profile, enrollment date, active direct business referral count, and default payout rates. Use me or the authenticated user's own user ID; other users are not accessible. Users who have not enrolled have a null joined_at. Retrieve referral URLs and promotion links from GET /partners/links.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - The authenticated partner's user ID, prefixed user_, or me. Other users' profiles are not accessible.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client.partners.retrieve(&"me".to_string(), None).await;
+    /// }
+    /// ```
+    pub async fn retrieve(
+        &self,
+        id: &str,
+        options: Option<RequestOptions>,
+    ) -> Result<Partner, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-13".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::GET,
+                &format!("partners/{}", id),
+                None,
+                None,
                 options,
             )
             .await

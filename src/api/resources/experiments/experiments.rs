@@ -161,6 +161,8 @@ impl ExperimentsClient {
     ///
     /// Pass `subject[account_id]` to enable account-level targeting rules. Pass `properties` as a JSON object to supply the values that `property` targeting conditions match against.
     ///
+    /// Pass `log_exposure=false` to read an assignment without recording an exposure, for a client that caches assignments up front and records the exposure when the arm is actually rendered. Omitted records the exposure, so pinned callers are unchanged.
+    ///
     /// # Arguments
     ///
     /// * `subject` - Bucketing subject. Ownership is the top-level account_id. Account experiments accept caller-supplied subject IDs; internal experiments derive the user from the session.
@@ -168,6 +170,7 @@ impl ExperimentsClient {
     /// * `flag_key` - Flag or experiment to evaluate — the flag_key handle or the `expt_` id. Omit to return all flags the caller qualifies for.
     /// * `account_id` - Owning account ID or internal. Required when evaluating by flag_key or in a batch; optional for an expt_ ID.
     /// * `properties` - JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[plan]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
+    /// * `log_exposure` - Set false to evaluate without recording an exposure. Omitted records it.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -220,6 +223,7 @@ impl ExperimentsClient {
                     .string("flag_key", request.flag_key.clone())
                     .string("account_id", request.account_id.clone())
                     .string("properties", request.properties.clone())
+                    .bool("log_exposure", request.log_exposure.clone())
                     .build(),
                 options,
             )
