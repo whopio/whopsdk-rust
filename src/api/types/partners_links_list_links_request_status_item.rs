@@ -1,9 +1,8 @@
 pub use crate::prelude::*;
 
-/// Whether the reward can still be claimed: `available`, `fully_claimed`, `expired`, or `unavailable`.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum OnboardingRewardStatus {
+pub enum ListLinksRequestStatusItem {
     Available,
     FullyClaimed,
     Expired,
@@ -13,7 +12,7 @@ pub enum OnboardingRewardStatus {
     /// it will be captured here with the raw string value.
     __Unknown(String),
 }
-impl Serialize for OnboardingRewardStatus {
+impl Serialize for ListLinksRequestStatusItem {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::Available => serializer.serialize_str("available"),
@@ -25,7 +24,7 @@ impl Serialize for OnboardingRewardStatus {
     }
 }
 
-impl<'de> Deserialize<'de> for OnboardingRewardStatus {
+impl<'de> Deserialize<'de> for ListLinksRequestStatusItem {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
@@ -38,7 +37,7 @@ impl<'de> Deserialize<'de> for OnboardingRewardStatus {
     }
 }
 
-impl fmt::Display for OnboardingRewardStatus {
+impl fmt::Display for ListLinksRequestStatusItem {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Available => write!(f, "available"),

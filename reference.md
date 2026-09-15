@@ -18997,7 +18997,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">exposures</a>(subject: Option&lt;Option&lt;ExposuresExperimentsRequestSubject&gt;&gt;, related_resource: Option&lt;Option&lt;ExperimentResourceReference&gt;&gt;, flag_key: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;, properties: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ExposuresExperimentsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">exposures</a>(subject: Option&lt;Option&lt;ExposuresExperimentsRequestSubject&gt;&gt;, related_resource: Option&lt;Option&lt;ExperimentResourceReference&gt;&gt;, flag_key: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;, properties: Option&lt;Option&lt;String&gt;&gt;, log_exposure: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;ExposuresExperimentsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -19016,6 +19016,8 @@ Pass `flag_key` to check a single flag, or omit it to fetch active flags in the 
 Assignments use exactly the configured `bucket_by`: `subject[user_id]`, `subject[account_id]`, or `subject[anonymous_id]`. Internal user experiments derive identity from the signed-in session. Missing the required identity fails single evaluation and omits the experiment from batch evaluation. Subjects outside all treatment ranges receive control.
 
 Pass `subject[account_id]` to enable account-level targeting rules. Pass `properties` as a JSON object to supply the values that `property` targeting conditions match against.
+
+Pass `log_exposure=false` to read an assignment without recording an exposure, for a client that caches assignments up front and records the exposure when the arm is actually rendered. Omitted records the exposure, so pinned callers are unchanged.
 </dd>
 </dl>
 </dd>
@@ -19096,6 +19098,14 @@ async fn main() {
 <dd>
 
 **properties:** `Option<String>` — JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[plan]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**log_exposure:** `Option<bool>` — Set false to evaluate without recording an exposure. Omitted records it.
     
 </dd>
 </dl>
@@ -25847,87 +25857,6 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.partners.<a href="/src/api/resources/partners/client.rs">retrieve_link</a>(partner_username: Option&lt;String&gt;, reward_slug: Option&lt;String&gt;) -> Result&lt;OnboardingReward, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Resolves the public reward terms and whether redemption capacity remains. Immediate rewards claim capacity at business creation; qualified rewards claim it when the business reaches the threshold.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .partners
-        .retrieve_link(
-            &RetrieveLinkQueryRequest {
-                partner_username: "partner_username".to_string(),
-                reward_slug: "reward_slug".to_string(),
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**partner_username:** `String` — Username from the partner link's `a` query parameter.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**reward_slug:** `String` — Reward slug from the partner link's `reward` query parameter.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.partners.<a href="/src/api/resources/partners/client.rs">referred_users</a>(has_businesses: Option&lt;Option&lt;bool&gt;&gt;, has_earning_businesses: Option&lt;Option&lt;bool&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ReferredUsersPartnersResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
@@ -26029,6 +25958,70 @@ async fn main() {
 <dd>
 
 **before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.partners.<a href="/src/api/resources/partners/client.rs">retrieve</a>(id: String) -> Result&lt;Partner, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves the authenticated user's public profile, enrollment date, active direct business referral count, and default payout rates. Use me or the authenticated user's own user ID; other users are not accessible. Users who have not enrolled have a null joined_at. Retrieve referral URLs and promotion links from GET /partners/links.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.partners.retrieve(&"me".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The authenticated partner's user ID, prefixed user_, or me. Other users' profiles are not accessible.
     
 </dd>
 </dl>
@@ -40715,6 +40708,116 @@ async fn main() {
 <dd>
 
 **id:** `String` — The partner business ID (a coma_ identifier).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Partners Links
+<details><summary><code>client.partners().links.<a href="/src/api/resources/partners/links/client.rs">list</a>(first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListLinksResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the authenticated user's standard referral URL and a page of their balance reward links, newest first. Expired and fully claimed rewards are included by default; deleted rewards are excluded. Filter status to narrow the promotion links. Users do not need to be enrolled to retrieve their links.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .partners
+        .links
+        .list(
+            &PartnersLinksListQueryRequest {
+                status: vec![],
+                first: None,
+                after: None,
+                last: None,
+                before: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**status:** `Option<ListLinksRequestStatusItem>` — Filter promotion links by availability. Repeat the status parameter for multiple values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of promotion links to return from the start of the window.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of promotion links to return from the end of the window.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
     
 </dd>
 </dl>
