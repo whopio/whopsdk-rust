@@ -56,6 +56,7 @@ pub enum CreateWebhooksRequestEventsItem {
     PayoutAccountStatusUpdated,
     PaymentAuthorized,
     PaymentCanceled,
+    PaymentRequiresAction,
     ResolutionCenterCaseCreated,
     ResolutionCenterCaseUpdated,
     ResolutionCenterCaseDecided,
@@ -207,6 +208,7 @@ impl Serialize for CreateWebhooksRequestEventsItem {
             }
             Self::PaymentAuthorized => serializer.serialize_str("payment.authorized"),
             Self::PaymentCanceled => serializer.serialize_str("payment.canceled"),
+            Self::PaymentRequiresAction => serializer.serialize_str("payment.requires_action"),
             Self::ResolutionCenterCaseCreated => {
                 serializer.serialize_str("resolution_center_case.created")
             }
@@ -379,6 +381,7 @@ impl<'de> Deserialize<'de> for CreateWebhooksRequestEventsItem {
             "payout_account.status_updated" => Ok(Self::PayoutAccountStatusUpdated),
             "payment.authorized" => Ok(Self::PaymentAuthorized),
             "payment.canceled" => Ok(Self::PaymentCanceled),
+            "payment.requires_action" => Ok(Self::PaymentRequiresAction),
             "resolution_center_case.created" => Ok(Self::ResolutionCenterCaseCreated),
             "resolution_center_case.updated" => Ok(Self::ResolutionCenterCaseUpdated),
             "resolution_center_case.decided" => Ok(Self::ResolutionCenterCaseDecided),
@@ -522,6 +525,7 @@ impl fmt::Display for CreateWebhooksRequestEventsItem {
             Self::PayoutAccountStatusUpdated => write!(f, "payout_account.status_updated"),
             Self::PaymentAuthorized => write!(f, "payment.authorized"),
             Self::PaymentCanceled => write!(f, "payment.canceled"),
+            Self::PaymentRequiresAction => write!(f, "payment.requires_action"),
             Self::ResolutionCenterCaseCreated => write!(f, "resolution_center_case.created"),
             Self::ResolutionCenterCaseUpdated => write!(f, "resolution_center_case.updated"),
             Self::ResolutionCenterCaseDecided => write!(f, "resolution_center_case.decided"),
