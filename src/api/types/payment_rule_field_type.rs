@@ -5,6 +5,7 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PaymentRuleFieldType {
     Integer,
+    Number,
     String_,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -15,6 +16,7 @@ impl Serialize for PaymentRuleFieldType {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::Integer => serializer.serialize_str("integer"),
+            Self::Number => serializer.serialize_str("number"),
             Self::String_ => serializer.serialize_str("string"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
@@ -26,6 +28,7 @@ impl<'de> Deserialize<'de> for PaymentRuleFieldType {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
             "integer" => Ok(Self::Integer),
+            "number" => Ok(Self::Number),
             "string" => Ok(Self::String_),
             _ => Ok(Self::__Unknown(value)),
         }
@@ -36,6 +39,7 @@ impl fmt::Display for PaymentRuleFieldType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Integer => write!(f, "integer"),
+            Self::Number => write!(f, "number"),
             Self::String_ => write!(f, "string"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
