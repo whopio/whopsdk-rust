@@ -1,7 +1,10 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListVerificationsResponseDataItemRequestedInformationItem {
+    /// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action_url: Option<String>,
     /// Follow-up prompt shown with this requirement.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub details_label: Option<String>,
@@ -37,6 +40,9 @@ pub struct ListVerificationsResponseDataItemRequestedInformationItem {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selection_mode:
         Option<ListVerificationsResponseDataItemRequestedInformationItemSelectionMode>,
+    /// Documents supplied with the requirement for context.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub supporting_documents: Option<Vec<File>>,
     /// Whether a written explanation may replace required supporting files.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub supporting_files_explanation_allowed: Option<bool>,
@@ -46,7 +52,7 @@ pub struct ListVerificationsResponseDataItemRequestedInformationItem {
     /// Selected option values that make the supporting-file input visible.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub supporting_files_visible_for: Option<Vec<String>>,
-    /// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
+    /// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), `address` (send `address`), or `liveness` (open `action_url`, then send `value` as `true` after completion).
     #[serde(default)]
     pub r#type: String,
 }
@@ -60,6 +66,7 @@ impl ListVerificationsResponseDataItemRequestedInformationItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListVerificationsResponseDataItemRequestedInformationItemBuilder {
+    action_url: Option<String>,
     details_label: Option<String>,
     details_required: Option<bool>,
     details_visible_for: Option<Vec<String>>,
@@ -71,6 +78,7 @@ pub struct ListVerificationsResponseDataItemRequestedInformationItemBuilder {
     requirement: Option<String>,
     response_type: Option<ListVerificationsResponseDataItemRequestedInformationItemResponseType>,
     selection_mode: Option<ListVerificationsResponseDataItemRequestedInformationItemSelectionMode>,
+    supporting_documents: Option<Vec<File>>,
     supporting_files_explanation_allowed: Option<bool>,
     supporting_files_required: Option<bool>,
     supporting_files_visible_for: Option<Vec<String>>,
@@ -78,6 +86,11 @@ pub struct ListVerificationsResponseDataItemRequestedInformationItemBuilder {
 }
 
 impl ListVerificationsResponseDataItemRequestedInformationItemBuilder {
+    pub fn action_url(mut self, value: impl Into<String>) -> Self {
+        self.action_url = Some(value.into());
+        self
+    }
+
     pub fn details_label(mut self, value: impl Into<String>) -> Self {
         self.details_label = Some(value.into());
         self
@@ -142,6 +155,11 @@ impl ListVerificationsResponseDataItemRequestedInformationItemBuilder {
         self
     }
 
+    pub fn supporting_documents(mut self, value: Vec<File>) -> Self {
+        self.supporting_documents = Some(value);
+        self
+    }
+
     pub fn supporting_files_explanation_allowed(mut self, value: bool) -> Self {
         self.supporting_files_explanation_allowed = Some(value);
         self
@@ -172,6 +190,7 @@ impl ListVerificationsResponseDataItemRequestedInformationItemBuilder {
         self,
     ) -> Result<ListVerificationsResponseDataItemRequestedInformationItem, BuildError> {
         Ok(ListVerificationsResponseDataItemRequestedInformationItem {
+            action_url: self.action_url,
             details_label: self.details_label,
             details_required: self.details_required,
             details_visible_for: self.details_visible_for,
@@ -187,6 +206,7 @@ impl ListVerificationsResponseDataItemRequestedInformationItemBuilder {
                 .ok_or_else(|| BuildError::missing_field("requirement"))?,
             response_type: self.response_type,
             selection_mode: self.selection_mode,
+            supporting_documents: self.supporting_documents,
             supporting_files_explanation_allowed: self.supporting_files_explanation_allowed,
             supporting_files_required: self.supporting_files_required,
             supporting_files_visible_for: self.supporting_files_visible_for,

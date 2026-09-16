@@ -20902,7 +20902,7 @@ async fn main() {
 <dl>
 <dd>
 
-**group_by:** `Option<RetrieveFinancialReportsRequestGroupBy>` — Grouping granularity for report rows.
+**group_by:** `Option<RetrieveFinancialReportsRequestGroupBy>` — Grouping granularity for report rows. Hourly grouping is supported for account-level balance activity reports only; hourly periods are timestamps in the requested timezone.
     
 </dd>
 </dl>

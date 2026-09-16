@@ -27,7 +27,7 @@ impl FinancialReportsClient {
     /// * `in_currency` - Aggregate all activity into this display currency via FX conversion.
     /// * `from` - Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
     /// * `to` - Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
-    /// * `group_by` - Grouping granularity for report rows.
+    /// * `group_by` - Grouping granularity for report rows. Hourly grouping is supported for account-level balance activity reports only; hourly periods are timestamps in the requested timezone.
     /// * `timezone` - IANA timezone (for example `America/New_York`) used to bucket report periods. Defaults to UTC. `from` and `to` remain exact instants.
     /// * `line_types` - Account-level balance activity only: ledger line categories to include.
     /// * `direction` - Account-level balance activity only: include money moving in or money moving out.
