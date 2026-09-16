@@ -15,6 +15,7 @@ pub enum PaymentRuleConditionOperator {
     Contains,
     StartsWith,
     EndsWith,
+    InCidr,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -34,6 +35,7 @@ impl Serialize for PaymentRuleConditionOperator {
             Self::Contains => serializer.serialize_str("contains"),
             Self::StartsWith => serializer.serialize_str("starts_with"),
             Self::EndsWith => serializer.serialize_str("ends_with"),
+            Self::InCidr => serializer.serialize_str("in_cidr"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -54,6 +56,7 @@ impl<'de> Deserialize<'de> for PaymentRuleConditionOperator {
             "contains" => Ok(Self::Contains),
             "starts_with" => Ok(Self::StartsWith),
             "ends_with" => Ok(Self::EndsWith),
+            "in_cidr" => Ok(Self::InCidr),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -73,6 +76,7 @@ impl fmt::Display for PaymentRuleConditionOperator {
             Self::Contains => write!(f, "contains"),
             Self::StartsWith => write!(f, "starts_with"),
             Self::EndsWith => write!(f, "ends_with"),
+            Self::InCidr => write!(f, "in_cidr"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }
