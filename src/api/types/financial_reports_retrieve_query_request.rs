@@ -24,7 +24,7 @@ pub struct FinancialReportsRetrieveQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub to: Option<DateTime<FixedOffset>>,
-    /// Grouping granularity for report rows.
+    /// Grouping granularity for report rows. Hourly grouping is supported for account-level balance activity reports only; hourly periods are timestamps in the requested timezone.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub group_by: Option<RetrieveFinancialReportsRequestGroupBy>,
     /// IANA timezone (for example `America/New_York`) used to bucket report periods. Defaults to UTC. `from` and `to` remain exact instants.

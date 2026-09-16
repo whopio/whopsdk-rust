@@ -3,6 +3,7 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RetrieveFinancialReportsRequestGroupBy {
+    Hour,
     Day,
     Week,
     Month,
@@ -14,6 +15,7 @@ pub enum RetrieveFinancialReportsRequestGroupBy {
 impl Serialize for RetrieveFinancialReportsRequestGroupBy {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::Hour => serializer.serialize_str("hour"),
             Self::Day => serializer.serialize_str("day"),
             Self::Week => serializer.serialize_str("week"),
             Self::Month => serializer.serialize_str("month"),
@@ -26,6 +28,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestGroupBy {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "hour" => Ok(Self::Hour),
             "day" => Ok(Self::Day),
             "week" => Ok(Self::Week),
             "month" => Ok(Self::Month),
@@ -37,6 +40,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestGroupBy {
 impl fmt::Display for RetrieveFinancialReportsRequestGroupBy {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Hour => write!(f, "hour"),
             Self::Day => write!(f, "day"),
             Self::Week => write!(f, "week"),
             Self::Month => write!(f, "month"),
