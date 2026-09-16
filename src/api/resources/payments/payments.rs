@@ -133,6 +133,7 @@ impl PaymentsClient {
     ///         .create(
     ///             &CreatePaymentsRequest {
     ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 auto_capture_after_minutes: None,
     ///                 capture: None,
     ///                 confirmation_token: None,
     ///                 email: None,
