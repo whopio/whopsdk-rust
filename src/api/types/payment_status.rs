@@ -5,6 +5,9 @@ pub struct PaymentStatus {
     /// The account receiving this payment, or `null` when the payment has no associated account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account: Option<AccountSummary>,
+    /// When Whop will capture this authorization automatically, as an ISO 8601 timestamp. `null` when no automatic capture was requested.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub auto_capture_at: Option<String>,
     /// When the card authorization must be captured, as an ISO 8601 timestamp. `null` when this payment was not authorized for later capture.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub capture_expires_at: Option<String>,
@@ -40,6 +43,7 @@ impl PaymentStatus {
 #[non_exhaustive]
 pub struct PaymentStatusBuilder {
     account: Option<AccountSummary>,
+    auto_capture_at: Option<String>,
     capture_expires_at: Option<String>,
     id: Option<String>,
     last_payment_error: Option<PaymentLastPaymentError>,
@@ -53,6 +57,11 @@ pub struct PaymentStatusBuilder {
 impl PaymentStatusBuilder {
     pub fn account(mut self, value: AccountSummary) -> Self {
         self.account = Some(value);
+        self
+    }
+
+    pub fn auto_capture_at(mut self, value: impl Into<String>) -> Self {
+        self.auto_capture_at = Some(value.into());
         self
     }
 
@@ -104,6 +113,7 @@ impl PaymentStatusBuilder {
     pub fn build(self) -> Result<PaymentStatus, BuildError> {
         Ok(PaymentStatus {
             account: self.account,
+            auto_capture_at: self.auto_capture_at,
             capture_expires_at: self.capture_expires_at,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             last_payment_error: self.last_payment_error,
