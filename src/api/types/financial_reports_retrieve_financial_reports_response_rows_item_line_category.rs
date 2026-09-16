@@ -224,6 +224,8 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     PspPayoutSettlementReversal,
     PspPoolClearing,
     PspPoolDisputeSettlement,
+    PspPoolRefundClearing,
+    PspPoolRefundSettlement,
     PspPoolSettlement,
     PspProcessingFee,
     PspReceivablePooled,
@@ -655,6 +657,8 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::PspPoolDisputeSettlement => {
                 serializer.serialize_str("psp_pool_dispute_settlement")
             }
+            Self::PspPoolRefundClearing => serializer.serialize_str("psp_pool_refund_clearing"),
+            Self::PspPoolRefundSettlement => serializer.serialize_str("psp_pool_refund_settlement"),
             Self::PspPoolSettlement => serializer.serialize_str("psp_pool_settlement"),
             Self::PspProcessingFee => serializer.serialize_str("psp_processing_fee"),
             Self::PspReceivablePooled => serializer.serialize_str("psp_receivable_pooled"),
@@ -1013,6 +1017,8 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "psp_payout_settlement_reversal" => Ok(Self::PspPayoutSettlementReversal),
             "psp_pool_clearing" => Ok(Self::PspPoolClearing),
             "psp_pool_dispute_settlement" => Ok(Self::PspPoolDisputeSettlement),
+            "psp_pool_refund_clearing" => Ok(Self::PspPoolRefundClearing),
+            "psp_pool_refund_settlement" => Ok(Self::PspPoolRefundSettlement),
             "psp_pool_settlement" => Ok(Self::PspPoolSettlement),
             "psp_processing_fee" => Ok(Self::PspProcessingFee),
             "psp_receivable_pooled" => Ok(Self::PspReceivablePooled),
@@ -1348,6 +1354,8 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::PspPayoutSettlementReversal => write!(f, "psp_payout_settlement_reversal"),
             Self::PspPoolClearing => write!(f, "psp_pool_clearing"),
             Self::PspPoolDisputeSettlement => write!(f, "psp_pool_dispute_settlement"),
+            Self::PspPoolRefundClearing => write!(f, "psp_pool_refund_clearing"),
+            Self::PspPoolRefundSettlement => write!(f, "psp_pool_refund_settlement"),
             Self::PspPoolSettlement => write!(f, "psp_pool_settlement"),
             Self::PspProcessingFee => write!(f, "psp_processing_fee"),
             Self::PspReceivablePooled => write!(f, "psp_receivable_pooled"),
