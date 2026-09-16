@@ -13,6 +13,9 @@ pub struct Partner {
     /// The authenticated partner's public profile.
     #[serde(default)]
     pub user: UserSummary,
+    /// Whether the user has a pending or approved personal entry on the Verified Partner waitlist.
+    #[serde(default)]
+    pub verification_waitlist_joined: bool,
     /// When the user became a verified Whop Partner, as an ISO 8601 timestamp. `null` if not verified.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub whop_partner_verified_at: Option<String>,
@@ -31,6 +34,7 @@ pub struct PartnerBuilder {
     payout_rates: Option<Vec<PartnerPayoutTier>>,
     referred_businesses_count: Option<i64>,
     user: Option<UserSummary>,
+    verification_waitlist_joined: Option<bool>,
     whop_partner_verified_at: Option<String>,
 }
 
@@ -55,6 +59,11 @@ impl PartnerBuilder {
         self
     }
 
+    pub fn verification_waitlist_joined(mut self, value: bool) -> Self {
+        self.verification_waitlist_joined = Some(value);
+        self
+    }
+
     pub fn whop_partner_verified_at(mut self, value: impl Into<String>) -> Self {
         self.whop_partner_verified_at = Some(value.into());
         self
@@ -65,6 +74,7 @@ impl PartnerBuilder {
     /// - [`payout_rates`](PartnerBuilder::payout_rates)
     /// - [`referred_businesses_count`](PartnerBuilder::referred_businesses_count)
     /// - [`user`](PartnerBuilder::user)
+    /// - [`verification_waitlist_joined`](PartnerBuilder::verification_waitlist_joined)
     pub fn build(self) -> Result<Partner, BuildError> {
         Ok(Partner {
             joined_at: self.joined_at,
@@ -75,6 +85,9 @@ impl PartnerBuilder {
                 .referred_businesses_count
                 .ok_or_else(|| BuildError::missing_field("referred_businesses_count"))?,
             user: self.user.ok_or_else(|| BuildError::missing_field("user"))?,
+            verification_waitlist_joined: self
+                .verification_waitlist_joined
+                .ok_or_else(|| BuildError::missing_field("verification_waitlist_joined"))?,
             whop_partner_verified_at: self.whop_partner_verified_at,
         })
     }
