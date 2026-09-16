@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct EconomicIntelligenceListQueryRequest {
-    /// Account ID, prefixed `biz_`. Defaults to the API key's own account.
+    /// Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
     /// Filter recommendations by their current status.

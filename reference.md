@@ -16621,7 +16621,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists an account's recommendations and generation requests, newest first.
+Lists an account's recommendations and generation requests, newest first. Without an account, signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation.
 </dd>
 </dl>
 </dd>
@@ -16669,7 +16669,7 @@ async fn main() {
 <dl>
 <dd>
 
-**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
+**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding.
     
 </dd>
 </dl>

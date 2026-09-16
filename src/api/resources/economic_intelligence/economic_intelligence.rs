@@ -13,11 +13,11 @@ impl EconomicIntelligenceClient {
         })
     }
 
-    /// Lists an account's recommendations and generation requests, newest first.
+    /// Lists an account's recommendations and generation requests, newest first. Without an account, signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation.
     ///
     /// # Arguments
     ///
-    /// * `account_id` - Account ID, prefixed `biz_`. Defaults to the API key's own account.
+    /// * `account_id` - Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding.
     /// * `status` - Filter recommendations by their current status.
     /// * `first` - Number of results to return from the start of the range.
     /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
