@@ -13,6 +13,9 @@ pub struct Partner {
     /// The authenticated partner's public profile.
     #[serde(default)]
     pub user: UserSummary,
+    /// When the user became a verified Whop Partner, as an ISO 8601 timestamp. `null` if not verified.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub whop_partner_verified_at: Option<String>,
 }
 
 impl Partner {
@@ -28,6 +31,7 @@ pub struct PartnerBuilder {
     payout_rates: Option<Vec<PartnerPayoutTier>>,
     referred_businesses_count: Option<i64>,
     user: Option<UserSummary>,
+    whop_partner_verified_at: Option<String>,
 }
 
 impl PartnerBuilder {
@@ -51,6 +55,11 @@ impl PartnerBuilder {
         self
     }
 
+    pub fn whop_partner_verified_at(mut self, value: impl Into<String>) -> Self {
+        self.whop_partner_verified_at = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`Partner`].
     /// This method will fail if any of the following fields are not set:
     /// - [`payout_rates`](PartnerBuilder::payout_rates)
@@ -66,6 +75,7 @@ impl PartnerBuilder {
                 .referred_businesses_count
                 .ok_or_else(|| BuildError::missing_field("referred_businesses_count"))?,
             user: self.user.ok_or_else(|| BuildError::missing_field("user"))?,
+            whop_partner_verified_at: self.whop_partner_verified_at,
         })
     }
 }
