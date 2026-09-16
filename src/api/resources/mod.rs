@@ -60,6 +60,7 @@
 //! - **Partners**
 //! - **Payment Method Domains**
 //! - **PaymentMethods**
+//! - **Payment Rules**
 //! - **Payments**
 //! - **PayoutAccounts**
 //! - **PayoutMethods**
@@ -148,6 +149,7 @@ pub mod notifications;
 pub mod partners;
 pub mod payment_method_domains;
 pub mod payment_methods;
+pub mod payment_rules;
 pub mod payments;
 pub mod payout_accounts;
 pub mod payout_methods;
@@ -233,6 +235,7 @@ pub struct Whop {
     pub partners: PartnersClient,
     pub payment_method_domains: PaymentMethodDomainsClient,
     pub payment_methods: PaymentMethodsClient,
+    pub payment_rules: PaymentRulesClient,
     pub payments: PaymentsClient,
     pub payout_accounts: PayoutAccountsClient,
     pub payout_methods: PayoutMethodsClient,
@@ -322,6 +325,7 @@ impl Whop {
             partners: PartnersClient::new(config.clone())?,
             payment_method_domains: PaymentMethodDomainsClient::new(config.clone())?,
             payment_methods: PaymentMethodsClient::new(config.clone())?,
+            payment_rules: PaymentRulesClient::new(config.clone())?,
             payments: PaymentsClient::new(config.clone())?,
             payout_accounts: PayoutAccountsClient::new(config.clone())?,
             payout_methods: PayoutMethodsClient::new(config.clone())?,
@@ -410,6 +414,7 @@ pub use notifications::NotificationsClient;
 pub use partners::PartnersClient;
 pub use payment_method_domains::PaymentMethodDomainsClient;
 pub use payment_methods::PaymentMethodsClient;
+pub use payment_rules::PaymentRulesClient;
 pub use payments::PaymentsClient;
 pub use payout_accounts::PayoutAccountsClient;
 pub use payout_methods::PayoutMethodsClient;

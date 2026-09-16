@@ -26884,6 +26884,696 @@ async fn main() {
 </dl>
 </details>
 
+## Payment Rules
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListPaymentRulesRequestStatus&gt;&gt;, action: Option&lt;Option&lt;ListPaymentRulesRequestAction&gt;&gt;, order: Option&lt;Option&lt;ListPaymentRulesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPaymentRulesRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPaymentRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .list(
+            &PaymentRulesListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Only return rules belonging to this account. Defaults to the account the request is acting for.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListPaymentRulesRequestStatus>` — Only return rules with this status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**action:** `Option<ListPaymentRulesRequestAction>` — Only return rules that take this action.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListPaymentRulesRequestOrder>` — The field to sort by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListPaymentRulesRequestDirection>` — The sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">create</a>(request: CreatePaymentRulesRequest) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .create(
+            &CreatePaymentRulesRequest {
+                action: CreatePaymentRulesRequestAction::Allow,
+                conditions: CreatePaymentRulesRequestConditions {
+                    all: vec![CreatePaymentRulesRequestConditionsAllItem {
+                        field: CreatePaymentRulesRequestConditionsAllItemField::RiskScore,
+                        operator: CreatePaymentRulesRequestConditionsAllItemOperator::Eq,
+                        value: PaymentRuleConditionValue::Integer(1),
+                    }],
+                    ..Default::default()
+                },
+                name: "Block high risk".to_string(),
+                account_id: None,
+                metadata: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The account to create the rule on. Defaults to the account the request is acting for.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**action:** `CreatePaymentRulesRequestAction` — What happens to a payment when every condition matches. An `allow` overrides this account's other rules only, never Whop's own fraud controls. An `enforce_3ds` is skipped where the payment cannot carry a challenge.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conditions:** `CreatePaymentRulesRequestConditions` — The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` — Custom string-to-string values for your integration. Maximum 50 keys, 40 characters per key, 500 characters per value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` — A name for this rule. Up to 255 characters.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">list_fields</a>() -> Result&lt;ListFieldsPaymentRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Small and returned in full on one page.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payment_rules.list_fields(None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">retrieve</a>(id: String) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payment_rules.retrieve(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">delete</a>(id: String) -> Result&lt;(), ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+The rule stops applying to new payments and is kept, so the payments it already decided still name it.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payment_rules.delete(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">update</a>(id: String, request: UpdatePaymentRulesRequest) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes the rule's name or metadata, keeping its ID and everything recorded against it. What the rule *does* is fixed once created, so the payments it decided keep naming the rule that decided them; use replace to change that.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .update(
+            &"id".to_string(),
+            &UpdatePaymentRulesRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` — Custom string-to-string values for your integration. Maximum 50 keys, 40 characters per key, 500 characters per value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `Option<String>` — A name for this rule. Up to 255 characters.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">activate</a>(id: String) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payment_rules.activate(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">deactivate</a>(id: String) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+The rule stops applying to new payments. It keeps its ID and can be activated again.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .deactivate(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">replace</a>(id: String, request: ReplacePaymentRulesRequest) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes this rule and creates its successor in one step. The successor carries a new ID and the metadata of the rule it replaced,.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .replace(
+            &"id".to_string(),
+            &ReplacePaymentRulesRequest {
+                action: ReplacePaymentRulesRequestAction::Allow,
+                conditions: ReplacePaymentRulesRequestConditions {
+                    all: vec![ReplacePaymentRulesRequestConditionsAllItem {
+                        field: ReplacePaymentRulesRequestConditionsAllItemField::RiskScore,
+                        operator: ReplacePaymentRulesRequestConditionsAllItemOperator::Eq,
+                        value: PaymentRuleConditionValue::Integer(1),
+                    }],
+                    ..Default::default()
+                },
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**action:** `ReplacePaymentRulesRequestAction` — What happens to a payment when every condition matches. An `allow` overrides this account's other rules only, never Whop's own fraud controls. An `enforce_3ds` is skipped where the payment cannot carry a challenge.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conditions:** `ReplacePaymentRulesRequestConditions` — The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Payments
 <details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListPaymentsRequestStatus&gt;&gt;, billing_reason: Option&lt;Option&lt;ListPaymentsRequestBillingReason&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;, membership_id: Option&lt;Option&lt;String&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, plan_id: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListPaymentsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPaymentsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPaymentsResponse, ApiError&gt;</code></summary>
 <dl>
