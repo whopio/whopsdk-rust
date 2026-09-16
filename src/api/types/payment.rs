@@ -81,6 +81,8 @@ pub struct Payment {
     /// The kind of instrument used, for example `card`, `apple_pay`, `klarna`, or `us_bank_account`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_type: Option<PaymentMethodTypes>,
+    #[serde(default)]
+    pub payment_rule_matches: Vec<PaymentRuleMatch>,
     /// How many charge attempts have failed on this payment.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -204,6 +206,7 @@ pub struct PaymentBuilder {
     payment_instrument: Option<PaymentInstrument>,
     payment_method_id: Option<String>,
     payment_method_type: Option<PaymentMethodTypes>,
+    payment_rule_matches: Option<Vec<PaymentRuleMatch>>,
     payments_failed: Option<f64>,
     plan_id: Option<String>,
     presentment_total: Option<Money>,
@@ -365,6 +368,11 @@ impl PaymentBuilder {
         self
     }
 
+    pub fn payment_rule_matches(mut self, value: Vec<PaymentRuleMatch>) -> Self {
+        self.payment_rule_matches = Some(value);
+        self
+    }
+
     pub fn payments_failed(mut self, value: f64) -> Self {
         self.payments_failed = Some(value);
         self
@@ -512,6 +520,7 @@ impl PaymentBuilder {
     /// - [`created_at`](PaymentBuilder::created_at)
     /// - [`currency`](PaymentBuilder::currency)
     /// - [`id`](PaymentBuilder::id)
+    /// - [`payment_rule_matches`](PaymentBuilder::payment_rule_matches)
     /// - [`payments_failed`](PaymentBuilder::payments_failed)
     /// - [`refundable`](PaymentBuilder::refundable)
     /// - [`retryable`](PaymentBuilder::retryable)
@@ -557,6 +566,9 @@ impl PaymentBuilder {
             payment_instrument: self.payment_instrument,
             payment_method_id: self.payment_method_id,
             payment_method_type: self.payment_method_type,
+            payment_rule_matches: self
+                .payment_rule_matches
+                .ok_or_else(|| BuildError::missing_field("payment_rule_matches"))?,
             payments_failed: self
                 .payments_failed
                 .ok_or_else(|| BuildError::missing_field("payments_failed"))?,
