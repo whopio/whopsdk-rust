@@ -27037,12 +27037,12 @@ async fn main() {
                 conditions: CreatePaymentRulesRequestConditions {
                     all: vec![CreatePaymentRulesRequestConditionsAllItem {
                         field: CreatePaymentRulesRequestConditionsAllItemField::RiskScore,
-                        operator: CreatePaymentRulesRequestConditionsAllItemOperator::Eq,
-                        value: PaymentRuleConditionValue::Integer(1),
+                        operator: CreatePaymentRulesRequestConditionsAllItemOperator::Gte,
+                        value: PaymentRuleConditionValue::Integer(70),
                     }],
                     ..Default::default()
                 },
-                name: "Block high risk".to_string(),
+                name: "Review risky cards".to_string(),
                 account_id: None,
                 metadata: None,
             },
@@ -27072,7 +27072,7 @@ async fn main() {
 <dl>
 <dd>
 
-**action:** `CreatePaymentRulesRequestAction` — What happens to a payment when every condition matches. An `allow` overrides this account's other rules only, never Whop's own fraud controls. An `enforce_3ds` is skipped where the payment cannot carry a challenge.
+**action:** `CreatePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 24 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
     
 </dd>
 </dl>
@@ -27522,8 +27522,8 @@ async fn main() {
                 conditions: ReplacePaymentRulesRequestConditions {
                     all: vec![ReplacePaymentRulesRequestConditionsAllItem {
                         field: ReplacePaymentRulesRequestConditionsAllItemField::RiskScore,
-                        operator: ReplacePaymentRulesRequestConditionsAllItemOperator::Eq,
-                        value: PaymentRuleConditionValue::Integer(1),
+                        operator: ReplacePaymentRulesRequestConditionsAllItemOperator::Gte,
+                        value: PaymentRuleConditionValue::Integer(70),
                     }],
                     ..Default::default()
                 },
@@ -27554,7 +27554,7 @@ async fn main() {
 <dl>
 <dd>
 
-**action:** `ReplacePaymentRulesRequestAction` — What happens to a payment when every condition matches. An `allow` overrides this account's other rules only, never Whop's own fraud controls. An `enforce_3ds` is skipped where the payment cannot carry a challenge.
+**action:** `ReplacePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 24 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
     
 </dd>
 </dl>
