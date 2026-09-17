@@ -34,6 +34,9 @@ pub struct EconomicIntelligence {
     /// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub superseded_at: Option<String>,
+    /// Website URL selected for pixel setup, or `null` when no website was captured for this recommendation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_url: Option<String>,
     /// Recommended action and its expected benefit, or `null` until generated.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
@@ -59,6 +62,7 @@ pub struct EconomicIntelligenceBuilder {
     reasoning: Option<String>,
     status: Option<EconomicIntelligenceStatus>,
     superseded_at: Option<String>,
+    target_url: Option<String>,
     title: Option<String>,
 }
 
@@ -118,6 +122,11 @@ impl EconomicIntelligenceBuilder {
         self
     }
 
+    pub fn target_url(mut self, value: impl Into<String>) -> Self {
+        self.target_url = Some(value.into());
+        self
+    }
+
     pub fn title(mut self, value: impl Into<String>) -> Self {
         self.title = Some(value.into());
         self
@@ -142,6 +151,7 @@ impl EconomicIntelligenceBuilder {
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
             superseded_at: self.superseded_at,
+            target_url: self.target_url,
             title: self.title,
         })
     }
