@@ -17,6 +17,9 @@ pub struct CreatePaymentsRequest {
     /// Overrides the buyer email carried on the confirmation token, resolving or creating the user the payment belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
+    /// What the buyer is purchasing. One entry charges that plan; several entries form a cart, which requires every plan to be a compatible plan from this account in the same currency.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub line_items: Option<Vec<CreatePaymentsRequestLineItemsItem>>,
     /// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_id: Option<String>,
@@ -26,10 +29,10 @@ pub struct CreatePaymentsRequest {
     /// The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_id: Option<String>,
-    /// Find or create a plan for this payment. Mutually exclusive with `plan_id`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+    /// Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub plan: Option<CreatePaymentsRequestPlan>,
-    /// The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan`.
+    /// The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub plan_id: Option<String>,
     /// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
@@ -57,6 +60,7 @@ pub struct CreatePaymentsRequestBuilder {
     capture: Option<bool>,
     confirmation_token: Option<String>,
     email: Option<String>,
+    line_items: Option<Vec<CreatePaymentsRequestLineItemsItem>>,
     member_id: Option<String>,
     metadata: Option<HashMap<String, Option<String>>>,
     payment_method_id: Option<String>,
@@ -90,6 +94,11 @@ impl CreatePaymentsRequestBuilder {
 
     pub fn email(mut self, value: impl Into<String>) -> Self {
         self.email = Some(value.into());
+        self
+    }
+
+    pub fn line_items(mut self, value: Vec<CreatePaymentsRequestLineItemsItem>) -> Self {
+        self.line_items = Some(value);
         self
     }
 
@@ -145,6 +154,7 @@ impl CreatePaymentsRequestBuilder {
             capture: self.capture,
             confirmation_token: self.confirmation_token,
             email: self.email,
+            line_items: self.line_items,
             member_id: self.member_id,
             metadata: self.metadata,
             payment_method_id: self.payment_method_id,
