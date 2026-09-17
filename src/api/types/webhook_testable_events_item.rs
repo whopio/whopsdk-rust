@@ -60,7 +60,6 @@ pub enum WebhookTestableEventsItem {
     PayoutAccountStatusUpdated,
     PaymentAuthorized,
     PaymentCanceled,
-    PaymentRequiresAction,
     ResolutionCenterCaseCreated,
     ResolutionCenterCaseUpdated,
     ResolutionCenterCaseDecided,
@@ -85,6 +84,7 @@ pub enum WebhookTestableEventsItem {
     PaymentSucceeded,
     PaymentFailed,
     PaymentPending,
+    PaymentRequiresAction,
     DisputeCreated,
     DisputeUpdated,
     RefundCreated,
@@ -105,6 +105,7 @@ pub enum WebhookTestableEventsItem {
     AppPaymentSucceeded,
     AppPaymentFailed,
     AppPaymentPending,
+    AppPaymentRequiresAction,
     AppMembershipCancelAtPeriodEndChanged,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -190,7 +191,6 @@ impl Serialize for WebhookTestableEventsItem {
             }
             Self::PaymentAuthorized => serializer.serialize_str("payment.authorized"),
             Self::PaymentCanceled => serializer.serialize_str("payment.canceled"),
-            Self::PaymentRequiresAction => serializer.serialize_str("payment.requires_action"),
             Self::ResolutionCenterCaseCreated => {
                 serializer.serialize_str("resolution_center_case.created")
             }
@@ -221,6 +221,7 @@ impl Serialize for WebhookTestableEventsItem {
             Self::PaymentSucceeded => serializer.serialize_str("payment.succeeded"),
             Self::PaymentFailed => serializer.serialize_str("payment.failed"),
             Self::PaymentPending => serializer.serialize_str("payment.pending"),
+            Self::PaymentRequiresAction => serializer.serialize_str("payment.requires_action"),
             Self::DisputeCreated => serializer.serialize_str("dispute.created"),
             Self::DisputeUpdated => serializer.serialize_str("dispute.updated"),
             Self::RefundCreated => serializer.serialize_str("refund.created"),
@@ -251,6 +252,9 @@ impl Serialize for WebhookTestableEventsItem {
             Self::AppPaymentSucceeded => serializer.serialize_str("app_payment.succeeded"),
             Self::AppPaymentFailed => serializer.serialize_str("app_payment.failed"),
             Self::AppPaymentPending => serializer.serialize_str("app_payment.pending"),
+            Self::AppPaymentRequiresAction => {
+                serializer.serialize_str("app_payment.requires_action")
+            }
             Self::AppMembershipCancelAtPeriodEndChanged => {
                 serializer.serialize_str("app_membership.cancel_at_period_end_changed")
             }
@@ -319,7 +323,6 @@ impl<'de> Deserialize<'de> for WebhookTestableEventsItem {
             "payout_account.status_updated" => Ok(Self::PayoutAccountStatusUpdated),
             "payment.authorized" => Ok(Self::PaymentAuthorized),
             "payment.canceled" => Ok(Self::PaymentCanceled),
-            "payment.requires_action" => Ok(Self::PaymentRequiresAction),
             "resolution_center_case.created" => Ok(Self::ResolutionCenterCaseCreated),
             "resolution_center_case.updated" => Ok(Self::ResolutionCenterCaseUpdated),
             "resolution_center_case.decided" => Ok(Self::ResolutionCenterCaseDecided),
@@ -344,6 +347,7 @@ impl<'de> Deserialize<'de> for WebhookTestableEventsItem {
             "payment.succeeded" => Ok(Self::PaymentSucceeded),
             "payment.failed" => Ok(Self::PaymentFailed),
             "payment.pending" => Ok(Self::PaymentPending),
+            "payment.requires_action" => Ok(Self::PaymentRequiresAction),
             "dispute.created" => Ok(Self::DisputeCreated),
             "dispute.updated" => Ok(Self::DisputeUpdated),
             "refund.created" => Ok(Self::RefundCreated),
@@ -366,6 +370,7 @@ impl<'de> Deserialize<'de> for WebhookTestableEventsItem {
             "app_payment.succeeded" => Ok(Self::AppPaymentSucceeded),
             "app_payment.failed" => Ok(Self::AppPaymentFailed),
             "app_payment.pending" => Ok(Self::AppPaymentPending),
+            "app_payment.requires_action" => Ok(Self::AppPaymentRequiresAction),
             "app_membership.cancel_at_period_end_changed" => {
                 Ok(Self::AppMembershipCancelAtPeriodEndChanged)
             }
@@ -437,7 +442,6 @@ impl fmt::Display for WebhookTestableEventsItem {
             Self::PayoutAccountStatusUpdated => write!(f, "payout_account.status_updated"),
             Self::PaymentAuthorized => write!(f, "payment.authorized"),
             Self::PaymentCanceled => write!(f, "payment.canceled"),
-            Self::PaymentRequiresAction => write!(f, "payment.requires_action"),
             Self::ResolutionCenterCaseCreated => write!(f, "resolution_center_case.created"),
             Self::ResolutionCenterCaseUpdated => write!(f, "resolution_center_case.updated"),
             Self::ResolutionCenterCaseDecided => write!(f, "resolution_center_case.decided"),
@@ -462,6 +466,7 @@ impl fmt::Display for WebhookTestableEventsItem {
             Self::PaymentSucceeded => write!(f, "payment.succeeded"),
             Self::PaymentFailed => write!(f, "payment.failed"),
             Self::PaymentPending => write!(f, "payment.pending"),
+            Self::PaymentRequiresAction => write!(f, "payment.requires_action"),
             Self::DisputeCreated => write!(f, "dispute.created"),
             Self::DisputeUpdated => write!(f, "dispute.updated"),
             Self::RefundCreated => write!(f, "refund.created"),
@@ -484,6 +489,7 @@ impl fmt::Display for WebhookTestableEventsItem {
             Self::AppPaymentSucceeded => write!(f, "app_payment.succeeded"),
             Self::AppPaymentFailed => write!(f, "app_payment.failed"),
             Self::AppPaymentPending => write!(f, "app_payment.pending"),
+            Self::AppPaymentRequiresAction => write!(f, "app_payment.requires_action"),
             Self::AppMembershipCancelAtPeriodEndChanged => {
                 write!(f, "app_membership.cancel_at_period_end_changed")
             }
