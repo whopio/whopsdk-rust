@@ -5,6 +5,7 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AccountRequiredActionAction {
     DepositFunds,
+    ReviewHeldPayments,
     AcceptAirwallexTerms,
     SubmitInformationRequest,
     UpdateAutomaticWithdrawalMethod,
@@ -27,6 +28,7 @@ impl Serialize for AccountRequiredActionAction {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::DepositFunds => serializer.serialize_str("deposit_funds"),
+            Self::ReviewHeldPayments => serializer.serialize_str("review_held_payments"),
             Self::AcceptAirwallexTerms => serializer.serialize_str("accept_airwallex_terms"),
             Self::SubmitInformationRequest => {
                 serializer.serialize_str("submit_information_request")
@@ -60,6 +62,7 @@ impl<'de> Deserialize<'de> for AccountRequiredActionAction {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
             "deposit_funds" => Ok(Self::DepositFunds),
+            "review_held_payments" => Ok(Self::ReviewHeldPayments),
             "accept_airwallex_terms" => Ok(Self::AcceptAirwallexTerms),
             "submit_information_request" => Ok(Self::SubmitInformationRequest),
             "update_automatic_withdrawal_method" => Ok(Self::UpdateAutomaticWithdrawalMethod),
@@ -82,6 +85,7 @@ impl fmt::Display for AccountRequiredActionAction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::DepositFunds => write!(f, "deposit_funds"),
+            Self::ReviewHeldPayments => write!(f, "review_held_payments"),
             Self::AcceptAirwallexTerms => write!(f, "accept_airwallex_terms"),
             Self::SubmitInformationRequest => write!(f, "submit_information_request"),
             Self::UpdateAutomaticWithdrawalMethod => {
