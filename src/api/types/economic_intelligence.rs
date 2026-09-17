@@ -29,6 +29,9 @@ pub struct EconomicIntelligence {
     /// Evidence and metrics supporting the recommendation, or `null` when no reasoning was provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning: Option<String>,
+    /// How the user rated this recommendation, or `null` if they have not rated it
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sentiment: Option<EconomicIntelligenceSentiment>,
     /// `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
     pub status: EconomicIntelligenceStatus,
     /// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
@@ -40,6 +43,9 @@ pub struct EconomicIntelligence {
     /// Recommended action and its expected benefit, or `null` until generated.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    /// The user's written feedback, or `null` if they have not provided any.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_feedback: Option<String>,
 }
 
 impl EconomicIntelligence {
@@ -60,10 +66,12 @@ pub struct EconomicIntelligenceBuilder {
     input: Option<String>,
     prompt: Option<String>,
     reasoning: Option<String>,
+    sentiment: Option<EconomicIntelligenceSentiment>,
     status: Option<EconomicIntelligenceStatus>,
     superseded_at: Option<String>,
     target_url: Option<String>,
     title: Option<String>,
+    user_feedback: Option<String>,
 }
 
 impl EconomicIntelligenceBuilder {
@@ -112,6 +120,11 @@ impl EconomicIntelligenceBuilder {
         self
     }
 
+    pub fn sentiment(mut self, value: EconomicIntelligenceSentiment) -> Self {
+        self.sentiment = Some(value);
+        self
+    }
+
     pub fn status(mut self, value: EconomicIntelligenceStatus) -> Self {
         self.status = Some(value);
         self
@@ -132,6 +145,11 @@ impl EconomicIntelligenceBuilder {
         self
     }
 
+    pub fn user_feedback(mut self, value: impl Into<String>) -> Self {
+        self.user_feedback = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`EconomicIntelligence`].
     /// This method will fail if any of the following fields are not set:
     /// - [`id`](EconomicIntelligenceBuilder::id)
@@ -147,12 +165,14 @@ impl EconomicIntelligenceBuilder {
             input: self.input,
             prompt: self.prompt,
             reasoning: self.reasoning,
+            sentiment: self.sentiment,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
             superseded_at: self.superseded_at,
             target_url: self.target_url,
             title: self.title,
+            user_feedback: self.user_feedback,
         })
     }
 }
