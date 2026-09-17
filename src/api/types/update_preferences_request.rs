@@ -5,7 +5,7 @@ pub struct UpdatePreferencesRequest {
     /// Opens an advertising certification application. Keyed by certification type (`prescription_drug_ads`); set the entry's `status` to `pending_information` to start, then answer the requested fields via `PATCH /verifications/{id}`. Only one application per type can be open at a time; every other status is set by Whop's review.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ads_certifications: Option<HashMap<String, UpdatePreferencesRequestAdsCertificationsValue>>,
-    /// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
+    /// How the account pays for Whop Ads spend. Requires `primary`; `backup` is optional and covers the charge when the primary fails. Configuring a `card` requires a user token; account API keys can configure only `platform_balance` sources.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ads_payment_methods: Option<UpdatePreferencesRequestAdsPaymentMethods>,
     /// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`.
