@@ -89,12 +89,12 @@ impl PaymentRulesClient {
     ///                 conditions: CreatePaymentRulesRequestConditions {
     ///                     all: vec![CreatePaymentRulesRequestConditionsAllItem {
     ///                         field: CreatePaymentRulesRequestConditionsAllItemField::RiskScore,
-    ///                         operator: CreatePaymentRulesRequestConditionsAllItemOperator::Eq,
-    ///                         value: PaymentRuleConditionValue::Integer(1),
+    ///                         operator: CreatePaymentRulesRequestConditionsAllItemOperator::Gte,
+    ///                         value: PaymentRuleConditionValue::Integer(70),
     ///                     }],
     ///                     ..Default::default()
     ///                 },
-    ///                 name: "Block high risk".to_string(),
+    ///                 name: "Review risky cards".to_string(),
     ///                 account_id: None,
     ///                 metadata: None,
     ///             },
@@ -431,8 +431,8 @@ impl PaymentRulesClient {
     ///                 conditions: ReplacePaymentRulesRequestConditions {
     ///                     all: vec![ReplacePaymentRulesRequestConditionsAllItem {
     ///                         field: ReplacePaymentRulesRequestConditionsAllItemField::RiskScore,
-    ///                         operator: ReplacePaymentRulesRequestConditionsAllItemOperator::Eq,
-    ///                         value: PaymentRuleConditionValue::Integer(1),
+    ///                         operator: ReplacePaymentRulesRequestConditionsAllItemOperator::Gte,
+    ///                         value: PaymentRuleConditionValue::Integer(70),
     ///                     }],
     ///                     ..Default::default()
     ///                 },
