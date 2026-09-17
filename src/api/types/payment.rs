@@ -54,6 +54,8 @@ pub struct Payment {
     /// When the most recent charge attempt ran, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last_payment_attempt_at: Option<String>,
+    #[serde(default)]
+    pub line_items: Vec<ReceiptLineItem>,
     /// The buyer's member record on the account, prefixed `mber_`. Null without the member:basic:read permission.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_id: Option<String>,
@@ -197,6 +199,7 @@ pub struct PaymentBuilder {
     financing_installments_count: Option<f64>,
     id: Option<String>,
     last_payment_attempt_at: Option<String>,
+    line_items: Option<Vec<ReceiptLineItem>>,
     member_id: Option<String>,
     membership_id: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
@@ -320,6 +323,11 @@ impl PaymentBuilder {
 
     pub fn last_payment_attempt_at(mut self, value: impl Into<String>) -> Self {
         self.last_payment_attempt_at = Some(value.into());
+        self
+    }
+
+    pub fn line_items(mut self, value: Vec<ReceiptLineItem>) -> Self {
+        self.line_items = Some(value);
         self
     }
 
@@ -520,6 +528,7 @@ impl PaymentBuilder {
     /// - [`created_at`](PaymentBuilder::created_at)
     /// - [`currency`](PaymentBuilder::currency)
     /// - [`id`](PaymentBuilder::id)
+    /// - [`line_items`](PaymentBuilder::line_items)
     /// - [`payment_rule_matches`](PaymentBuilder::payment_rule_matches)
     /// - [`payments_failed`](PaymentBuilder::payments_failed)
     /// - [`refundable`](PaymentBuilder::refundable)
@@ -557,6 +566,9 @@ impl PaymentBuilder {
             financing_installments_count: self.financing_installments_count,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             last_payment_attempt_at: self.last_payment_attempt_at,
+            line_items: self
+                .line_items
+                .ok_or_else(|| BuildError::missing_field("line_items"))?,
             member_id: self.member_id,
             membership_id: self.membership_id,
             metadata: self.metadata,
