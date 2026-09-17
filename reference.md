@@ -16808,7 +16808,7 @@ async fn main() {
 <dl>
 <dd>
 
-Approves or rejects a recommendation and requests replacements.
+Updates a recommendation status, records feedback, or both. Send `sentiment` to rate it. Include `status: superseded` to retire it and request replacements; a rating alone leaves its status unchanged.
 </dd>
 </dl>
 </dd>
@@ -16837,9 +16837,7 @@ async fn main() {
         .update(
             &"id".to_string(),
             &UpdateEconomicIntelligenceRequest {
-                status: UpdateEconomicIntelligenceRequestStatus::Executed,
-                account_id: None,
-                reason: None,
+                ..Default::default()
             },
             None,
         )
@@ -16867,7 +16865,7 @@ async fn main() {
 <dl>
 <dd>
 
-**reason:** `Option<String>` — Why the recommendation was rejected. Used as feedback when replenishing recommendations.
+**sentiment:** `Option<UpdateEconomicIntelligenceRequestSentiment>` — A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
     
 </dd>
 </dl>
@@ -16875,7 +16873,15 @@ async fn main() {
 <dl>
 <dd>
 
-**status:** `UpdateEconomicIntelligenceRequestStatus` — Use `executed` to record approval, or `superseded` to reject the recommendation.
+**status:** `Option<UpdateEconomicIntelligenceRequestStatus>` — Use `executed` to record approval, or `superseded` to reject the recommendation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_feedback:** `Option<String>` — An optional explanation of the rating or rejection. Negative feedback informs replacement recommendations.
     
 </dd>
 </dl>

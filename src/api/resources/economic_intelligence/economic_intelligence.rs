@@ -133,7 +133,7 @@ impl EconomicIntelligenceClient {
             .await
     }
 
-    /// Approves or rejects a recommendation and requests replacements.
+    /// Updates a recommendation status, records feedback, or both. Send `sentiment` to rate it. Include `status: superseded` to retire it and request replacements; a rating alone leaves its status unchanged.
     ///
     /// # Arguments
     ///
@@ -162,9 +162,7 @@ impl EconomicIntelligenceClient {
     ///         .update(
     ///             &"id".to_string(),
     ///             &UpdateEconomicIntelligenceRequest {
-    ///                 status: UpdateEconomicIntelligenceRequestStatus::Executed,
-    ///                 account_id: None,
-    ///                 reason: None,
+    ///                 ..Default::default()
     ///             },
     ///             None,
     ///         )
