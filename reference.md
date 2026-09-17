@@ -39869,6 +39869,389 @@ async fn main() {
 </dl>
 </details>
 
+## Accounts Fees
+<details><summary><code>client.accounts().fees.<a href="/src/api/resources/accounts/fees/client.rs">retrieve</a>(account_id: String) -> Result&lt;AccountFees, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves every fee the account is charged, as a document keyed by fee: Whop's fees, resolved the way they are charged, and any markups the platform the account is connected to adds on top. The account's own team, the Whop Verified Partner who referred it, and the platform it is connected to all read the same document; `adjustable` on each fee says what the caller may change through `PATCH`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .accounts
+        .fees
+        .retrieve(&"account_id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — Account ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.accounts().fees.<a href="/src/api/resources/accounts/fees/client.rs">update</a>(account_id: String, request: UpdateFeesRequest) -> Result&lt;AccountFees, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes fees on the account. The body mirrors the document: send only the keys to change, and each is replaced while the rest stay as they are. A platform sets `markups` on an account connected to it, or `child_markups` on itself for every connected account. A Whop Verified Partner edits the fee schedule of a business they referred, with `notes`, from a first-party Whop session. Every change is validated against the document before anything is written, and a rejected request names the key. Returns the full document.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .accounts
+        .fees
+        .update(
+            &"account_id".to_string(),
+            &UpdateFeesRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — Account ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ads:** `Option<UpdateFeesRequestAds>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bank_deposit:** `Option<UpdateFeesRequestBankDeposit>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billing:** `Option<UpdateFeesRequestBilling>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**buyer:** `Option<UpdateFeesRequestBuyer>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**card_processing:** `Option<UpdateFeesRequestCardProcessing>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**child_markups:** `Option<UpdateFeesRequestChildMarkups>` — This platform's default markups for every account connected to it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cross_border:** `Option<UpdateFeesRequestCrossBorder>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dispute:** `Option<UpdateFeesRequestDispute>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dispute_alert:** `Option<UpdateFeesRequestDisputeAlert>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dispute_alert_cdrn:** `Option<UpdateFeesRequestDisputeAlertCdrn>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dispute_alert_ethoca:** `Option<UpdateFeesRequestDisputeAlertEthoca>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dispute_alert_rdr:** `Option<UpdateFeesRequestDisputeAlertRdr>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dispute_representment:** `Option<UpdateFeesRequestDisputeRepresentment>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**foreign_exchange:** `Option<UpdateFeesRequestForeignExchange>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fraud_screening:** `Option<UpdateFeesRequestFraudScreening>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**high_risk:** `Option<UpdateFeesRequestHighRisk>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**marketplace:** `Option<UpdateFeesRequestMarketplace>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**markups:** `Option<UpdateFeesRequestMarkups>` — Markups on this connected account, set by the platform it is connected to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notes:** `Option<String>` — Why the fees are changing, recorded with the change. Required when a Whop Verified Partner edits the fee schedule; ignored for markups.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**orchestration:** `Option<UpdateFeesRequestOrchestration>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payment_methods:** `Option<std::collections::HashMap<String, UpdateFeesRequestPaymentMethodsValue>>` — Changes to non-card payment method fees, keyed by payment method type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payouts:** `Option<std::collections::HashMap<String, UpdateFeesRequestPayoutsValue>>` — Changes to withdrawal fees, keyed by payout method.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pending_auto_topup:** `Option<UpdateFeesRequestPendingAutoTopup>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform_processing:** `Option<UpdateFeesRequestPlatformProcessing>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pool_payout:** `Option<UpdateFeesRequestPoolPayout>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**revshare:** `Option<UpdateFeesRequestRevshare>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tax_calculation:** `Option<UpdateFeesRequestTaxCalculation>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tax_service:** `Option<UpdateFeesRequestTaxService>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**three_ds:** `Option<UpdateFeesRequestThreeDs>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transfers:** `Option<UpdateFeesRequestTransfers>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Accounts Preferences
 <details><summary><code>client.accounts().preferences.<a href="/src/api/resources/accounts/preferences/client.rs">retrieve</a>(account_id: String) -> Result&lt;RetrievePreferencesResponse, ApiError&gt;</code></summary>
 <dl>

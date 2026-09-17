@@ -2,12 +2,15 @@ use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
 use reqwest::Method;
 
+pub mod fees;
+pub use fees::FeesClient;
 pub mod preferences;
 pub use preferences::PreferencesClient;
 pub mod reserves;
 pub use reserves::ReservesClient;
 pub struct AccountsClient {
     pub http_client: HttpClient,
+    pub fees: FeesClient,
     pub preferences: PreferencesClient,
     pub reserves: ReservesClient,
 }
@@ -16,6 +19,7 @@ impl AccountsClient {
     pub fn new(config: ClientConfig) -> Result<Self, ApiError> {
         Ok(Self {
             http_client: HttpClient::new(config.clone())?,
+            fees: FeesClient::new(config.clone())?,
             preferences: PreferencesClient::new(config.clone())?,
             reserves: ReservesClient::new(config.clone())?,
         })
