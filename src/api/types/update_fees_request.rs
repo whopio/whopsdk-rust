@@ -4,9 +4,6 @@ pub use crate::prelude::*;
 pub struct UpdateFeesRequest {
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ads: Option<UpdateFeesRequestAds>,
-    /// The fields of a fee the caller may change. Only the keys sent are replaced.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub bank_deposit: Option<UpdateFeesRequestBankDeposit>,
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -103,7 +100,6 @@ impl UpdateFeesRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct UpdateFeesRequestBuilder {
-    ads: Option<UpdateFeesRequestAds>,
     bank_deposit: Option<UpdateFeesRequestBankDeposit>,
     billing: Option<UpdateFeesRequestBilling>,
     buyer: Option<UpdateFeesRequestBuyer>,
@@ -136,11 +132,6 @@ pub struct UpdateFeesRequestBuilder {
 }
 
 impl UpdateFeesRequestBuilder {
-    pub fn ads(mut self, value: UpdateFeesRequestAds) -> Self {
-        self.ads = Some(value);
-        self
-    }
-
     pub fn bank_deposit(mut self, value: UpdateFeesRequestBankDeposit) -> Self {
         self.bank_deposit = Some(value);
         self
@@ -292,7 +283,6 @@ impl UpdateFeesRequestBuilder {
     /// Consumes the builder and constructs a [`UpdateFeesRequest`].
     pub fn build(self) -> Result<UpdateFeesRequest, BuildError> {
         Ok(UpdateFeesRequest {
-            ads: self.ads,
             bank_deposit: self.bank_deposit,
             billing: self.billing,
             buyer: self.buyer,

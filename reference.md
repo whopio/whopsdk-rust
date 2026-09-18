@@ -40328,14 +40328,6 @@ async fn main() {
 <dl>
 <dd>
 
-**ads:** `Option<UpdateFeesRequestAds>` — The fields of a fee the caller may change. Only the keys sent are replaced.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **bank_deposit:** `Option<UpdateFeesRequestBankDeposit>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
