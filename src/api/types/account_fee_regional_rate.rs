@@ -8,6 +8,9 @@ pub struct AccountFeeRegionalRate {
     /// The amount charged per event in effect. `null` when the fee has no fixed component.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fixed: Option<Money>,
+    /// The highest regional rate the caller may set. `null` when the fee is not adjustable or the caller is not capped.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub maximum: Option<AccountFeeRate>,
     /// The lowest regional rate the caller may set, present only when the fee is adjustable.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub minimum: Option<AccountFeeRate>,
@@ -34,6 +37,7 @@ impl AccountFeeRegionalRate {
 pub struct AccountFeeRegionalRateBuilder {
     default: Option<AccountFeeRate>,
     fixed: Option<Money>,
+    maximum: Option<AccountFeeRate>,
     minimum: Option<AccountFeeRate>,
     percentage: Option<f64>,
     reset: Option<AccountFeeRate>,
@@ -48,6 +52,11 @@ impl AccountFeeRegionalRateBuilder {
 
     pub fn fixed(mut self, value: Money) -> Self {
         self.fixed = Some(value);
+        self
+    }
+
+    pub fn maximum(mut self, value: AccountFeeRate) -> Self {
+        self.maximum = Some(value);
         self
     }
 
@@ -82,6 +91,7 @@ impl AccountFeeRegionalRateBuilder {
                 .default
                 .ok_or_else(|| BuildError::missing_field("default"))?,
             fixed: self.fixed,
+            maximum: self.maximum,
             minimum: self.minimum,
             percentage: self.percentage,
             reset: self
