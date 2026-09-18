@@ -7,7 +7,7 @@ pub struct AccountFee {
     pub adjustable: bool,
     /// Which group of the fee schedule this fee belongs to, for grouping in a UI.
     pub category: AccountFeeCategory,
-    /// The platform rate with no custom deal: what applies if the custom rate is cleared.
+    /// The platform rate before custom or inherited pricing is applied.
     #[serde(default)]
     pub default: AccountFeeRate,
     /// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies or the rate does not expire.
@@ -27,9 +27,12 @@ pub struct AccountFee {
     /// The acquirer region `percentage` and `fixed` describe, for a fee that varies by where the money is processed. `null` for a fee that does not vary by region.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub region: Option<AccountFeeRegion>,
-    /// The rate in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
+    /// The rate, source, default, reset rate, and editable minimum in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
     #[serde(default)]
-    pub regions: HashMap<String, AccountFeeRate>,
+    pub regions: HashMap<String, AccountFeeRegionalRate>,
+    /// The rate that takes effect when this account's custom rate is cleared, including inherited pricing.
+    #[serde(default)]
+    pub reset: AccountFeeRate,
     /// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
     pub source: AccountFeeSource,
     /// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
@@ -54,7 +57,8 @@ pub struct AccountFeeBuilder {
     minimum: Option<AccountFeeRate>,
     percentage: Option<f64>,
     region: Option<AccountFeeRegion>,
-    regions: Option<HashMap<String, AccountFeeRate>>,
+    regions: Option<HashMap<String, AccountFeeRegionalRate>>,
+    reset: Option<AccountFeeRate>,
     source: Option<AccountFeeSource>,
     unadjustable_reason: Option<AccountFeeUnadjustableReason>,
 }
@@ -100,8 +104,13 @@ impl AccountFeeBuilder {
         self
     }
 
-    pub fn regions(mut self, value: HashMap<String, AccountFeeRate>) -> Self {
+    pub fn regions(mut self, value: HashMap<String, AccountFeeRegionalRate>) -> Self {
         self.regions = Some(value);
+        self
+    }
+
+    pub fn reset(mut self, value: AccountFeeRate) -> Self {
+        self.reset = Some(value);
         self
     }
 
@@ -121,6 +130,7 @@ impl AccountFeeBuilder {
     /// - [`category`](AccountFeeBuilder::category)
     /// - [`default`](AccountFeeBuilder::default)
     /// - [`regions`](AccountFeeBuilder::regions)
+    /// - [`reset`](AccountFeeBuilder::reset)
     /// - [`source`](AccountFeeBuilder::source)
     pub fn build(self) -> Result<AccountFee, BuildError> {
         Ok(AccountFee {
@@ -141,6 +151,9 @@ impl AccountFeeBuilder {
             regions: self
                 .regions
                 .ok_or_else(|| BuildError::missing_field("regions"))?,
+            reset: self
+                .reset
+                .ok_or_else(|| BuildError::missing_field("reset"))?,
             source: self
                 .source
                 .ok_or_else(|| BuildError::missing_field("source"))?,

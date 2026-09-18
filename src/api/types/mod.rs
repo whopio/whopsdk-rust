@@ -38,6 +38,8 @@ pub mod account_fee_markup_unadjustable_reason;
 pub mod account_fee_markups;
 pub mod account_fee_rate;
 pub mod account_fee_region;
+pub mod account_fee_regional_rate;
+pub mod account_fee_regional_rate_source;
 pub mod account_fee_source;
 pub mod account_fee_unadjustable_reason;
 pub mod account_fees;
@@ -4648,6 +4650,8 @@ pub use account_fee_markup_unadjustable_reason::{AccountFeeMarkupUnadjustableRea
 pub use account_fee_markup::{AccountFeeMarkup};
 pub use account_fee_markups::{AccountFeeMarkups};
 pub use account_fee_rate::{AccountFeeRate};
+pub use account_fee_regional_rate_source::{AccountFeeRegionalRateSource};
+pub use account_fee_regional_rate::{AccountFeeRegionalRate};
 pub use account_fees::{AccountFees};
 pub use account_link::{AccountLink};
 pub use account_link_use_cases::{AccountLinkUseCases};
