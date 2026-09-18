@@ -41,6 +41,7 @@ pub enum LedgerActivityLineType {
     DisputeAlertFee,
     DisputeHoldAdjustment,
     DisputeRepresentmentFee,
+    EconomicIntelligencePercentageFee,
     ExternalCardLoadDeposit,
     FraudPreventionFee,
     FxPercentageFee,
@@ -201,6 +202,9 @@ impl Serialize for LedgerActivityLineType {
             Self::DisputeAlertFee => serializer.serialize_str("dispute_alert_fee"),
             Self::DisputeHoldAdjustment => serializer.serialize_str("dispute_hold_adjustment"),
             Self::DisputeRepresentmentFee => serializer.serialize_str("dispute_representment_fee"),
+            Self::EconomicIntelligencePercentageFee => {
+                serializer.serialize_str("economic_intelligence_percentage_fee")
+            }
             Self::ExternalCardLoadDeposit => serializer.serialize_str("external_card_load_deposit"),
             Self::FraudPreventionFee => serializer.serialize_str("fraud_prevention_fee"),
             Self::FxPercentageFee => serializer.serialize_str("fx_percentage_fee"),
@@ -414,6 +418,7 @@ impl<'de> Deserialize<'de> for LedgerActivityLineType {
             "dispute_alert_fee" => Ok(Self::DisputeAlertFee),
             "dispute_hold_adjustment" => Ok(Self::DisputeHoldAdjustment),
             "dispute_representment_fee" => Ok(Self::DisputeRepresentmentFee),
+            "economic_intelligence_percentage_fee" => Ok(Self::EconomicIntelligencePercentageFee),
             "external_card_load_deposit" => Ok(Self::ExternalCardLoadDeposit),
             "fraud_prevention_fee" => Ok(Self::FraudPreventionFee),
             "fx_percentage_fee" => Ok(Self::FxPercentageFee),
@@ -568,6 +573,9 @@ impl fmt::Display for LedgerActivityLineType {
             Self::DisputeAlertFee => write!(f, "dispute_alert_fee"),
             Self::DisputeHoldAdjustment => write!(f, "dispute_hold_adjustment"),
             Self::DisputeRepresentmentFee => write!(f, "dispute_representment_fee"),
+            Self::EconomicIntelligencePercentageFee => {
+                write!(f, "economic_intelligence_percentage_fee")
+            }
             Self::ExternalCardLoadDeposit => write!(f, "external_card_load_deposit"),
             Self::FraudPreventionFee => write!(f, "fraud_prevention_fee"),
             Self::FxPercentageFee => write!(f, "fx_percentage_fee"),
