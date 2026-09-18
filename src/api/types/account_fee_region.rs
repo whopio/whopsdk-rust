@@ -18,6 +18,7 @@ pub enum AccountFeeRegion {
     Cr,
     Gt,
     Uy,
+    Br,
     Ph,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -41,6 +42,7 @@ impl Serialize for AccountFeeRegion {
             Self::Cr => serializer.serialize_str("cr"),
             Self::Gt => serializer.serialize_str("gt"),
             Self::Uy => serializer.serialize_str("uy"),
+            Self::Br => serializer.serialize_str("br"),
             Self::Ph => serializer.serialize_str("ph"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
@@ -65,6 +67,7 @@ impl<'de> Deserialize<'de> for AccountFeeRegion {
             "cr" => Ok(Self::Cr),
             "gt" => Ok(Self::Gt),
             "uy" => Ok(Self::Uy),
+            "br" => Ok(Self::Br),
             "ph" => Ok(Self::Ph),
             _ => Ok(Self::__Unknown(value)),
         }
@@ -88,6 +91,7 @@ impl fmt::Display for AccountFeeRegion {
             Self::Cr => write!(f, "cr"),
             Self::Gt => write!(f, "gt"),
             Self::Uy => write!(f, "uy"),
+            Self::Br => write!(f, "br"),
             Self::Ph => write!(f, "ph"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
