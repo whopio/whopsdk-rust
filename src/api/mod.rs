@@ -24,11 +24,12 @@ pub use resources::{
     FilesClient, FinancialActivityClient, FinancialReportsClient, ForumPostsClient, ForumsClient,
     IdentityProfilesClient, InvoicesClient, LeadsClient, LedgerAccountsClient, LedgersClient,
     MediaClient, MembersClient, MembershipsClient, MessagesClient, NotificationsClient,
-    PartnersClient, PaymentMethodDomainsClient, PaymentMethodsClient, PaymentRulesClient,
-    PaymentsClient, PayoutAccountsClient, PayoutMethodsClient, PayoutsClient, PeopleClient,
-    PermissionsClient, PlansClient, ProductsClient, PromoCodesClient, ReactionsClient,
-    RefundsClient, ResolutionCenterCasesClient, ReviewsClient, SetupIntentsClient, ShipmentsClient,
-    SocialAccountsClient, StatsClient, SupportChannelsClient, SwapsClient, TeamMembersClient,
-    TopupsClient, TransfersClient, UsersClient, VerificationsClient, WebhooksClient, Whop,
+    PartnerReferralRequestsClient, PartnersClient, PaymentMethodDomainsClient,
+    PaymentMethodsClient, PaymentRulesClient, PaymentsClient, PayoutAccountsClient,
+    PayoutMethodsClient, PayoutsClient, PeopleClient, PermissionsClient, PlansClient,
+    ProductsClient, PromoCodesClient, ReactionsClient, RefundsClient, ResolutionCenterCasesClient,
+    ReviewsClient, SetupIntentsClient, ShipmentsClient, SocialAccountsClient, StatsClient,
+    SupportChannelsClient, SwapsClient, TeamMembersClient, TopupsClient, TransfersClient,
+    UsersClient, VerificationsClient, WebhooksClient, Whop,
 };
 pub use types::*;

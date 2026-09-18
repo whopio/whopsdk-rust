@@ -183,6 +183,11 @@ pub enum PermissionAction {
     PartnerBasicRead,
     PartnerEmailRead,
     PartnerInviteCreate,
+    PartnerReferralRequestRead,
+    PartnerReferralRequestCreate,
+    PartnerReferralRequestAccept,
+    PartnerReferralRequestDecline,
+    PartnerReferralRequestCancel,
     PartnerCreate,
     StatsRead,
     SupportChatRead,
@@ -491,6 +496,21 @@ impl Serialize for PermissionAction {
             Self::PartnerBasicRead => serializer.serialize_str("partner:basic:read"),
             Self::PartnerEmailRead => serializer.serialize_str("partner:email:read"),
             Self::PartnerInviteCreate => serializer.serialize_str("partner:invite:create"),
+            Self::PartnerReferralRequestRead => {
+                serializer.serialize_str("partner:referral_request:read")
+            }
+            Self::PartnerReferralRequestCreate => {
+                serializer.serialize_str("partner:referral_request:create")
+            }
+            Self::PartnerReferralRequestAccept => {
+                serializer.serialize_str("partner:referral_request:accept")
+            }
+            Self::PartnerReferralRequestDecline => {
+                serializer.serialize_str("partner:referral_request:decline")
+            }
+            Self::PartnerReferralRequestCancel => {
+                serializer.serialize_str("partner:referral_request:cancel")
+            }
             Self::PartnerCreate => serializer.serialize_str("partner:create"),
             Self::StatsRead => serializer.serialize_str("stats:read"),
             Self::SupportChatRead => serializer.serialize_str("support_chat:read"),
@@ -804,6 +824,11 @@ impl<'de> Deserialize<'de> for PermissionAction {
             "partner:basic:read" => Ok(Self::PartnerBasicRead),
             "partner:email:read" => Ok(Self::PartnerEmailRead),
             "partner:invite:create" => Ok(Self::PartnerInviteCreate),
+            "partner:referral_request:read" => Ok(Self::PartnerReferralRequestRead),
+            "partner:referral_request:create" => Ok(Self::PartnerReferralRequestCreate),
+            "partner:referral_request:accept" => Ok(Self::PartnerReferralRequestAccept),
+            "partner:referral_request:decline" => Ok(Self::PartnerReferralRequestDecline),
+            "partner:referral_request:cancel" => Ok(Self::PartnerReferralRequestCancel),
             "partner:create" => Ok(Self::PartnerCreate),
             "stats:read" => Ok(Self::StatsRead),
             "support_chat:read" => Ok(Self::SupportChatRead),
@@ -1084,6 +1109,11 @@ impl fmt::Display for PermissionAction {
             Self::PartnerBasicRead => write!(f, "partner:basic:read"),
             Self::PartnerEmailRead => write!(f, "partner:email:read"),
             Self::PartnerInviteCreate => write!(f, "partner:invite:create"),
+            Self::PartnerReferralRequestRead => write!(f, "partner:referral_request:read"),
+            Self::PartnerReferralRequestCreate => write!(f, "partner:referral_request:create"),
+            Self::PartnerReferralRequestAccept => write!(f, "partner:referral_request:accept"),
+            Self::PartnerReferralRequestDecline => write!(f, "partner:referral_request:decline"),
+            Self::PartnerReferralRequestCancel => write!(f, "partner:referral_request:cancel"),
             Self::PartnerCreate => write!(f, "partner:create"),
             Self::StatsRead => write!(f, "stats:read"),
             Self::SupportChatRead => write!(f, "support_chat:read"),

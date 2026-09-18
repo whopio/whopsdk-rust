@@ -1,0 +1,2 @@
+pub mod partner_referral_requests;
+pub use partner_referral_requests::PartnerReferralRequestsClient;
