@@ -13,6 +13,7 @@ pub enum AccountRequiredActionAction {
     UpdatePayoutProfile,
     CardUsageReview,
     VerifyIdentity,
+    VerifyAirwallexAccount,
     SignFormationDocuments,
     ConnectFulfillmentTracker,
     SetupApplePayDomains,
@@ -42,6 +43,7 @@ impl Serialize for AccountRequiredActionAction {
             Self::UpdatePayoutProfile => serializer.serialize_str("update_payout_profile"),
             Self::CardUsageReview => serializer.serialize_str("card_usage_review"),
             Self::VerifyIdentity => serializer.serialize_str("verify_identity"),
+            Self::VerifyAirwallexAccount => serializer.serialize_str("verify_airwallex_account"),
             Self::SignFormationDocuments => serializer.serialize_str("sign_formation_documents"),
             Self::ConnectFulfillmentTracker => {
                 serializer.serialize_str("connect_fulfillment_tracker")
@@ -70,6 +72,7 @@ impl<'de> Deserialize<'de> for AccountRequiredActionAction {
             "update_payout_profile" => Ok(Self::UpdatePayoutProfile),
             "card_usage_review" => Ok(Self::CardUsageReview),
             "verify_identity" => Ok(Self::VerifyIdentity),
+            "verify_airwallex_account" => Ok(Self::VerifyAirwallexAccount),
             "sign_formation_documents" => Ok(Self::SignFormationDocuments),
             "connect_fulfillment_tracker" => Ok(Self::ConnectFulfillmentTracker),
             "setup_apple_pay_domains" => Ok(Self::SetupApplePayDomains),
@@ -95,6 +98,7 @@ impl fmt::Display for AccountRequiredActionAction {
             Self::UpdatePayoutProfile => write!(f, "update_payout_profile"),
             Self::CardUsageReview => write!(f, "card_usage_review"),
             Self::VerifyIdentity => write!(f, "verify_identity"),
+            Self::VerifyAirwallexAccount => write!(f, "verify_airwallex_account"),
             Self::SignFormationDocuments => write!(f, "sign_formation_documents"),
             Self::ConnectFulfillmentTracker => write!(f, "connect_fulfillment_tracker"),
             Self::SetupApplePayDomains => write!(f, "setup_apple_pay_domains"),
