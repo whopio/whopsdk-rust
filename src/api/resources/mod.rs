@@ -57,6 +57,7 @@
 //! - **Memberships**
 //! - **Messages**
 //! - **Notifications**
+//! - **Partner Referral Requests**
 //! - **Partners**
 //! - **Payment Method Domains**
 //! - **PaymentMethods**
@@ -146,6 +147,7 @@ pub mod members;
 pub mod memberships;
 pub mod messages;
 pub mod notifications;
+pub mod partner_referral_requests;
 pub mod partners;
 pub mod payment_method_domains;
 pub mod payment_methods;
@@ -232,6 +234,7 @@ pub struct Whop {
     pub memberships: MembershipsClient,
     pub messages: MessagesClient,
     pub notifications: NotificationsClient,
+    pub partner_referral_requests: PartnerReferralRequestsClient,
     pub partners: PartnersClient,
     pub payment_method_domains: PaymentMethodDomainsClient,
     pub payment_methods: PaymentMethodsClient,
@@ -322,6 +325,7 @@ impl Whop {
             memberships: MembershipsClient::new(config.clone())?,
             messages: MessagesClient::new(config.clone())?,
             notifications: NotificationsClient::new(config.clone())?,
+            partner_referral_requests: PartnerReferralRequestsClient::new(config.clone())?,
             partners: PartnersClient::new(config.clone())?,
             payment_method_domains: PaymentMethodDomainsClient::new(config.clone())?,
             payment_methods: PaymentMethodsClient::new(config.clone())?,
@@ -411,6 +415,7 @@ pub use members::MembersClient;
 pub use memberships::MembershipsClient;
 pub use messages::MessagesClient;
 pub use notifications::NotificationsClient;
+pub use partner_referral_requests::PartnerReferralRequestsClient;
 pub use partners::PartnersClient;
 pub use payment_method_domains::PaymentMethodDomainsClient;
 pub use payment_methods::PaymentMethodsClient;
