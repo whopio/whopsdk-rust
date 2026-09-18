@@ -16,6 +16,9 @@ pub struct AccountFee {
     /// The amount charged per event in effect. `null` when the fee has no fixed component.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fixed: Option<Money>,
+    /// The highest rate the caller may set. `null` when the fee is not adjustable or the caller is not capped.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub maximum: Option<AccountFeeRate>,
     /// The lowest rate the caller may set, present only when `adjustable`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub minimum: Option<AccountFeeRate>,
@@ -27,7 +30,7 @@ pub struct AccountFee {
     /// The acquirer region `percentage` and `fixed` describe, for a fee that varies by where the money is processed. `null` for a fee that does not vary by region.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub region: Option<AccountFeeRegion>,
-    /// The rate, source, default, reset rate, and editable minimum in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
+    /// The rate, source, default, reset rate, and editable limits in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
     #[serde(default)]
     pub regions: HashMap<String, AccountFeeRegionalRate>,
     /// The rate that takes effect when this account's custom rate is cleared, including inherited pricing.
@@ -54,6 +57,7 @@ pub struct AccountFeeBuilder {
     default: Option<AccountFeeRate>,
     ends_at: Option<String>,
     fixed: Option<Money>,
+    maximum: Option<AccountFeeRate>,
     minimum: Option<AccountFeeRate>,
     percentage: Option<f64>,
     region: Option<AccountFeeRegion>,
@@ -86,6 +90,11 @@ impl AccountFeeBuilder {
 
     pub fn fixed(mut self, value: Money) -> Self {
         self.fixed = Some(value);
+        self
+    }
+
+    pub fn maximum(mut self, value: AccountFeeRate) -> Self {
+        self.maximum = Some(value);
         self
     }
 
@@ -145,6 +154,7 @@ impl AccountFeeBuilder {
                 .ok_or_else(|| BuildError::missing_field("default"))?,
             ends_at: self.ends_at,
             fixed: self.fixed,
+            maximum: self.maximum,
             minimum: self.minimum,
             percentage: self.percentage,
             region: self.region,
