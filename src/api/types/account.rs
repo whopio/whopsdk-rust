@@ -90,6 +90,9 @@ pub struct Account {
     /// Parent account for connected accounts, or `null` for standalone accounts.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent_account: Option<AccountParent>,
+    /// The account's active first-tier partner. Present on retrieve responses; null when no active first-tier partner is attributed to the account. Omitted from other responses.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub partner: Option<AccountPartner>,
     /// Payment health controls currently applied to the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_controls: Option<AccountPaymentControls>,
@@ -228,6 +231,7 @@ pub struct AccountBuilder {
     other_industry_description: Option<String>,
     owner: Option<UserSummary>,
     parent_account: Option<AccountParent>,
+    partner: Option<AccountPartner>,
     payment_controls: Option<AccountPaymentControls>,
     privacy_policy: Option<File>,
     product_tax_code: Option<HashMap<String, serde_json::Value>>,
@@ -410,6 +414,11 @@ impl AccountBuilder {
 
     pub fn parent_account(mut self, value: AccountParent) -> Self {
         self.parent_account = Some(value);
+        self
+    }
+
+    pub fn partner(mut self, value: AccountPartner) -> Self {
+        self.partner = Some(value);
         self
     }
 
@@ -651,6 +660,7 @@ impl AccountBuilder {
                 .owner
                 .ok_or_else(|| BuildError::missing_field("owner"))?,
             parent_account: self.parent_account,
+            partner: self.partner,
             payment_controls: self.payment_controls,
             privacy_policy: self.privacy_policy,
             product_tax_code: self.product_tax_code,
