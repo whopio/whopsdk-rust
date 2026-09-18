@@ -449,7 +449,7 @@ async fn main() {
 <dl>
 <dd>
 
-**email:** `Option<String>` — The email address of the account owner. Required for Account API key requests.
+**email:** `Option<String>` — The email address of the account owner. Required when creating a connected account.
     
 </dd>
 </dl>

@@ -11,7 +11,7 @@ pub struct CreateAccountsRequest {
     /// The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub country: Option<String>,
-    /// The email address of the account owner. Required for Account API key requests.
+    /// The email address of the account owner. Required when creating a connected account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
     /// Arbitrary key/value metadata to store on the account.
