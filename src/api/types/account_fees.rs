@@ -5,8 +5,6 @@ pub struct AccountFees {
     /// The account these fees are charged to, prefixed `biz_`.
     #[serde(default)]
     pub account_id: String,
-    /// Charged on Whop Ads spend.
-    pub ads: AccountFee,
     /// Charged on bank deposits into the account's balance.
     pub bank_deposit: AccountFee,
     /// Charged on recurring billing.
@@ -82,7 +80,6 @@ impl AccountFees {
 #[non_exhaustive]
 pub struct AccountFeesBuilder {
     account_id: Option<String>,
-    ads: Option<AccountFee>,
     bank_deposit: Option<AccountFee>,
     billing: Option<AccountFee>,
     buyer: Option<AccountFee>,
@@ -117,11 +114,6 @@ pub struct AccountFeesBuilder {
 impl AccountFeesBuilder {
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
-        self
-    }
-
-    pub fn ads(mut self, value: AccountFee) -> Self {
-        self.ads = Some(value);
         self
     }
 
@@ -273,7 +265,6 @@ impl AccountFeesBuilder {
     /// Consumes the builder and constructs a [`AccountFees`].
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](AccountFeesBuilder::account_id)
-    /// - [`ads`](AccountFeesBuilder::ads)
     /// - [`bank_deposit`](AccountFeesBuilder::bank_deposit)
     /// - [`billing`](AccountFeesBuilder::billing)
     /// - [`buyer`](AccountFeesBuilder::buyer)
@@ -305,7 +296,6 @@ impl AccountFeesBuilder {
             account_id: self
                 .account_id
                 .ok_or_else(|| BuildError::missing_field("account_id"))?,
-            ads: self.ads.ok_or_else(|| BuildError::missing_field("ads"))?,
             bank_deposit: self
                 .bank_deposit
                 .ok_or_else(|| BuildError::missing_field("bank_deposit"))?,
