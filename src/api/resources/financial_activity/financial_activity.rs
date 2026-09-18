@@ -92,7 +92,7 @@ impl FinancialActivityClient {
         self.http_client
             .execute_request(
                 Method::GET,
-                "financial-activity",
+                "financial_activity",
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
