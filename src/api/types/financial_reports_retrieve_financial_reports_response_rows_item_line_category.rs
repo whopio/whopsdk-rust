@@ -85,6 +85,7 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     DisputeSettlementReversal,
     DisputeUnreconciledClearing,
     DisputeUnreconciledReversal,
+    EconomicIntelligencePercentageFee,
     ExternalAccountConnectionFee,
     ExternalCardLoadDeposit,
     ExternalCardLoadOffset,
@@ -425,6 +426,9 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             }
             Self::DisputeUnreconciledReversal => {
                 serializer.serialize_str("dispute_unreconciled_reversal")
+            }
+            Self::EconomicIntelligencePercentageFee => {
+                serializer.serialize_str("economic_intelligence_percentage_fee")
             }
             Self::ExternalAccountConnectionFee => {
                 serializer.serialize_str("external_account_connection_fee")
@@ -868,6 +872,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "dispute_settlement_reversal" => Ok(Self::DisputeSettlementReversal),
             "dispute_unreconciled_clearing" => Ok(Self::DisputeUnreconciledClearing),
             "dispute_unreconciled_reversal" => Ok(Self::DisputeUnreconciledReversal),
+            "economic_intelligence_percentage_fee" => Ok(Self::EconomicIntelligencePercentageFee),
             "external_account_connection_fee" => Ok(Self::ExternalAccountConnectionFee),
             "external_card_load_deposit" => Ok(Self::ExternalCardLoadDeposit),
             "external_card_load_offset" => Ok(Self::ExternalCardLoadOffset),
@@ -1187,6 +1192,9 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::DisputeSettlementReversal => write!(f, "dispute_settlement_reversal"),
             Self::DisputeUnreconciledClearing => write!(f, "dispute_unreconciled_clearing"),
             Self::DisputeUnreconciledReversal => write!(f, "dispute_unreconciled_reversal"),
+            Self::EconomicIntelligencePercentageFee => {
+                write!(f, "economic_intelligence_percentage_fee")
+            }
             Self::ExternalAccountConnectionFee => write!(f, "external_account_connection_fee"),
             Self::ExternalCardLoadDeposit => write!(f, "external_card_load_deposit"),
             Self::ExternalCardLoadOffset => write!(f, "external_card_load_offset"),
