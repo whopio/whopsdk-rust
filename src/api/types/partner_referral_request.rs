@@ -22,6 +22,8 @@ pub struct PartnerReferralRequest {
     pub partner: UserSummary,
     /// How the referral request was initiated.
     pub request_type: PartnerReferralRequestRequestType,
+    #[serde(default)]
+    pub rewards: Vec<PartnerReferralReward>,
     /// The approval state, or null for requests without an approval process.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<PartnerReferralRequestStatus>,
@@ -46,6 +48,7 @@ pub struct PartnerReferralRequestBuilder {
     max_redemptions: Option<i64>,
     partner: Option<UserSummary>,
     request_type: Option<PartnerReferralRequestRequestType>,
+    rewards: Option<Vec<PartnerReferralReward>>,
     status: Option<PartnerReferralRequestStatus>,
     updated_at: Option<String>,
 }
@@ -86,6 +89,11 @@ impl PartnerReferralRequestBuilder {
         self
     }
 
+    pub fn rewards(mut self, value: Vec<PartnerReferralReward>) -> Self {
+        self.rewards = Some(value);
+        self
+    }
+
     pub fn status(mut self, value: PartnerReferralRequestStatus) -> Self {
         self.status = Some(value);
         self
@@ -102,6 +110,7 @@ impl PartnerReferralRequestBuilder {
     /// - [`id`](PartnerReferralRequestBuilder::id)
     /// - [`partner`](PartnerReferralRequestBuilder::partner)
     /// - [`request_type`](PartnerReferralRequestBuilder::request_type)
+    /// - [`rewards`](PartnerReferralRequestBuilder::rewards)
     /// - [`updated_at`](PartnerReferralRequestBuilder::updated_at)
     pub fn build(self) -> Result<PartnerReferralRequest, BuildError> {
         Ok(PartnerReferralRequest {
@@ -118,6 +127,9 @@ impl PartnerReferralRequestBuilder {
             request_type: self
                 .request_type
                 .ok_or_else(|| BuildError::missing_field("request_type"))?,
+            rewards: self
+                .rewards
+                .ok_or_else(|| BuildError::missing_field("rewards"))?,
             status: self.status,
             updated_at: self
                 .updated_at
