@@ -63,6 +63,9 @@ pub struct Plan {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub initial_price: f64,
+    /// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring plans, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this plan.
+    #[serde(default)]
+    pub initial_price_due: Money,
     /// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub internal_notes: Option<String>,
@@ -167,6 +170,7 @@ pub struct PlanBuilder {
     id: Option<String>,
     image: Option<HashMap<String, serde_json::Value>>,
     initial_price: Option<f64>,
+    initial_price_due: Option<Money>,
     internal_notes: Option<String>,
     invoice: Option<HashMap<String, serde_json::Value>>,
     member_count: Option<f64>,
@@ -282,6 +286,11 @@ impl PlanBuilder {
 
     pub fn initial_price(mut self, value: f64) -> Self {
         self.initial_price = Some(value);
+        self
+    }
+
+    pub fn initial_price_due(mut self, value: Money) -> Self {
+        self.initial_price_due = Some(value);
         self
     }
 
@@ -408,6 +417,7 @@ impl PlanBuilder {
     /// - [`formatted_price`](PlanBuilder::formatted_price)
     /// - [`id`](PlanBuilder::id)
     /// - [`initial_price`](PlanBuilder::initial_price)
+    /// - [`initial_price_due`](PlanBuilder::initial_price_due)
     /// - [`plan_type`](PlanBuilder::plan_type)
     /// - [`purchase_url`](PlanBuilder::purchase_url)
     /// - [`release_method`](PlanBuilder::release_method)
@@ -450,6 +460,9 @@ impl PlanBuilder {
             initial_price: self
                 .initial_price
                 .ok_or_else(|| BuildError::missing_field("initial_price"))?,
+            initial_price_due: self
+                .initial_price_due
+                .ok_or_else(|| BuildError::missing_field("initial_price_due"))?,
             internal_notes: self.internal_notes,
             invoice: self.invoice,
             member_count: self.member_count,
