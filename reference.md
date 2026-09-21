@@ -28841,6 +28841,7 @@ async fn main() {
                 plan_id: None,
                 promo_code_id: None,
                 return_url: None,
+                shipping_address: None,
                 statement_descriptor: None,
             },
             None,
@@ -28958,6 +28959,14 @@ async fn main() {
 <dd>
 
 **return_url:** `Option<Option<String>>` — Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**shipping_address:** `Option<Option<CreatePaymentsRequestShippingAddress>>` — Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
     
 </dd>
 </dl>

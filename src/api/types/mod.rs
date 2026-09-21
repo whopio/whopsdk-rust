@@ -2096,6 +2096,7 @@ pub mod payments_create_payments_request_plan_product;
 pub mod payments_create_payments_request_plan_product_global_affiliate_status;
 pub mod payments_create_payments_request_plan_product_visibility;
 pub mod payments_create_payments_request_plan_visibility;
+pub mod payments_create_payments_request_shipping_address;
 pub mod payments_list_fees_payments_response;
 pub mod payments_list_fees_payments_response_page_info;
 pub mod payments_list_payments_request_billing_reason;
@@ -3858,6 +3859,7 @@ pub use payments_create_payments_request_plan_product_visibility::{CreatePayment
 pub use payments_create_payments_request_plan_product::{CreatePaymentsRequestPlanProduct};
 pub use payments_create_payments_request_plan_visibility::{CreatePaymentsRequestPlanVisibility};
 pub use payments_create_payments_request_plan::{CreatePaymentsRequestPlan};
+pub use payments_create_payments_request_shipping_address::{CreatePaymentsRequestShippingAddress};
 pub use payments_list_fees_payments_response_page_info::{ListFeesPaymentsResponsePageInfo};
 pub use payments_list_fees_payments_response::{ListFeesPaymentsResponse};
 pub use payments_post_payment_authorized_payload_api_version::{PostPaymentAuthorizedPayloadApiVersion};
