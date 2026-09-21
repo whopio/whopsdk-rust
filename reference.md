@@ -8121,7 +8121,7 @@ async fn main() {
 <dl>
 <dd>
 
-**filters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Filter audiences only. The People filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. Date filters must be rolling windows — `first_seen_within_days` or `last_seen_within_days` — so the audience re-anchors on every refresh; fixed dates such as `first_seen_after` are rejected. Source values are canonical source paths (`whop:<campaign>:<group>:<ad>`, `ext:<platform>:...`, `referrer:<domain>`, `direct`), exact or with a trailing `:*` wildcard.
+**filters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Filter audiences only. The People filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. Activity dates `event_from` and `event_to` are inclusive and remain fixed on refresh. Use `event_within_days`, `first_seen_within_days` or `last_seen_within_days` for a rolling window. Source values are canonical source paths (`whop:<campaign>:<group>:<ad>`, `ext:<platform>:...`, `referrer:<domain>`, `direct`), exact or with a trailing `:*` wildcard.
     
 </dd>
 </dl>
@@ -17278,7 +17278,7 @@ async fn main() {
 <dl>
 <dd>
 
-**source:** `Option<String>` — Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct). Restricts the list to conversion targets attributed to that source — the debuggability twin of a metric cell's source parameter. A whop:... source combined with non-conversion event names (event=pixel.page) instead lists the events whose ad click resolved to that entity — the page views an ad drove.
+**source:** `Option<String>` — Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct, unknown). Selects conversions credited to this source.
     
 </dd>
 </dl>
@@ -29805,7 +29805,7 @@ async fn main() {
 </details>
 
 ## People
-<details><summary><code>client.people.<a href="/src/api/resources/people/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, attribution_model: Option&lt;Option&lt;ListPeopleRequestAttributionModel&gt;&gt;, custom_event: Option&lt;Option&lt;String&gt;&gt;, event_from: Option&lt;Option&lt;String&gt;&gt;, event_to: Option&lt;Option&lt;String&gt;&gt;, audience_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, email: Option&lt;Option&lt;String&gt;&gt;, phone: Option&lt;Option&lt;String&gt;&gt;, country: Option&lt;Option&lt;String&gt;&gt;, has_purchased: Option&lt;Option&lt;bool&gt;&gt;, contactable: Option&lt;Option&lt;bool&gt;&gt;, first_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, last_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, first_seen_after: Option&lt;Option&lt;String&gt;&gt;, first_seen_before: Option&lt;Option&lt;String&gt;&gt;, last_seen_after: Option&lt;Option&lt;String&gt;&gt;, last_seen_before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListPeopleRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPeopleRequestDirection&gt;&gt;) -> Result&lt;ListPeopleResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.people.<a href="/src/api/resources/people/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, attribution_model: Option&lt;Option&lt;ListPeopleRequestAttributionModel&gt;&gt;, custom_event: Option&lt;Option&lt;String&gt;&gt;, event_within_days: Option&lt;Option&lt;i64&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, event_from: Option&lt;Option&lt;String&gt;&gt;, event_to: Option&lt;Option&lt;String&gt;&gt;, audience_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, email: Option&lt;Option&lt;String&gt;&gt;, phone: Option&lt;Option&lt;String&gt;&gt;, country: Option&lt;Option&lt;String&gt;&gt;, has_purchased: Option&lt;Option&lt;bool&gt;&gt;, contactable: Option&lt;Option&lt;bool&gt;&gt;, first_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, last_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, first_seen_after: Option&lt;Option&lt;String&gt;&gt;, first_seen_before: Option&lt;Option&lt;String&gt;&gt;, last_seen_after: Option&lt;Option&lt;String&gt;&gt;, last_seen_before: Option&lt;Option&lt;String&gt;&gt;, ltv_gt: Option&lt;Option&lt;f64&gt;&gt;, ltv_gte: Option&lt;Option&lt;f64&gt;&gt;, ltv_lt: Option&lt;Option&lt;f64&gt;&gt;, ltv_lte: Option&lt;Option&lt;f64&gt;&gt;, aov_gt: Option&lt;Option&lt;f64&gt;&gt;, aov_gte: Option&lt;Option&lt;f64&gt;&gt;, aov_lt: Option&lt;Option&lt;f64&gt;&gt;, aov_lte: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_gt: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_gte: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_lt: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_lte: Option&lt;Option&lt;f64&gt;&gt;, event_count_gt: Option&lt;Option&lt;f64&gt;&gt;, event_count_gte: Option&lt;Option&lt;f64&gt;&gt;, event_count_lt: Option&lt;Option&lt;f64&gt;&gt;, event_count_lte: Option&lt;Option&lt;f64&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListPeopleRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPeopleRequestDirection&gt;&gt;) -> Result&lt;ListPeopleResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -29851,6 +29851,9 @@ async fn main() {
                 query: None,
                 attribution_model: None,
                 custom_event: None,
+                event_within_days: None,
+                from: None,
+                to: None,
                 event_from: None,
                 event_to: None,
                 audience_id: None,
@@ -29866,6 +29869,22 @@ async fn main() {
                 first_seen_before: None,
                 last_seen_after: None,
                 last_seen_before: None,
+                ltv_gt: None,
+                ltv_gte: None,
+                ltv_lt: None,
+                ltv_lte: None,
+                aov_gt: None,
+                aov_gte: None,
+                aov_lt: None,
+                aov_lte: None,
+                purchase_count_gt: None,
+                purchase_count_gte: None,
+                purchase_count_lt: None,
+                purchase_count_lte: None,
+                event_count_gt: None,
+                event_count_gte: None,
+                event_count_lt: None,
+                event_count_lte: None,
                 first: None,
                 after: None,
                 before: None,
@@ -29938,7 +29957,7 @@ async fn main() {
 <dl>
 <dd>
 
-**event_from:** `Option<String>` — With event_to plus an event or source filter, switches to exact-population mode: person ids are resolved and paginated on the events side within this window (the same query the people metric counts), then hydrated per page.
+**event_within_days:** `Option<i64>` — Match activity within a rolling number of days. Cannot be combined with event_from/event_to.
     
 </dd>
 </dl>
@@ -29946,7 +29965,31 @@ async fn main() {
 <dl>
 <dd>
 
-**event_to:** `Option<String>` — The inclusive end of the event window for exact-population mode.
+**from:** `Option<String>` — Inclusive activity-window start. Alias for event_from.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to:** `Option<String>` — Inclusive activity-window end. Alias for event_to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_from:** `Option<String>` — The inclusive start of the matching activity window.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_to:** `Option<String>` — The inclusive end of the matching activity window, for both stats drilldowns and saved audiences.
     
 </dd>
 </dl>
@@ -29986,7 +30029,7 @@ async fn main() {
 <dl>
 <dd>
 
-**country:** `Option<String>` — Only include people whose most recent visit came from this ISO 3166-1 alpha-2 country code.
+**country:** `Option<String>` — Only include people with activity from this ISO 3166-1 alpha-2 country code.
     
 </dd>
 </dl>
@@ -30051,6 +30094,134 @@ async fn main() {
 <dd>
 
 **last_seen_before:** `Option<String>` — Only include people last seen before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_gt:** `Option<f64>` — Select people whose lifetime ltv is greater than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_gte:** `Option<f64>` — Select people whose lifetime ltv is at least this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_lt:** `Option<f64>` — Select people whose lifetime ltv is less than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_lte:** `Option<f64>` — Select people whose lifetime ltv is at most this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_gt:** `Option<f64>` — Select people whose lifetime aov is greater than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_gte:** `Option<f64>` — Select people whose lifetime aov is at least this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_lt:** `Option<f64>` — Select people whose lifetime aov is less than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_lte:** `Option<f64>` — Select people whose lifetime aov is at most this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_gt:** `Option<f64>` — Select people whose lifetime purchase_count is greater than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_gte:** `Option<f64>` — Select people whose lifetime purchase_count is at least this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_lt:** `Option<f64>` — Select people whose lifetime purchase_count is less than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_lte:** `Option<f64>` — Select people whose lifetime purchase_count is at most this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_gt:** `Option<f64>` — Select people whose lifetime event_count is greater than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_gte:** `Option<f64>` — Select people whose lifetime event_count is at least this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_lt:** `Option<f64>` — Select people whose lifetime event_count is less than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_lte:** `Option<f64>` — Select people whose lifetime event_count is at most this value. LTV and AOV are in USD.
     
 </dd>
 </dl>
@@ -36129,7 +36300,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">retrieve</a>(metric: String, account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;String&gt;, to: Option&lt;String&gt;, interval: Option&lt;Option&lt;RetrieveStatsRequestInterval&gt;&gt;, breakdown_by: Option&lt;Option&lt;String&gt;&gt;, convert_to: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, payment_method: Option&lt;Option&lt;String&gt;&gt;, card_network: Option&lt;Option&lt;String&gt;&gt;, dispute_reason: Option&lt;Option&lt;String&gt;&gt;, source: Option&lt;Option&lt;String&gt;&gt;, hostname: Option&lt;Option&lt;String&gt;&gt;, page: Option&lt;Option&lt;String&gt;&gt;, device_type: Option&lt;Option&lt;String&gt;&gt;, country_code: Option&lt;Option&lt;String&gt;&gt;, event_name: Option&lt;Option&lt;String&gt;&gt;, event_type: Option&lt;Option&lt;RetrieveStatsRequestEventType&gt;&gt;, custom_name: Option&lt;Option&lt;String&gt;&gt;, segment: Option&lt;Option&lt;String&gt;&gt;, category: Option&lt;Option&lt;String&gt;&gt;, merchant: Option&lt;Option&lt;String&gt;&gt;, fee_type: Option&lt;Option&lt;String&gt;&gt;, product: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;String&gt;&gt;, access_level: Option&lt;Option&lt;String&gt;&gt;, most_recent_action: Option&lt;Option&lt;String&gt;&gt;, referred_user_id: Option&lt;Option&lt;String&gt;&gt;, snapshot_window: Option&lt;Option&lt;RetrieveStatsRequestSnapshotWindow&gt;&gt;, event: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;RetrieveStatsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">retrieve</a>(metric: String, account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;String&gt;, to: Option&lt;String&gt;, interval: Option&lt;Option&lt;RetrieveStatsRequestInterval&gt;&gt;, breakdown_by: Option&lt;Option&lt;String&gt;&gt;, convert_to: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, payment_method: Option&lt;Option&lt;String&gt;&gt;, card_network: Option&lt;Option&lt;String&gt;&gt;, dispute_reason: Option&lt;Option&lt;String&gt;&gt;, source: Option&lt;Option&lt;String&gt;&gt;, hostname: Option&lt;Option&lt;String&gt;&gt;, page: Option&lt;Option&lt;String&gt;&gt;, device_type: Option&lt;Option&lt;String&gt;&gt;, country_code: Option&lt;Option&lt;String&gt;&gt;, event_name: Option&lt;Option&lt;String&gt;&gt;, event_type: Option&lt;Option&lt;RetrieveStatsRequestEventType&gt;&gt;, custom_name: Option&lt;Option&lt;String&gt;&gt;, segment: Option&lt;Option&lt;String&gt;&gt;, category: Option&lt;Option&lt;String&gt;&gt;, merchant: Option&lt;Option&lt;String&gt;&gt;, fee_type: Option&lt;Option&lt;String&gt;&gt;, product: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;String&gt;&gt;, access_level: Option&lt;Option&lt;String&gt;&gt;, most_recent_action: Option&lt;Option&lt;String&gt;&gt;, referred_user_id: Option&lt;Option&lt;String&gt;&gt;, snapshot_window: Option&lt;Option&lt;RetrieveStatsRequestSnapshotWindow&gt;&gt;, event: Option&lt;Option&lt;String&gt;&gt;, contactable: Option&lt;Option&lt;bool&gt;&gt;, has_purchased: Option&lt;Option&lt;bool&gt;&gt;, first_seen_after: Option&lt;Option&lt;String&gt;&gt;, first_seen_before: Option&lt;Option&lt;String&gt;&gt;, last_seen_after: Option&lt;Option&lt;String&gt;&gt;, last_seen_before: Option&lt;Option&lt;String&gt;&gt;, first_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, last_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, known: Option&lt;Option&lt;bool&gt;&gt;, has_email: Option&lt;Option&lt;bool&gt;&gt;, has_phone: Option&lt;Option&lt;bool&gt;&gt;, ltv_gt: Option&lt;Option&lt;f64&gt;&gt;, ltv_gte: Option&lt;Option&lt;f64&gt;&gt;, ltv_lt: Option&lt;Option&lt;f64&gt;&gt;, ltv_lte: Option&lt;Option&lt;f64&gt;&gt;, aov_gt: Option&lt;Option&lt;f64&gt;&gt;, aov_gte: Option&lt;Option&lt;f64&gt;&gt;, aov_lt: Option&lt;Option&lt;f64&gt;&gt;, aov_lte: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_gt: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_gte: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_lt: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_lte: Option&lt;Option&lt;f64&gt;&gt;, event_count_gt: Option&lt;Option&lt;f64&gt;&gt;, event_count_gte: Option&lt;Option&lt;f64&gt;&gt;, event_count_lt: Option&lt;Option&lt;f64&gt;&gt;, event_count_lte: Option&lt;Option&lt;f64&gt;&gt;) -> Result&lt;RetrieveStatsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -36204,6 +36375,33 @@ async fn main() {
                 referred_user_id: None,
                 snapshot_window: None,
                 event: None,
+                contactable: None,
+                has_purchased: None,
+                first_seen_after: None,
+                first_seen_before: None,
+                last_seen_after: None,
+                last_seen_before: None,
+                first_seen_within_days: None,
+                last_seen_within_days: None,
+                known: None,
+                has_email: None,
+                has_phone: None,
+                ltv_gt: None,
+                ltv_gte: None,
+                ltv_lt: None,
+                ltv_lte: None,
+                aov_gt: None,
+                aov_gte: None,
+                aov_lt: None,
+                aov_lte: None,
+                purchase_count_gt: None,
+                purchase_count_gte: None,
+                purchase_count_lt: None,
+                purchase_count_lte: None,
+                event_count_gt: None,
+                event_count_gte: None,
+                event_count_lt: None,
+                event_count_lte: None,
             },
             None,
         )
@@ -36495,7 +36693,223 @@ async fn main() {
 <dl>
 <dd>
 
-**event:** `Option<String>` — Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separate several to break the metric down by each event. Available on metrics that list event.
+**event:** `Option<String>` — Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**contactable:** `Option<bool>` — People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**has_purchased:** `Option<bool>` — People metric only: has_purchased equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first_seen_after:** `Option<String>` — People metric only: first_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first_seen_before:** `Option<String>` — People metric only: first_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last_seen_after:** `Option<String>` — People metric only: last_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last_seen_before:** `Option<String>` — People metric only: last_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first_seen_within_days:** `Option<i64>` — People metric only: first_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last_seen_within_days:** `Option<i64>` — People metric only: last_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**known:** `Option<bool>` — People metric only: known equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**has_email:** `Option<bool>` — People metric only: has_email equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**has_phone:** `Option<bool>` — People metric only: has_phone equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_gt:** `Option<f64>` — People metric only: ltv greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_gte:** `Option<f64>` — People metric only: ltv greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_lt:** `Option<f64>` — People metric only: ltv less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_lte:** `Option<f64>` — People metric only: ltv less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_gt:** `Option<f64>` — People metric only: aov greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_gte:** `Option<f64>` — People metric only: aov greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_lt:** `Option<f64>` — People metric only: aov less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_lte:** `Option<f64>` — People metric only: aov less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_gt:** `Option<f64>` — People metric only: purchase_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_gte:** `Option<f64>` — People metric only: purchase_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_lt:** `Option<f64>` — People metric only: purchase_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_lte:** `Option<f64>` — People metric only: purchase_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_gt:** `Option<f64>` — People metric only: event_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_gte:** `Option<f64>` — People metric only: event_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_lt:** `Option<f64>` — People metric only: event_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_lte:** `Option<f64>` — People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
     
 </dd>
 </dl>

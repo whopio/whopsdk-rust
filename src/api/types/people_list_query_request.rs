@@ -1,7 +1,7 @@
 pub use crate::prelude::*;
 
 /// Query parameters for list
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct PeopleListQueryRequest {
     /// Account ID, prefixed `biz_`. Optional for account API keys; required for credentials that can access multiple accounts.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -21,12 +21,25 @@ pub struct PeopleListQueryRequest {
     /// Only include people who fired this custom pixel event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_event: Option<String>,
-    /// With event_to plus an event or source filter, switches to exact-population mode: person ids are resolved and paginated on the events side within this window (the same query the people metric counts), then hydrated per page.
+    /// Match activity within a rolling number of days. Cannot be combined with event_from/event_to.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_within_days: Option<i64>,
+    /// Inclusive activity-window start. Alias for event_from.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub from: Option<DateTime<FixedOffset>>,
+    /// Inclusive activity-window end. Alias for event_to.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub to: Option<DateTime<FixedOffset>>,
+    /// The inclusive start of the matching activity window.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub event_from: Option<DateTime<FixedOffset>>,
-    /// The inclusive end of the event window for exact-population mode.
+    /// The inclusive end of the matching activity window, for both stats drilldowns and saved audiences.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
@@ -43,7 +56,7 @@ pub struct PeopleListQueryRequest {
     /// Only include the person linked to this phone number.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub phone: Option<String>,
-    /// Only include people whose most recent visit came from this ISO 3166-1 alpha-2 country code.
+    /// Only include people with activity from this ISO 3166-1 alpha-2 country code.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub country: Option<String>,
     /// true for customers only, false for people who have never purchased.
@@ -78,6 +91,86 @@ pub struct PeopleListQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub last_seen_before: Option<DateTime<FixedOffset>>,
+    /// Select people whose lifetime ltv is greater than this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub ltv_gt: Option<f64>,
+    /// Select people whose lifetime ltv is at least this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub ltv_gte: Option<f64>,
+    /// Select people whose lifetime ltv is less than this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub ltv_lt: Option<f64>,
+    /// Select people whose lifetime ltv is at most this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub ltv_lte: Option<f64>,
+    /// Select people whose lifetime aov is greater than this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub aov_gt: Option<f64>,
+    /// Select people whose lifetime aov is at least this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub aov_gte: Option<f64>,
+    /// Select people whose lifetime aov is less than this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub aov_lt: Option<f64>,
+    /// Select people whose lifetime aov is at most this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub aov_lte: Option<f64>,
+    /// Select people whose lifetime purchase_count is greater than this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub purchase_count_gt: Option<f64>,
+    /// Select people whose lifetime purchase_count is at least this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub purchase_count_gte: Option<f64>,
+    /// Select people whose lifetime purchase_count is less than this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub purchase_count_lt: Option<f64>,
+    /// Select people whose lifetime purchase_count is at most this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub purchase_count_lte: Option<f64>,
+    /// Select people whose lifetime event_count is greater than this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub event_count_gt: Option<f64>,
+    /// Select people whose lifetime event_count is at least this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub event_count_gte: Option<f64>,
+    /// Select people whose lifetime event_count is less than this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub event_count_lt: Option<f64>,
+    /// Select people whose lifetime event_count is at most this value. LTV and AOV are in USD.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub event_count_lte: Option<f64>,
     /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
@@ -110,6 +203,9 @@ pub struct PeopleListQueryRequestBuilder {
     attribution_model: Option<ListPeopleRequestAttributionModel>,
     event_name: Option<Vec<Option<String>>>,
     custom_event: Option<String>,
+    event_within_days: Option<i64>,
+    from: Option<DateTime<FixedOffset>>,
+    to: Option<DateTime<FixedOffset>>,
     event_from: Option<DateTime<FixedOffset>>,
     event_to: Option<DateTime<FixedOffset>>,
     audience_id: Option<String>,
@@ -125,6 +221,22 @@ pub struct PeopleListQueryRequestBuilder {
     first_seen_before: Option<DateTime<FixedOffset>>,
     last_seen_after: Option<DateTime<FixedOffset>>,
     last_seen_before: Option<DateTime<FixedOffset>>,
+    ltv_gt: Option<f64>,
+    ltv_gte: Option<f64>,
+    ltv_lt: Option<f64>,
+    ltv_lte: Option<f64>,
+    aov_gt: Option<f64>,
+    aov_gte: Option<f64>,
+    aov_lt: Option<f64>,
+    aov_lte: Option<f64>,
+    purchase_count_gt: Option<f64>,
+    purchase_count_gte: Option<f64>,
+    purchase_count_lt: Option<f64>,
+    purchase_count_lte: Option<f64>,
+    event_count_gt: Option<f64>,
+    event_count_gte: Option<f64>,
+    event_count_lt: Option<f64>,
+    event_count_lte: Option<f64>,
     first: Option<i64>,
     after: Option<String>,
     before: Option<String>,
@@ -160,6 +272,21 @@ impl PeopleListQueryRequestBuilder {
 
     pub fn custom_event(mut self, value: impl Into<String>) -> Self {
         self.custom_event = Some(value.into());
+        self
+    }
+
+    pub fn event_within_days(mut self, value: i64) -> Self {
+        self.event_within_days = Some(value);
+        self
+    }
+
+    pub fn from(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.from = Some(value);
+        self
+    }
+
+    pub fn to(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.to = Some(value);
         self
     }
 
@@ -238,6 +365,86 @@ impl PeopleListQueryRequestBuilder {
         self
     }
 
+    pub fn ltv_gt(mut self, value: f64) -> Self {
+        self.ltv_gt = Some(value);
+        self
+    }
+
+    pub fn ltv_gte(mut self, value: f64) -> Self {
+        self.ltv_gte = Some(value);
+        self
+    }
+
+    pub fn ltv_lt(mut self, value: f64) -> Self {
+        self.ltv_lt = Some(value);
+        self
+    }
+
+    pub fn ltv_lte(mut self, value: f64) -> Self {
+        self.ltv_lte = Some(value);
+        self
+    }
+
+    pub fn aov_gt(mut self, value: f64) -> Self {
+        self.aov_gt = Some(value);
+        self
+    }
+
+    pub fn aov_gte(mut self, value: f64) -> Self {
+        self.aov_gte = Some(value);
+        self
+    }
+
+    pub fn aov_lt(mut self, value: f64) -> Self {
+        self.aov_lt = Some(value);
+        self
+    }
+
+    pub fn aov_lte(mut self, value: f64) -> Self {
+        self.aov_lte = Some(value);
+        self
+    }
+
+    pub fn purchase_count_gt(mut self, value: f64) -> Self {
+        self.purchase_count_gt = Some(value);
+        self
+    }
+
+    pub fn purchase_count_gte(mut self, value: f64) -> Self {
+        self.purchase_count_gte = Some(value);
+        self
+    }
+
+    pub fn purchase_count_lt(mut self, value: f64) -> Self {
+        self.purchase_count_lt = Some(value);
+        self
+    }
+
+    pub fn purchase_count_lte(mut self, value: f64) -> Self {
+        self.purchase_count_lte = Some(value);
+        self
+    }
+
+    pub fn event_count_gt(mut self, value: f64) -> Self {
+        self.event_count_gt = Some(value);
+        self
+    }
+
+    pub fn event_count_gte(mut self, value: f64) -> Self {
+        self.event_count_gte = Some(value);
+        self
+    }
+
+    pub fn event_count_lt(mut self, value: f64) -> Self {
+        self.event_count_lt = Some(value);
+        self
+    }
+
+    pub fn event_count_lte(mut self, value: f64) -> Self {
+        self.event_count_lte = Some(value);
+        self
+    }
+
     pub fn first(mut self, value: i64) -> Self {
         self.first = Some(value);
         self
@@ -279,6 +486,9 @@ impl PeopleListQueryRequestBuilder {
                 .event_name
                 .ok_or_else(|| BuildError::missing_field("event_name"))?,
             custom_event: self.custom_event,
+            event_within_days: self.event_within_days,
+            from: self.from,
+            to: self.to,
             event_from: self.event_from,
             event_to: self.event_to,
             audience_id: self.audience_id,
@@ -294,6 +504,22 @@ impl PeopleListQueryRequestBuilder {
             first_seen_before: self.first_seen_before,
             last_seen_after: self.last_seen_after,
             last_seen_before: self.last_seen_before,
+            ltv_gt: self.ltv_gt,
+            ltv_gte: self.ltv_gte,
+            ltv_lt: self.ltv_lt,
+            ltv_lte: self.ltv_lte,
+            aov_gt: self.aov_gt,
+            aov_gte: self.aov_gte,
+            aov_lt: self.aov_lt,
+            aov_lte: self.aov_lte,
+            purchase_count_gt: self.purchase_count_gt,
+            purchase_count_gte: self.purchase_count_gte,
+            purchase_count_lt: self.purchase_count_lt,
+            purchase_count_lte: self.purchase_count_lte,
+            event_count_gt: self.event_count_gt,
+            event_count_gte: self.event_count_gte,
+            event_count_lt: self.event_count_lt,
+            event_count_lte: self.event_count_lte,
             first: self.first,
             after: self.after,
             before: self.before,
