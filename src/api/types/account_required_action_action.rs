@@ -6,14 +6,13 @@ pub use crate::prelude::*;
 pub enum AccountRequiredActionAction {
     DepositFunds,
     ReviewHeldPayments,
-    AcceptAirwallexTerms,
     SubmitInformationRequest,
     UpdateAutomaticWithdrawalMethod,
     ReauthorizePayoutMethods,
     UpdatePayoutProfile,
     CardUsageReview,
     VerifyIdentity,
-    VerifyAirwallexAccount,
+    ScaleAccountSetup,
     SignFormationDocuments,
     ConnectFulfillmentTracker,
     SetupApplePayDomains,
@@ -30,7 +29,6 @@ impl Serialize for AccountRequiredActionAction {
         match self {
             Self::DepositFunds => serializer.serialize_str("deposit_funds"),
             Self::ReviewHeldPayments => serializer.serialize_str("review_held_payments"),
-            Self::AcceptAirwallexTerms => serializer.serialize_str("accept_airwallex_terms"),
             Self::SubmitInformationRequest => {
                 serializer.serialize_str("submit_information_request")
             }
@@ -43,7 +41,7 @@ impl Serialize for AccountRequiredActionAction {
             Self::UpdatePayoutProfile => serializer.serialize_str("update_payout_profile"),
             Self::CardUsageReview => serializer.serialize_str("card_usage_review"),
             Self::VerifyIdentity => serializer.serialize_str("verify_identity"),
-            Self::VerifyAirwallexAccount => serializer.serialize_str("verify_airwallex_account"),
+            Self::ScaleAccountSetup => serializer.serialize_str("scale_account_setup"),
             Self::SignFormationDocuments => serializer.serialize_str("sign_formation_documents"),
             Self::ConnectFulfillmentTracker => {
                 serializer.serialize_str("connect_fulfillment_tracker")
@@ -65,14 +63,13 @@ impl<'de> Deserialize<'de> for AccountRequiredActionAction {
         match value.as_str() {
             "deposit_funds" => Ok(Self::DepositFunds),
             "review_held_payments" => Ok(Self::ReviewHeldPayments),
-            "accept_airwallex_terms" => Ok(Self::AcceptAirwallexTerms),
             "submit_information_request" => Ok(Self::SubmitInformationRequest),
             "update_automatic_withdrawal_method" => Ok(Self::UpdateAutomaticWithdrawalMethod),
             "reauthorize_payout_methods" => Ok(Self::ReauthorizePayoutMethods),
             "update_payout_profile" => Ok(Self::UpdatePayoutProfile),
             "card_usage_review" => Ok(Self::CardUsageReview),
             "verify_identity" => Ok(Self::VerifyIdentity),
-            "verify_airwallex_account" => Ok(Self::VerifyAirwallexAccount),
+            "scale_account_setup" => Ok(Self::ScaleAccountSetup),
             "sign_formation_documents" => Ok(Self::SignFormationDocuments),
             "connect_fulfillment_tracker" => Ok(Self::ConnectFulfillmentTracker),
             "setup_apple_pay_domains" => Ok(Self::SetupApplePayDomains),
@@ -89,7 +86,6 @@ impl fmt::Display for AccountRequiredActionAction {
         match self {
             Self::DepositFunds => write!(f, "deposit_funds"),
             Self::ReviewHeldPayments => write!(f, "review_held_payments"),
-            Self::AcceptAirwallexTerms => write!(f, "accept_airwallex_terms"),
             Self::SubmitInformationRequest => write!(f, "submit_information_request"),
             Self::UpdateAutomaticWithdrawalMethod => {
                 write!(f, "update_automatic_withdrawal_method")
@@ -98,7 +94,7 @@ impl fmt::Display for AccountRequiredActionAction {
             Self::UpdatePayoutProfile => write!(f, "update_payout_profile"),
             Self::CardUsageReview => write!(f, "card_usage_review"),
             Self::VerifyIdentity => write!(f, "verify_identity"),
-            Self::VerifyAirwallexAccount => write!(f, "verify_airwallex_account"),
+            Self::ScaleAccountSetup => write!(f, "scale_account_setup"),
             Self::SignFormationDocuments => write!(f, "sign_formation_documents"),
             Self::ConnectFulfillmentTracker => write!(f, "connect_fulfillment_tracker"),
             Self::SetupApplePayDomains => write!(f, "setup_apple_pay_domains"),
