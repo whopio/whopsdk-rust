@@ -4,6 +4,9 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PermissionAction {
+    WaitlistEntryRead,
+    WaitlistEntryCreate,
+    WaitlistEntryCancel,
     ExperimentManage,
     ExperimentRead,
     AiPromptCreate,
@@ -279,6 +282,9 @@ pub enum PermissionAction {
 impl Serialize for PermissionAction {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::WaitlistEntryRead => serializer.serialize_str("waitlist_entry:read"),
+            Self::WaitlistEntryCreate => serializer.serialize_str("waitlist_entry:create"),
+            Self::WaitlistEntryCancel => serializer.serialize_str("waitlist_entry:cancel"),
             Self::ExperimentManage => serializer.serialize_str("experiment:manage"),
             Self::ExperimentRead => serializer.serialize_str("experiment:read"),
             Self::AiPromptCreate => serializer.serialize_str("ai_prompt:create"),
@@ -645,6 +651,9 @@ impl<'de> Deserialize<'de> for PermissionAction {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "waitlist_entry:read" => Ok(Self::WaitlistEntryRead),
+            "waitlist_entry:create" => Ok(Self::WaitlistEntryCreate),
+            "waitlist_entry:cancel" => Ok(Self::WaitlistEntryCancel),
             "experiment:manage" => Ok(Self::ExperimentManage),
             "experiment:read" => Ok(Self::ExperimentRead),
             "ai_prompt:create" => Ok(Self::AiPromptCreate),
@@ -920,6 +929,9 @@ impl<'de> Deserialize<'de> for PermissionAction {
 impl fmt::Display for PermissionAction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::WaitlistEntryRead => write!(f, "waitlist_entry:read"),
+            Self::WaitlistEntryCreate => write!(f, "waitlist_entry:create"),
+            Self::WaitlistEntryCancel => write!(f, "waitlist_entry:cancel"),
             Self::ExperimentManage => write!(f, "experiment:manage"),
             Self::ExperimentRead => write!(f, "experiment:read"),
             Self::AiPromptCreate => write!(f, "ai_prompt:create"),
