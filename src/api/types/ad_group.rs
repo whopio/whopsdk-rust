@@ -189,6 +189,8 @@ pub struct AdGroup {
     pub optimization_goal: Option<AdGroupOptimizationGoal>,
     #[serde(default)]
     pub placements: Vec<AdGroupPlacement>,
+    /// The ad platform this ad group runs on.
+    pub platform: AdGroupPlatform,
     /// USD value of pixel-attributed purchases.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -332,6 +334,7 @@ pub struct AdGroupBuilder {
     minimum_daily_spend: Option<f64>,
     optimization_goal: Option<AdGroupOptimizationGoal>,
     placements: Option<Vec<AdGroupPlacement>>,
+    platform: Option<AdGroupPlatform>,
     purchase_value: Option<f64>,
     purchases: Option<f64>,
     reach: Option<f64>,
@@ -612,6 +615,11 @@ impl AdGroupBuilder {
         self
     }
 
+    pub fn platform(mut self, value: AdGroupPlatform) -> Self {
+        self.platform = Some(value);
+        self
+    }
+
     pub fn purchase_value(mut self, value: f64) -> Self {
         self.purchase_value = Some(value);
         self
@@ -752,6 +760,7 @@ impl AdGroupBuilder {
     /// - [`leads`](AdGroupBuilder::leads)
     /// - [`link_clicks`](AdGroupBuilder::link_clicks)
     /// - [`placements`](AdGroupBuilder::placements)
+    /// - [`platform`](AdGroupBuilder::platform)
     /// - [`purchase_value`](AdGroupBuilder::purchase_value)
     /// - [`purchases`](AdGroupBuilder::purchases)
     /// - [`reach`](AdGroupBuilder::reach)
@@ -874,6 +883,9 @@ impl AdGroupBuilder {
             placements: self
                 .placements
                 .ok_or_else(|| BuildError::missing_field("placements"))?,
+            platform: self
+                .platform
+                .ok_or_else(|| BuildError::missing_field("platform"))?,
             purchase_value: self
                 .purchase_value
                 .ok_or_else(|| BuildError::missing_field("purchase_value"))?,

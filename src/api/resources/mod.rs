@@ -6,6 +6,7 @@
 //! - **AccountLinks**
 //! - **Accounts**
 //! - **Ad Campaigns**
+//! - **Ad Conversion Value Rules**
 //! - **Ad Groups**
 //! - **Ads**
 //! - **Affiliates**
@@ -95,6 +96,7 @@ pub mod access_tokens;
 pub mod account_links;
 pub mod accounts;
 pub mod ad_campaigns;
+pub mod ad_conversion_value_rules;
 pub mod ad_groups;
 pub mod ads;
 pub mod affiliates;
@@ -183,6 +185,7 @@ pub struct Whop {
     pub account_links: AccountLinksClient,
     pub accounts: AccountsClient,
     pub ad_campaigns: AdCampaignsClient,
+    pub ad_conversion_value_rules: AdConversionValueRulesClient,
     pub ad_groups: AdGroupsClient,
     pub ads: AdsClient,
     pub affiliates: AffiliatesClient,
@@ -274,6 +277,7 @@ impl Whop {
             account_links: AccountLinksClient::new(config.clone())?,
             accounts: AccountsClient::new(config.clone())?,
             ad_campaigns: AdCampaignsClient::new(config.clone())?,
+            ad_conversion_value_rules: AdConversionValueRulesClient::new(config.clone())?,
             ad_groups: AdGroupsClient::new(config.clone())?,
             ads: AdsClient::new(config.clone())?,
             affiliates: AffiliatesClient::new(config.clone())?,
@@ -363,6 +367,7 @@ pub use access_tokens::AccessTokensClient;
 pub use account_links::AccountLinksClient;
 pub use accounts::AccountsClient;
 pub use ad_campaigns::AdCampaignsClient;
+pub use ad_conversion_value_rules::AdConversionValueRulesClient;
 pub use ad_groups::AdGroupsClient;
 pub use ads::AdsClient;
 pub use affiliates::AffiliatesClient;
