@@ -23,13 +23,16 @@ impl PeopleClient {
     /// * `attribution_model` - Attribution model the source filter matches against (defaults to last_touch).
     /// * `event_name` - Only include people who fired any of these events, e.g. payment.completed or page.checkout.view.
     /// * `custom_event` - Only include people who fired this custom pixel event.
-    /// * `event_from` - With event_to plus an event or source filter, switches to exact-population mode: person ids are resolved and paginated on the events side within this window (the same query the people metric counts), then hydrated per page.
-    /// * `event_to` - The inclusive end of the event window for exact-population mode.
+    /// * `event_within_days` - Match activity within a rolling number of days. Cannot be combined with event_from/event_to.
+    /// * `from` - Inclusive activity-window start. Alias for event_from.
+    /// * `to` - Inclusive activity-window end. Alias for event_to.
+    /// * `event_from` - The inclusive start of the matching activity window.
+    /// * `event_to` - The inclusive end of the matching activity window, for both stats drilldowns and saved audiences.
     /// * `audience_id` - Only include people in this audience. An audience that keeps itself up to date resolves to the People filters that define it, so this always reflects who matches now; uploaded lists and point-in-time snapshots match their recorded members.
     /// * `user_id` - Only include the person linked to this whop user ID.
     /// * `email` - Only include the person linked to this email address.
     /// * `phone` - Only include the person linked to this phone number.
-    /// * `country` - Only include people whose most recent visit came from this ISO 3166-1 alpha-2 country code.
+    /// * `country` - Only include people with activity from this ISO 3166-1 alpha-2 country code.
     /// * `has_purchased` - true for customers only, false for people who have never purchased.
     /// * `contactable` - true for people who have an email address or phone number — the ones an ad platform can match.
     /// * `first_seen_within_days` - Only include people first seen within this many days, as a rolling window.
@@ -38,6 +41,22 @@ impl PeopleClient {
     /// * `first_seen_before` - Only include people first seen before this ISO 8601 timestamp.
     /// * `last_seen_after` - Only include people last seen at or after this ISO 8601 timestamp.
     /// * `last_seen_before` - Only include people last seen before this ISO 8601 timestamp.
+    /// * `ltv_gt` - Select people whose lifetime ltv is greater than this value. LTV and AOV are in USD.
+    /// * `ltv_gte` - Select people whose lifetime ltv is at least this value. LTV and AOV are in USD.
+    /// * `ltv_lt` - Select people whose lifetime ltv is less than this value. LTV and AOV are in USD.
+    /// * `ltv_lte` - Select people whose lifetime ltv is at most this value. LTV and AOV are in USD.
+    /// * `aov_gt` - Select people whose lifetime aov is greater than this value. LTV and AOV are in USD.
+    /// * `aov_gte` - Select people whose lifetime aov is at least this value. LTV and AOV are in USD.
+    /// * `aov_lt` - Select people whose lifetime aov is less than this value. LTV and AOV are in USD.
+    /// * `aov_lte` - Select people whose lifetime aov is at most this value. LTV and AOV are in USD.
+    /// * `purchase_count_gt` - Select people whose lifetime purchase_count is greater than this value. LTV and AOV are in USD.
+    /// * `purchase_count_gte` - Select people whose lifetime purchase_count is at least this value. LTV and AOV are in USD.
+    /// * `purchase_count_lt` - Select people whose lifetime purchase_count is less than this value. LTV and AOV are in USD.
+    /// * `purchase_count_lte` - Select people whose lifetime purchase_count is at most this value. LTV and AOV are in USD.
+    /// * `event_count_gt` - Select people whose lifetime event_count is greater than this value. LTV and AOV are in USD.
+    /// * `event_count_gte` - Select people whose lifetime event_count is at least this value. LTV and AOV are in USD.
+    /// * `event_count_lt` - Select people whose lifetime event_count is less than this value. LTV and AOV are in USD.
+    /// * `event_count_lte` - Select people whose lifetime event_count is at most this value. LTV and AOV are in USD.
     /// * `first` - Number of results to return from the start of the range.
     /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
@@ -71,6 +90,9 @@ impl PeopleClient {
     ///                 query: None,
     ///                 attribution_model: None,
     ///                 custom_event: None,
+    ///                 event_within_days: None,
+    ///                 from: None,
+    ///                 to: None,
     ///                 event_from: None,
     ///                 event_to: None,
     ///                 audience_id: None,
@@ -86,6 +108,22 @@ impl PeopleClient {
     ///                 first_seen_before: None,
     ///                 last_seen_after: None,
     ///                 last_seen_before: None,
+    ///                 ltv_gt: None,
+    ///                 ltv_gte: None,
+    ///                 ltv_lt: None,
+    ///                 ltv_lte: None,
+    ///                 aov_gt: None,
+    ///                 aov_gte: None,
+    ///                 aov_lt: None,
+    ///                 aov_lte: None,
+    ///                 purchase_count_gt: None,
+    ///                 purchase_count_gte: None,
+    ///                 purchase_count_lt: None,
+    ///                 purchase_count_lte: None,
+    ///                 event_count_gt: None,
+    ///                 event_count_gte: None,
+    ///                 event_count_lt: None,
+    ///                 event_count_lte: None,
     ///                 first: None,
     ///                 after: None,
     ///                 before: None,
@@ -121,6 +159,9 @@ impl PeopleClient {
                     .serialize("attribution_model", request.attribution_model.clone())
                     .string_array("event_name", request.event_name.clone())
                     .string("custom_event", request.custom_event.clone())
+                    .int("event_within_days", request.event_within_days.clone())
+                    .datetime("from", request.from.clone())
+                    .datetime("to", request.to.clone())
                     .datetime("event_from", request.event_from.clone())
                     .datetime("event_to", request.event_to.clone())
                     .string("audience_id", request.audience_id.clone())
@@ -142,6 +183,22 @@ impl PeopleClient {
                     .datetime("first_seen_before", request.first_seen_before.clone())
                     .datetime("last_seen_after", request.last_seen_after.clone())
                     .datetime("last_seen_before", request.last_seen_before.clone())
+                    .float("ltv_gt", request.ltv_gt.clone())
+                    .float("ltv_gte", request.ltv_gte.clone())
+                    .float("ltv_lt", request.ltv_lt.clone())
+                    .float("ltv_lte", request.ltv_lte.clone())
+                    .float("aov_gt", request.aov_gt.clone())
+                    .float("aov_gte", request.aov_gte.clone())
+                    .float("aov_lt", request.aov_lt.clone())
+                    .float("aov_lte", request.aov_lte.clone())
+                    .float("purchase_count_gt", request.purchase_count_gt.clone())
+                    .float("purchase_count_gte", request.purchase_count_gte.clone())
+                    .float("purchase_count_lt", request.purchase_count_lt.clone())
+                    .float("purchase_count_lte", request.purchase_count_lte.clone())
+                    .float("event_count_gt", request.event_count_gt.clone())
+                    .float("event_count_gte", request.event_count_gte.clone())
+                    .float("event_count_lt", request.event_count_lt.clone())
+                    .float("event_count_lte", request.event_count_lte.clone())
                     .int("first", request.first.clone())
                     .string("after", request.after.clone())
                     .string("before", request.before.clone())

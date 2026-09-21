@@ -92,7 +92,34 @@ impl StatsClient {
     /// * `ad_group_ids` - Ad group ids (adgrp_...) to scope the report to; stats are summed across them. Available on metrics that list ad_group_ids.
     /// * `ad_ids` - Ad ids (ad_...) to scope the report to; stats are summed across them. Available on metrics that list ad_ids.
     /// * `snapshot_window` - Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
-    /// * `event` - Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separate several to break the metric down by each event. Available on metrics that list event.
+    /// * `event` - Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
+    /// * `contactable` - People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `has_purchased` - People metric only: has_purchased equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `first_seen_after` - People metric only: first_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `first_seen_before` - People metric only: first_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `last_seen_after` - People metric only: last_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `last_seen_before` - People metric only: last_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `first_seen_within_days` - People metric only: first_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `last_seen_within_days` - People metric only: last_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `known` - People metric only: known equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `has_email` - People metric only: has_email equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `has_phone` - People metric only: has_phone equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `ltv_gt` - People metric only: ltv greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `ltv_gte` - People metric only: ltv greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `ltv_lt` - People metric only: ltv less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `ltv_lte` - People metric only: ltv less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `aov_gt` - People metric only: aov greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `aov_gte` - People metric only: aov greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `aov_lt` - People metric only: aov less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `aov_lte` - People metric only: aov less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `purchase_count_gt` - People metric only: purchase_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `purchase_count_gte` - People metric only: purchase_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `purchase_count_lt` - People metric only: purchase_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `purchase_count_lte` - People metric only: purchase_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `event_count_gt` - People metric only: event_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `event_count_gte` - People metric only: event_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `event_count_lt` - People metric only: event_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `event_count_lte` - People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -150,6 +177,33 @@ impl StatsClient {
     ///                 referred_user_id: None,
     ///                 snapshot_window: None,
     ///                 event: None,
+    ///                 contactable: None,
+    ///                 has_purchased: None,
+    ///                 first_seen_after: None,
+    ///                 first_seen_before: None,
+    ///                 last_seen_after: None,
+    ///                 last_seen_before: None,
+    ///                 first_seen_within_days: None,
+    ///                 last_seen_within_days: None,
+    ///                 known: None,
+    ///                 has_email: None,
+    ///                 has_phone: None,
+    ///                 ltv_gt: None,
+    ///                 ltv_gte: None,
+    ///                 ltv_lt: None,
+    ///                 ltv_lte: None,
+    ///                 aov_gt: None,
+    ///                 aov_gte: None,
+    ///                 aov_lt: None,
+    ///                 aov_lte: None,
+    ///                 purchase_count_gt: None,
+    ///                 purchase_count_gte: None,
+    ///                 purchase_count_lt: None,
+    ///                 purchase_count_lte: None,
+    ///                 event_count_gt: None,
+    ///                 event_count_gte: None,
+    ///                 event_count_lt: None,
+    ///                 event_count_lte: None,
     ///             },
     ///             None,
     ///         )
@@ -209,6 +263,39 @@ impl StatsClient {
                     .string_array("ad_ids", request.ad_ids.clone())
                     .serialize("snapshot_window", request.snapshot_window.clone())
                     .string("event", request.event.clone())
+                    .bool("contactable", request.contactable.clone())
+                    .bool("has_purchased", request.has_purchased.clone())
+                    .datetime("first_seen_after", request.first_seen_after.clone())
+                    .datetime("first_seen_before", request.first_seen_before.clone())
+                    .datetime("last_seen_after", request.last_seen_after.clone())
+                    .datetime("last_seen_before", request.last_seen_before.clone())
+                    .int(
+                        "first_seen_within_days",
+                        request.first_seen_within_days.clone(),
+                    )
+                    .int(
+                        "last_seen_within_days",
+                        request.last_seen_within_days.clone(),
+                    )
+                    .bool("known", request.known.clone())
+                    .bool("has_email", request.has_email.clone())
+                    .bool("has_phone", request.has_phone.clone())
+                    .float("ltv_gt", request.ltv_gt.clone())
+                    .float("ltv_gte", request.ltv_gte.clone())
+                    .float("ltv_lt", request.ltv_lt.clone())
+                    .float("ltv_lte", request.ltv_lte.clone())
+                    .float("aov_gt", request.aov_gt.clone())
+                    .float("aov_gte", request.aov_gte.clone())
+                    .float("aov_lt", request.aov_lt.clone())
+                    .float("aov_lte", request.aov_lte.clone())
+                    .float("purchase_count_gt", request.purchase_count_gt.clone())
+                    .float("purchase_count_gte", request.purchase_count_gte.clone())
+                    .float("purchase_count_lt", request.purchase_count_lt.clone())
+                    .float("purchase_count_lte", request.purchase_count_lte.clone())
+                    .float("event_count_gt", request.event_count_gt.clone())
+                    .float("event_count_gte", request.event_count_gte.clone())
+                    .float("event_count_lt", request.event_count_lt.clone())
+                    .float("event_count_lte", request.event_count_lte.clone())
                     .build(),
                 options,
             )
