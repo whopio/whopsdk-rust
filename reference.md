@@ -2340,6 +2340,685 @@ async fn main() {
 </dl>
 </details>
 
+## Ad Conversion Value Rules
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListAdConversionValueRulesRequestStatus&gt;&gt;, platform: Option&lt;Option&lt;ListAdConversionValueRulesRequestPlatform&gt;&gt;, resource_id: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListAdConversionValueRulesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListAdConversionValueRulesRequestDirection&gt;&gt;) -> Result&lt;ListAdConversionValueRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List saved rules the caller can read. Filter by business with account_id.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .list(
+            &AdConversionValueRulesListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListAdConversionValueRulesRequestStatus>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `Option<ListAdConversionValueRulesRequestPlatform>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resource_id:** `Option<String>` — Campaign, ad group, or ad ID. Return rules covering this item, its ancestors, or its descendants.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListAdConversionValueRulesRequestOrder>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListAdConversionValueRulesRequestDirection>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">create</a>(request: CreateAdConversionValueRulesRequest) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create one rule covering every selected target and event combination. Active rules cannot overlap for the same platform and event. Customer prices and Whop revenue stay unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .create(
+            &CreateAdConversionValueRulesRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                adjustment_type: CreateAdConversionValueRulesRequestAdjustmentType::Fixed,
+                events: vec![CreateAdConversionValueRulesRequestEventsItem {
+                    custom_name: None,
+                    event_name: CreateAdConversionValueRulesRequestEventsItemEventName::Purchase,
+                }],
+                targets: vec![CreateAdConversionValueRulesRequestTargetsItem {
+                    platform: CreateAdConversionValueRulesRequestTargetsItemPlatform::Tiktok,
+                    resource_id: None,
+                    scope: CreateAdConversionValueRulesRequestTargetsItemScope::Business,
+                }],
+                fixed_value: None,
+                metadata: None,
+                percentage_change: None,
+                replace_rule_ids: None,
+                status: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — Business that owns the rule.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adjustment_type:** `CreateAdConversionValueRulesRequestAdjustmentType` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `Vec<CreateAdConversionValueRulesRequestEventsItem>` — Events adjusted on every selected target. Every platform must support every selected event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fixed_value:** `Option<Option<CreateAdConversionValueRulesRequestFixedValue>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**percentage_change:** `Option<Option<f64>>` — Signed percent change from negative 100 to 10000. The sent value cannot go below zero.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replace_rule_ids:** `Option<Vec<String>>` — Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Stale or incomplete conflict selections fail.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<CreateAdConversionValueRulesRequestStatus>` — Initial rule status. Defaults to active.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targets:** `Vec<CreateAdConversionValueRulesRequestTargetsItem>` — Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">retrieve</a>(id: String) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .retrieve(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">delete</a>(id: String) -> Result&lt;DeleteAdConversionValueRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Soft-delete a rule and deactivate all its coverage. Preserve its stored settings.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .delete(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">update</a>(id: String, request: UpdateAdConversionValueRulesRequest) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Edit a rule without changing its status. Supplied targets or events replace that selection in full. Omitted fields stay unchanged. All changes succeed or fail together.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .update(
+            &"id".to_string(),
+            &UpdateAdConversionValueRulesRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adjustment_type:** `Option<UpdateAdConversionValueRulesRequestAdjustmentType>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `Option<Vec<UpdateAdConversionValueRulesRequestEventsItem>>` — Events adjusted on every selected target. Every platform must support every selected event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fixed_value:** `Option<Option<UpdateAdConversionValueRulesRequestFixedValue>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**percentage_change:** `Option<Option<f64>>` — Signed percent change from negative 100 to 10000. The sent value cannot go below zero.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replace_rule_ids:** `Option<Vec<String>>` — Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Stale or incomplete conflict selections fail.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targets:** `Option<Vec<UpdateAdConversionValueRulesRequestTargetsItem>>` — Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">pause</a>(id: String) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Pause the rule across all selected targets and events.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .pause(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">unpause</a>(id: String) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Resume the rule and automatically replace overlapping selections in the same transaction. Other selections keep their values, and broader rules remain as defaults. Rules with no remaining selections are paused. Resuming an already-active rule makes no changes.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .unpause(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Ad Groups
 <details><summary><code>client.ad_groups.<a href="/src/api/resources/ad_groups/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, ad_campaign_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListAdGroupsRequestStatus&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListAdGroupsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListAdGroupsRequestDirection&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, stats_from: Option&lt;Option&lt;String&gt;&gt;, stats_to: Option&lt;Option&lt;String&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, attribution_model: Option&lt;Option&lt;ListAdGroupsRequestAttributionModel&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAdGroupsResponse, ApiError&gt;</code></summary>
 <dl>

@@ -166,6 +166,8 @@ pub struct Ad {
     /// The advertiser-uploaded MP3 a TikTok carousel ad plays. TikTok-only; `null` elsewhere and for non-carousel ads.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub music: Option<AdMusic>,
+    /// The ad platform this ad runs on.
+    pub platform: AdPlatform,
     /// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_id: Option<String>,
@@ -315,6 +317,7 @@ pub struct AdBuilder {
     messaging_config: Option<AdMessagingConfig>,
     multi_advertiser_ads: Option<bool>,
     music: Option<AdMusic>,
+    platform: Option<AdPlatform>,
     post_id: Option<String>,
     post_source: Option<AdPostSource>,
     post_thumbnail_url: Option<String>,
@@ -565,6 +568,11 @@ impl AdBuilder {
         self
     }
 
+    pub fn platform(mut self, value: AdPlatform) -> Self {
+        self.platform = Some(value);
+        self
+    }
+
     pub fn post_id(mut self, value: impl Into<String>) -> Self {
         self.post_id = Some(value.into());
         self
@@ -728,6 +736,7 @@ impl AdBuilder {
     /// - [`lead_value`](AdBuilder::lead_value)
     /// - [`leads`](AdBuilder::leads)
     /// - [`link_clicks`](AdBuilder::link_clicks)
+    /// - [`platform`](AdBuilder::platform)
     /// - [`primary_texts`](AdBuilder::primary_texts)
     /// - [`purchase_value`](AdBuilder::purchase_value)
     /// - [`purchases`](AdBuilder::purchases)
@@ -841,6 +850,9 @@ impl AdBuilder {
             messaging_config: self.messaging_config,
             multi_advertiser_ads: self.multi_advertiser_ads,
             music: self.music,
+            platform: self
+                .platform
+                .ok_or_else(|| BuildError::missing_field("platform"))?,
             post_id: self.post_id,
             post_source: self.post_source,
             post_thumbnail_url: self.post_thumbnail_url,
