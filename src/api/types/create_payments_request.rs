@@ -41,6 +41,9 @@ pub struct CreatePaymentsRequest {
     /// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_url: Option<String>,
+    /// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_address: Option<CreatePaymentsRequestShippingAddress>,
     /// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub statement_descriptor: Option<String>,
@@ -68,6 +71,7 @@ pub struct CreatePaymentsRequestBuilder {
     plan_id: Option<String>,
     promo_code_id: Option<String>,
     return_url: Option<String>,
+    shipping_address: Option<CreatePaymentsRequestShippingAddress>,
     statement_descriptor: Option<String>,
 }
 
@@ -137,6 +141,11 @@ impl CreatePaymentsRequestBuilder {
         self
     }
 
+    pub fn shipping_address(mut self, value: CreatePaymentsRequestShippingAddress) -> Self {
+        self.shipping_address = Some(value);
+        self
+    }
+
     pub fn statement_descriptor(mut self, value: impl Into<String>) -> Self {
         self.statement_descriptor = Some(value.into());
         self
@@ -162,6 +171,7 @@ impl CreatePaymentsRequestBuilder {
             plan_id: self.plan_id,
             promo_code_id: self.promo_code_id,
             return_url: self.return_url,
+            shipping_address: self.shipping_address,
             statement_descriptor: self.statement_descriptor,
         })
     }

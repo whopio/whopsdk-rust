@@ -145,6 +145,7 @@ impl PaymentsClient {
     ///                 plan_id: None,
     ///                 promo_code_id: None,
     ///                 return_url: None,
+    ///                 shipping_address: None,
     ///                 statement_descriptor: None,
     ///             },
     ///             None,
