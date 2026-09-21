@@ -38,7 +38,6 @@
 //! - **DmMembers**
 //! - **Domains**
 //! - **Economic Intelligence**
-//! - **Entries**
 //! - **Events**
 //! - **Experiences**
 //! - **Experiments**
@@ -87,7 +86,9 @@
 //! - **Transfers**
 //! - **Users**
 //! - **Verifications**
+//! - **Waitlist Entries**
 //! - **Webhooks**
+//! - **Entries**
 //! - **Ledgers**
 
 use crate::{ApiError, ClientConfig};
@@ -178,6 +179,7 @@ pub mod topups;
 pub mod transfers;
 pub mod users;
 pub mod verifications;
+pub mod waitlist_entries;
 pub mod webhooks;
 pub struct Whop {
     pub config: ClientConfig,
@@ -217,7 +219,6 @@ pub struct Whop {
     pub dm_members: DmMembersClient,
     pub domains: DomainsClient,
     pub economic_intelligence: EconomicIntelligenceClient,
-    pub entries: EntriesClient,
     pub events: EventsClient,
     pub experiences: ExperiencesClient,
     pub experiments: ExperimentsClient,
@@ -266,6 +267,7 @@ pub struct Whop {
     pub transfers: TransfersClient,
     pub users: UsersClient,
     pub verifications: VerificationsClient,
+    pub waitlist_entries: WaitlistEntriesClient,
     pub webhooks: WebhooksClient,
 }
 
@@ -309,7 +311,6 @@ impl Whop {
             dm_members: DmMembersClient::new(config.clone())?,
             domains: DomainsClient::new(config.clone())?,
             economic_intelligence: EconomicIntelligenceClient::new(config.clone())?,
-            entries: EntriesClient::new(config.clone())?,
             events: EventsClient::new(config.clone())?,
             experiences: ExperiencesClient::new(config.clone())?,
             experiments: ExperimentsClient::new(config.clone())?,
@@ -358,6 +359,7 @@ impl Whop {
             transfers: TransfersClient::new(config.clone())?,
             users: UsersClient::new(config.clone())?,
             verifications: VerificationsClient::new(config.clone())?,
+            waitlist_entries: WaitlistEntriesClient::new(config.clone())?,
             webhooks: WebhooksClient::new(config.clone())?,
         })
     }
@@ -449,4 +451,5 @@ pub use topups::TopupsClient;
 pub use transfers::TransfersClient;
 pub use users::UsersClient;
 pub use verifications::VerificationsClient;
+pub use waitlist_entries::WaitlistEntriesClient;
 pub use webhooks::WebhooksClient;

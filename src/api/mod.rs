@@ -30,6 +30,7 @@ pub use resources::{
     PermissionsClient, PlansClient, ProductsClient, PromoCodesClient, ReactionsClient,
     RefundsClient, ResolutionCenterCasesClient, ReviewsClient, SetupIntentsClient, ShipmentsClient,
     SocialAccountsClient, StatsClient, SupportChannelsClient, SwapsClient, TeamMembersClient,
-    TopupsClient, TransfersClient, UsersClient, VerificationsClient, WebhooksClient, Whop,
+    TopupsClient, TransfersClient, UsersClient, VerificationsClient, WaitlistEntriesClient,
+    WebhooksClient, Whop,
 };
 pub use types::*;
