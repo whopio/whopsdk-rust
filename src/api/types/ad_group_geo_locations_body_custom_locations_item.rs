@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct AdGroupGeoLocationsBodyCustomLocationsItem {
+    /// ISO 3166-1 alpha-2 country the point falls in, as `DE`. Send it under a special ad category: the campaign must declare the countries its ad sets reach, and a coordinate names none.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub country_code: Option<String>,
     /// Unit for `radius`. Defaults to `mile`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub distance_unit: Option<AdGroupGeoLocationsBodyCustomLocationsItemDistanceUnit>,
@@ -31,6 +34,7 @@ impl AdGroupGeoLocationsBodyCustomLocationsItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct AdGroupGeoLocationsBodyCustomLocationsItemBuilder {
+    country_code: Option<String>,
     distance_unit: Option<AdGroupGeoLocationsBodyCustomLocationsItemDistanceUnit>,
     latitude: Option<f64>,
     longitude: Option<f64>,
@@ -39,6 +43,11 @@ pub struct AdGroupGeoLocationsBodyCustomLocationsItemBuilder {
 }
 
 impl AdGroupGeoLocationsBodyCustomLocationsItemBuilder {
+    pub fn country_code(mut self, value: impl Into<String>) -> Self {
+        self.country_code = Some(value.into());
+        self
+    }
+
     pub fn distance_unit(
         mut self,
         value: AdGroupGeoLocationsBodyCustomLocationsItemDistanceUnit,
@@ -74,6 +83,7 @@ impl AdGroupGeoLocationsBodyCustomLocationsItemBuilder {
     /// - [`radius`](AdGroupGeoLocationsBodyCustomLocationsItemBuilder::radius)
     pub fn build(self) -> Result<AdGroupGeoLocationsBodyCustomLocationsItem, BuildError> {
         Ok(AdGroupGeoLocationsBodyCustomLocationsItem {
+            country_code: self.country_code,
             distance_unit: self.distance_unit,
             latitude: self
                 .latitude
