@@ -133,6 +133,7 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     OnchainWithdrawal,
     OnchainWithdrawalOffset,
     OrchestrationPercentageFee,
+    PartnerGrantReward,
     PassthroughGmv,
     PassthroughGmvOffset,
     PaymentDispute,
@@ -511,6 +512,7 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::OrchestrationPercentageFee => {
                 serializer.serialize_str("orchestration_percentage_fee")
             }
+            Self::PartnerGrantReward => serializer.serialize_str("partner_grant_reward"),
             Self::PassthroughGmv => serializer.serialize_str("passthrough_gmv"),
             Self::PassthroughGmvOffset => serializer.serialize_str("passthrough_gmv_offset"),
             Self::PaymentDispute => serializer.serialize_str("payment_dispute"),
@@ -926,6 +928,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "onchain_withdrawal" => Ok(Self::OnchainWithdrawal),
             "onchain_withdrawal_offset" => Ok(Self::OnchainWithdrawalOffset),
             "orchestration_percentage_fee" => Ok(Self::OrchestrationPercentageFee),
+            "partner_grant_reward" => Ok(Self::PartnerGrantReward),
             "passthrough_gmv" => Ok(Self::PassthroughGmv),
             "passthrough_gmv_offset" => Ok(Self::PassthroughGmvOffset),
             "payment_dispute" => Ok(Self::PaymentDispute),
@@ -1256,6 +1259,7 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::OnchainWithdrawal => write!(f, "onchain_withdrawal"),
             Self::OnchainWithdrawalOffset => write!(f, "onchain_withdrawal_offset"),
             Self::OrchestrationPercentageFee => write!(f, "orchestration_percentage_fee"),
+            Self::PartnerGrantReward => write!(f, "partner_grant_reward"),
             Self::PassthroughGmv => write!(f, "passthrough_gmv"),
             Self::PassthroughGmvOffset => write!(f, "passthrough_gmv_offset"),
             Self::PaymentDispute => write!(f, "payment_dispute"),

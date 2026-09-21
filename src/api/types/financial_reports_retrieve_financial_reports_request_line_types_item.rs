@@ -78,6 +78,7 @@ pub enum RetrieveFinancialReportsRequestLineTypesItem {
     OnchainWalletTransferOutgoing,
     OnchainWithdrawal,
     OrchestrationPercentageFee,
+    PartnerGrantReward,
     PassthroughGmv,
     PaymentDispute,
     PaymentDisputeAdjustment,
@@ -265,6 +266,7 @@ impl Serialize for RetrieveFinancialReportsRequestLineTypesItem {
             Self::OrchestrationPercentageFee => {
                 serializer.serialize_str("orchestration_percentage_fee")
             }
+            Self::PartnerGrantReward => serializer.serialize_str("partner_grant_reward"),
             Self::PassthroughGmv => serializer.serialize_str("passthrough_gmv"),
             Self::PaymentDispute => serializer.serialize_str("payment_dispute"),
             Self::PaymentDisputeAdjustment => {
@@ -453,6 +455,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestLineTypesItem {
             "onchain_wallet_transfer_outgoing" => Ok(Self::OnchainWalletTransferOutgoing),
             "onchain_withdrawal" => Ok(Self::OnchainWithdrawal),
             "orchestration_percentage_fee" => Ok(Self::OrchestrationPercentageFee),
+            "partner_grant_reward" => Ok(Self::PartnerGrantReward),
             "passthrough_gmv" => Ok(Self::PassthroughGmv),
             "payment_dispute" => Ok(Self::PaymentDispute),
             "payment_dispute_adjustment" => Ok(Self::PaymentDisputeAdjustment),
@@ -612,6 +615,7 @@ impl fmt::Display for RetrieveFinancialReportsRequestLineTypesItem {
             Self::OnchainWalletTransferOutgoing => write!(f, "onchain_wallet_transfer_outgoing"),
             Self::OnchainWithdrawal => write!(f, "onchain_withdrawal"),
             Self::OrchestrationPercentageFee => write!(f, "orchestration_percentage_fee"),
+            Self::PartnerGrantReward => write!(f, "partner_grant_reward"),
             Self::PassthroughGmv => write!(f, "passthrough_gmv"),
             Self::PaymentDispute => write!(f, "payment_dispute"),
             Self::PaymentDisputeAdjustment => write!(f, "payment_dispute_adjustment"),
