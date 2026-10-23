@@ -93,7 +93,7 @@ async fn the_client_built_with_the_exchanged_token_sends_it() {
 }
 
 #[tokio::test]
-async fn github_actions_requests_the_whop_audience_and_explains_a_missing_permission() {
+async fn github_actions_requests_the_default_or_given_audience_and_explains_a_missing_permission() {
     std::env::remove_var("ACTIONS_ID_TOKEN_REQUEST_URL");
     std::env::remove_var("ACTIONS_ID_TOKEN_REQUEST_TOKEN");
     let missing = oidc::access_token("aurl_xxxxxxxxxxxxx", IdentityToken::github_actions())
@@ -107,6 +107,8 @@ async fn github_actions_requests_the_whop_audience_and_explains_a_missing_permis
     let (address, heads) = serve(vec![
         r#"{"value":"github-id-token"}"#,
         r#"{"access_token":"whop-token-1","expires_in":3600}"#,
+        r#"{"value":"github-id-token"}"#,
+        r#"{"access_token":"whop-token-2","expires_in":3600}"#,
     ])
     .await;
     std::env::set_var(
@@ -116,12 +118,21 @@ async fn github_actions_requests_the_whop_audience_and_explains_a_missing_permis
     std::env::set_var("ACTIONS_ID_TOKEN_REQUEST_TOKEN", "request-token");
 
     let token = oidc::Exchange::new("aurl_xxxxxxxxxxxxx", IdentityToken::github_actions())
-        .base_url(address)
+        .base_url(address.clone())
         .access_token()
         .await
         .unwrap();
+    let custom_token = oidc::Exchange::new(
+        "aurl_xxxxxxxxxxxxx",
+        IdentityToken::github_actions_with_audience("https://example.com"),
+    )
+    .base_url(address)
+    .access_token()
+    .await
+    .unwrap();
 
     assert_eq!(token, "whop-token-1");
+    assert_eq!(custom_token, "whop-token-2");
     let github_request = heads.lock().unwrap()[0].clone();
     assert!(
         github_request
@@ -135,4 +146,11 @@ async fn github_actions_requests_the_whop_audience_and_explains_a_missing_permis
         "{github_request}"
     );
     assert!(heads.lock().unwrap()[1].starts_with("POST /access_tokens/exchange"));
+    let custom_github_request = heads.lock().unwrap()[2].clone();
+    assert!(
+        custom_github_request
+            .starts_with("GET /idtoken?api-version=2.0&audience=https%3A%2F%2Fexample.com"),
+        "{custom_github_request}"
+    );
+    assert!(heads.lock().unwrap()[3].starts_with("POST /access_tokens/exchange"));
 }

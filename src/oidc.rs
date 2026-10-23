@@ -14,6 +14,11 @@
 //! # }
 //! ```
 //!
+//! [`IdentityToken::github_actions`] and [`IdentityToken::google_cloud`] request
+//! [`DEFAULT_AUDIENCE`]. For a trust with another audience, use
+//! [`IdentityToken::github_actions_with_audience`] or
+//! [`IdentityToken::google_cloud_with_audience`].
+//!
 //! The token lasts an hour by default and up to three with [`Exchange::expires_at`]. A long-running
 //! process builds a new client with a fresh token before the old one expires. The module depends on
 //! no generated code, so it survives the client being regenerated.
@@ -23,7 +28,8 @@ use std::time::Duration;
 use chrono::{DateTime, SecondsFormat, Utc};
 use serde::Deserialize;
 
-/// The audience the built-in identity token sources request, and the one to set on your trust.
+/// The audience [`IdentityToken::github_actions`] and [`IdentityToken::google_cloud`] request, and
+/// the one to set on your trust.
 pub const DEFAULT_AUDIENCE: &str = "https://api.whop.com";
 
 const DEFAULT_BASE_URL: &str = "https://api.whop.com/api/v1";
@@ -52,17 +58,29 @@ pub enum IdentityToken {
 }
 
 impl IdentityToken {
-    /// The job's token from GitHub Actions, for the default audience.
+    /// The job's token from GitHub Actions, for [`DEFAULT_AUDIENCE`].
     pub fn github_actions() -> Self {
+        Self::github_actions_with_audience(DEFAULT_AUDIENCE)
+    }
+
+    /// The job's token from GitHub Actions, for `audience`. It must equal the audience on your
+    /// trust.
+    pub fn github_actions_with_audience(audience: impl Into<String>) -> Self {
         Self::GitHubActions {
-            audience: DEFAULT_AUDIENCE.to_string(),
+            audience: audience.into(),
         }
     }
 
-    /// The service account's token from the Google Cloud metadata server, for the default audience.
+    /// The service account's token from the Google Cloud metadata server, for [`DEFAULT_AUDIENCE`].
     pub fn google_cloud() -> Self {
+        Self::google_cloud_with_audience(DEFAULT_AUDIENCE)
+    }
+
+    /// The service account's token from the Google Cloud metadata server, for `audience`. It must
+    /// equal the audience on your trust.
+    pub fn google_cloud_with_audience(audience: impl Into<String>) -> Self {
         Self::GoogleCloud {
-            audience: DEFAULT_AUDIENCE.to_string(),
+            audience: audience.into(),
         }
     }
 
@@ -457,5 +475,37 @@ mod tests {
             "GET /identity?audience=https%3A%2F%2Fexample.com HTTP/1.1"
         );
         assert_eq!(request.header("Metadata-Flavor"), Some("Google"));
+    }
+
+    #[tokio::test]
+    async fn google_cloud_asks_the_metadata_server_for_the_default_or_given_audience() {
+        let (proxy, recorded) =
+            serve(vec![(200, "default-id-token"), (200, "custom-id-token")]).await;
+        let http = reqwest::Client::builder()
+            .proxy(reqwest::Proxy::http(proxy).unwrap())
+            .build()
+            .unwrap();
+
+        let default_token = IdentityToken::google_cloud().resolve(&http).await.unwrap();
+        let custom_token = IdentityToken::google_cloud_with_audience("https://example.com")
+            .resolve(&http)
+            .await
+            .unwrap();
+
+        assert_eq!(default_token, "default-id-token");
+        assert_eq!(custom_token, "custom-id-token");
+        let requests = recorded.lock().unwrap().clone();
+        assert_eq!(
+            requests[0].request_line,
+            format!(
+                "GET {GOOGLE_METADATA_IDENTITY_URL}?audience=https%3A%2F%2Fapi.whop.com HTTP/1.1"
+            )
+        );
+        assert_eq!(
+            requests[1].request_line,
+            format!(
+                "GET {GOOGLE_METADATA_IDENTITY_URL}?audience=https%3A%2F%2Fexample.com HTTP/1.1"
+            )
+        );
     }
 }
