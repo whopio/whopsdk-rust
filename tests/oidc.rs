@@ -92,6 +92,36 @@ async fn the_client_built_with_the_exchanged_token_sends_it() {
     );
 }
 
+#[test]
+fn debug_output_redacts_an_identity_token_value() {
+    let identity_token = IdentityToken::Value("id-token-secret".to_string());
+    let exchange = oidc::Exchange::new("aurl_xxxxxxxxxxxxx", identity_token.clone());
+
+    assert_eq!(format!("{identity_token:?}"), "Value([REDACTED])");
+    for exchange_debug in [format!("{exchange:?}"), format!("{exchange:#?}")] {
+        assert!(
+            !exchange_debug.contains("id-token-secret"),
+            "{exchange_debug}"
+        );
+        assert!(
+            exchange_debug.contains("aurl_xxxxxxxxxxxxx"),
+            "{exchange_debug}"
+        );
+        assert!(exchange_debug.contains("[REDACTED]"), "{exchange_debug}");
+    }
+    assert_eq!(
+        format!("{:?}", IdentityToken::github_actions()),
+        r#"GitHubActions { audience: "https://api.whop.com" }"#
+    );
+    assert_eq!(
+        format!(
+            "{:?}",
+            IdentityToken::google_cloud_with_audience("https://example.com")
+        ),
+        r#"GoogleCloud { audience: "https://example.com" }"#
+    );
+}
+
 #[tokio::test]
 async fn github_actions_requests_the_default_or_given_audience_and_explains_a_missing_permission() {
     std::env::remove_var("ACTIONS_ID_TOKEN_REQUEST_URL");

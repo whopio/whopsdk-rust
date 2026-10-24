@@ -23,6 +23,7 @@
 //! process builds a new client with a fresh token before the old one expires. The module depends on
 //! no generated code, so it survives the client being regenerated.
 
+use std::fmt;
 use std::time::Duration;
 
 use chrono::{DateTime, SecondsFormat, Utc};
@@ -39,8 +40,9 @@ const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 const GOOGLE_METADATA_IDENTITY_URL: &str =
     "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity";
 
-/// Where the identity token comes from.
-#[derive(Debug, Clone)]
+/// Where the identity token comes from. Its `Debug` output redacts a token you pass as
+/// [`IdentityToken::Value`].
+#[derive(Clone)]
 pub enum IdentityToken {
     /// A token you already hold.
     Value(String),
@@ -91,6 +93,25 @@ impl IdentityToken {
             Self::GoogleCloud { audience } => {
                 google_cloud_token(http, GOOGLE_METADATA_IDENTITY_URL, audience).await
             }
+        }
+    }
+}
+
+impl fmt::Debug for IdentityToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Value(_) => f
+                .debug_tuple("Value")
+                .field(&format_args!("[REDACTED]"))
+                .finish(),
+            Self::GitHubActions { audience } => f
+                .debug_struct("GitHubActions")
+                .field("audience", audience)
+                .finish(),
+            Self::GoogleCloud { audience } => f
+                .debug_struct("GoogleCloud")
+                .field("audience", audience)
+                .finish(),
         }
     }
 }
