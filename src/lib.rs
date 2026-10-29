@@ -41,6 +41,7 @@ pub mod config;
 pub mod core;
 pub mod environment;
 pub mod error;
+pub mod oidc;
 pub mod prelude;
 
 pub use api::*;

@@ -31,3 +31,12 @@ LICENSE
 .fern/replay.lock
 .fern/replay.yml
 .gitattributes
+
+# src/oidc.rs is the hand-written OIDC helper: it trades a cloud provider's identity token for
+# a short-lived Whop access token to build the client with. It uses no generated code. The one
+# line that exposes it, `pub mod oidc;` in the generated src/lib.rs, is carried across
+# regenerations by Fern Replay rather than listed here, since listing lib.rs would freeze every
+# generated module declaration. tests/oidc.rs imports whop_sdk::oidc, so if a regeneration ever
+# drops that line the crate's tests stop compiling instead of the helper vanishing silently.
+src/oidc.rs
+tests/oidc.rs
