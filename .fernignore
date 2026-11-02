@@ -40,3 +40,5 @@ LICENSE
 # drops that line the crate's tests stop compiling instead of the helper vanishing silently.
 src/oidc.rs
 tests/oidc.rs
+
+src/helpers/
