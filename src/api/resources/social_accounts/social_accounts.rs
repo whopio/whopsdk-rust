@@ -22,10 +22,10 @@ impl SocialAccountsClient {
     /// * `platform` - Only return social accounts for the platform that is specified.
     /// * `verified` - Only return social accounts that are verified on the platform.
     /// * `scopes` - Only return social accounts that have these scopes.
-    /// * `first` - The number of social accounts to return.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - The number of social accounts to return from the end of the range.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort social accounts by.
     /// * `direction` - Sort direction.
     /// * `options` - Additional request options such as headers, timeout, etc.
@@ -72,6 +72,13 @@ impl SocialAccountsClient {
         request: &SocialAccountsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -95,7 +102,7 @@ impl SocialAccountsClient {
             .await
     }
 
-    /// Creates or returns a Whop-managed Facebook page for an account.
+    /// Creates or returns a Whop-managed Facebook page or TikTok account for an account.
     ///
     /// # Arguments
     ///
@@ -134,6 +141,13 @@ impl SocialAccountsClient {
         request: &CreateSocialAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<SocialAccount, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -172,8 +186,8 @@ impl SocialAccountsClient {
     ///         .connect(
     ///             &ConnectSocialAccountsRequest {
     ///                 platform: ConnectSocialAccountsRequestPlatform::MetaBusiness,
+    ///                 redirect_url: "https://example.com/settings/social-accounts".to_string(),
     ///                 account_id: None,
-    ///                 redirect_url: None,
     ///                 scopes: None,
     ///             },
     ///             None,
@@ -186,6 +200,13 @@ impl SocialAccountsClient {
         request: &ConnectSocialAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ConnectSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -240,6 +261,13 @@ impl SocialAccountsClient {
         request: &SocialAccountsDeleteQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<DeleteSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -296,6 +324,13 @@ impl SocialAccountsClient {
         request: &LeadFormsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<LeadFormsSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -316,8 +351,8 @@ impl SocialAccountsClient {
     /// * `id` - The social account (a sacc_ identifier) whose posts to list.
     /// * `account_id` - The Account (a biz_ identifier) the social account is connected to.
     /// * `post_id` - Return only the single post with this platform id, instead of the full list.
-    /// * `first` - The number of posts to return.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -357,6 +392,13 @@ impl SocialAccountsClient {
         request: &PostsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<PostsSocialAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

@@ -9,16 +9,16 @@ pub struct PartnersBusinessesListQueryRequest {
     /// When true, only businesses with pending or completed earnings paid to the caller.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub has_earnings: Option<bool>,
-    /// Number of partner businesses to return from the start of the window.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// Cursor to fetch the page after (from page_info.end_cursor).
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// Number of partner businesses to return from the end of the window.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// Cursor to fetch the page before (from page_info.start_cursor).
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
     /// The field to sort partner businesses by.
@@ -39,9 +39,12 @@ pub struct PartnersBusinessesListQueryRequest {
     /// Filter by the referred user's exact username. Ignored when `referred_user_id` is present.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub referred_username: Option<String>,
-    /// Filter to only first-tier referrals or only second-tier referrals.
+    /// Filter to referrals from a single tier: first, second, or blueprint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tier: Option<ListBusinessesRequestTier>,
+    /// Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub business_prefix_query: Option<String>,
 }
 
 impl PartnersBusinessesListQueryRequest {
@@ -66,6 +69,7 @@ pub struct PartnersBusinessesListQueryRequestBuilder {
     referred_user_id: Option<String>,
     referred_username: Option<String>,
     tier: Option<ListBusinessesRequestTier>,
+    business_prefix_query: Option<String>,
 }
 
 impl PartnersBusinessesListQueryRequestBuilder {
@@ -134,6 +138,11 @@ impl PartnersBusinessesListQueryRequestBuilder {
         self
     }
 
+    pub fn business_prefix_query(mut self, value: impl Into<String>) -> Self {
+        self.business_prefix_query = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`PartnersBusinessesListQueryRequest`].
     pub fn build(self) -> Result<PartnersBusinessesListQueryRequest, BuildError> {
         Ok(PartnersBusinessesListQueryRequest {
@@ -150,6 +159,7 @@ impl PartnersBusinessesListQueryRequestBuilder {
             referred_user_id: self.referred_user_id,
             referred_username: self.referred_username,
             tier: self.tier,
+            business_prefix_query: self.business_prefix_query,
         })
     }
 }

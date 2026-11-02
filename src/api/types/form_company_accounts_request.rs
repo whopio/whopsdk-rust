@@ -26,7 +26,7 @@ pub struct FormCompanyAccountsRequest {
     /// Request expedited EIN processing for an additional fee. Available only when no founder supplies an SSN.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expedite_ein: Option<bool>,
-    /// Two-letter code of the US state (or `DC`) to form the company in.
+    /// Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
     pub formation_state: FormCompanyAccountsRequestFormationState,
     /// The company's founders. Exactly one must be marked `is_primary` — the responsible party for the filing.
     #[serde(default)]

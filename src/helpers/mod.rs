@@ -4,8 +4,8 @@
 //! no path to be generated from. Everything here depends only on third-party
 //! crates and the standard library, never on generated client code, so it
 //! survives the client being replaced. `.fernignore` keeps the files;
-//! `src/lib.rs` is kept with them because it is generated and is the only place
-//! a Rust module can be declared.
+//! the module declaration in generated `src/lib.rs` follows the existing OIDC
+//! declaration through Fern Replay.
 
 pub mod verify_webhook;
 

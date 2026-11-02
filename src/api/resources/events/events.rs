@@ -21,12 +21,12 @@ impl EventsClient {
     /// * `account_id` - Account ID, prefixed `biz_`. Optional for account API keys; required for credentials that can access multiple accounts.
     /// * `from` - Start of the time range as an ISO 8601 timestamp. Required when identifier is omitted.
     /// * `to` - End of the time range as an ISO 8601 timestamp. Required when identifier is omitted; otherwise defaults to now.
-    /// * `first` - The number of events to return.
-    /// * `after` - A cursor for fetching events after a previous page.
-    /// * `before` - A cursor for fetching events before a later page.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `direction` - The order events are returned in by time. Defaults to desc (most recent first); asc reads a journey forwards from where it starts. after and before always page forwards and backwards through that order.
     /// * `event` - Full event names to filter by, comma-separated (payment.completed, pixel.lead, pixel.page, pixel.custom:<name>) — the same vocabulary the events / people metrics use.
-    /// * `source` - Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct). Restricts the list to conversion targets attributed to that source — the debuggability twin of a metric cell's source parameter.
+    /// * `source` - Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct, unknown). Selects conversions credited to this source.
     /// * `attribution_model` - Attribution model for the source filter (defaults to last_touch).
     /// * `country` - Country codes to filter by, comma-separated.
     /// * `city` - Cities to filter by, comma-separated.
@@ -70,6 +70,13 @@ impl EventsClient {
         request: &EventsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListEventsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -130,6 +137,8 @@ impl EventsClient {
     ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 event_name: "coating_deposit_paid".to_string(),
     ///                 action_source: None,
+    ///                 app_build_id: None,
+    ///                 app_id: None,
     ///                 context: None,
     ///                 currency: None,
     ///                 custom_name: None,
@@ -156,6 +165,13 @@ impl EventsClient {
         request: &CreateEventsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateEventsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -172,9 +188,9 @@ impl EventsClient {
     /// # Arguments
     ///
     /// * `event` - Filter to one or more types, comma separated — for example `purchase,card_spend`. These are the item's `type`, not its `event_name`: several types share the `ledger_line.created` event name. Omit for every type in the feed. Values outside the feed's own set are rejected.
-    /// * `first` - The number of events to return.
-    /// * `after` - A cursor for fetching events after a previous page.
-    /// * `before` - A cursor for fetching events before a later page.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -209,6 +225,13 @@ impl EventsClient {
         request: &PulseQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<PulseEventsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -263,6 +286,13 @@ impl EventsClient {
         request: &ValidatePixelEventsRequest,
         options: Option<RequestOptions>,
     ) -> Result<PixelValidation, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

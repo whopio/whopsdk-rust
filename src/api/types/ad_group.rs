@@ -24,7 +24,7 @@ pub struct AdGroup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub budget_amount: Option<f64>,
-    /// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+    /// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub budget_type: Option<AdGroupBudgetType>,
     /// Clicks divided by impressions, between 0 and 1.
@@ -136,7 +136,7 @@ pub struct AdGroup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub desired_cost_per_result: Option<f64>,
-    /// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting, and unavailable to campaigns with special_ad_categories.
+    /// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting. Special ad category campaigns are limited to approved interests.
     #[serde(default)]
     pub detailed_targeting: AdGroupDetailedTargeting,
     /// Device platforms and operating systems targeted.
@@ -175,6 +175,10 @@ pub struct AdGroup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub leads: f64,
+    /// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub link_clicks: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub message_apps: Option<Vec<AdGroupMessageAppsItem>>,
     /// Minimum the ad group tries to spend each day. `null` when no floor is set.
@@ -185,6 +189,8 @@ pub struct AdGroup {
     pub optimization_goal: Option<AdGroupOptimizationGoal>,
     #[serde(default)]
     pub placements: Vec<AdGroupPlacement>,
+    /// The ad platform this ad group runs on.
+    pub platform: AdGroupPlatform,
     /// USD value of pixel-attributed purchases.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -323,10 +329,12 @@ pub struct AdGroupBuilder {
     languages: Option<Vec<String>>,
     lead_value: Option<f64>,
     leads: Option<f64>,
+    link_clicks: Option<f64>,
     message_apps: Option<Vec<AdGroupMessageAppsItem>>,
     minimum_daily_spend: Option<f64>,
     optimization_goal: Option<AdGroupOptimizationGoal>,
     placements: Option<Vec<AdGroupPlacement>>,
+    platform: Option<AdGroupPlatform>,
     purchase_value: Option<f64>,
     purchases: Option<f64>,
     reach: Option<f64>,
@@ -582,6 +590,11 @@ impl AdGroupBuilder {
         self
     }
 
+    pub fn link_clicks(mut self, value: f64) -> Self {
+        self.link_clicks = Some(value);
+        self
+    }
+
     pub fn message_apps(mut self, value: Vec<AdGroupMessageAppsItem>) -> Self {
         self.message_apps = Some(value);
         self
@@ -599,6 +612,11 @@ impl AdGroupBuilder {
 
     pub fn placements(mut self, value: Vec<AdGroupPlacement>) -> Self {
         self.placements = Some(value);
+        self
+    }
+
+    pub fn platform(mut self, value: AdGroupPlatform) -> Self {
+        self.platform = Some(value);
         self
     }
 
@@ -740,7 +758,9 @@ impl AdGroupBuilder {
     /// - [`languages`](AdGroupBuilder::languages)
     /// - [`lead_value`](AdGroupBuilder::lead_value)
     /// - [`leads`](AdGroupBuilder::leads)
+    /// - [`link_clicks`](AdGroupBuilder::link_clicks)
     /// - [`placements`](AdGroupBuilder::placements)
+    /// - [`platform`](AdGroupBuilder::platform)
     /// - [`purchase_value`](AdGroupBuilder::purchase_value)
     /// - [`purchases`](AdGroupBuilder::purchases)
     /// - [`reach`](AdGroupBuilder::reach)
@@ -854,12 +874,18 @@ impl AdGroupBuilder {
             leads: self
                 .leads
                 .ok_or_else(|| BuildError::missing_field("leads"))?,
+            link_clicks: self
+                .link_clicks
+                .ok_or_else(|| BuildError::missing_field("link_clicks"))?,
             message_apps: self.message_apps,
             minimum_daily_spend: self.minimum_daily_spend,
             optimization_goal: self.optimization_goal,
             placements: self
                 .placements
                 .ok_or_else(|| BuildError::missing_field("placements"))?,
+            platform: self
+                .platform
+                .ok_or_else(|| BuildError::missing_field("platform"))?,
             purchase_value: self
                 .purchase_value
                 .ok_or_else(|| BuildError::missing_field("purchase_value"))?,

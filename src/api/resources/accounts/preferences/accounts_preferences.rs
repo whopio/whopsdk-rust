@@ -48,6 +48,13 @@ impl PreferencesClient {
         account_id: &str,
         options: Option<RequestOptions>,
     ) -> Result<RetrievePreferencesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -59,7 +66,7 @@ impl PreferencesClient {
             .await
     }
 
-    /// Updates the account's preferences. Each top-level key present in the body is replaced as a whole; omitted keys are left untouched. `ads_triple_whale_integration` takes the Data-In API key to connect with, or `null` to disconnect. `ads_payment_methods` always requires a `primary` entry. `backup` is optional and any pairing is allowed — two cards, `card`+`platform_balance`, or a single method — so a card-only advertiser can fund ads without a platform balance. The `primary` and `backup` must be different sources. A `platform_balance` entry may omit `id` to use the account's default Whop balance. Configuring a `card` requires a user token; account API keys can set up platform-balance billing only.
+    /// Updates the account's preferences. Each top-level key present in the body is replaced as a whole; omitted keys are left untouched.
     ///
     /// # Arguments
     ///
@@ -101,6 +108,13 @@ impl PreferencesClient {
         request: &UpdatePreferencesRequest,
         options: Option<RequestOptions>,
     ) -> Result<UpdatePreferencesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

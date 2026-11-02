@@ -2,12 +2,15 @@ use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
 use reqwest::Method;
 
+pub mod fees;
+pub use fees::FeesClient;
 pub mod preferences;
 pub use preferences::PreferencesClient;
 pub mod reserves;
 pub use reserves::ReservesClient;
 pub struct AccountsClient {
     pub http_client: HttpClient,
+    pub fees: FeesClient,
     pub preferences: PreferencesClient,
     pub reserves: ReservesClient,
 }
@@ -16,6 +19,7 @@ impl AccountsClient {
     pub fn new(config: ClientConfig) -> Result<Self, ApiError> {
         Ok(Self {
             http_client: HttpClient::new(config.clone())?,
+            fees: FeesClient::new(config.clone())?,
             preferences: PreferencesClient::new(config.clone())?,
             reserves: ReservesClient::new(config.clone())?,
         })
@@ -25,10 +29,10 @@ impl AccountsClient {
     ///
     /// # Arguments
     ///
-    /// * `first` - The number of accounts to return (default 10, max 50).
-    /// * `after` - A cursor; returns accounts after this position.
-    /// * `last` - The number of accounts to return from the end of the range.
-    /// * `before` - A cursor; returns accounts before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort accounts by. `volume` requires `stats:read` on the parent account.
     /// * `direction` - Sort direction.
     /// * `status` - Return only accounts with this status: `active` (includes accounts that have not entered payments review) or `suspended`.
@@ -72,6 +76,13 @@ impl AccountsClient {
         request: &AccountsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -135,6 +146,13 @@ impl AccountsClient {
         request: &CreateAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -172,6 +190,13 @@ impl AccountsClient {
     /// }
     /// ```
     pub async fn me(&self, options: Option<RequestOptions>) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, "accounts/me", None, None, options)
             .await
@@ -208,6 +233,13 @@ impl AccountsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -260,6 +292,13 @@ impl AccountsClient {
         request: &UpdateAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -315,7 +354,7 @@ impl AccountsClient {
     ///                 entity_suffix: Some(FormCompanyAccountsRequestEntitySuffix::Llc),
     ///                 entity_type: Some(FormCompanyAccountsRequestEntityType::Llc),
     ///                 expedite_ein: Some(true),
-    ///                 formation_state: FormCompanyAccountsRequestFormationState::Tx,
+    ///                 formation_state: FormCompanyAccountsRequestFormationState::Wy,
     ///                 founders: vec![FormCompanyAccountsRequestFoundersItem {
     ///                     address: FormCompanyAccountsRequestFoundersItemAddress {
     ///                         city: "Austin".to_string(),
@@ -359,6 +398,13 @@ impl AccountsClient {
         request: &FormCompanyAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<FormCompanyAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -370,11 +416,59 @@ impl AccountsClient {
             .await
     }
 
+    /// Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Connected account ID, prefixed `biz_`.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client.accounts.suspend(&"id".to_string(), None).await;
+    /// }
+    /// ```
+    pub async fn suspend(
+        &self,
+        id: &str,
+        options: Option<RequestOptions>,
+    ) -> Result<Account, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::POST,
+                &format!("accounts/{}/suspend", id),
+                None,
+                None,
+                options,
+            )
+            .await
+    }
+
     /// Transfers ownership of the account to another user, identified by user ID or email address. If the recipient already holds the owner role, ownership moves immediately; otherwise they get an invite and ownership moves when they accept.
     ///
     /// # Arguments
     ///
-    /// * `id` - Account ID, prefixed `biz_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -400,6 +494,7 @@ impl AccountsClient {
     ///             &TransferOwnershipAccountsRequest {
     ///                 identifier: "marcus@shinetime.example".to_string(),
     ///                 as_partner: None,
+    ///                 message: None,
     ///             },
     ///             None,
     ///         )
@@ -412,6 +507,13 @@ impl AccountsClient {
         request: &TransferOwnershipAccountsRequest,
         options: Option<RequestOptions>,
     ) -> Result<TransferOwnershipAccountsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

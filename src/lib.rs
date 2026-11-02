@@ -33,7 +33,6 @@
 //! - [`config`] - Configuration options
 //! - [`core`] - Core utilities and infrastructure
 //! - [`error`] - Error types and handling
-//! - [`helpers`] - Hand-written helpers Fern cannot generate
 //! - [`prelude`] - Common imports for convenience
 
 pub mod api;
@@ -43,6 +42,7 @@ pub mod core;
 pub mod environment;
 pub mod error;
 pub mod helpers;
+pub mod oidc;
 pub mod prelude;
 
 pub use api::*;

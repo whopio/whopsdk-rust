@@ -10,7 +10,7 @@ pub struct PostRefundCreatedPayload {
     /// The dated API version (Api-Version-Date) the payload is serialized to
     #[serde(skip_serializing_if = "Option::is_none")]
     pub api_version_date: Option<String>,
-    pub data: Refund,
+    pub data: RefundLegacy,
     /// A unique ID for every single webhook request
     #[serde(default)]
     pub id: String,
@@ -37,7 +37,7 @@ pub struct PostRefundCreatedPayloadBuilder {
     account_id: Option<String>,
     api_version: Option<PostRefundCreatedPayloadApiVersion>,
     api_version_date: Option<String>,
-    data: Option<Refund>,
+    data: Option<RefundLegacy>,
     id: Option<String>,
     previous_attributes: Option<HashMap<String, serde_json::Value>>,
     timestamp: Option<DateTime<FixedOffset>>,
@@ -60,7 +60,7 @@ impl PostRefundCreatedPayloadBuilder {
         self
     }
 
-    pub fn data(mut self, value: Refund) -> Self {
+    pub fn data(mut self, value: RefundLegacy) -> Self {
         self.data = Some(value);
         self
     }

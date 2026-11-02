@@ -23,17 +23,18 @@ impl BusinessesClient {
     ///
     /// * `status` - Filter by referral status.
     /// * `has_earnings` - When true, only businesses with pending or completed earnings paid to the caller.
-    /// * `first` - Number of partner businesses to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of partner businesses to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort partner businesses by.
     /// * `direction` - Sort direction.
     /// * `created_before` - Only return partner businesses created before this timestamp.
     /// * `created_after` - Only return partner businesses created after this timestamp.
     /// * `referred_user_id` - Filter to referrals attributed to this user. For first-tier referrals, this is the referred account owner; for second-tier referrals, this is the partner you recruited.
     /// * `referred_username` - Filter by the referred user's exact username. Ignored when `referred_user_id` is present.
-    /// * `tier` - Filter to only first-tier referrals or only second-tier referrals.
+    /// * `tier` - Filter to referrals from a single tier: first, second, or blueprint.
+    /// * `business_prefix_query` - Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -69,6 +70,13 @@ impl BusinessesClient {
         request: &PartnersBusinessesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListBusinessesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -88,6 +96,10 @@ impl BusinessesClient {
                     .string("referred_user_id", request.referred_user_id.clone())
                     .string("referred_username", request.referred_username.clone())
                     .serialize("tier", request.tier.clone())
+                    .string(
+                        "business_prefix_query",
+                        request.business_prefix_query.clone(),
+                    )
                     .build(),
                 options,
             )
@@ -129,6 +141,13 @@ impl BusinessesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<RetrieveBusinessesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

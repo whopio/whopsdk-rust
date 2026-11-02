@@ -24,10 +24,10 @@ pub struct SocialAccount {
     pub profile_picture_url: Option<String>,
     #[serde(default)]
     pub scopes: Vec<String>,
-    /// The URL where the social account can be accessed on the platform. Null while a Whop-owned page is still being provisioned.
+    /// The URL where the social account can be accessed on the platform. Null while a Whop-owned account is still being provisioned.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// The username of the social account on the platform. Null while a Whop-owned page is still being provisioned.
+    /// The username of the social account on the platform. Null while a Whop-owned account is still being provisioned.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub username: Option<String>,
     /// Whether the social account is verified on the platform.

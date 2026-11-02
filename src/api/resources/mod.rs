@@ -6,12 +6,13 @@
 //! - **AccountLinks**
 //! - **Accounts**
 //! - **Ad Campaigns**
+//! - **Ad Conversion Value Rules**
 //! - **Ad Groups**
-//! - **AdReports**
 //! - **Ads**
 //! - **Affiliates**
 //! - **AiChats**
 //! - **API Keys**
+//! - **Api Logs**
 //! - **App Builds**
 //! - **Apps**
 //! - **Audiences**
@@ -20,10 +21,11 @@
 //! - **Bounty Submissions**
 //! - **CardTransactions**
 //! - **Cards**
+//! - **Cashback Rules**
 //! - **ChatChannels**
 //! - **Checkout Configurations**
-//! - **Companies**
 //! - **CompanyTokenTransactions**
+//! - **Confirmation Tokens**
 //! - **CourseChapters**
 //! - **CourseLessonInteractions**
 //! - **CourseLessons**
@@ -34,14 +36,16 @@
 //! - **Disputes**
 //! - **DmChannels**
 //! - **DmMembers**
-//! - **Entries**
+//! - **Domains**
+//! - **Economic Intelligence**
 //! - **Events**
 //! - **Experiences**
+//! - **Experiments**
 //! - **Exports**
 //! - **FeeMarkups**
 //! - **Files**
 //! - **FinancialActivity**
-//! - **Ledgers**
+//! - **FinancialReports**
 //! - **ForumPosts**
 //! - **Forums**
 //! - **IdentityProfiles**
@@ -53,9 +57,11 @@
 //! - **Memberships**
 //! - **Messages**
 //! - **Notifications**
+//! - **Partner Referral Requests**
 //! - **Partners**
 //! - **Payment Method Domains**
 //! - **PaymentMethods**
+//! - **Payment Rules**
 //! - **Payments**
 //! - **PayoutAccounts**
 //! - **PayoutMethods**
@@ -66,7 +72,6 @@
 //! - **Products**
 //! - **Promo Codes**
 //! - **Reactions**
-//! - **Recommended Actions**
 //! - **Refunds**
 //! - **Resolution Center Cases**
 //! - **Reviews**
@@ -81,8 +86,10 @@
 //! - **Transfers**
 //! - **Users**
 //! - **Verifications**
+//! - **Waitlist Entries**
 //! - **Webhooks**
-//! - **Withdrawals**
+//! - **Entries**
+//! - **Ledgers**
 
 use crate::{ApiError, ClientConfig};
 
@@ -90,12 +97,13 @@ pub mod access_tokens;
 pub mod account_links;
 pub mod accounts;
 pub mod ad_campaigns;
+pub mod ad_conversion_value_rules;
 pub mod ad_groups;
-pub mod ad_reports;
 pub mod ads;
 pub mod affiliates;
 pub mod ai_chats;
 pub mod api_keys;
+pub mod api_logs;
 pub mod app_builds;
 pub mod apps;
 pub mod audiences;
@@ -104,10 +112,11 @@ pub mod bounties;
 pub mod bounty_submissions;
 pub mod card_transactions;
 pub mod cards;
+pub mod cashback_rules;
 pub mod chat_channels;
 pub mod checkout_configurations;
-pub mod companies;
 pub mod company_token_transactions;
+pub mod confirmation_tokens;
 pub mod course_chapters;
 pub mod course_lesson_interactions;
 pub mod course_lessons;
@@ -118,13 +127,17 @@ pub mod dispute_alerts;
 pub mod disputes;
 pub mod dm_channels;
 pub mod dm_members;
+pub mod domains;
+pub mod economic_intelligence;
 pub mod entries;
 pub mod events;
 pub mod experiences;
+pub mod experiments;
 pub mod exports;
 pub mod fee_markups;
 pub mod files;
 pub mod financial_activity;
+pub mod financial_reports;
 pub mod forum_posts;
 pub mod forums;
 pub mod identity_profiles;
@@ -137,9 +150,11 @@ pub mod members;
 pub mod memberships;
 pub mod messages;
 pub mod notifications;
+pub mod partner_referral_requests;
 pub mod partners;
 pub mod payment_method_domains;
 pub mod payment_methods;
+pub mod payment_rules;
 pub mod payments;
 pub mod payout_accounts;
 pub mod payout_methods;
@@ -150,7 +165,6 @@ pub mod plans;
 pub mod products;
 pub mod promo_codes;
 pub mod reactions;
-pub mod recommended_actions;
 pub mod refunds;
 pub mod resolution_center_cases;
 pub mod reviews;
@@ -165,20 +179,21 @@ pub mod topups;
 pub mod transfers;
 pub mod users;
 pub mod verifications;
+pub mod waitlist_entries;
 pub mod webhooks;
-pub mod withdrawals;
 pub struct Whop {
     pub config: ClientConfig,
     pub access_tokens: AccessTokensClient,
     pub account_links: AccountLinksClient,
     pub accounts: AccountsClient,
     pub ad_campaigns: AdCampaignsClient,
+    pub ad_conversion_value_rules: AdConversionValueRulesClient,
     pub ad_groups: AdGroupsClient,
-    pub ad_reports: AdReportsClient,
     pub ads: AdsClient,
     pub affiliates: AffiliatesClient,
     pub ai_chats: AiChatsClient,
     pub api_keys: ApiKeysClient,
+    pub api_logs: ApiLogsClient,
     pub app_builds: AppBuildsClient,
     pub apps: AppsClient,
     pub audiences: AudiencesClient,
@@ -187,10 +202,11 @@ pub struct Whop {
     pub bounty_submissions: BountySubmissionsClient,
     pub card_transactions: CardTransactionsClient,
     pub cards: CardsClient,
+    pub cashback_rules: CashbackRulesClient,
     pub chat_channels: ChatChannelsClient,
     pub checkout_configurations: CheckoutConfigurationsClient,
-    pub companies: CompaniesClient,
     pub company_token_transactions: CompanyTokenTransactionsClient,
+    pub confirmation_tokens: ConfirmationTokensClient,
     pub course_chapters: CourseChaptersClient,
     pub course_lesson_interactions: CourseLessonInteractionsClient,
     pub course_lessons: CourseLessonsClient,
@@ -201,14 +217,16 @@ pub struct Whop {
     pub disputes: DisputesClient,
     pub dm_channels: DmChannelsClient,
     pub dm_members: DmMembersClient,
-    pub entries: EntriesClient,
+    pub domains: DomainsClient,
+    pub economic_intelligence: EconomicIntelligenceClient,
     pub events: EventsClient,
     pub experiences: ExperiencesClient,
+    pub experiments: ExperimentsClient,
     pub exports: ExportsClient,
     pub fee_markups: FeeMarkupsClient,
     pub files: FilesClient,
     pub financial_activity: FinancialActivityClient,
-    pub ledgers: LedgersClient,
+    pub financial_reports: FinancialReportsClient,
     pub forum_posts: ForumPostsClient,
     pub forums: ForumsClient,
     pub identity_profiles: IdentityProfilesClient,
@@ -220,9 +238,11 @@ pub struct Whop {
     pub memberships: MembershipsClient,
     pub messages: MessagesClient,
     pub notifications: NotificationsClient,
+    pub partner_referral_requests: PartnerReferralRequestsClient,
     pub partners: PartnersClient,
     pub payment_method_domains: PaymentMethodDomainsClient,
     pub payment_methods: PaymentMethodsClient,
+    pub payment_rules: PaymentRulesClient,
     pub payments: PaymentsClient,
     pub payout_accounts: PayoutAccountsClient,
     pub payout_methods: PayoutMethodsClient,
@@ -233,7 +253,6 @@ pub struct Whop {
     pub products: ProductsClient,
     pub promo_codes: PromoCodesClient,
     pub reactions: ReactionsClient,
-    pub recommended_actions: RecommendedActionsClient,
     pub refunds: RefundsClient,
     pub resolution_center_cases: ResolutionCenterCasesClient,
     pub reviews: ReviewsClient,
@@ -248,8 +267,8 @@ pub struct Whop {
     pub transfers: TransfersClient,
     pub users: UsersClient,
     pub verifications: VerificationsClient,
+    pub waitlist_entries: WaitlistEntriesClient,
     pub webhooks: WebhooksClient,
-    pub withdrawals: WithdrawalsClient,
 }
 
 impl Whop {
@@ -260,12 +279,13 @@ impl Whop {
             account_links: AccountLinksClient::new(config.clone())?,
             accounts: AccountsClient::new(config.clone())?,
             ad_campaigns: AdCampaignsClient::new(config.clone())?,
+            ad_conversion_value_rules: AdConversionValueRulesClient::new(config.clone())?,
             ad_groups: AdGroupsClient::new(config.clone())?,
-            ad_reports: AdReportsClient::new(config.clone())?,
             ads: AdsClient::new(config.clone())?,
             affiliates: AffiliatesClient::new(config.clone())?,
             ai_chats: AiChatsClient::new(config.clone())?,
             api_keys: ApiKeysClient::new(config.clone())?,
+            api_logs: ApiLogsClient::new(config.clone())?,
             app_builds: AppBuildsClient::new(config.clone())?,
             apps: AppsClient::new(config.clone())?,
             audiences: AudiencesClient::new(config.clone())?,
@@ -274,10 +294,11 @@ impl Whop {
             bounty_submissions: BountySubmissionsClient::new(config.clone())?,
             card_transactions: CardTransactionsClient::new(config.clone())?,
             cards: CardsClient::new(config.clone())?,
+            cashback_rules: CashbackRulesClient::new(config.clone())?,
             chat_channels: ChatChannelsClient::new(config.clone())?,
             checkout_configurations: CheckoutConfigurationsClient::new(config.clone())?,
-            companies: CompaniesClient::new(config.clone())?,
             company_token_transactions: CompanyTokenTransactionsClient::new(config.clone())?,
+            confirmation_tokens: ConfirmationTokensClient::new(config.clone())?,
             course_chapters: CourseChaptersClient::new(config.clone())?,
             course_lesson_interactions: CourseLessonInteractionsClient::new(config.clone())?,
             course_lessons: CourseLessonsClient::new(config.clone())?,
@@ -288,14 +309,16 @@ impl Whop {
             disputes: DisputesClient::new(config.clone())?,
             dm_channels: DmChannelsClient::new(config.clone())?,
             dm_members: DmMembersClient::new(config.clone())?,
-            entries: EntriesClient::new(config.clone())?,
+            domains: DomainsClient::new(config.clone())?,
+            economic_intelligence: EconomicIntelligenceClient::new(config.clone())?,
             events: EventsClient::new(config.clone())?,
             experiences: ExperiencesClient::new(config.clone())?,
+            experiments: ExperimentsClient::new(config.clone())?,
             exports: ExportsClient::new(config.clone())?,
             fee_markups: FeeMarkupsClient::new(config.clone())?,
             files: FilesClient::new(config.clone())?,
             financial_activity: FinancialActivityClient::new(config.clone())?,
-            ledgers: LedgersClient::new(config.clone())?,
+            financial_reports: FinancialReportsClient::new(config.clone())?,
             forum_posts: ForumPostsClient::new(config.clone())?,
             forums: ForumsClient::new(config.clone())?,
             identity_profiles: IdentityProfilesClient::new(config.clone())?,
@@ -307,9 +330,11 @@ impl Whop {
             memberships: MembershipsClient::new(config.clone())?,
             messages: MessagesClient::new(config.clone())?,
             notifications: NotificationsClient::new(config.clone())?,
+            partner_referral_requests: PartnerReferralRequestsClient::new(config.clone())?,
             partners: PartnersClient::new(config.clone())?,
             payment_method_domains: PaymentMethodDomainsClient::new(config.clone())?,
             payment_methods: PaymentMethodsClient::new(config.clone())?,
+            payment_rules: PaymentRulesClient::new(config.clone())?,
             payments: PaymentsClient::new(config.clone())?,
             payout_accounts: PayoutAccountsClient::new(config.clone())?,
             payout_methods: PayoutMethodsClient::new(config.clone())?,
@@ -320,7 +345,6 @@ impl Whop {
             products: ProductsClient::new(config.clone())?,
             promo_codes: PromoCodesClient::new(config.clone())?,
             reactions: ReactionsClient::new(config.clone())?,
-            recommended_actions: RecommendedActionsClient::new(config.clone())?,
             refunds: RefundsClient::new(config.clone())?,
             resolution_center_cases: ResolutionCenterCasesClient::new(config.clone())?,
             reviews: ReviewsClient::new(config.clone())?,
@@ -335,8 +359,8 @@ impl Whop {
             transfers: TransfersClient::new(config.clone())?,
             users: UsersClient::new(config.clone())?,
             verifications: VerificationsClient::new(config.clone())?,
+            waitlist_entries: WaitlistEntriesClient::new(config.clone())?,
             webhooks: WebhooksClient::new(config.clone())?,
-            withdrawals: WithdrawalsClient::new(config.clone())?,
         })
     }
 }
@@ -345,12 +369,13 @@ pub use access_tokens::AccessTokensClient;
 pub use account_links::AccountLinksClient;
 pub use accounts::AccountsClient;
 pub use ad_campaigns::AdCampaignsClient;
+pub use ad_conversion_value_rules::AdConversionValueRulesClient;
 pub use ad_groups::AdGroupsClient;
-pub use ad_reports::AdReportsClient;
 pub use ads::AdsClient;
 pub use affiliates::AffiliatesClient;
 pub use ai_chats::AiChatsClient;
 pub use api_keys::ApiKeysClient;
+pub use api_logs::ApiLogsClient;
 pub use app_builds::AppBuildsClient;
 pub use apps::AppsClient;
 pub use audiences::AudiencesClient;
@@ -359,10 +384,11 @@ pub use bounties::BountiesClient;
 pub use bounty_submissions::BountySubmissionsClient;
 pub use card_transactions::CardTransactionsClient;
 pub use cards::CardsClient;
+pub use cashback_rules::CashbackRulesClient;
 pub use chat_channels::ChatChannelsClient;
 pub use checkout_configurations::CheckoutConfigurationsClient;
-pub use companies::CompaniesClient;
 pub use company_token_transactions::CompanyTokenTransactionsClient;
+pub use confirmation_tokens::ConfirmationTokensClient;
 pub use course_chapters::CourseChaptersClient;
 pub use course_lesson_interactions::CourseLessonInteractionsClient;
 pub use course_lessons::CourseLessonsClient;
@@ -373,13 +399,17 @@ pub use dispute_alerts::DisputeAlertsClient;
 pub use disputes::DisputesClient;
 pub use dm_channels::DmChannelsClient;
 pub use dm_members::DmMembersClient;
+pub use domains::DomainsClient;
+pub use economic_intelligence::EconomicIntelligenceClient;
 pub use entries::EntriesClient;
 pub use events::EventsClient;
 pub use experiences::ExperiencesClient;
+pub use experiments::ExperimentsClient;
 pub use exports::ExportsClient;
 pub use fee_markups::FeeMarkupsClient;
 pub use files::FilesClient;
 pub use financial_activity::FinancialActivityClient;
+pub use financial_reports::FinancialReportsClient;
 pub use forum_posts::ForumPostsClient;
 pub use forums::ForumsClient;
 pub use identity_profiles::IdentityProfilesClient;
@@ -392,9 +422,11 @@ pub use members::MembersClient;
 pub use memberships::MembershipsClient;
 pub use messages::MessagesClient;
 pub use notifications::NotificationsClient;
+pub use partner_referral_requests::PartnerReferralRequestsClient;
 pub use partners::PartnersClient;
 pub use payment_method_domains::PaymentMethodDomainsClient;
 pub use payment_methods::PaymentMethodsClient;
+pub use payment_rules::PaymentRulesClient;
 pub use payments::PaymentsClient;
 pub use payout_accounts::PayoutAccountsClient;
 pub use payout_methods::PayoutMethodsClient;
@@ -405,7 +437,6 @@ pub use plans::PlansClient;
 pub use products::ProductsClient;
 pub use promo_codes::PromoCodesClient;
 pub use reactions::ReactionsClient;
-pub use recommended_actions::RecommendedActionsClient;
 pub use refunds::RefundsClient;
 pub use resolution_center_cases::ResolutionCenterCasesClient;
 pub use reviews::ReviewsClient;
@@ -420,5 +451,5 @@ pub use topups::TopupsClient;
 pub use transfers::TransfersClient;
 pub use users::UsersClient;
 pub use verifications::VerificationsClient;
+pub use waitlist_entries::WaitlistEntriesClient;
 pub use webhooks::WebhooksClient;
-pub use withdrawals::WithdrawalsClient;

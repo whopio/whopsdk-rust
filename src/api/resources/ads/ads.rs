@@ -32,10 +32,10 @@ impl AdsClient {
     /// * `stats_to` - End of the stats window. Defaults to now.
     /// * `time_zone` - IANA timezone (e.g. America/New_York) the stats window is interpreted in. Bare stats_from/stats_to dates resolve to day boundaries on this clock. Defaults to UTC.
     /// * `attribution_model` - Attribution model the conversion stats count under (defaults to last_touch). Under both models a journey with any whop ad touch attributes to whop; the model picks which whop touch credits the entity and which non-whop source wins otherwise.
-    /// * `first` - The number of ads to return.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - The number of ads to return from the end of the range.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -88,6 +88,13 @@ impl AdsClient {
         request: &AdsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAdsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -119,7 +126,7 @@ impl AdsClient {
             .await
     }
 
-    /// Creates an ad in an ad group.
+    /// Creates an ad in an ad group. Any campaign status other than `draft` launches the campaign, which requires an ads payment method on the account.
     ///
     /// # Arguments
     ///
@@ -157,6 +164,13 @@ impl AdsClient {
         request: &CreateAdsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -213,6 +227,13 @@ impl AdsClient {
         request: &AdsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -260,6 +281,13 @@ impl AdsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteAdsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::DELETE, &format!("ads/{}", id), None, None, options)
             .await
@@ -306,6 +334,13 @@ impl AdsClient {
         request: &UpdateAdsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -358,6 +393,13 @@ impl AdsClient {
         request: &DuplicateAdsRequest,
         options: Option<RequestOptions>,
     ) -> Result<DuplicateAdsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -396,6 +438,13 @@ impl AdsClient {
     /// }
     /// ```
     pub async fn pause(&self, id: &str, options: Option<RequestOptions>) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -434,6 +483,13 @@ impl AdsClient {
     /// }
     /// ```
     pub async fn unpause(&self, id: &str, options: Option<RequestOptions>) -> Result<Ad, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

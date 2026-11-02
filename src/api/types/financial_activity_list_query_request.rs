@@ -18,6 +18,18 @@ pub struct FinancialActivityListQueryRequest {
     /// Optional ledger line categories to include. Some categories (for example `onchain_deposit`, which covers inbound crypto deposits such as MoonPay onramps) are only returned when explicitly requested here.
     #[serde(default)]
     pub line_types: Vec<Option<ListFinancialActivityRequestLineTypesItem>>,
+    /// Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub direction: Option<ListFinancialActivityRequestDirection>,
+    /// Optional prefixed resource ID. Returns activity associated with that resource.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resource_id: Option<String>,
+    /// Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub activity_id: Option<String>,
+    /// Whether to exclude balance reservations and balanced movements between the account's own balances.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub exclude_internal_movements: Option<bool>,
     /// Optional currency code filter, for example `usd`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
@@ -59,6 +71,10 @@ pub struct FinancialActivityListQueryRequestBuilder {
     include_owned_accounts: Option<bool>,
     include_resource: Option<bool>,
     line_types: Option<Vec<Option<ListFinancialActivityRequestLineTypesItem>>>,
+    direction: Option<ListFinancialActivityRequestDirection>,
+    resource_id: Option<String>,
+    activity_id: Option<String>,
+    exclude_internal_movements: Option<bool>,
     currency: Option<String>,
     posted_after: Option<DateTime<FixedOffset>>,
     posted_before: Option<DateTime<FixedOffset>>,
@@ -94,6 +110,26 @@ impl FinancialActivityListQueryRequestBuilder {
         value: Vec<Option<ListFinancialActivityRequestLineTypesItem>>,
     ) -> Self {
         self.line_types = Some(value);
+        self
+    }
+
+    pub fn direction(mut self, value: ListFinancialActivityRequestDirection) -> Self {
+        self.direction = Some(value);
+        self
+    }
+
+    pub fn resource_id(mut self, value: impl Into<String>) -> Self {
+        self.resource_id = Some(value.into());
+        self
+    }
+
+    pub fn activity_id(mut self, value: impl Into<String>) -> Self {
+        self.activity_id = Some(value.into());
+        self
+    }
+
+    pub fn exclude_internal_movements(mut self, value: bool) -> Self {
+        self.exclude_internal_movements = Some(value);
         self
     }
 
@@ -144,6 +180,10 @@ impl FinancialActivityListQueryRequestBuilder {
             line_types: self
                 .line_types
                 .ok_or_else(|| BuildError::missing_field("line_types"))?,
+            direction: self.direction,
+            resource_id: self.resource_id,
+            activity_id: self.activity_id,
+            exclude_internal_movements: self.exclude_internal_movements,
             currency: self.currency,
             posted_after: self.posted_after,
             posted_before: self.posted_before,

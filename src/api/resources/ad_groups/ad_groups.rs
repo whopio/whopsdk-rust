@@ -30,10 +30,10 @@ impl AdGroupsClient {
     /// * `stats_to` - End of the stats window. Defaults to now.
     /// * `time_zone` - IANA timezone (e.g. America/New_York) the stats window is interpreted in. Bare stats_from/stats_to dates resolve to day boundaries on this clock. Defaults to UTC.
     /// * `attribution_model` - Attribution model the conversion stats count under (defaults to last_touch). Under both models a journey with any whop ad touch attributes to whop; the model picks which whop touch credits the entity and which non-whop source wins otherwise.
-    /// * `first` - The number of ad groups to return.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - The number of ad groups to return from the end of the range.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -84,6 +84,13 @@ impl AdGroupsClient {
         request: &AdGroupsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAdGroupsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -173,6 +180,13 @@ impl AdGroupsClient {
         request: &CreateAdGroupsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -229,6 +243,13 @@ impl AdGroupsClient {
         request: &EstimateReachAdGroupsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ReachEstimate, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -251,6 +272,7 @@ impl AdGroupsClient {
     /// * `location_types` - Narrow location results to these kinds of places. Only applies when `types` includes `locations`.
     /// * `country` - Narrow location results to one country, as an ISO 3166-1 code such as `US`. Only applies when `types` includes `locations`.
     /// * `limit` - Maximum number of results per requested type.
+    /// * `special_ad_categories` - The campaign's declared special ad categories. Under `housing`, `employment`, or `financial_products` the ad platform allows interests only, drawn from a short approved list, so results are narrowed to what such a campaign can launch with and other kinds return nothing. Blank `query` browses that approved list instead of the usual fixed lists.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -280,6 +302,7 @@ impl AdGroupsClient {
     ///                 location_types: vec![],
     ///                 country: None,
     ///                 limit: None,
+    ///                 special_ad_categories: vec![],
     ///             },
     ///             None,
     ///         )
@@ -291,6 +314,13 @@ impl AdGroupsClient {
         request: &SearchTargetingOptionsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<SearchTargetingOptionsAdGroupsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -304,6 +334,10 @@ impl AdGroupsClient {
                     .serialize_array("location_types", request.location_types.clone())
                     .string("country", request.country.clone())
                     .int("limit", request.limit.clone())
+                    .serialize_array(
+                        "special_ad_categories",
+                        request.special_ad_categories.clone(),
+                    )
                     .build(),
                 options,
             )
@@ -355,6 +389,13 @@ impl AdGroupsClient {
         request: &AdGroupsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -402,6 +443,13 @@ impl AdGroupsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteAdGroupsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -454,6 +502,13 @@ impl AdGroupsClient {
         request: &UpdateAdGroupsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -506,6 +561,13 @@ impl AdGroupsClient {
         request: &DuplicateAdGroupsRequest,
         options: Option<RequestOptions>,
     ) -> Result<DuplicateAdGroupsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -548,6 +610,13 @@ impl AdGroupsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -590,6 +659,13 @@ impl AdGroupsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AdGroup, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

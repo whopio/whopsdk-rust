@@ -8,7 +8,7 @@ pub struct CreateExportsRequest {
     /// Column keys to include. Empty means all columns for the resource.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub columns: Option<Vec<String>>,
-    /// Resource-specific filters. For native REST resources (`payouts`, `transfers`, `memberships`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
+    /// Resource-specific filters. For native REST resources (`payouts`, `transfers`, `products`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub filters: Option<HashMap<String, serde_json::Value>>,
     /// The resource to export, e.g. `payouts`, `receipts`, or `members`.

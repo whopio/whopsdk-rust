@@ -4,6 +4,8 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CreateWebhooksRequestEventsItem {
     AccountUpdated,
+    AccountFinancingApproved,
+    AccountFinancingDenied,
     InvoiceCreated,
     InvoiceMarkedUncollectible,
     InvoicePaid,
@@ -24,12 +26,13 @@ pub enum CreateWebhooksRequestEventsItem {
     LedgerAccountFundsAvailable,
     SwapCompleted,
     DepositSucceeded,
+    FinancialActivityFundsAvailable,
     TransferCreated,
     TransferCompleted,
     TransferFailed,
-    WithdrawalCreated,
-    WithdrawalUpdated,
-    WithdrawalReversed,
+    PayoutCreated,
+    PayoutUpdated,
+    PayoutReversed,
     CardTransactionCreated,
     CardTransactionUpdated,
     CardTransactionCompleted,
@@ -51,6 +54,8 @@ pub enum CreateWebhooksRequestEventsItem {
     IdentityProfileNeedsAction,
     IdentityProfileUpdated,
     PayoutAccountStatusUpdated,
+    PaymentAuthorized,
+    PaymentCanceled,
     ResolutionCenterCaseCreated,
     ResolutionCenterCaseUpdated,
     ResolutionCenterCaseDecided,
@@ -65,13 +70,17 @@ pub enum CreateWebhooksRequestEventsItem {
     ShipmentCreated,
     ShipmentUpdated,
     MemberCreated,
+    MemberUpdated,
     AdCampaignPaymentFailed,
+    AdCampaignUpdated,
+    AdUpdated,
     ChatMessageCreated,
     ChatReactionCreated,
     PaymentCreated,
     PaymentSucceeded,
     PaymentFailed,
     PaymentPending,
+    PaymentRequiresAction,
     DisputeCreated,
     DisputeUpdated,
     RefundCreated,
@@ -92,11 +101,13 @@ pub enum CreateWebhooksRequestEventsItem {
     AppPaymentSucceededUnderscore,
     AppPaymentFailedUnderscore,
     AppPaymentPendingUnderscore,
+    AppPaymentRequiresActionUnderscore,
     AppMembershipCancelAtPeriodEndChangedUnderscore,
     PaymentCreatedUnderscore,
     PaymentSucceededUnderscore,
     PaymentFailedUnderscore,
     PaymentPendingUnderscore,
+    PaymentRequiresActionUnderscore,
     DisputeCreatedUnderscore,
     DisputeUpdatedUnderscore,
     RefundCreatedUnderscore,
@@ -117,6 +128,7 @@ pub enum CreateWebhooksRequestEventsItem {
     AppPaymentSucceeded,
     AppPaymentFailed,
     AppPaymentPending,
+    AppPaymentRequiresAction,
     AppMembershipCancelAtPeriodEndChanged,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -127,6 +139,10 @@ impl Serialize for CreateWebhooksRequestEventsItem {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::AccountUpdated => serializer.serialize_str("account.updated"),
+            Self::AccountFinancingApproved => {
+                serializer.serialize_str("account.financing_approved")
+            }
+            Self::AccountFinancingDenied => serializer.serialize_str("account.financing_denied"),
             Self::InvoiceCreated => serializer.serialize_str("invoice.created"),
             Self::InvoiceMarkedUncollectible => {
                 serializer.serialize_str("invoice.marked_uncollectible")
@@ -155,12 +171,15 @@ impl Serialize for CreateWebhooksRequestEventsItem {
             }
             Self::SwapCompleted => serializer.serialize_str("swap.completed"),
             Self::DepositSucceeded => serializer.serialize_str("deposit.succeeded"),
+            Self::FinancialActivityFundsAvailable => {
+                serializer.serialize_str("financial_activity.funds_available")
+            }
             Self::TransferCreated => serializer.serialize_str("transfer.created"),
             Self::TransferCompleted => serializer.serialize_str("transfer.completed"),
             Self::TransferFailed => serializer.serialize_str("transfer.failed"),
-            Self::WithdrawalCreated => serializer.serialize_str("withdrawal.created"),
-            Self::WithdrawalUpdated => serializer.serialize_str("withdrawal.updated"),
-            Self::WithdrawalReversed => serializer.serialize_str("withdrawal.reversed"),
+            Self::PayoutCreated => serializer.serialize_str("payout.created"),
+            Self::PayoutUpdated => serializer.serialize_str("payout.updated"),
+            Self::PayoutReversed => serializer.serialize_str("payout.reversed"),
             Self::CardTransactionCreated => serializer.serialize_str("card_transaction.created"),
             Self::CardTransactionUpdated => serializer.serialize_str("card_transaction.updated"),
             Self::CardTransactionCompleted => {
@@ -190,6 +209,8 @@ impl Serialize for CreateWebhooksRequestEventsItem {
             Self::PayoutAccountStatusUpdated => {
                 serializer.serialize_str("payout_account.status_updated")
             }
+            Self::PaymentAuthorized => serializer.serialize_str("payment.authorized"),
+            Self::PaymentCanceled => serializer.serialize_str("payment.canceled"),
             Self::ResolutionCenterCaseCreated => {
                 serializer.serialize_str("resolution_center_case.created")
             }
@@ -210,13 +231,17 @@ impl Serialize for CreateWebhooksRequestEventsItem {
             Self::ShipmentCreated => serializer.serialize_str("shipment.created"),
             Self::ShipmentUpdated => serializer.serialize_str("shipment.updated"),
             Self::MemberCreated => serializer.serialize_str("member.created"),
+            Self::MemberUpdated => serializer.serialize_str("member.updated"),
             Self::AdCampaignPaymentFailed => serializer.serialize_str("ad_campaign.payment_failed"),
+            Self::AdCampaignUpdated => serializer.serialize_str("ad_campaign.updated"),
+            Self::AdUpdated => serializer.serialize_str("ad.updated"),
             Self::ChatMessageCreated => serializer.serialize_str("chat.message.created"),
             Self::ChatReactionCreated => serializer.serialize_str("chat.reaction.created"),
             Self::PaymentCreated => serializer.serialize_str("payment.created"),
             Self::PaymentSucceeded => serializer.serialize_str("payment.succeeded"),
             Self::PaymentFailed => serializer.serialize_str("payment.failed"),
             Self::PaymentPending => serializer.serialize_str("payment.pending"),
+            Self::PaymentRequiresAction => serializer.serialize_str("payment.requires_action"),
             Self::DisputeCreated => serializer.serialize_str("dispute.created"),
             Self::DisputeUpdated => serializer.serialize_str("dispute.updated"),
             Self::RefundCreated => serializer.serialize_str("refund.created"),
@@ -255,6 +280,9 @@ impl Serialize for CreateWebhooksRequestEventsItem {
             }
             Self::AppPaymentFailedUnderscore => serializer.serialize_str("app_payment_failed"),
             Self::AppPaymentPendingUnderscore => serializer.serialize_str("app_payment_pending"),
+            Self::AppPaymentRequiresActionUnderscore => {
+                serializer.serialize_str("app_payment_requires_action")
+            }
             Self::AppMembershipCancelAtPeriodEndChangedUnderscore => {
                 serializer.serialize_str("app_membership_cancel_at_period_end_changed")
             }
@@ -262,6 +290,9 @@ impl Serialize for CreateWebhooksRequestEventsItem {
             Self::PaymentSucceededUnderscore => serializer.serialize_str("payment_succeeded"),
             Self::PaymentFailedUnderscore => serializer.serialize_str("payment_failed"),
             Self::PaymentPendingUnderscore => serializer.serialize_str("payment_pending"),
+            Self::PaymentRequiresActionUnderscore => {
+                serializer.serialize_str("payment_requires_action")
+            }
             Self::DisputeCreatedUnderscore => serializer.serialize_str("dispute_created"),
             Self::DisputeUpdatedUnderscore => serializer.serialize_str("dispute_updated"),
             Self::RefundCreatedUnderscore => serializer.serialize_str("refund_created"),
@@ -294,6 +325,9 @@ impl Serialize for CreateWebhooksRequestEventsItem {
             Self::AppPaymentSucceeded => serializer.serialize_str("app_payment.succeeded"),
             Self::AppPaymentFailed => serializer.serialize_str("app_payment.failed"),
             Self::AppPaymentPending => serializer.serialize_str("app_payment.pending"),
+            Self::AppPaymentRequiresAction => {
+                serializer.serialize_str("app_payment.requires_action")
+            }
             Self::AppMembershipCancelAtPeriodEndChanged => {
                 serializer.serialize_str("app_membership.cancel_at_period_end_changed")
             }
@@ -307,6 +341,8 @@ impl<'de> Deserialize<'de> for CreateWebhooksRequestEventsItem {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
             "account.updated" => Ok(Self::AccountUpdated),
+            "account.financing_approved" => Ok(Self::AccountFinancingApproved),
+            "account.financing_denied" => Ok(Self::AccountFinancingDenied),
             "invoice.created" => Ok(Self::InvoiceCreated),
             "invoice.marked_uncollectible" => Ok(Self::InvoiceMarkedUncollectible),
             "invoice.paid" => Ok(Self::InvoicePaid),
@@ -327,12 +363,13 @@ impl<'de> Deserialize<'de> for CreateWebhooksRequestEventsItem {
             "ledger_account.funds_available" => Ok(Self::LedgerAccountFundsAvailable),
             "swap.completed" => Ok(Self::SwapCompleted),
             "deposit.succeeded" => Ok(Self::DepositSucceeded),
+            "financial_activity.funds_available" => Ok(Self::FinancialActivityFundsAvailable),
             "transfer.created" => Ok(Self::TransferCreated),
             "transfer.completed" => Ok(Self::TransferCompleted),
             "transfer.failed" => Ok(Self::TransferFailed),
-            "withdrawal.created" => Ok(Self::WithdrawalCreated),
-            "withdrawal.updated" => Ok(Self::WithdrawalUpdated),
-            "withdrawal.reversed" => Ok(Self::WithdrawalReversed),
+            "payout.created" => Ok(Self::PayoutCreated),
+            "payout.updated" => Ok(Self::PayoutUpdated),
+            "payout.reversed" => Ok(Self::PayoutReversed),
             "card_transaction.created" => Ok(Self::CardTransactionCreated),
             "card_transaction.updated" => Ok(Self::CardTransactionUpdated),
             "card_transaction.completed" => Ok(Self::CardTransactionCompleted),
@@ -354,6 +391,8 @@ impl<'de> Deserialize<'de> for CreateWebhooksRequestEventsItem {
             "identity_profile.needs_action" => Ok(Self::IdentityProfileNeedsAction),
             "identity_profile.updated" => Ok(Self::IdentityProfileUpdated),
             "payout_account.status_updated" => Ok(Self::PayoutAccountStatusUpdated),
+            "payment.authorized" => Ok(Self::PaymentAuthorized),
+            "payment.canceled" => Ok(Self::PaymentCanceled),
             "resolution_center_case.created" => Ok(Self::ResolutionCenterCaseCreated),
             "resolution_center_case.updated" => Ok(Self::ResolutionCenterCaseUpdated),
             "resolution_center_case.decided" => Ok(Self::ResolutionCenterCaseDecided),
@@ -368,13 +407,17 @@ impl<'de> Deserialize<'de> for CreateWebhooksRequestEventsItem {
             "shipment.created" => Ok(Self::ShipmentCreated),
             "shipment.updated" => Ok(Self::ShipmentUpdated),
             "member.created" => Ok(Self::MemberCreated),
+            "member.updated" => Ok(Self::MemberUpdated),
             "ad_campaign.payment_failed" => Ok(Self::AdCampaignPaymentFailed),
+            "ad_campaign.updated" => Ok(Self::AdCampaignUpdated),
+            "ad.updated" => Ok(Self::AdUpdated),
             "chat.message.created" => Ok(Self::ChatMessageCreated),
             "chat.reaction.created" => Ok(Self::ChatReactionCreated),
             "payment.created" => Ok(Self::PaymentCreated),
             "payment.succeeded" => Ok(Self::PaymentSucceeded),
             "payment.failed" => Ok(Self::PaymentFailed),
             "payment.pending" => Ok(Self::PaymentPending),
+            "payment.requires_action" => Ok(Self::PaymentRequiresAction),
             "dispute.created" => Ok(Self::DisputeCreated),
             "dispute.updated" => Ok(Self::DisputeUpdated),
             "refund.created" => Ok(Self::RefundCreated),
@@ -397,6 +440,7 @@ impl<'de> Deserialize<'de> for CreateWebhooksRequestEventsItem {
             "app_payment_succeeded" => Ok(Self::AppPaymentSucceededUnderscore),
             "app_payment_failed" => Ok(Self::AppPaymentFailedUnderscore),
             "app_payment_pending" => Ok(Self::AppPaymentPendingUnderscore),
+            "app_payment_requires_action" => Ok(Self::AppPaymentRequiresActionUnderscore),
             "app_membership_cancel_at_period_end_changed" => {
                 Ok(Self::AppMembershipCancelAtPeriodEndChangedUnderscore)
             }
@@ -404,6 +448,7 @@ impl<'de> Deserialize<'de> for CreateWebhooksRequestEventsItem {
             "payment_succeeded" => Ok(Self::PaymentSucceededUnderscore),
             "payment_failed" => Ok(Self::PaymentFailedUnderscore),
             "payment_pending" => Ok(Self::PaymentPendingUnderscore),
+            "payment_requires_action" => Ok(Self::PaymentRequiresActionUnderscore),
             "dispute_created" => Ok(Self::DisputeCreatedUnderscore),
             "dispute_updated" => Ok(Self::DisputeUpdatedUnderscore),
             "refund_created" => Ok(Self::RefundCreatedUnderscore),
@@ -426,6 +471,7 @@ impl<'de> Deserialize<'de> for CreateWebhooksRequestEventsItem {
             "app_payment.succeeded" => Ok(Self::AppPaymentSucceeded),
             "app_payment.failed" => Ok(Self::AppPaymentFailed),
             "app_payment.pending" => Ok(Self::AppPaymentPending),
+            "app_payment.requires_action" => Ok(Self::AppPaymentRequiresAction),
             "app_membership.cancel_at_period_end_changed" => {
                 Ok(Self::AppMembershipCancelAtPeriodEndChanged)
             }
@@ -438,6 +484,8 @@ impl fmt::Display for CreateWebhooksRequestEventsItem {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::AccountUpdated => write!(f, "account.updated"),
+            Self::AccountFinancingApproved => write!(f, "account.financing_approved"),
+            Self::AccountFinancingDenied => write!(f, "account.financing_denied"),
             Self::InvoiceCreated => write!(f, "invoice.created"),
             Self::InvoiceMarkedUncollectible => write!(f, "invoice.marked_uncollectible"),
             Self::InvoicePaid => write!(f, "invoice.paid"),
@@ -458,12 +506,15 @@ impl fmt::Display for CreateWebhooksRequestEventsItem {
             Self::LedgerAccountFundsAvailable => write!(f, "ledger_account.funds_available"),
             Self::SwapCompleted => write!(f, "swap.completed"),
             Self::DepositSucceeded => write!(f, "deposit.succeeded"),
+            Self::FinancialActivityFundsAvailable => {
+                write!(f, "financial_activity.funds_available")
+            }
             Self::TransferCreated => write!(f, "transfer.created"),
             Self::TransferCompleted => write!(f, "transfer.completed"),
             Self::TransferFailed => write!(f, "transfer.failed"),
-            Self::WithdrawalCreated => write!(f, "withdrawal.created"),
-            Self::WithdrawalUpdated => write!(f, "withdrawal.updated"),
-            Self::WithdrawalReversed => write!(f, "withdrawal.reversed"),
+            Self::PayoutCreated => write!(f, "payout.created"),
+            Self::PayoutUpdated => write!(f, "payout.updated"),
+            Self::PayoutReversed => write!(f, "payout.reversed"),
             Self::CardTransactionCreated => write!(f, "card_transaction.created"),
             Self::CardTransactionUpdated => write!(f, "card_transaction.updated"),
             Self::CardTransactionCompleted => write!(f, "card_transaction.completed"),
@@ -487,6 +538,8 @@ impl fmt::Display for CreateWebhooksRequestEventsItem {
             Self::IdentityProfileNeedsAction => write!(f, "identity_profile.needs_action"),
             Self::IdentityProfileUpdated => write!(f, "identity_profile.updated"),
             Self::PayoutAccountStatusUpdated => write!(f, "payout_account.status_updated"),
+            Self::PaymentAuthorized => write!(f, "payment.authorized"),
+            Self::PaymentCanceled => write!(f, "payment.canceled"),
             Self::ResolutionCenterCaseCreated => write!(f, "resolution_center_case.created"),
             Self::ResolutionCenterCaseUpdated => write!(f, "resolution_center_case.updated"),
             Self::ResolutionCenterCaseDecided => write!(f, "resolution_center_case.decided"),
@@ -501,13 +554,17 @@ impl fmt::Display for CreateWebhooksRequestEventsItem {
             Self::ShipmentCreated => write!(f, "shipment.created"),
             Self::ShipmentUpdated => write!(f, "shipment.updated"),
             Self::MemberCreated => write!(f, "member.created"),
+            Self::MemberUpdated => write!(f, "member.updated"),
             Self::AdCampaignPaymentFailed => write!(f, "ad_campaign.payment_failed"),
+            Self::AdCampaignUpdated => write!(f, "ad_campaign.updated"),
+            Self::AdUpdated => write!(f, "ad.updated"),
             Self::ChatMessageCreated => write!(f, "chat.message.created"),
             Self::ChatReactionCreated => write!(f, "chat.reaction.created"),
             Self::PaymentCreated => write!(f, "payment.created"),
             Self::PaymentSucceeded => write!(f, "payment.succeeded"),
             Self::PaymentFailed => write!(f, "payment.failed"),
             Self::PaymentPending => write!(f, "payment.pending"),
+            Self::PaymentRequiresAction => write!(f, "payment.requires_action"),
             Self::DisputeCreated => write!(f, "dispute.created"),
             Self::DisputeUpdated => write!(f, "dispute.updated"),
             Self::RefundCreated => write!(f, "refund.created"),
@@ -534,6 +591,7 @@ impl fmt::Display for CreateWebhooksRequestEventsItem {
             Self::AppPaymentSucceededUnderscore => write!(f, "app_payment_succeeded"),
             Self::AppPaymentFailedUnderscore => write!(f, "app_payment_failed"),
             Self::AppPaymentPendingUnderscore => write!(f, "app_payment_pending"),
+            Self::AppPaymentRequiresActionUnderscore => write!(f, "app_payment_requires_action"),
             Self::AppMembershipCancelAtPeriodEndChangedUnderscore => {
                 write!(f, "app_membership_cancel_at_period_end_changed")
             }
@@ -541,6 +599,7 @@ impl fmt::Display for CreateWebhooksRequestEventsItem {
             Self::PaymentSucceededUnderscore => write!(f, "payment_succeeded"),
             Self::PaymentFailedUnderscore => write!(f, "payment_failed"),
             Self::PaymentPendingUnderscore => write!(f, "payment_pending"),
+            Self::PaymentRequiresActionUnderscore => write!(f, "payment_requires_action"),
             Self::DisputeCreatedUnderscore => write!(f, "dispute_created"),
             Self::DisputeUpdatedUnderscore => write!(f, "dispute_updated"),
             Self::RefundCreatedUnderscore => write!(f, "refund_created"),
@@ -563,6 +622,7 @@ impl fmt::Display for CreateWebhooksRequestEventsItem {
             Self::AppPaymentSucceeded => write!(f, "app_payment.succeeded"),
             Self::AppPaymentFailed => write!(f, "app_payment.failed"),
             Self::AppPaymentPending => write!(f, "app_payment.pending"),
+            Self::AppPaymentRequiresAction => write!(f, "app_payment.requires_action"),
             Self::AppMembershipCancelAtPeriodEndChanged => {
                 write!(f, "app_membership.cancel_at_period_end_changed")
             }

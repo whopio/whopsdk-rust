@@ -13,20 +13,20 @@ impl MethodsClient {
         })
     }
 
-    /// Lists the bank accounts, wallets, and crypto addresses an account or user can withdraw to, newest first.
+    /// Lists the bank accounts, wallets, and crypto addresses an account or user can pay out to, newest first.
     ///
     /// # Arguments
     ///
     /// * `account_id` - The owning account ID (a biz_ identifier). Provide this or user_id.
     /// * `user_id` - The owning user ID (a user_ identifier). Provide this or account_id.
     /// * `status` - Optional status filter. `created` means saved but unused, `active` means a payout through it succeeded, `broken` means the last payout failed and the method needs fixing.
-    /// * `amount` - Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
+    /// * `amount` - Optional payout amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
     /// * `currency` - Currency code of the amount, for example `usd`. Only meaningful with amount or include_limits.
     /// * `include_limits` - When true, the response also carries limits — the live per-speed payout caps the account's payout requests are validated against, in the requested currency. Requires the payout:withdrawal:read scope.
-    /// * `first` - Number of payout methods to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of payout methods to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -62,6 +62,13 @@ impl MethodsClient {
         request: &PayoutsMethodsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListMethodsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -84,7 +91,7 @@ impl MethodsClient {
             .await
     }
 
-    /// Saves a new place an account or user can withdraw to. Sensitive details are vaulted in transit and never stored raw.
+    /// Saves a new place an account or user can pay out to. Sensitive details are vaulted in transit and never stored raw.
     ///
     /// # Arguments
     ///
@@ -129,6 +136,13 @@ impl MethodsClient {
         request: &CreateMethodsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateMethodsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -171,6 +185,13 @@ impl MethodsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteMethodsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -182,7 +203,7 @@ impl MethodsClient {
             .await
     }
 
-    /// Changes the label used to identify a saved payout method.
+    /// Changes the label used to identify a saved payout method or makes it the account's default payout method.
     ///
     /// # Arguments
     ///
@@ -211,7 +232,7 @@ impl MethodsClient {
     ///         .update(
     ///             &"id".to_string(),
     ///             &UpdateMethodsRequest {
-    ///                 nickname: "Primary checking".to_string(),
+    ///                 ..Default::default()
     ///             },
     ///             None,
     ///         )
@@ -224,6 +245,13 @@ impl MethodsClient {
         request: &UpdateMethodsRequest,
         options: Option<RequestOptions>,
     ) -> Result<UpdateMethodsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

@@ -6,6 +6,7 @@ pub use crate::prelude::*;
 pub enum TeamMemberRole {
     Owner,
     Admin,
+    Partner,
     SalesManager,
     Moderator,
     Advertiser,
@@ -24,6 +25,7 @@ impl Serialize for TeamMemberRole {
         match self {
             Self::Owner => serializer.serialize_str("owner"),
             Self::Admin => serializer.serialize_str("admin"),
+            Self::Partner => serializer.serialize_str("partner"),
             Self::SalesManager => serializer.serialize_str("sales_manager"),
             Self::Moderator => serializer.serialize_str("moderator"),
             Self::Advertiser => serializer.serialize_str("advertiser"),
@@ -43,6 +45,7 @@ impl<'de> Deserialize<'de> for TeamMemberRole {
         match value.as_str() {
             "owner" => Ok(Self::Owner),
             "admin" => Ok(Self::Admin),
+            "partner" => Ok(Self::Partner),
             "sales_manager" => Ok(Self::SalesManager),
             "moderator" => Ok(Self::Moderator),
             "advertiser" => Ok(Self::Advertiser),
@@ -61,6 +64,7 @@ impl fmt::Display for TeamMemberRole {
         match self {
             Self::Owner => write!(f, "owner"),
             Self::Admin => write!(f, "admin"),
+            Self::Partner => write!(f, "partner"),
             Self::SalesManager => write!(f, "sales_manager"),
             Self::Moderator => write!(f, "moderator"),
             Self::Advertiser => write!(f, "advertiser"),

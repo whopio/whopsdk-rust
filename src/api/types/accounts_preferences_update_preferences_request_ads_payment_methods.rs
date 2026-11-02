@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
+/// How the account pays for Whop Ads spend. Requires `primary`; `backup` is optional and covers the charge when the primary fails. Configuring a `card` requires a user token; account API keys can configure only `platform_balance` sources.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct UpdatePreferencesRequestAdsPaymentMethods {
     /// Optional second method charged if the primary fails. Any pairing is allowed (two cards, card+balance, balance+card); omit it to run on a single method. Must differ from the primary.

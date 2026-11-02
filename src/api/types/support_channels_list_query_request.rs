@@ -15,9 +15,6 @@ pub struct SupportChannelsListQueryRequest {
     /// Returns the last _n_ elements from the list.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub view: Option<SupportChannelView>,
     /// Whether to filter by open or resolved support channels. Set to true to only return channels awaiting a response, or false for resolved channels.
@@ -27,6 +24,9 @@ pub struct SupportChannelsListQueryRequest {
     pub direction: Option<Direction>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<MessageChannelOrder>,
+    /// The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
 }
 
 impl SupportChannelsListQueryRequest {
@@ -42,11 +42,11 @@ pub struct SupportChannelsListQueryRequestBuilder {
     before: Option<String>,
     first: Option<i64>,
     last: Option<i64>,
-    company_id: Option<String>,
     view: Option<SupportChannelView>,
     open: Option<bool>,
     direction: Option<Direction>,
     order: Option<MessageChannelOrder>,
+    account_id: Option<String>,
 }
 
 impl SupportChannelsListQueryRequestBuilder {
@@ -70,11 +70,6 @@ impl SupportChannelsListQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
-        self
-    }
-
     pub fn view(mut self, value: SupportChannelView) -> Self {
         self.view = Some(value);
         self
@@ -95,6 +90,11 @@ impl SupportChannelsListQueryRequestBuilder {
         self
     }
 
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`SupportChannelsListQueryRequest`].
     pub fn build(self) -> Result<SupportChannelsListQueryRequest, BuildError> {
         Ok(SupportChannelsListQueryRequest {
@@ -102,11 +102,11 @@ impl SupportChannelsListQueryRequestBuilder {
             before: self.before,
             first: self.first,
             last: self.last,
-            company_id: self.company_id,
             view: self.view,
             open: self.open,
             direction: self.direction,
             order: self.order,
+            account_id: self.account_id,
         })
     }
 }

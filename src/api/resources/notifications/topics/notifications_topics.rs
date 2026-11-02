@@ -18,8 +18,8 @@ impl TopicsClient {
     /// # Arguments
     ///
     /// * `topic_type` - Only return topics of this scope: `user` (member notifications) or `account_team` (team notifications).
-    /// * `first` - The number of topics to return (default 20, max 100).
-    /// * `after` - A cursor; returns topics after this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -55,6 +55,13 @@ impl TopicsClient {
         request: &NotificationsTopicsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListTopicsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

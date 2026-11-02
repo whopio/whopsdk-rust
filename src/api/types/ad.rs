@@ -120,6 +120,9 @@ pub struct Ad {
     pub delivery_status: AdDeliveryStatus,
     #[serde(default)]
     pub descriptions: Vec<String>,
+    /// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub existing_post_id: Option<String>,
     /// Platform-reported impressions divided by reach.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -150,19 +153,28 @@ pub struct Ad {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub leads: f64,
+    /// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub link_clicks: f64,
     /// Welcome message for click-to-message ads, shown when the conversation opens. `null` when the ad has none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub messaging_config: Option<AdMessagingConfig>,
     /// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_advertiser_ads: Option<bool>,
-    /// The existing post this ad promotes — a Facebook post or Instagram media ID. `null` when the ad uses uploaded creatives.
+    /// The advertiser-uploaded MP3 a TikTok carousel ad plays. TikTok-only; `null` elsewhere and for non-carousel ads.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub music: Option<AdMusic>,
+    /// The ad platform this ad runs on.
+    pub platform: AdPlatform,
+    /// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_id: Option<String>,
-    /// Identifies the network that owns `post_id`; `null` when the ad uses uploaded creatives.
+    /// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_source: Option<AdPostSource>,
-    /// Preview image of the existing post this ad promotes. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
+    /// Preview image of the post named by `existing_post_id`. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_thumbnail_url: Option<String>,
     #[serde(default)]
@@ -239,7 +251,7 @@ pub struct Ad {
     /// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters on top; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+    /// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters on top; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
     #[serde(default)]
     pub url_parameters: HashMap<String, serde_json::Value>,
     /// USD value attributed to view-content events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
@@ -291,6 +303,7 @@ pub struct AdBuilder {
     custom_event_values: Option<HashMap<String, serde_json::Value>>,
     delivery_status: Option<AdDeliveryStatus>,
     descriptions: Option<Vec<String>>,
+    existing_post_id: Option<String>,
     frequency: Option<f64>,
     headlines: Option<Vec<String>>,
     id: Option<String>,
@@ -300,8 +313,11 @@ pub struct AdBuilder {
     lead_form_id: Option<String>,
     lead_value: Option<f64>,
     leads: Option<f64>,
+    link_clicks: Option<f64>,
     messaging_config: Option<AdMessagingConfig>,
     multi_advertiser_ads: Option<bool>,
+    music: Option<AdMusic>,
+    platform: Option<AdPlatform>,
     post_id: Option<String>,
     post_source: Option<AdPostSource>,
     post_thumbnail_url: Option<String>,
@@ -482,6 +498,11 @@ impl AdBuilder {
         self
     }
 
+    pub fn existing_post_id(mut self, value: impl Into<String>) -> Self {
+        self.existing_post_id = Some(value.into());
+        self
+    }
+
     pub fn frequency(mut self, value: f64) -> Self {
         self.frequency = Some(value);
         self
@@ -527,6 +548,11 @@ impl AdBuilder {
         self
     }
 
+    pub fn link_clicks(mut self, value: f64) -> Self {
+        self.link_clicks = Some(value);
+        self
+    }
+
     pub fn messaging_config(mut self, value: AdMessagingConfig) -> Self {
         self.messaging_config = Some(value);
         self
@@ -534,6 +560,16 @@ impl AdBuilder {
 
     pub fn multi_advertiser_ads(mut self, value: bool) -> Self {
         self.multi_advertiser_ads = Some(value);
+        self
+    }
+
+    pub fn music(mut self, value: AdMusic) -> Self {
+        self.music = Some(value);
+        self
+    }
+
+    pub fn platform(mut self, value: AdPlatform) -> Self {
+        self.platform = Some(value);
         self
     }
 
@@ -699,6 +735,8 @@ impl AdBuilder {
     /// - [`issues`](AdBuilder::issues)
     /// - [`lead_value`](AdBuilder::lead_value)
     /// - [`leads`](AdBuilder::leads)
+    /// - [`link_clicks`](AdBuilder::link_clicks)
+    /// - [`platform`](AdBuilder::platform)
     /// - [`primary_texts`](AdBuilder::primary_texts)
     /// - [`purchase_value`](AdBuilder::purchase_value)
     /// - [`purchases`](AdBuilder::purchases)
@@ -786,6 +824,7 @@ impl AdBuilder {
             descriptions: self
                 .descriptions
                 .ok_or_else(|| BuildError::missing_field("descriptions"))?,
+            existing_post_id: self.existing_post_id,
             frequency: self.frequency,
             headlines: self
                 .headlines
@@ -805,8 +844,15 @@ impl AdBuilder {
             leads: self
                 .leads
                 .ok_or_else(|| BuildError::missing_field("leads"))?,
+            link_clicks: self
+                .link_clicks
+                .ok_or_else(|| BuildError::missing_field("link_clicks"))?,
             messaging_config: self.messaging_config,
             multi_advertiser_ads: self.multi_advertiser_ads,
+            music: self.music,
+            platform: self
+                .platform
+                .ok_or_else(|| BuildError::missing_field("platform"))?,
             post_id: self.post_id,
             post_source: self.post_source,
             post_thumbnail_url: self.post_thumbnail_url,

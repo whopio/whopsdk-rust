@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct UpdateTeamMembersRequest {
-    /// The system role to grant.
+    /// The system role to grant. Partners must pass all certification quizzes.
     pub role: UpdateTeamMembersRequestRole,
 }
 

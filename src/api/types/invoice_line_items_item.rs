@@ -17,7 +17,7 @@ pub struct InvoiceLineItemsItem {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub total: f64,
-    /// The unit price for this line item.
+    /// The unit price for this line item. Negative for a credit or deduction.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub unit_price: f64,

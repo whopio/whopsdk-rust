@@ -25,10 +25,10 @@ impl TeamMembersClient {
     /// * `created_after` - Only return members added after this ISO 8601 timestamp.
     /// * `order` - Field used to sort members.
     /// * `direction` - Sort direction. Defaults to `desc`.
-    /// * `first` - Number of members to return. Defaults to 20; maximum 100.
-    /// * `after` - Cursor for the next page of members.
-    /// * `last` - Number of members to return from the end of the window.
-    /// * `before` - Cursor to paginate backwards from.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -74,6 +74,13 @@ impl TeamMembersClient {
         request: &TeamMembersListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListTeamMembersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -139,6 +146,13 @@ impl TeamMembersClient {
         request: &CreateTeamMembersRequest,
         options: Option<RequestOptions>,
     ) -> Result<TeamMember, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -181,6 +195,13 @@ impl TeamMembersClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<TeamMember, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -223,6 +244,13 @@ impl TeamMembersClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteTeamMembersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -275,6 +303,13 @@ impl TeamMembersClient {
         request: &UpdateTeamMembersRequest,
         options: Option<RequestOptions>,
     ) -> Result<TeamMember, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

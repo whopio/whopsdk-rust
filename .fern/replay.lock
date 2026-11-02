@@ -1,0 +1,784 @@
+# DO NOT EDIT MANUALLY - Managed by Fern Replay
+version: "1.0"
+generations:
+  - commit_sha: 1ec7bcacab8cd653640f40d6b500abc326278e8a
+    tree_hash: c6b91f2992de13a98b2736510f37e269be690ba2
+    timestamp: 2026-08-25T02:17:35.225Z
+    cli_version: unknown
+    generator_versions: {}
+  - commit_sha: ad09b9b50718bb56c5a7cd73d6e79950e47a930a
+    tree_hash: 1d2a8f1dbaa9aecc8464af86ec0f99cb4c711c83
+    timestamp: 2026-08-25T02:17:35.800Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 4317b21b5e9af2b936ae81d7422d4d605433ff62
+    tree_hash: e56d4a18fee7c49f220bcfb4615595b046f62dee
+    timestamp: 2026-08-25T06:36:18.752Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 62846f1615c4486e140dd81ff0e85cbc470fb49a
+    tree_hash: 9028e1a8e515c274df405d05e7aa4119d3f5ceda
+    timestamp: 2026-08-25T18:46:29.975Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 95fb3ef06222c01ae825c11a9f89ea96cea402ac
+    tree_hash: 0afe4affbcf55c7de41011b166468288ff1cdfd9
+    timestamp: 2026-08-25T22:50:52.353Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 44529cd13d67d113685a5b1f94b13fc85c6e56c2
+    tree_hash: 8870ce4212f46b043c404ddc0992f00ae8b1874e
+    timestamp: 2026-08-26T04:06:06.823Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 4695411fc3a6123de1b1f09a2bfb5b4a4838aa4d
+    tree_hash: 85181b3ff6607f44c572c473da35506067782b5c
+    timestamp: 2026-08-27T20:12:48.715Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 1f8b08a4f909f155c2d5c0c5cf9c21943c5e4bd9
+    tree_hash: 67b9f03d991b25b2454262ee48fb7aec30ff44f6
+    timestamp: 2026-08-27T20:28:25.916Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 9d1f6d1fc9d04ce98fe3fe1bac5f82ffa56dd97f
+    tree_hash: a52bb4f90b7fbddf69b2997f947657d595d3d73b
+    timestamp: 2026-08-28T17:23:51.574Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: be899ee63303ffca23b8a5791ec0810f088670c3
+    tree_hash: f7e4b64f3b76cfe4ff7ef2e0c3a9657195ef21ea
+    timestamp: 2026-08-31T18:29:57.306Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 71c5dafa3bce879dcc4cd2040c07a0cb31826c57
+    tree_hash: 2e5d7fc4aaa4d6c46a44a925ffa1f534e2df11ae
+    timestamp: 2026-09-03T00:33:50.820Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 720c2881eeb438857e74e5ac00df2765577c99ab
+    tree_hash: 6da1f746bac3868fd7697679f8664af0a5b236f3
+    timestamp: 2026-09-03T02:43:31.176Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: fd243ec3af132c46f4b68c63a5e1adc4a54e7210
+    tree_hash: dbc524fa8bc06f2c908a058f71994e9a5714d87f
+    timestamp: 2026-09-03T03:58:03.789Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: ee51c375f922774e4d3c60a66bd4ae84e96634ea
+    tree_hash: e0c1d939f50884f25b4136a104d711d1147a349f
+    timestamp: 2026-09-03T06:19:18.407Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 60fa31cc7ad7b541c21eb43e7fc373cc27684c18
+    tree_hash: 3620d05ae3d34890923e5aee982088e180125229
+    timestamp: 2026-09-08T20:11:28.863Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 9c4d10e9f98697758962a8506a5087541b1c09ed
+    tree_hash: 9aee116f19cfaa0b311edf067d1b3d57be2b74e2
+    timestamp: 2026-09-08T20:26:29.779Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 03b0d5ce2317bb918e250acfb0d19cd2475f9de0
+    tree_hash: 02141aee1b08c8f5464ead3b85d063c33776c5af
+    timestamp: 2026-09-10T04:07:03.482Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 1c498b9e2f30cc242f61dacc7edcf57365a99400
+    tree_hash: 617eb5f0d9293826d154bac273e425e9ffcffefb
+    timestamp: 2026-09-10T04:55:14.838Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 26a92c3568dc24b98636a6ac360422fc822a4e27
+    tree_hash: 329adfdb7e5ecdfa55a477670fb0e4185f823395
+    timestamp: 2026-09-10T15:13:03.483Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0ab5a4b1ad5f1154ae00cc52f838a557f3101773
+    tree_hash: a32ecefb2b33a68ac640e05e89bc6944e68f600b
+    timestamp: 2026-09-10T17:33:13.476Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: af1b70cbc1998f411bf44af0981ffb5553c05242
+    tree_hash: f5a75a9dbeff9ce156c45f4084be5fbfaafcaf28
+    timestamp: 2026-09-10T18:19:00.936Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 03a3f4a065e9d1a61823b16d6b81ca20c2eaab0e
+    tree_hash: ee68bbe2bf774cc5668e276595ac02e67a0036ee
+    timestamp: 2026-09-10T19:33:17.437Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 801cc8315cd1c06559aef55fdc6473ca512c438c
+    tree_hash: d1ce7e747f1dde8584f7d6673f85f091980b3c2c
+    timestamp: 2026-09-10T21:26:06.567Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7f45dd5df2c5506f76634a117d7a2d1d99717c6e
+    tree_hash: beb17edd8c5ee71f8a98ae3d70fc926319aff534
+    timestamp: 2026-09-10T21:40:55.452Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 9f8844ebbaeae50322b283c80a00d7c13c2b6570
+    tree_hash: 357cdd67de94c0f44eb1007828d3aa954c5459c6
+    timestamp: 2026-09-10T23:26:02.845Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 445610c1eb164e413528726de8a50043fd5a7627
+    tree_hash: ca1fa9e353c7ea458aad6217fe8e2a82caa8d2ed
+    timestamp: 2026-09-10T23:52:58.277Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0e796ba13bee2ac01924c2a76b4df35c42d467dd
+    tree_hash: 56e83712cf85afa82a35a6f263316d3b016e47ec
+    timestamp: 2026-09-11T00:07:43.432Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 30d0b5b0e26250bace35c8fb60dc986249decec9
+    tree_hash: 87aa15b43af0154edb720a3a74641e9e2bd211bd
+    timestamp: 2026-09-11T00:22:39.874Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e47868a1c39667075d291c20a17a33819992b51d
+    tree_hash: 81264ffbb35e7b4b34279e342e6608e2425f3a4b
+    timestamp: 2026-09-11T00:52:02.929Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: b29d21f7b344049f3f01a07d0dc749988025dab5
+    tree_hash: a7ae9bf625efdcd86518e5b83b235a9d4251d1bb
+    timestamp: 2026-09-11T01:41:03.001Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 4b98c44e450e4715ff7130c2b63ef0db76da6259
+    tree_hash: e225b84f44a926541d59959a99d819b30929ba8f
+    timestamp: 2026-09-11T02:08:56.843Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 91c0a6b4dce32b0c8663cdb79158f5b6c2068678
+    tree_hash: 6aa0dc89ab668a24b7b4f106dcfef8af991d14cf
+    timestamp: 2026-09-11T03:48:02.928Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 4aff2c1774226d6012d04f601fc32c3ed325819c
+    tree_hash: 06cca16681b9ff2052d841d24dc6f36289c2044a
+    timestamp: 2026-09-11T04:55:14.147Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 6685630f5357f1b2b5a3ded04631ca6117d095bb
+    tree_hash: ce1fcba94eaca0cb779c7ffb30292648498843de
+    timestamp: 2026-09-11T05:09:34.368Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: a76787ee7ff22883507f3d177ac231146dbe5980
+    tree_hash: f6c5f4ee8275b9ead3d2160c351a0de40dc191a7
+    timestamp: 2026-09-11T06:05:24.853Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0ab36e4ac829eaa68ca5e172d7e14f85c76e20f5
+    tree_hash: 37a99fe313468dddd16c904c69db00333ab7de11
+    timestamp: 2026-09-11T06:44:04.784Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: efc7d832f244deb1b6a79a06ac7442789531dea7
+    tree_hash: 4afdd1d8228b9b29158287708d2c887081f64d7d
+    timestamp: 2026-09-11T16:35:30.933Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: ac0a93ef74244f789fb18ae9ab1747bd0ca0ad95
+    tree_hash: 13e3431f37edcdf3f5730c16ccf1841d2a8c50b5
+    timestamp: 2026-09-11T17:43:33.679Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 9dce7364caa0a7c21d6070e2f22389f2044d59fe
+    tree_hash: ff688a6cfba67899f22a9c3335c3abf858adf38c
+    timestamp: 2026-09-11T18:39:15.338Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 91a7c11babfc87560e6d1580fefc5088323db689
+    tree_hash: ff675f08bf893f2d3bfe70871003e9d4ad753b79
+    timestamp: 2026-09-11T19:04:07.647Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 79877843b4754063e9f6201e25037701219f1218
+    tree_hash: f5b86e54432461a15e47a8a5b6e58788d8318111
+    timestamp: 2026-09-11T19:48:53.845Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 8b327b2ed97dff134a9dbef7135bb29312325ffa
+    tree_hash: 38cbc3ebbe56fb3b631fa4956b520a982fd96b00
+    timestamp: 2026-09-11T20:58:24.143Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 254525caa433994e1a07979e87b70994437aa8c5
+    tree_hash: 73ab8157a00dd7d33dc848e297a9b2020ad2cd17
+    timestamp: 2026-09-11T22:16:26.849Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0b213675fc755d0447ef768fc85081d72a0b9157
+    tree_hash: 28ff3a438604b082f9530856fc668609213c6f7f
+    timestamp: 2026-09-11T22:45:24.860Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 6cef7bceb8c6ff54a249feaad1526681cc99b859
+    tree_hash: 184428357f679280ca1b5d1dcaad927c7546bacc
+    timestamp: 2026-09-12T00:22:12.629Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: bf7fb289ba82bf10aa09176a4b662d99631e3143
+    tree_hash: 55bfae714287a55a2f368359a5793ef2e15e4b60
+    timestamp: 2026-09-12T00:37:21.440Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 8c958f1659bc68facb72853650628f7e79a2f6e6
+    tree_hash: 8338f89a4833fdd8f1b958b84e03035cb4d79336
+    timestamp: 2026-09-12T00:54:40.647Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 83b9fe6446895075c07d289887dce78992daa434
+    tree_hash: d4208377f5da647e125461fda290f40492178e8d
+    timestamp: 2026-09-12T01:09:40.543Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e9da8617ba8faf60dc34f2cc95ed71c1fb9e55cd
+    tree_hash: 7794b0b9b6876e389e52ab26ea1da545d8444fc7
+    timestamp: 2026-09-12T02:01:13.543Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 26f6d588482b055f2a8efc875c974a5444371800
+    tree_hash: 69f2df6fb016820637638e64e0c66dc8894b3751
+    timestamp: 2026-09-12T04:31:06.331Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 4bce5ad2ed4f4bf16b974aed5c7e297e2ec1c116
+    tree_hash: 3459c29e2cad5bec1bbb24f7025af921cc81a052
+    timestamp: 2026-09-12T05:00:04.036Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: bf289042806e933f56ea6653f3470162c2c0bfa1
+    tree_hash: b69f66b5f41bdda3cb80b6543dd26eae6cdbe65f
+    timestamp: 2026-09-12T08:11:19.187Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 3589cbf2c357d8fcff01585c4fd002806bba70d8
+    tree_hash: be7393eddfb35bb21b60756d5365288f43174162
+    timestamp: 2026-09-12T23:45:43.959Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 5666cde67bd89af95c5a1956d32bd965d2cb10d1
+    tree_hash: 2d3e3edb3ee9410092180d8a10aff6c8b1abb936
+    timestamp: 2026-09-13T02:05:59.351Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 086b0000f82f626445aed415cdce6ceb8c8ceaf7
+    tree_hash: 76aca4a05d62b3160adf7541bcba420e2188da7c
+    timestamp: 2026-09-13T03:37:03.842Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 4af6009f114fb07ede1dad3c3ae9312f5825c085
+    tree_hash: f5c7f09ef5926ccd087f0ecde9476aa1cf119422
+    timestamp: 2026-09-13T06:05:49.244Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0b5e78037903f32f60d3aeac40c0f9c9399e0d87
+    tree_hash: 13c77b77cfd949c99a0b23588c080ecada8b4fa4
+    timestamp: 2026-09-13T17:26:37.336Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e76d2c4806c6f0dd4169b2ebebac79914696ee22
+    tree_hash: 4d3384e2ee889f94d6a7db9b50105a9d5b7c40f8
+    timestamp: 2026-09-13T20:10:13.871Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 3e2ae8700c9466d8678716787e779059603f73fa
+    tree_hash: b6bc963b7fa94076c3cc73cca6148a42caddb85f
+    timestamp: 2026-09-13T21:36:50.477Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: efa05324ac959f20bf3945a3ddc878e6c4fa94f3
+    tree_hash: 9484af8eda3237efb4da20aba0a48bdd048d62fd
+    timestamp: 2026-09-14T04:47:26.472Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: bb8fdf4855b770a9b927b6c8bded572ac38ff11e
+    tree_hash: 991e3d81269adad3d88a57737690be2919a56759
+    timestamp: 2026-09-14T13:52:55.761Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 779f0cc9c5f0e1ed17002e3f1bbe463da6a76a56
+    tree_hash: 28140dd29c08441058e2984988cae28e7d151f94
+    timestamp: 2026-09-14T17:50:15.349Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7b0d696db3779cb9650f480ce2c2e3183f2f80f1
+    tree_hash: 428b9d8c3e6c3b3b1e306ce77f42d9a2731640cc
+    timestamp: 2026-09-14T18:07:13.869Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 78023fe454d8c76e39c7b05c200449912f618ff5
+    tree_hash: 1cd95b9bcbe55d1337b23532180ac284a80d9d92
+    timestamp: 2026-09-14T19:06:35.876Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 41f9bcf137162cb38a7d48dd87d7b29e8e21119d
+    tree_hash: a933d244696ecf8bc267fbd75a91e10a90dd0a81
+    timestamp: 2026-09-14T23:08:09.289Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: f8ce56dd6f5b50e59ad1897ff99c359855172683
+    tree_hash: f4933c6cd8f90b56e1e25d2be7210cb2aab1c4af
+    timestamp: 2026-09-14T23:39:06.588Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 873d8c9f32d472a9bc5118c3f9671bd9be853396
+    tree_hash: a9ac1b856c1efb6ef975d8644a046998a35ee420
+    timestamp: 2026-09-14T23:54:42.379Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 5b61c0e9325b61db4ace3fb89f2b74be9d2f5315
+    tree_hash: 46c7c22eebaf38cc0e6b451de720c6ffa7ee394a
+    timestamp: 2026-09-15T00:15:38.589Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0c74b028588202b87ce2fdc5df4b6e6109804b5a
+    tree_hash: e5300e08002370fb903d71bfc358663e61cdc3bb
+    timestamp: 2026-09-15T00:45:37.831Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 9d14b1cd1252414ac2f96f239bb1dab8cc0b841b
+    tree_hash: e91595c9460670a9d7ee607beea9fa5cc963662d
+    timestamp: 2026-09-15T01:31:42.727Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: a24a8a4ba0ff14c198f7ba03cd448cb51d2e170d
+    tree_hash: 53173759da98ba540ec44b910475a41d9458b56c
+    timestamp: 2026-09-15T01:47:15.438Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e75c262fbe1ccdc273a8abe7798eefa0690c2059
+    tree_hash: 36e6b9ab8bc160b223314ac527c98d9db42f7ae6
+    timestamp: 2026-09-15T02:19:12.239Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 301674dd75d49d934d138d6f46970a7d6fd4804e
+    tree_hash: 806ccffa5028677931c22d063e393acc1f8c522e
+    timestamp: 2026-09-15T04:48:19.264Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 105fc3566aa2feb95e67b71b21fea9a6263d2eb1
+    tree_hash: 0ad82465886f78eb98bb1adfba5a9a5abf04f6c6
+    timestamp: 2026-09-15T09:05:15.248Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: da76265108f7577345c43ca20d3f4f10f188b9f4
+    tree_hash: 4777683775c0fc92122a783911f24aaf4a14fd5d
+    timestamp: 2026-09-15T20:32:20.729Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 6cda847f0754a0fb4075a849389c249b23fa13f7
+    tree_hash: bbed4e561338ae6d069a9efb773a69d95648ac75
+    timestamp: 2026-09-15T22:38:02.639Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 9ca6d9bfa0e398897722deb0e3605b3aa1b5af50
+    tree_hash: f7e3414389622465df4b0fd2f03df236e4edde35
+    timestamp: 2026-09-15T22:53:28.182Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: d4c1dce71f1ecc58dedb24a40cfdd2f6d48195cb
+    tree_hash: aa5f2887174b2247cf1aad8beb0b4903bd894220
+    timestamp: 2026-09-15T23:47:28.484Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 729a422d3d5480f51b207641a2a359c99fbdfa72
+    tree_hash: 4fa461683be88690613e96b50bf5d717e85526b0
+    timestamp: 2026-09-16T00:25:31.639Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: cf7d6417474483392470c10ae9ee68b7ff287ef6
+    tree_hash: 02a0b0fd8a15a0ca5946dea7d84750aabfc78551
+    timestamp: 2026-09-16T02:23:07.061Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e292d82ffd28266993e6470b4c33274a6b59d63f
+    tree_hash: fce47f6aa3c89262362e2f18387a3b53e5f25e2b
+    timestamp: 2026-09-16T03:37:12.872Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7a241a82f0760799061cbada32ef98ec5672758c
+    tree_hash: 80482d20d5e712e628348aac41dbed0fa4470af6
+    timestamp: 2026-09-16T06:54:16.232Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7f50e8b79dc3beb17ed2fbf3ab850787aa25dc97
+    tree_hash: eb2c4f3d4f58374f8b08fc35ab1436cd1caf9e9e
+    timestamp: 2026-09-16T09:22:13.344Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: bf5517c83c9aabb4323e0086f363631b760cc9d4
+    tree_hash: 8cf01fcb0a70711e5de0417858bd57ca9b5c27c1
+    timestamp: 2026-09-16T16:19:07.560Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e984825da453a6eff500498ee7ac4bcf9a899f6c
+    tree_hash: cd9ffc14587392fa0aabe9479b071796e4113c28
+    timestamp: 2026-09-16T16:59:40.380Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 973f415f23079c868ca79e41701bc020042698ee
+    tree_hash: 1b7ef6af971ccf487dbeaed07d6a86d9d8bac91d
+    timestamp: 2026-09-16T17:14:42.285Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: aefc22aedb040a1095ea874ca5fe0144c3dc6208
+    tree_hash: 4a3018bb5628ad47d80baf45ac79b2541e385d95
+    timestamp: 2026-09-16T18:09:49.205Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7874d6e3dc979cf00f1777ae3b70a8c9291cf0b2
+    tree_hash: 2d013c19e3192c7c642ee166f45bb1a9bb3f24ba
+    timestamp: 2026-09-16T18:31:47.878Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 633c78e88732d5729d229f78af485f964e9cfee7
+    tree_hash: 5c8daaf00f2587d960960caa3be34f258c952e3c
+    timestamp: 2026-09-16T21:07:10.284Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: b05ae1c9ec734be487037831dcf41f6641b0dd1d
+    tree_hash: ab938b13d80a8bdf19b304b0617b676fd35b62da
+    timestamp: 2026-09-16T21:22:59.646Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 5c1bbdfe37b92c33c894c2d26e91f9a96fc1590a
+    tree_hash: a929dc800f2b87917d1de2c7e909bb1909f8e02a
+    timestamp: 2026-09-16T21:38:28.756Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7c4a06d4d5042b3e5305230569e283f48402e2a6
+    tree_hash: 1681ab3a3d2089fbf967f8ed8d169761b46f72e2
+    timestamp: 2026-09-16T22:16:35.270Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 6d17e6ec1b96cca02c7bd5f110ec03417bd09cfd
+    tree_hash: ebdc7c2d21d84f4b2391ec9822e4236b120a1834
+    timestamp: 2026-09-16T22:32:34.480Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 175b0614b89b7fc397c846eb9e65253819c00de2
+    tree_hash: deee7ae66a14b2ac59f5a0c3d7a861b98d8b13b7
+    timestamp: 2026-09-17T00:42:18.641Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 19b5c6fb4d501872673b94d096247d6a32dec18b
+    tree_hash: 3bbabd4cd4301f921685426fd6afd374b25945ee
+    timestamp: 2026-09-17T01:00:04.276Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: b40065af145e32824adbedaeef5cf080897c0899
+    tree_hash: ae792c7355f752628bf7df552c158438f6cdb94a
+    timestamp: 2026-09-17T01:16:08.659Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: fea1ae17bdb81dab4e825247bd24ec19ca2741ec
+    tree_hash: a05955131ac85433a97b30b977a412744fe17d82
+    timestamp: 2026-09-17T01:33:40.468Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7fda5c9e5cf53600dd686f28ce3ae197f2b37314
+    tree_hash: 7aa2477b6dadb75a2b2e6d8ba3c93811bc07ceaa
+    timestamp: 2026-09-17T05:51:16.482Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e6266223e771d9c7d1702d0c991bf973010ef34d
+    tree_hash: 6ad34977fcd0285cd4ea066be582ff6c5a27f737
+    timestamp: 2026-09-17T17:21:08.877Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: b4995c201d22b0bad1505b3ac3a32a60e921cd76
+    tree_hash: e05564919712c5e334bacb08c0106810b1a6d5a6
+    timestamp: 2026-09-17T18:01:35.034Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7efcf92b19b137c778d737f5f28a51db0ea6675a
+    tree_hash: 5510201037843577df06dde1139413582631e307
+    timestamp: 2026-09-17T18:54:18.447Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 19368b7b2059ebad2bf40bb89c825951685b7c3d
+    tree_hash: af5f4b0c09492c1d756a2ad9d0862a186b8be1e8
+    timestamp: 2026-09-17T19:40:44.234Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: ac435403f86014216b342010cce6a8499185c69e
+    tree_hash: 842b1deeddc7812e0d097cd6a012548378edb3bc
+    timestamp: 2026-09-17T20:16:21.528Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 7c0c1c588d0a10298950bf876af51d94243df0f0
+    tree_hash: 5747aba9f02007900072f12f740962d58324961d
+    timestamp: 2026-09-17T20:33:02.650Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e8a4c95c3cfb8164b4839d8996325cf6fcf20dd5
+    tree_hash: a82f6ed2b30b3054d060ad080ad49342b61765fb
+    timestamp: 2026-09-17T20:57:18.050Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0b14d06de640ddcf95d717f75e4f6a1dd85c95be
+    tree_hash: 9cc2f0d5e6c6dc040fc167fffadf848ef804cf05
+    timestamp: 2026-09-17T21:23:43.551Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 9e34b666d0220bc6eee63b40adab2ba6e54812c8
+    tree_hash: b835dabafe436960fb9d625190d192afa5d2de11
+    timestamp: 2026-09-18T00:15:20.347Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 818975be5eb7074b7383e21499a4d4c9a032bd72
+    tree_hash: f404411a20a9f019e0d62b6acce0ed8bae4ff54d
+    timestamp: 2026-09-18T00:50:44.531Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: e04f1176cefb4874b2a94a281c55ae18955f405f
+    tree_hash: bfb9766c4e24520f0bbb5cf25f3d288be319afef
+    timestamp: 2026-09-18T01:45:53.277Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 5e94efc57a1fa38ee5c541ecc9738cf4a0d92f94
+    tree_hash: e04cf29932dad4a3c00e7a86da0a19ad3543db8d
+    timestamp: 2026-09-18T04:28:23.949Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 97b78e42a7e7628d1a676d9ee8fe5f8e97d5d59b
+    tree_hash: bed237fceb91906347e5e69bcbe739b3cadc35d7
+    timestamp: 2026-09-18T05:25:03.062Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: d304f868ceef328dcc0a02763518d1d21c4dea85
+    tree_hash: 61fdf5c09dee9d569aae26366b3e695e26ad8694
+    timestamp: 2026-09-18T11:03:47.237Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0925bfe9cb469f05ae3423e32fef31838483a318
+    tree_hash: 473b0379ddc934e4b11c39bc4f02127c5c96ce99
+    timestamp: 2026-09-18T18:02:04.441Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 45aa426f3ce2c26f3c98994bf3b01e4364597ed2
+    tree_hash: 43e42c4963f01b6c68e6c31717e444773a6903aa
+    timestamp: 2026-09-18T18:30:52.243Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 195d3442d8472fbcd46c999c8e4765937a764c1e
+    tree_hash: ae35e20b7151ff41b3c508f34cdc35a7c7b0748a
+    timestamp: 2026-09-18T18:48:20.745Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 59766f3e17c621f18c22c01166204328d70128f4
+    tree_hash: b4693db5588b2e11990c11c1a0bbcd180464bf91
+    timestamp: 2026-09-18T21:06:06.341Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 0f38b3740152a5b2896dc1980800dc55b254f67c
+    tree_hash: 47ab2db94f099c8d1992aa792f4eeaa5bf0093ad
+    timestamp: 2026-09-18T23:14:08.829Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: d0c2c0770e7bd8a13b3dbcb00eaf8afa022120ff
+    tree_hash: 23a6ff3f4394d9023bfe4f3d4a210fd40bffe2b8
+    timestamp: 2026-09-19T01:37:11.442Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 51b3b36ec6b0aba4c02d66fd89d401d8eb62d395
+    tree_hash: 63d9ba9de0f3b9b083ba42134e43b761e6da922a
+    timestamp: 2026-09-19T02:36:22.744Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 35b3496432840fc9b94d8d0ddb2a8b0974a4263c
+    tree_hash: 788d74ef2cdecb483b286b730e4bc726bf24cda9
+    timestamp: 2026-09-19T21:36:54.630Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 96ab14b4887bf1103d0c65960616a351fc4bd5ad
+    tree_hash: 64091ccbf740ce9c156264e4cd28f6763f01be88
+    timestamp: 2026-09-21T00:41:58.300Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: ac0c506e80e837c1f3f01f47f7c467262349aa64
+    tree_hash: 21c8513e66038063a523eac02ec57e50b4c8cc03
+    timestamp: 2026-09-21T08:17:27.803Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: c56cee12b35bbd3ef3d15e9f4441abb14a2b14cf
+    tree_hash: d47693304b6acd1908518e0a76eae4698d4f7812
+    timestamp: 2026-09-21T09:48:24.124Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: c1e9d4fe1553896ffeceeb454de2913f1d91777e
+    tree_hash: 5b6495d16254e1c4255c0816660b214cb387e32c
+    timestamp: 2026-09-21T17:23:51.619Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 1494c0a4d584d9fa0e951c93d0c728c46fe8c019
+    tree_hash: 369763b07336c6ed4971327918c2a6c7fb6d8d64
+    timestamp: 2026-09-21T18:17:44.997Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 97e871bdaef9116cc52d780d23a6532db3ebb379
+    tree_hash: 65f1138c3c00ae2a231e00df4e3aaee46de7d89f
+    timestamp: 2026-09-21T18:36:47.160Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 4a3e94d58e2a61f66e24a76d139781d83c1890c1
+    tree_hash: ec36af837293548ee1c1a28c2c572b10a82c7af7
+    timestamp: 2026-09-21T19:37:08.292Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 8f38dcb4001e3110aa62eef02a75f99535e6ae35
+    tree_hash: c6a2cf6f017e17f113485d691a73c634a6c68a53
+    timestamp: 2026-09-21T19:54:36.894Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: db879c70bf2f2182591668b1f3cb17239eb1a730
+    tree_hash: b782f29bb4fa9e545c6e32a569496e1760676607
+    timestamp: 2026-09-21T21:33:38.372Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+  - commit_sha: 66340a39151241eef99b3e5d8c425916fa790062
+    tree_hash: 1ece1381f0275420f05250f95171e8f34c3343e4
+    timestamp: 2026-09-21T22:54:50.966Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-rust-sdk: 0.46.0
+current_generation: 66340a39151241eef99b3e5d8c425916fa790062
+patches: []

@@ -15,6 +15,12 @@ pub struct CreateTransfersRequest {
     /// claim_link only. Link expiry as an ISO 8601 timestamp. Defaults to 24 hours from creation.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<DateTime<FixedOffset>>,
+    /// Ledger transfers only. The feed the transfer was initiated from. Given with `feed_type`, the payment receipt posts into that feed instead of a direct message.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feed_id: Option<String>,
+    /// Ledger transfers only. The type of the feed named by `feed_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feed_type: Option<CreateTransfersRequestFeedType>,
     /// Ledger transfers and wallet sends. A unique key that makes retries safe. Retrying with the same key returns the original transfer, or attaches to the original wallet send, instead of moving money twice.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub idempotence_key: Option<String>,
@@ -48,6 +54,8 @@ pub struct CreateTransfersRequestBuilder {
     currency: Option<String>,
     destination_id: Option<String>,
     expires_at: Option<DateTime<FixedOffset>>,
+    feed_id: Option<String>,
+    feed_type: Option<CreateTransfersRequestFeedType>,
     idempotence_key: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
     notes: Option<String>,
@@ -74,6 +82,16 @@ impl CreateTransfersRequestBuilder {
 
     pub fn expires_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.expires_at = Some(value);
+        self
+    }
+
+    pub fn feed_id(mut self, value: impl Into<String>) -> Self {
+        self.feed_id = Some(value.into());
+        self
+    }
+
+    pub fn feed_type(mut self, value: CreateTransfersRequestFeedType) -> Self {
+        self.feed_type = Some(value);
         self
     }
 
@@ -119,6 +137,8 @@ impl CreateTransfersRequestBuilder {
             currency: self.currency,
             destination_id: self.destination_id,
             expires_at: self.expires_at,
+            feed_id: self.feed_id,
+            feed_type: self.feed_type,
             idempotence_key: self.idempotence_key,
             metadata: self.metadata,
             notes: self.notes,

@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct CreateFeeMarkupsRequest {
     /// The unique identifier of the company to create or update the fee markup for.
     #[serde(default)]
-    pub company_id: String,
+    pub account_id: String,
     /// The type of fee this markup applies to, such as processing or platform fees.
     pub fee_type: FeeMarkupTypes,
     /// The fixed fee amount in USD to charge per transaction. Must be between 0 and 50.
@@ -30,7 +30,7 @@ impl CreateFeeMarkupsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateFeeMarkupsRequestBuilder {
-    company_id: Option<String>,
+    account_id: Option<String>,
     fee_type: Option<FeeMarkupTypes>,
     fixed_fee_usd: Option<f64>,
     metadata: Option<HashMap<String, serde_json::Value>>,
@@ -39,8 +39,8 @@ pub struct CreateFeeMarkupsRequestBuilder {
 }
 
 impl CreateFeeMarkupsRequestBuilder {
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -71,13 +71,13 @@ impl CreateFeeMarkupsRequestBuilder {
 
     /// Consumes the builder and constructs a [`CreateFeeMarkupsRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](CreateFeeMarkupsRequestBuilder::company_id)
+    /// - [`account_id`](CreateFeeMarkupsRequestBuilder::account_id)
     /// - [`fee_type`](CreateFeeMarkupsRequestBuilder::fee_type)
     pub fn build(self) -> Result<CreateFeeMarkupsRequest, BuildError> {
         Ok(CreateFeeMarkupsRequest {
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
             fee_type: self
                 .fee_type
                 .ok_or_else(|| BuildError::missing_field("fee_type"))?,

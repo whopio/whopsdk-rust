@@ -58,6 +58,13 @@ impl AiChatsClient {
         request: &AiChatsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAiChatsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -68,6 +75,7 @@ impl AiChatsClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
+                    .serialize("agent_identifier", request.agent_identifier.clone())
                     .bool("only_active_crons", request.only_active_crons.clone())
                     .build(),
                 options,
@@ -105,7 +113,8 @@ impl AiChatsClient {
     ///         .create(
     ///             &CreateAiChatsRequest {
     ///                 message_text: "message_text".to_string(),
-    ///                 current_company_id: None,
+    ///                 agent_identifier: None,
+    ///                 current_account_id: None,
     ///                 message_attachments: None,
     ///                 message_source: None,
     ///                 suggestion_type: None,
@@ -121,6 +130,13 @@ impl AiChatsClient {
         request: &CreateAiChatsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AiChat, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -166,6 +182,13 @@ impl AiChatsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AiChat, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -214,6 +237,13 @@ impl AiChatsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -225,7 +255,7 @@ impl AiChatsClient {
             .await
     }
 
-    /// Update an AI chat's title, notification preferences, or associated company context.
+    /// Update an AI chat's title, notification preferences, or associated account context.
     ///
     /// Required permissions:
     /// - `ai_chat:update`
@@ -269,6 +299,13 @@ impl AiChatsClient {
         request: &UpdateAiChatsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AiChat, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

@@ -2,9 +2,22 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ProductListItem {
+    /// Account that sells this product.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account: Option<HashMap<String, serde_json::Value>>,
+    /// Average star rating across published reviews for this product, from `1.0` to `5.0`. Returns `0.0` when no published-review rating is available.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub average_review_rating: f64,
     /// When the product was created, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
+    /// Buyable plan to show and check out with. The configured default when that plan is buyable, otherwise the first buyable plan in product-page order. `null` when none is buyable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default_plan: Option<ProductPublicPlan>,
+    /// Written description displayed on the product page. `null` if none is set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
     /// External identifier stored on the product for your own reference.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub external_identifier: Option<String>,
@@ -55,7 +68,11 @@ impl ProductListItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ProductListItemBuilder {
+    account: Option<HashMap<String, serde_json::Value>>,
+    average_review_rating: Option<f64>,
     created_at: Option<String>,
+    default_plan: Option<ProductPublicPlan>,
+    description: Option<String>,
     external_identifier: Option<String>,
     gallery_images: Option<Vec<ProductGalleryImage>>,
     headline: Option<String>,
@@ -72,8 +89,28 @@ pub struct ProductListItemBuilder {
 }
 
 impl ProductListItemBuilder {
+    pub fn account(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.account = Some(value);
+        self
+    }
+
+    pub fn average_review_rating(mut self, value: f64) -> Self {
+        self.average_review_rating = Some(value);
+        self
+    }
+
     pub fn created_at(mut self, value: impl Into<String>) -> Self {
         self.created_at = Some(value.into());
+        self
+    }
+
+    pub fn default_plan(mut self, value: ProductPublicPlan) -> Self {
+        self.default_plan = Some(value);
+        self
+    }
+
+    pub fn description(mut self, value: impl Into<String>) -> Self {
+        self.description = Some(value.into());
         self
     }
 
@@ -144,6 +181,7 @@ impl ProductListItemBuilder {
 
     /// Consumes the builder and constructs a [`ProductListItem`].
     /// This method will fail if any of the following fields are not set:
+    /// - [`average_review_rating`](ProductListItemBuilder::average_review_rating)
     /// - [`created_at`](ProductListItemBuilder::created_at)
     /// - [`gallery_images`](ProductListItemBuilder::gallery_images)
     /// - [`id`](ProductListItemBuilder::id)
@@ -156,9 +194,15 @@ impl ProductListItemBuilder {
     /// - [`verified`](ProductListItemBuilder::verified)
     pub fn build(self) -> Result<ProductListItem, BuildError> {
         Ok(ProductListItem {
+            account: self.account,
+            average_review_rating: self
+                .average_review_rating
+                .ok_or_else(|| BuildError::missing_field("average_review_rating"))?,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
+            default_plan: self.default_plan,
+            description: self.description,
             external_identifier: self.external_identifier,
             gallery_images: self
                 .gallery_images

@@ -1,14 +1,11 @@
 pub use crate::prelude::*;
 
-/// The connection type for Receipt.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListPaymentsResponse {
-    /// A list of nodes.
     #[serde(default)]
-    pub data: Vec<PaymentListItem>,
-    /// Information to aid in pagination.
+    pub data: Vec<Payment>,
     #[serde(default)]
-    pub page_info: PageInfo,
+    pub page_info: ListPaymentsResponsePageInfo,
 }
 
 impl ListPaymentsResponse {
@@ -20,17 +17,17 @@ impl ListPaymentsResponse {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListPaymentsResponseBuilder {
-    data: Option<Vec<PaymentListItem>>,
-    page_info: Option<PageInfo>,
+    data: Option<Vec<Payment>>,
+    page_info: Option<ListPaymentsResponsePageInfo>,
 }
 
 impl ListPaymentsResponseBuilder {
-    pub fn data(mut self, value: Vec<PaymentListItem>) -> Self {
+    pub fn data(mut self, value: Vec<Payment>) -> Self {
         self.data = Some(value);
         self
     }
 
-    pub fn page_info(mut self, value: PageInfo) -> Self {
+    pub fn page_info(mut self, value: ListPaymentsResponsePageInfo) -> Self {
         self.page_info = Some(value);
         self
     }

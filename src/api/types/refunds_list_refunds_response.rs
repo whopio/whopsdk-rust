@@ -1,14 +1,11 @@
 pub use crate::prelude::*;
 
-/// The connection type for Refund.
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ListRefundsResponse {
-    /// A list of nodes.
     #[serde(default)]
-    pub data: Vec<RefundListItem>,
-    /// Information to aid in pagination.
+    pub data: Vec<Refund>,
     #[serde(default)]
-    pub page_info: PageInfo,
+    pub page_info: ListRefundsResponsePageInfo,
 }
 
 impl ListRefundsResponse {
@@ -20,17 +17,17 @@ impl ListRefundsResponse {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListRefundsResponseBuilder {
-    data: Option<Vec<RefundListItem>>,
-    page_info: Option<PageInfo>,
+    data: Option<Vec<Refund>>,
+    page_info: Option<ListRefundsResponsePageInfo>,
 }
 
 impl ListRefundsResponseBuilder {
-    pub fn data(mut self, value: Vec<RefundListItem>) -> Self {
+    pub fn data(mut self, value: Vec<Refund>) -> Self {
         self.data = Some(value);
         self
     }
 
-    pub fn page_info(mut self, value: PageInfo) -> Self {
+    pub fn page_info(mut self, value: ListRefundsResponsePageInfo) -> Self {
         self.page_info = Some(value);
         self
     }

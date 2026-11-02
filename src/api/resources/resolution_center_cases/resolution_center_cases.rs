@@ -19,10 +19,10 @@ impl ResolutionCenterCasesClient {
     ///
     /// * `account_id` - Only cases filed against this account (`biz_` tag). With read access to the account this lists its whole queue; without, only the cases you opened against it.
     /// * `user_id` - Only cases opened by this customer — a `user_` tag, or `me` for the calling user. It narrows what you can already read, so `me` lists the cases you opened without the ones on accounts you are a team member of.
-    /// * `first` - The number of cases to return (default 20, max 100).
-    /// * `after` - A cursor; returns cases after this position.
-    /// * `last` - The number of cases to return from the end of the range.
-    /// * `before` - A cursor; returns cases before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort cases by.
     /// * `direction` - Sort direction.
     /// * `status` - Only cases in these statuses. Repeat the parameter to pass several — one paginated list covers all of them.
@@ -76,6 +76,13 @@ impl ResolutionCenterCasesClient {
         request: &ResolutionCenterCasesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListResolutionCenterCasesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -143,6 +150,13 @@ impl ResolutionCenterCasesClient {
         request: &CreateResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -207,6 +221,13 @@ impl ResolutionCenterCasesClient {
         request: &ResolutionCenterCasesSummaryQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<SummaryResolutionCenterCasesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -261,6 +282,13 @@ impl ResolutionCenterCasesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -313,6 +341,13 @@ impl ResolutionCenterCasesClient {
         request: &AcceptResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -366,6 +401,13 @@ impl ResolutionCenterCasesClient {
         request: &AppealResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -421,6 +463,13 @@ impl ResolutionCenterCasesClient {
         request: &DenyResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -437,10 +486,10 @@ impl ResolutionCenterCasesClient {
     /// # Arguments
     ///
     /// * `id` - The resolution center case ID (`reso_` tag).
-    /// * `first` - The number of events to return (default 20, max 100).
-    /// * `after` - A cursor; returns events after this position.
-    /// * `last` - The number of events to return from the end of the range.
-    /// * `before` - A cursor; returns events before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -477,6 +526,13 @@ impl ResolutionCenterCasesClient {
         request: &EventsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<EventsResolutionCenterCasesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -535,6 +591,13 @@ impl ResolutionCenterCasesClient {
         request: &ReplyResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -587,6 +650,13 @@ impl ResolutionCenterCasesClient {
         request: &RequestInfoResolutionCenterCasesRequest,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -632,6 +702,13 @@ impl ResolutionCenterCasesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ResolutionCenterCase, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

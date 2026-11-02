@@ -51,7 +51,7 @@ pub struct ListMethodsResponseDataItem {
     /// Display name of the payout rail, such as `ACH Bank Deposit`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payer_name: Option<String>,
-    /// Fee and delivery estimate for withdrawing the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
+    /// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quote: Option<ListMethodsResponseDataItemQuote>,
     /// Lifecycle status: `created` means saved but unused, `active` means a payout succeeded through it, `broken` means a payout failure disabled it; a later successful payout returns it to `active`.

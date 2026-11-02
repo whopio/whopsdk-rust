@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct Membership {
     /// The account (seller) this membership belongs to.
     #[serde(default)]
-    pub account: MembershipAccount,
+    pub account: StorefrontAccount,
     /// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring plans.
     #[serde(default)]
     pub cancel_at_period_end: bool,
@@ -26,6 +26,9 @@ pub struct Membership {
     /// Custom key-value pairs stored on the membership, commonly used for software licensing.
     #[serde(default)]
     pub metadata: HashMap<String, serde_json::Value>,
+    /// The buyer's phone number recorded for this membership, or `null`. The number collected (or verified) at checkout when the seller's phone collection is on; falls back to the buyer's account number when they have shared one with this seller.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phone_number: Option<String>,
     /// The plan the buyer purchased, prefixed `plan_`.
     #[serde(default)]
     pub plan_id: String,
@@ -48,7 +51,7 @@ impl Membership {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct MembershipBuilder {
-    account: Option<MembershipAccount>,
+    account: Option<StorefrontAccount>,
     cancel_at_period_end: Option<bool>,
     created_at: Option<String>,
     current_period_end: Option<String>,
@@ -56,6 +59,7 @@ pub struct MembershipBuilder {
     license_key: Option<String>,
     member: Option<MembershipMember>,
     metadata: Option<HashMap<String, serde_json::Value>>,
+    phone_number: Option<String>,
     plan_id: Option<String>,
     product_id: Option<String>,
     status: Option<MembershipStatus>,
@@ -63,7 +67,7 @@ pub struct MembershipBuilder {
 }
 
 impl MembershipBuilder {
-    pub fn account(mut self, value: MembershipAccount) -> Self {
+    pub fn account(mut self, value: StorefrontAccount) -> Self {
         self.account = Some(value);
         self
     }
@@ -100,6 +104,11 @@ impl MembershipBuilder {
 
     pub fn metadata(mut self, value: HashMap<String, serde_json::Value>) -> Self {
         self.metadata = Some(value);
+        self
+    }
+
+    pub fn phone_number(mut self, value: impl Into<String>) -> Self {
+        self.phone_number = Some(value.into());
         self
     }
 
@@ -151,6 +160,7 @@ impl MembershipBuilder {
             metadata: self
                 .metadata
                 .ok_or_else(|| BuildError::missing_field("metadata"))?,
+            phone_number: self.phone_number,
             plan_id: self
                 .plan_id
                 .ok_or_else(|| BuildError::missing_field("plan_id"))?,

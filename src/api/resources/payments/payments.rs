@@ -13,38 +13,28 @@ impl PaymentsClient {
         })
     }
 
-    /// Returns a paginated list of payments for the actor in context, with optional filtering by product, plan, status, billing reason, currency, and creation date.
-    ///
-    /// Required permissions:
-    /// - `payment:basic:read`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    /// - `promo_code:basic:read`
-    /// - `shipment:basic:read`
+    /// Lists payments, newest first. Without filters this is every payment the caller can read: a company credential's own account, or for a user every account they can read payments for. Filters narrow by account, buyer, product, plan, membership, status, billing reason, currency, and creation window. Filtering by `billing_reason=subscription_cycle` also matches renewals recorded as `subscription_update`. `settlement_time_at` is null on list rows — retrieve the payment for it.
     ///
     /// # Arguments
     ///
-    /// * `after` - Returns the elements in the list that come after the specified cursor.
-    /// * `before` - Returns the elements in the list that come before the specified cursor.
-    /// * `first` - Returns the first _n_ elements from the list.
-    /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list payments for.
-    /// * `product_ids` - Filter payments to only those associated with these specific product identifiers.
-    /// * `billing_reasons` - Filter payments by their billing reason.
-    /// * `currencies` - Filter payments by their currency code.
-    /// * `plan_ids` - Filter payments to only those associated with these specific plan identifiers.
-    /// * `statuses` - Filter payments by their current status.
-    /// * `substatuses` - Filter payments by their current substatus for more granular filtering.
-    /// * `include_free` - Whether to include payments with a zero amount.
-    /// * `created_before` - Only return payments created before this timestamp.
-    /// * `created_after` - Only return payments created after this timestamp.
-    /// * `updated_before` - Only return payments last updated before this timestamp.
-    /// * `updated_after` - Only return payments last updated after this timestamp.
+    /// * `account_id` - Only payments charged by this account, prefixed `biz_`.
+    /// * `status` - Only payments in this lifecycle state.
+    /// * `billing_reason` - Only payments charged for this reason.
+    /// * `currency` - Only payments presented in this three-letter currency, such as `usd`.
+    /// * `user_id` - Only payments made by this buyer, prefixed `user_`.
     /// * `query` - Search payments by user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
-    /// * `checkout_configuration_ids` - Only return payments from these checkout configurations.
+    /// * `member_id` - Only payments made by this member, prefixed `mber_`.
+    /// * `membership_id` - Only payments billed under this membership, prefixed `mem_`.
+    /// * `product_id` - Only payments for this product, prefixed `prod_`.
+    /// * `plan_id` - Only payments priced by this plan, prefixed `plan_`.
+    /// * `created_before` - Only payments created before this ISO 8601 timestamp.
+    /// * `created_after` - Only payments created after this ISO 8601 timestamp.
+    /// * `order` - The field to sort by.
+    /// * `direction` - The sort direction.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -67,26 +57,7 @@ impl PaymentsClient {
     ///         .payments
     ///         .list(
     ///             &PaymentsListQueryRequest {
-    ///                 first: Some(42),
-    ///                 last: Some(42),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-    ///                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 updated_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 updated_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 after: None,
-    ///                 before: None,
-    ///                 direction: None,
-    ///                 order: None,
-    ///                 product_ids: vec![],
-    ///                 billing_reasons: vec![],
-    ///                 currencies: vec![],
-    ///                 plan_ids: vec![],
-    ///                 statuses: vec![],
-    ///                 substatuses: vec![],
-    ///                 include_free: None,
-    ///                 query: None,
-    ///                 checkout_configuration_ids: vec![],
+    ///                 ..Default::default()
     ///             },
     ///             None,
     ///         )
@@ -98,61 +69,47 @@ impl PaymentsClient {
         request: &PaymentsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListPaymentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
                 "payments",
                 None,
                 QueryBuilder::new()
-                    .string("after", request.after.clone())
-                    .string("before", request.before.clone())
-                    .int("first", request.first.clone())
-                    .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
-                    .serialize("direction", request.direction.clone())
-                    .serialize("order", request.order.clone())
-                    .string_array("product_ids", request.product_ids.clone())
-                    .serialize_array("billing_reasons", request.billing_reasons.clone())
-                    .serialize_array("currencies", request.currencies.clone())
-                    .string_array("plan_ids", request.plan_ids.clone())
-                    .serialize_array("statuses", request.statuses.clone())
-                    .serialize_array("substatuses", request.substatuses.clone())
-                    .bool("include_free", request.include_free.clone())
+                    .string("account_id", request.account_id.clone())
+                    .serialize("status", request.status.clone())
+                    .serialize("billing_reason", request.billing_reason.clone())
+                    .string("currency", request.currency.clone())
+                    .string("user_id", request.user_id.clone())
+                    .structured_query("query", request.query.clone())
+                    .string("member_id", request.member_id.clone())
+                    .string("membership_id", request.membership_id.clone())
+                    .string("product_id", request.product_id.clone())
+                    .string("plan_id", request.plan_id.clone())
                     .datetime("created_before", request.created_before.clone())
                     .datetime("created_after", request.created_after.clone())
-                    .datetime("updated_before", request.updated_before.clone())
-                    .datetime("updated_after", request.updated_after.clone())
-                    .structured_query("query", request.query.clone())
-                    .string_array(
-                        "checkout_configuration_ids",
-                        request.checkout_configuration_ids.clone(),
-                    )
+                    .serialize("order", request.order.clone())
+                    .serialize("direction", request.direction.clone())
+                    .int("first", request.first.clone())
+                    .string("after", request.after.clone())
+                    .int("last", request.last.clone())
+                    .string("before", request.before.clone())
                     .build(),
                 options,
             )
             .await
     }
 
-    /// Charge an existing member off-session using one of their stored payment methods. You can provide an existing plan, or create a new one in-line. This endpoint will respond with a payment object immediately, but the payment is processed asynchronously in the background. Use webhooks to be notified when the payment succeeds or fails.
-    ///
-    /// Required permissions:
-    /// - `payment:charge`
-    /// - `plan:create`
-    /// - `access_pass:create`
-    /// - `access_pass:update`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    /// - `promo_code:basic:read`
-    /// - `shipment:basic:read`
-    /// - `payment:dispute:read`
-    /// - `payment:resolution_center_case:read`
+    /// Charges a buyer for one or more plans. Pass a payment method already on file (`member_id` and `payment_method_id`), or a `confirmation_token` describing a method the buyer just supplied. Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and, for a confirmation-token payment, what the buyer must still do. Pass `line_items` for one or more plans with quantities, `plan_id` for an existing plan, or `plan` to find or create one inline. These inputs are mutually exclusive.
     ///
     /// # Arguments
     ///
-    /// * `request` - Parameters for CreatePayment
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -174,32 +131,23 @@ impl PaymentsClient {
     ///     client
     ///         .payments
     ///         .create(
-    ///             &CreatePaymentsRequest::CreatePaymentsRequestZero(CreatePaymentsRequestZero {
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-    ///                 confirmation_token: "confirmation_token".to_string(),
+    ///             &CreatePaymentsRequest {
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 auto_capture_after_minutes: None,
+    ///                 capture: None,
+    ///                 confirmation_token: None,
     ///                 email: None,
+    ///                 line_items: None,
+    ///                 member_id: None,
     ///                 metadata: None,
     ///                 payment_method_id: None,
-    ///                 plan: CreatePaymentsRequestZeroPlan {
-    ///                     application_fee_amount: None,
-    ///                     billing_period: None,
-    ///                     currency: Currencies::Usd,
-    ///                     description: None,
-    ///                     expiration_days: None,
-    ///                     force_create_new_plan: None,
-    ///                     initial_price: None,
-    ///                     internal_notes: None,
-    ///                     plan_type: None,
-    ///                     product: None,
-    ///                     product_id: None,
-    ///                     renewal_price: None,
-    ///                     title: None,
-    ///                     trial_period_days: None,
-    ///                     visibility: None,
-    ///                 },
+    ///                 plan: None,
+    ///                 plan_id: None,
     ///                 promo_code_id: None,
     ///                 return_url: None,
-    ///             }),
+    ///                 shipping_address: None,
+    ///                 statement_descriptor: None,
+    ///             },
     ///             None,
     ///         )
     ///         .await;
@@ -209,7 +157,14 @@ impl PaymentsClient {
         &self,
         request: &CreatePaymentsRequest,
         options: Option<RequestOptions>,
-    ) -> Result<CreatePaymentsResponse, ApiError> {
+    ) -> Result<Payment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -221,23 +176,11 @@ impl PaymentsClient {
             .await
     }
 
-    /// Retrieves the details of an existing payment.
-    ///
-    /// Required permissions:
-    /// - `payment:basic:read`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    /// - `promo_code:basic:read`
-    /// - `shipment:basic:read`
-    /// - `payment:dispute:read`
-    /// - `payment:resolution_center_case:read`
+    /// Returns one payment, including every purchased line item with its quantity and subtotal. Related records are ids — resolve a plan, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`.
     ///
     /// # Arguments
     ///
-    /// * `id` - The unique identifier of the payment.
+    /// * `id` - The payment to retrieve, prefixed `pay_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -256,17 +199,21 @@ impl PaymentsClient {
     ///         ..Default::default()
     ///     };
     ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .payments
-    ///         .retrieve(&"pay_xxxxxxxxxxxxxx".to_string(), None)
-    ///         .await;
+    ///     client.payments.retrieve(&"id".to_string(), None).await;
     /// }
     /// ```
     pub async fn retrieve(
         &self,
         id: &str,
         options: Option<RequestOptions>,
-    ) -> Result<RetrievePaymentsResponse, ApiError> {
+    ) -> Result<Payment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -278,18 +225,10 @@ impl PaymentsClient {
             .await
     }
 
-    /// Returns the list of fees associated with a specific payment, including platform fees and processing fees.
-    ///
-    /// Required permissions:
-    /// - `payment:basic:read`
+    /// Captures the full amount of a card payment created with `capture: false`. The payment must still be in `requires_capture` before `capture_expires_at`. Partial capture, multiple captures, capturing more than the authorized amount, and tips are not supported.
     ///
     /// # Arguments
     ///
-    /// * `id` - The unique identifier of the payment to list fees for.
-    /// * `after` - Returns the elements in the list that come after the specified cursor.
-    /// * `before` - Returns the elements in the list that come before the specified cursor.
-    /// * `first` - Returns the first _n_ elements from the list.
-    /// * `last` - Returns the last _n_ elements from the list.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -308,59 +247,86 @@ impl PaymentsClient {
     ///         ..Default::default()
     ///     };
     ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .payments
-    ///         .list_fees(
-    ///             &"pay_xxxxxxxxxxxxxx".to_string(),
-    ///             &ListFeesQueryRequest {
-    ///                 first: Some(42),
-    ///                 last: Some(42),
-    ///                 ..Default::default()
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
+    ///     client.payments.capture(&"id".to_string(), None).await;
     /// }
     /// ```
-    pub async fn list_fees(
+    pub async fn capture(
         &self,
         id: &str,
-        request: &ListFeesQueryRequest,
         options: Option<RequestOptions>,
-    ) -> Result<ListFeesPaymentsResponse, ApiError> {
+    ) -> Result<PaymentStatus, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
-                Method::GET,
-                &format!("payments/{}/fees", id),
+                Method::POST,
+                &format!("payments/{}/capture", id),
                 None,
-                QueryBuilder::new()
-                    .string("after", request.after.clone())
-                    .string("before", request.before.clone())
-                    .int("first", request.first.clone())
-                    .int("last", request.last.clone())
-                    .build(),
+                None,
                 options,
             )
             .await
     }
 
-    /// Issue a full or partial refund for a payment. The refund is processed through the original payment processor and the membership status is updated accordingly.
-    ///
-    /// Required permissions:
-    /// - `payment:manage`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    /// - `promo_code:basic:read`
-    /// - `shipment:basic:read`
-    /// - `payment:dispute:read`
-    /// - `payment:resolution_center_case:read`
+    /// Returns the fee breakdown of one payment — Whop's fee, processing, affiliate and other lines — each in the currency it was collected in and converted to the payment's settlement currency. The list is complete in one page.
     ///
     /// # Arguments
     ///
-    /// * `id` - The unique identifier of the payment to refund.
+    /// * `id` - The payment whose fees to list, prefixed `pay_`.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client.payments.list_fees(&"id".to_string(), None).await;
+    /// }
+    /// ```
+    pub async fn list_fees(
+        &self,
+        id: &str,
+        options: Option<RequestOptions>,
+    ) -> Result<ListFeesPaymentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::GET,
+                &format!("payments/{}/fees", id),
+                None,
+                None,
+                options,
+            )
+            .await
+    }
+
+    /// Issues a full or partial refund for a payment. The refund is processed through the original payment processor and the membership status is updated accordingly.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - The payment to refund, prefixed `pay_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -382,7 +348,7 @@ impl PaymentsClient {
     ///     client
     ///         .payments
     ///         .refund(
-    ///             &"pay_xxxxxxxxxxxxxx".to_string(),
+    ///             &"id".to_string(),
     ///             &RefundPaymentsRequest {
     ///                 ..Default::default()
     ///             },
@@ -397,6 +363,13 @@ impl PaymentsClient {
         request: &RefundPaymentsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Payment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -408,23 +381,11 @@ impl PaymentsClient {
             .await
     }
 
-    /// Retry a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
-    ///
-    /// Required permissions:
-    /// - `payment:manage`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    /// - `promo_code:basic:read`
-    /// - `shipment:basic:read`
-    /// - `payment:dispute:read`
-    /// - `payment:resolution_center_case:read`
+    /// Retries a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
     ///
     /// # Arguments
     ///
-    /// * `id` - The unique identifier of the payment to retry.
+    /// * `id` - The payment to retry, prefixed `pay_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -443,10 +404,7 @@ impl PaymentsClient {
     ///         ..Default::default()
     ///     };
     ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .payments
-    ///         .retry(&"pay_xxxxxxxxxxxxxx".to_string(), None)
-    ///         .await;
+    ///     client.payments.retry(&"id".to_string(), None).await;
     /// }
     /// ```
     pub async fn retry(
@@ -454,6 +412,13 @@ impl PaymentsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Payment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -465,23 +430,59 @@ impl PaymentsClient {
             .await
     }
 
-    /// Void a payment that has not yet been settled. Voiding cancels the payment before it is captured by the payment processor.
-    ///
-    /// Required permissions:
-    /// - `payment:manage`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    /// - `promo_code:basic:read`
-    /// - `shipment:basic:read`
-    /// - `payment:dispute:read`
-    /// - `payment:resolution_center_case:read`
+    /// Voids a payment that has not yet been settled. Voiding cancels the payment before it is captured by the payment processor.
     ///
     /// # Arguments
     ///
-    /// * `id` - The unique identifier of the payment to void.
+    /// * `id` - The payment to void, prefixed `pay_`.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client.payments.void(&"id".to_string(), None).await;
+    /// }
+    /// ```
+    pub async fn void(
+        &self,
+        id: &str,
+        options: Option<RequestOptions>,
+    ) -> Result<Payment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::POST,
+                &format!("payments/{}/void", id),
+                None,
+                None,
+                options,
+            )
+            .await
+    }
+
+    /// Starts a fresh on-session attempt with the saved card for a subscription renewal that is waiting on the customer to authenticate; the bank's step then arrives in `next_action` on the following status reads. Only the payment's own customer may call it — with the payment's `client_secret` or their own session — and it is a no-op for any payment that is not a parked renewal.
+    ///
+    /// # Arguments
+    ///
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -502,19 +503,26 @@ impl PaymentsClient {
     ///     let client = Whop::new(config).expect("Failed to build client");
     ///     client
     ///         .payments
-    ///         .void(&"pay_xxxxxxxxxxxxxx".to_string(), None)
+    ///         .resume(&"payment_id".to_string(), None)
     ///         .await;
     /// }
     /// ```
-    pub async fn void(
+    pub async fn resume(
         &self,
-        id: &str,
+        payment_id: &str,
         options: Option<RequestOptions>,
-    ) -> Result<Payment, ApiError> {
+    ) -> Result<PaymentStatus, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
-                &format!("payments/{}/void", id),
+                &format!("payments/{}/resume", payment_id),
                 None,
                 None,
                 options,
@@ -563,6 +571,13 @@ impl PaymentsClient {
         request: &UpdateReturnUrlPaymentsRequest,
         options: Option<RequestOptions>,
     ) -> Result<PaymentStatus, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -608,6 +623,13 @@ impl PaymentsClient {
         payment_id: &str,
         options: Option<RequestOptions>,
     ) -> Result<PaymentStatus, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

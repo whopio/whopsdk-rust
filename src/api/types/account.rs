@@ -15,7 +15,7 @@ pub struct Account {
     pub business_name: Option<String>,
     /// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub business_type: Option<AccountBusinessType>,
+    pub business_type: Option<String>,
     /// Whether pending funds may be transferred from this platform account to its connected accounts.
     #[serde(default)]
     pub can_transfer_pending_balance_to_children: bool,
@@ -40,9 +40,15 @@ pub struct Account {
     /// Account promotional description.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    /// Whether economic intelligence is enabled for the account.
+    #[serde(default)]
+    pub economic_intelligence: bool,
     /// Account owner email address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
+    /// The account's end-user license agreement document, or `null` if they have not published one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eula: Option<File>,
     #[serde(default)]
     pub home_preferences: Vec<AccountHomePreferencesItem>,
     /// Account ID, prefixed `biz_`.
@@ -50,7 +56,7 @@ pub struct Account {
     pub id: String,
     /// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub industry_group: Option<AccountIndustryGroup>,
+    pub industry_group: Option<String>,
     /// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub industry_type: Option<String>,
@@ -84,13 +90,19 @@ pub struct Account {
     /// Parent account for connected accounts, or `null` for standalone accounts.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent_account: Option<AccountParent>,
+    /// The account's active first-tier partner. Present on retrieve responses; null when no active first-tier partner is attributed to the account. Omitted from other responses.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub partner: Option<AccountPartner>,
     /// Payment health controls currently applied to the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_controls: Option<AccountPaymentControls>,
+    /// The account's privacy policy document, or `null` if they have not published one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub privacy_policy: Option<File>,
     /// Tax classification code applied by default to the account's products, with `id`, `name`, and `product_type`. `null` when no default is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_tax_code: Option<HashMap<String, serde_json::Value>>,
-    /// DEPRECATED: Use the `GET /recommended_actions?account_id={account_id}` endpoint instead.
+    /// DEPRECATED: Use the `GET /economic_intelligence?account_id={account_id}` endpoint instead.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recommended_actions: Option<Vec<AccountRecommendedAction>>,
     /// Whether authorized users must enable two-factor authentication.
@@ -99,6 +111,9 @@ pub struct Account {
     pub require2fa: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required_actions: Option<Vec<AccountRequiredAction>>,
+    /// The account's return policy document, or `null` if they have not published one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub return_policy: Option<File>,
     /// Account public route identifier.
     #[serde(default)]
     pub route: String,
@@ -119,10 +134,10 @@ pub struct Account {
     /// Whether the account settles on stablecoin rails — its balance is held on-chain as USDT and paid out over crypto, rather than as fiat cash.
     #[serde(default)]
     pub stablecoin_rails: bool,
-    /// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, and `me`; `null` otherwise.
+    /// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, `me`, and `suspend`; `null` otherwise.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
-    /// Why the account was suspended, in language safe to show the account owner. Computed only on `retrieve` and `me`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
+    /// Why the account was suspended, in language safe to show the account owner. Computed on `retrieve`, `me`, and `suspend`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status_reason: Option<String>,
     /// Account store page display configuration.
@@ -141,7 +156,10 @@ pub struct Account {
     /// How tax is applied to the account's prices: `inclusive` (tax included in the listed price) or `exclusive` (tax added on top). Defaults to `exclusive` when unset; `null` only when the account has no payment connection.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_type: Option<AccountTaxType>,
-    /// Account-level 3D Secure behavior. `mandate_challenge` requires cardholder verification on supported card payments; `null` uses the standard checkout flow.
+    /// The account's terms of service document, or `null` if they have not published one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub terms_of_service: Option<File>,
+    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<AccountThreeDsLevel>,
     /// Account display name.
@@ -169,6 +187,9 @@ pub struct Account {
     /// Account primary crypto wallet, or `null` if none has been provisioned.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wallet: Option<AccountWallet>,
+    /// The account's business website URL, or `null` if none has been provided. Setting it also adds a `website` entry to `social_links`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub website: Option<String>,
 }
 
 impl Account {
@@ -184,7 +205,7 @@ pub struct AccountBuilder {
     banner_image_url: Option<String>,
     business_address: Option<HashMap<String, serde_json::Value>>,
     business_name: Option<String>,
-    business_type: Option<AccountBusinessType>,
+    business_type: Option<String>,
     can_transfer_pending_balance_to_children: Option<bool>,
     capabilities: Option<AccountCapabilities>,
     cards: Option<AccountCards>,
@@ -193,10 +214,12 @@ pub struct AccountBuilder {
     country: Option<String>,
     created_at: Option<String>,
     description: Option<String>,
+    economic_intelligence: Option<bool>,
     email: Option<String>,
+    eula: Option<File>,
     home_preferences: Option<Vec<AccountHomePreferencesItem>>,
     id: Option<String>,
-    industry_group: Option<AccountIndustryGroup>,
+    industry_group: Option<String>,
     industry_type: Option<String>,
     invoice_prefix: Option<String>,
     logo_url: Option<String>,
@@ -208,11 +231,14 @@ pub struct AccountBuilder {
     other_industry_description: Option<String>,
     owner: Option<UserSummary>,
     parent_account: Option<AccountParent>,
+    partner: Option<AccountPartner>,
     payment_controls: Option<AccountPaymentControls>,
+    privacy_policy: Option<File>,
     product_tax_code: Option<HashMap<String, serde_json::Value>>,
     recommended_actions: Option<Vec<AccountRecommendedAction>>,
     require2fa: Option<bool>,
     required_actions: Option<Vec<AccountRequiredAction>>,
+    return_policy: Option<File>,
     route: Option<String>,
     send_customer_emails: Option<bool>,
     show_joined_whops: Option<bool>,
@@ -228,6 +254,7 @@ pub struct AccountBuilder {
     tax_identifiers: Option<Vec<AccountTaxIdentifier>>,
     tax_remitted_by: Option<AccountTaxRemittedBy>,
     tax_type: Option<AccountTaxType>,
+    terms_of_service: Option<File>,
     three_ds_level: Option<AccountThreeDsLevel>,
     title: Option<String>,
     total_earned_usd: Option<f64>,
@@ -236,6 +263,7 @@ pub struct AccountBuilder {
     verification: Option<HashMap<String, serde_json::Value>>,
     volume_usd: Option<f64>,
     wallet: Option<AccountWallet>,
+    website: Option<String>,
 }
 
 impl AccountBuilder {
@@ -259,8 +287,8 @@ impl AccountBuilder {
         self
     }
 
-    pub fn business_type(mut self, value: AccountBusinessType) -> Self {
-        self.business_type = Some(value);
+    pub fn business_type(mut self, value: impl Into<String>) -> Self {
+        self.business_type = Some(value.into());
         self
     }
 
@@ -304,8 +332,18 @@ impl AccountBuilder {
         self
     }
 
+    pub fn economic_intelligence(mut self, value: bool) -> Self {
+        self.economic_intelligence = Some(value);
+        self
+    }
+
     pub fn email(mut self, value: impl Into<String>) -> Self {
         self.email = Some(value.into());
+        self
+    }
+
+    pub fn eula(mut self, value: File) -> Self {
+        self.eula = Some(value);
         self
     }
 
@@ -319,8 +357,8 @@ impl AccountBuilder {
         self
     }
 
-    pub fn industry_group(mut self, value: AccountIndustryGroup) -> Self {
-        self.industry_group = Some(value);
+    pub fn industry_group(mut self, value: impl Into<String>) -> Self {
+        self.industry_group = Some(value.into());
         self
     }
 
@@ -379,8 +417,18 @@ impl AccountBuilder {
         self
     }
 
+    pub fn partner(mut self, value: AccountPartner) -> Self {
+        self.partner = Some(value);
+        self
+    }
+
     pub fn payment_controls(mut self, value: AccountPaymentControls) -> Self {
         self.payment_controls = Some(value);
+        self
+    }
+
+    pub fn privacy_policy(mut self, value: File) -> Self {
+        self.privacy_policy = Some(value);
         self
     }
 
@@ -401,6 +449,11 @@ impl AccountBuilder {
 
     pub fn required_actions(mut self, value: Vec<AccountRequiredAction>) -> Self {
         self.required_actions = Some(value);
+        self
+    }
+
+    pub fn return_policy(mut self, value: File) -> Self {
+        self.return_policy = Some(value);
         self
     }
 
@@ -479,6 +532,11 @@ impl AccountBuilder {
         self
     }
 
+    pub fn terms_of_service(mut self, value: File) -> Self {
+        self.terms_of_service = Some(value);
+        self
+    }
+
     pub fn three_ds_level(mut self, value: AccountThreeDsLevel) -> Self {
         self.three_ds_level = Some(value);
         self
@@ -519,6 +577,11 @@ impl AccountBuilder {
         self
     }
 
+    pub fn website(mut self, value: impl Into<String>) -> Self {
+        self.website = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`Account`].
     /// This method will fail if any of the following fields are not set:
     /// - [`balances`](AccountBuilder::balances)
@@ -526,6 +589,7 @@ impl AccountBuilder {
     /// - [`collect_vat_id`](AccountBuilder::collect_vat_id)
     /// - [`company_formation`](AccountBuilder::company_formation)
     /// - [`created_at`](AccountBuilder::created_at)
+    /// - [`economic_intelligence`](AccountBuilder::economic_intelligence)
     /// - [`home_preferences`](AccountBuilder::home_preferences)
     /// - [`id`](AccountBuilder::id)
     /// - [`metadata`](AccountBuilder::metadata)
@@ -571,7 +635,11 @@ impl AccountBuilder {
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
             description: self.description,
+            economic_intelligence: self
+                .economic_intelligence
+                .ok_or_else(|| BuildError::missing_field("economic_intelligence"))?,
             email: self.email,
+            eula: self.eula,
             home_preferences: self
                 .home_preferences
                 .ok_or_else(|| BuildError::missing_field("home_preferences"))?,
@@ -592,13 +660,16 @@ impl AccountBuilder {
                 .owner
                 .ok_or_else(|| BuildError::missing_field("owner"))?,
             parent_account: self.parent_account,
+            partner: self.partner,
             payment_controls: self.payment_controls,
+            privacy_policy: self.privacy_policy,
             product_tax_code: self.product_tax_code,
             recommended_actions: self.recommended_actions,
             require2fa: self
                 .require2fa
                 .ok_or_else(|| BuildError::missing_field("require2fa"))?,
             required_actions: self.required_actions,
+            return_policy: self.return_policy,
             route: self
                 .route
                 .ok_or_else(|| BuildError::missing_field("route"))?,
@@ -634,6 +705,7 @@ impl AccountBuilder {
                 .ok_or_else(|| BuildError::missing_field("tax_identifiers"))?,
             tax_remitted_by: self.tax_remitted_by,
             tax_type: self.tax_type,
+            terms_of_service: self.terms_of_service,
             three_ds_level: self.three_ds_level,
             title: self
                 .title
@@ -648,6 +720,7 @@ impl AccountBuilder {
                 .ok_or_else(|| BuildError::missing_field("verification"))?,
             volume_usd: self.volume_usd,
             wallet: self.wallet,
+            website: self.website,
         })
     }
 }

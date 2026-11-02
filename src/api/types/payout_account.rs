@@ -24,7 +24,7 @@ pub struct PayoutAccount {
     /// The business representative's phone
     #[serde(skip_serializing_if = "Option::is_none")]
     pub phone: Option<String>,
-    /// The granular calculated status of the payout account reflecting its current KYC and withdrawal readiness state.
+    /// The granular calculated status of the payout account reflecting its current KYC and payout readiness state.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<PayoutAccountCalculatedStatuses>,
 }

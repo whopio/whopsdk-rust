@@ -12,7 +12,7 @@
 <dl>
 <dd>
 
-Create a short-lived access token for authenticating API requests. When using API key authentication, provide company_id or user_id. When using OAuth, the user is derived from the token. Use this token with Whop's web and mobile embedded components.
+Create a short-lived access token for authenticating API requests. When using API key authentication, provide account_id or user_id. When using OAuth, the user is derived from the token. Use this token with Whop's web and mobile embedded components.
 </dd>
 </dl>
 </dd>
@@ -60,7 +60,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<Option<String>>` — The unique identifier of the company to generate the token for, starting with 'biz_'. The API key must have permission to access this company.
+**account_id:** `Option<Option<String>>` — The unique identifier of the company to generate the token for, starting with 'biz_'. The API key must have permission to access this company.
     
 </dd>
 </dl>
@@ -137,7 +137,7 @@ async fn main() {
         .account_links
         .create(
             &CreateAccountLinksRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 refresh_url: "refresh_url".to_string(),
                 return_url: "return_url".to_string(),
                 use_case: AccountLinkUseCases::AccountOnboarding,
@@ -160,7 +160,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
+**account_id:** `String` — The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
     
 </dd>
 </dl>
@@ -257,7 +257,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of accounts to return (default 10, max 50).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -265,7 +265,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns accounts after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -273,7 +273,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of accounts to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -281,7 +281,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns accounts before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -433,6 +433,14 @@ async fn main() {
 <dl>
 <dd>
 
+**blueprint_id:** `Option<Option<String>>` — The blueprint App ID, prefixed `app_`. Creates a hosted website for the account and queues its deployment asynchronously; the Account response does not report deployment completion.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **country:** `Option<String>` — The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
     
 </dd>
@@ -441,7 +449,7 @@ async fn main() {
 <dl>
 <dd>
 
-**email:** `Option<String>` — The email address of the account owner. Required for Account API key requests.
+**email:** `Option<String>` — The email address of the account owner. Required when creating a connected account.
     
 </dd>
 </dl>
@@ -457,7 +465,23 @@ async fn main() {
 <dl>
 <dd>
 
+**send_customer_emails:** `Option<bool>` — Whether Whop sends transactional emails to customers on behalf of the connected account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **title:** `Option<String>` — The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**website:** `Option<Option<String>>` — The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
     
 </dd>
 </dl>
@@ -691,7 +715,7 @@ async fn main() {
 <dl>
 <dd>
 
-**business_type:** `Option<Option<UpdateAccountsRequestBusinessType>>` — High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+**business_type:** `Option<Option<String>>` — High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     
 </dd>
 </dl>
@@ -739,7 +763,7 @@ async fn main() {
 <dl>
 <dd>
 
-**industry_group:** `Option<Option<UpdateAccountsRequestIndustryGroup>>` — Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+**industry_group:** `Option<Option<String>>` — Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     
 </dd>
 </dl>
@@ -931,7 +955,7 @@ async fn main() {
 <dl>
 <dd>
 
-**three_ds_level:** `Option<Option<UpdateAccountsRequestThreeDsLevel>>` — Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
+**three_ds_level:** `Option<Option<UpdateAccountsRequestThreeDsLevel>>` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
     
 </dd>
 </dl>
@@ -948,6 +972,14 @@ async fn main() {
 <dd>
 
 **use_logo_as_opengraph_image_fallback:** `Option<bool>` — Whether the account uses its logo as the fallback Open Graph image.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**website:** `Option<Option<String>>` — The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
     
 </dd>
 </dl>
@@ -1016,7 +1048,7 @@ async fn main() {
                 entity_suffix: Some(FormCompanyAccountsRequestEntitySuffix::Llc),
                 entity_type: Some(FormCompanyAccountsRequestEntityType::Llc),
                 expedite_ein: Some(true),
-                formation_state: FormCompanyAccountsRequestFormationState::Tx,
+                formation_state: FormCompanyAccountsRequestFormationState::Wy,
                 founders: vec![FormCompanyAccountsRequestFoundersItem {
                     address: FormCompanyAccountsRequestFoundersItemAddress {
                         city: "Austin".to_string(),
@@ -1139,7 +1171,7 @@ async fn main() {
 <dl>
 <dd>
 
-**formation_state:** `FormCompanyAccountsRequestFormationState` — Two-letter code of the US state (or `DC`) to form the company in.
+**formation_state:** `FormCompanyAccountsRequestFormationState` — Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
     
 </dd>
 </dl>
@@ -1180,6 +1212,70 @@ async fn main() {
 <dd>
 
 **use_registered_agent:** `Option<bool>` — Use the registered agent's address as the company address instead of `business_address`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.accounts.<a href="/src/api/resources/accounts/client.rs">suspend</a>(id: String) -> Result&lt;Account, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.accounts.suspend(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Connected account ID, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -1234,6 +1330,7 @@ async fn main() {
             &TransferOwnershipAccountsRequest {
                 identifier: "marcus@shinetime.example".to_string(),
                 as_partner: None,
+                message: None,
             },
             None,
         )
@@ -1253,7 +1350,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — Account ID, prefixed `biz_`.
+**id:** `String` 
     
 </dd>
 </dl>
@@ -1270,6 +1367,14 @@ async fn main() {
 <dd>
 
 **identifier:** `String` — The user to transfer ownership to: a user ID (`user_*`) or an email address. An email address with no Whop account yet is sent an invite to create one.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**message:** `Option<String>` — A note from the partner, shown as a quote in the invite email and signed with their name. Requires `as_partner`; sending it on an ordinary transfer is a 400. Omit it and the email sends without a note.
     
 </dd>
 </dl>
@@ -1430,7 +1535,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of campaigns to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -1438,7 +1543,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -1446,7 +1551,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of campaigns to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -1454,7 +1559,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -1818,7 +1923,7 @@ async fn main() {
 <dl>
 <dd>
 
-Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget optimization), and launches a draft campaign by setting status to active. Objective, budget type and desired cost per result are fixed at creation and cannot be changed.
+Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget type and budget optimization), and launches a draft campaign by setting status to active. Objective and desired cost per result are fixed at creation and cannot be changed.
 </dd>
 </dl>
 </dd>
@@ -1883,7 +1988,7 @@ async fn main() {
 <dl>
 <dd>
 
-**budget_amount:** `Option<f64>` — The campaign budget, in the account's currency. Interpreted as daily or lifetime per the campaign's existing budget type.
+**budget_amount:** `Option<f64>` — The campaign budget, in the account's currency. Interpreted as daily or lifetime per the campaign's budget type, including a budget_type sent in the same request.
     
 </dd>
 </dl>
@@ -1892,6 +1997,14 @@ async fn main() {
 <dd>
 
 **budget_optimization:** `Option<UpdateAdCampaignsRequestBudgetOptimization>` — Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign is live on the ad network; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**budget_type:** `Option<UpdateAdCampaignsRequestBudgetType>` — Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`). Only changeable while the campaign is a draft; send budget_amount in the same request so the amount lands on the new type.
     
 </dd>
 </dl>
@@ -2175,7 +2288,7 @@ async fn main() {
 <dl>
 <dd>
 
-Resumes a paused ad campaign.
+Resumes a paused ad campaign. Requires an ads payment method on the account.
 </dd>
 </dl>
 </dd>
@@ -2216,6 +2329,685 @@ async fn main() {
 <dd>
 
 **id:** `String` — The ad campaign ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Ad Conversion Value Rules
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListAdConversionValueRulesRequestStatus&gt;&gt;, platform: Option&lt;Option&lt;ListAdConversionValueRulesRequestPlatform&gt;&gt;, resource_id: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListAdConversionValueRulesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListAdConversionValueRulesRequestDirection&gt;&gt;) -> Result&lt;ListAdConversionValueRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List saved rules the caller can read. Filter by business with account_id.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .list(
+            &AdConversionValueRulesListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListAdConversionValueRulesRequestStatus>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `Option<ListAdConversionValueRulesRequestPlatform>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resource_id:** `Option<String>` — Campaign, ad group, or ad ID. Return rules covering this item, its ancestors, or its descendants.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListAdConversionValueRulesRequestOrder>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListAdConversionValueRulesRequestDirection>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">create</a>(request: CreateAdConversionValueRulesRequest) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create one rule covering every selected target and event combination. Active rules cannot overlap for the same platform and event. Customer prices and Whop revenue stay unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .create(
+            &CreateAdConversionValueRulesRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                adjustment_type: CreateAdConversionValueRulesRequestAdjustmentType::Fixed,
+                events: vec![CreateAdConversionValueRulesRequestEventsItem {
+                    custom_name: None,
+                    event_name: CreateAdConversionValueRulesRequestEventsItemEventName::Purchase,
+                }],
+                targets: vec![CreateAdConversionValueRulesRequestTargetsItem {
+                    platform: CreateAdConversionValueRulesRequestTargetsItemPlatform::Tiktok,
+                    resource_id: None,
+                    scope: CreateAdConversionValueRulesRequestTargetsItemScope::Business,
+                }],
+                fixed_value: None,
+                metadata: None,
+                percentage_change: None,
+                replace_rule_ids: None,
+                status: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — Business that owns the rule.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adjustment_type:** `CreateAdConversionValueRulesRequestAdjustmentType` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `Vec<CreateAdConversionValueRulesRequestEventsItem>` — Events adjusted on every selected target. Every platform must support every selected event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fixed_value:** `Option<Option<CreateAdConversionValueRulesRequestFixedValue>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**percentage_change:** `Option<Option<f64>>` — Signed percent change from negative 100 to 10000. The sent value cannot go below zero.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replace_rule_ids:** `Option<Vec<String>>` — Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Stale or incomplete conflict selections fail.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<CreateAdConversionValueRulesRequestStatus>` — Initial rule status. Defaults to active.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targets:** `Vec<CreateAdConversionValueRulesRequestTargetsItem>` — Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">retrieve</a>(id: String) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .retrieve(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">delete</a>(id: String) -> Result&lt;DeleteAdConversionValueRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Soft-delete a rule and deactivate all its coverage. Preserve its stored settings.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .delete(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">update</a>(id: String, request: UpdateAdConversionValueRulesRequest) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Edit a rule without changing its status. Supplied targets or events replace that selection in full. Omitted fields stay unchanged. All changes succeed or fail together.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .update(
+            &"id".to_string(),
+            &UpdateAdConversionValueRulesRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adjustment_type:** `Option<UpdateAdConversionValueRulesRequestAdjustmentType>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `Option<Vec<UpdateAdConversionValueRulesRequestEventsItem>>` — Events adjusted on every selected target. Every platform must support every selected event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fixed_value:** `Option<Option<UpdateAdConversionValueRulesRequestFixedValue>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**percentage_change:** `Option<Option<f64>>` — Signed percent change from negative 100 to 10000. The sent value cannot go below zero.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replace_rule_ids:** `Option<Vec<String>>` — Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Stale or incomplete conflict selections fail.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targets:** `Option<Vec<UpdateAdConversionValueRulesRequestTargetsItem>>` — Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">pause</a>(id: String) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Pause the rule across all selected targets and events.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .pause(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ad_conversion_value_rules.<a href="/src/api/resources/ad_conversion_value_rules/client.rs">unpause</a>(id: String) -> Result&lt;AdConversionValueRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Resume the rule and automatically replace overlapping selections in the same transaction. Other selections keep their values, and broader rules remain as defaults. Rules with no remaining selections are paused. Resuming an already-active rule makes no changes.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .ad_conversion_value_rules
+        .unpause(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Conversion value rule ID.
     
 </dd>
 </dl>
@@ -2408,7 +3200,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of ad groups to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -2416,7 +3208,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -2424,7 +3216,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of ad groups to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -2432,7 +3224,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -2614,7 +3406,7 @@ async fn main() {
 <dl>
 <dd>
 
-**dynamic_creative:** `Option<bool>` — Let the ad platform automatically mix and match this ad group's creatives and copy to find the best-performing combinations. Set at creation; can't be changed afterward.
+**dynamic_creative:** `Option<bool>` — Whether the ad platform automatically mixes and matches this ad group's creatives and copy to find the best-performing combinations. Meta has deprecated it and rejects `true`; ad groups already using it keep it, and it can't be changed afterward.
     
 </dd>
 </dl>
@@ -2907,6 +3699,7 @@ async fn main() {
                 location_types: vec![],
                 country: None,
                 limit: None,
+                special_ad_categories: vec![],
             },
             None,
         )
@@ -2975,6 +3768,14 @@ async fn main() {
 <dd>
 
 **limit:** `Option<i64>` — Maximum number of results per requested type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**special_ad_categories:** `Option<SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem>` — The campaign's declared special ad categories. Under `housing`, `employment`, or `financial_products` the ad platform allows interests only, drawn from a short approved list, so results are narrowed to what such a campaign can launch with and other kinds return nothing. Blank `query` browses that approved list instead of the usual fixed lists.
     
 </dd>
 </dl>
@@ -3632,154 +4433,6 @@ async fn main() {
 </dl>
 </details>
 
-## AdReports
-<details><summary><code>client.ad_reports.<a href="/src/api/resources/ad_reports/client.rs">retrieve</a>(breakdown: Option&lt;Option&lt;AdReportBreakdownLevels&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;String&gt;, granularity: Option&lt;Option&lt;Granularities&gt;&gt;, to: Option&lt;String&gt;) -> Result&lt;AdReport, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Performance report for a company, ad campaigns, ad groups, or ads. Always returns aggregate `summary` totals summed across the scope. Set `granularity` to additionally get a time series, or set `breakdown` (`campaign`/`ad_group`/`ad`) to additionally get per-entity rows inside the requested scope. Exactly one of `companyId`, `adCampaignIds`, `adGroupIds`, or `adIds` must be provided.
-
-Required permissions:
- - `ad_campaign:stats:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .ad_reports
-        .retrieve(
-            &AdReportsRetrieveQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-                from: DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap(),
-                to: DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap(),
-                ad_campaign_ids: vec![],
-                ad_group_ids: vec![],
-                ad_ids: vec![],
-                breakdown: None,
-                currency: None,
-                granularity: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**ad_campaign_ids:** `Option<String>` — Scope the report to these ad campaigns (max 100); stats are summed across them. Mutually exclusive with `companyId`, `adGroupIds`, and `adIds`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**ad_group_ids:** `Option<String>` — Scope the report to these ad groups (max 100); stats are summed across them. Mutually exclusive with `companyId`, `adCampaignIds`, and `adIds`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**ad_ids:** `Option<String>` — Scope the report to these ads (max 100); stats are summed across them. Mutually exclusive with `companyId`, `adCampaignIds`, and `adGroupIds`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**breakdown:** `Option<AdReportBreakdownLevels>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `Option<String>` — The unique identifier of a company. Mutually exclusive with `adCampaignIds`, `adGroupIds`, and `adIds`. Use with `breakdown` to fan out across every campaign, ad group, or ad in the company without paging.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**currency:** `Option<String>` — ISO 4217 currency code to report `spend` in. Defaults to the company's ads reporting currency.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**from:** `String` — Inclusive start of the reporting window.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**granularity:** `Option<Granularities>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**to:** `String` — Inclusive end of the reporting window.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Ads
 <details><summary><code>client.ads.<a href="/src/api/resources/ads/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, ad_campaign_id: Option&lt;Option&lt;String&gt;&gt;, ad_group_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListAdsRequestStatus&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListAdsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListAdsRequestDirection&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, stats_from: Option&lt;Option&lt;String&gt;&gt;, stats_to: Option&lt;Option&lt;String&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, attribution_model: Option&lt;Option&lt;ListAdsRequestAttributionModel&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAdsResponse, ApiError&gt;</code></summary>
 <dl>
@@ -3979,7 +4632,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of ads to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -3987,7 +4640,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -3995,7 +4648,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of ads to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -4003,7 +4656,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -4027,7 +4680,7 @@ async fn main() {
 <dl>
 <dd>
 
-Creates an ad in an ad group.
+Creates an ad in an ad group. Any campaign status other than `draft` launches the campaign, which requires an ads payment method on the account.
 </dd>
 </dl>
 </dd>
@@ -4099,7 +4752,7 @@ async fn main() {
 <dl>
 <dd>
 
-**creatives:** `Option<Vec<CreateAdsRequestCreativesItem>>` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Two or more entries with no format become a carousel (2-10 attachments), in order, sharing the ad's copy.
+**creatives:** `Option<Vec<CreateAdsRequestCreativesItem>>` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
     
 </dd>
 </dl>
@@ -4108,6 +4761,14 @@ async fn main() {
 <dd>
 
 **descriptions:** `Option<Vec<String>>` — The description variants shown on the ad.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**existing_post_id:** `Option<String>` — Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
     
 </dd>
 </dl>
@@ -4155,7 +4816,7 @@ async fn main() {
 <dl>
 <dd>
 
-**post_id:** `Option<String>` — Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+**music:** `Option<Option<CreateAdsRequestMusic>>` — The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
     
 </dd>
 </dl>
@@ -4163,7 +4824,7 @@ async fn main() {
 <dl>
 <dd>
 
-**post_source:** `Option<CreateAdsRequestPostSource>` — Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+**post_source:** `Option<CreateAdsRequestPostSource>` — Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
     
 </dd>
 </dl>
@@ -4203,7 +4864,7 @@ async fn main() {
 <dl>
 <dd>
 
-**url_parameters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+**url_parameters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
     
 </dd>
 </dl>
@@ -4461,7 +5122,7 @@ async fn main() {
 <dl>
 <dd>
 
-**creatives:** `Option<Vec<UpdateAdsRequestCreativesItem>>` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Two or more entries with no format replace it with a carousel (2-10 attachments), in order, sharing the ad's copy.
+**creatives:** `Option<Vec<UpdateAdsRequestCreativesItem>>` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Entries with no format replace it with a carousel's ordered cards — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
     
 </dd>
 </dl>
@@ -4470,6 +5131,14 @@ async fn main() {
 <dd>
 
 **descriptions:** `Option<Vec<String>>` — The description variants shown on the ad.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**existing_post_id:** `Option<String>` — Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
     
 </dd>
 </dl>
@@ -4517,7 +5186,7 @@ async fn main() {
 <dl>
 <dd>
 
-**post_id:** `Option<String>` — Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+**music:** `Option<Option<UpdateAdsRequestMusic>>` — The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Omitted leaves the ad's music untouched. Null removes it before launch; a submitted carousel takes a replacement track instead. TikTok-only.
     
 </dd>
 </dl>
@@ -4525,7 +5194,7 @@ async fn main() {
 <dl>
 <dd>
 
-**post_source:** `Option<UpdateAdsRequestPostSource>` — Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+**post_source:** `Option<UpdateAdsRequestPostSource>` — Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
     
 </dd>
 </dl>
@@ -4565,7 +5234,7 @@ async fn main() {
 <dl>
 <dd>
 
-**url_parameters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+**url_parameters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
     
 </dd>
 </dl>
@@ -4803,7 +5472,7 @@ async fn main() {
 </details>
 
 ## Affiliates
-<details><summary><code>client.affiliates.<a href="/src/api/resources/affiliates/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;AffiliatesSortableColumns&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;Status&gt;&gt;) -> Result&lt;ListAffiliatesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.affiliates.<a href="/src/api/resources/affiliates/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;AffiliatesSortableColumns&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;Status&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListAffiliatesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -4848,7 +5517,7 @@ async fn main() {
             &AffiliatesListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 direction: None,
@@ -4906,14 +5575,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list affiliates for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **direction:** `Option<Direction>` 
     
 </dd>
@@ -4939,6 +5600,14 @@ async fn main() {
 <dd>
 
 **status:** `Option<Status>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list affiliates for.
     
 </dd>
 </dl>
@@ -4993,7 +5662,7 @@ async fn main() {
         .affiliates
         .create(
             &CreateAffiliatesRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 user_identifier: "user_identifier".to_string(),
             },
             None,
@@ -5014,7 +5683,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The ID of the company to create the affiliate for.
+**account_id:** `String` — The ID of the company to create the affiliate for.
     
 </dd>
 </dl>
@@ -5245,7 +5914,7 @@ async fn main() {
 </details>
 
 ## AiChats
-<details><summary><code>client.ai_chats.<a href="/src/api/resources/ai_chats/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, only_active_crons: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;ListAiChatsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.ai_chats.<a href="/src/api/resources/ai_chats/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, agent_identifier: Option&lt;Option&lt;AiChatAgentIdentifiers&gt;&gt;, only_active_crons: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;ListAiChatsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -5339,6 +6008,14 @@ async fn main() {
 <dl>
 <dd>
 
+**agent_identifier:** `Option<AiChatAgentIdentifiers>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **only_active_crons:** `Option<bool>` — When true, returns only chats with an active cron schedule
     
 </dd>
@@ -5395,7 +6072,8 @@ async fn main() {
         .create(
             &CreateAiChatsRequest {
                 message_text: "message_text".to_string(),
-                current_company_id: None,
+                agent_identifier: None,
+                current_account_id: None,
                 message_attachments: None,
                 message_source: None,
                 suggestion_type: None,
@@ -5419,7 +6097,15 @@ async fn main() {
 <dl>
 <dd>
 
-**current_company_id:** `Option<Option<String>>` — The unique identifier of the company to set as context for the AI chat (e.g., "biz_XXXXX").
+**agent_identifier:** `Option<Option<AiChatAgentIdentifiers>>` — The AI agent that handles the chat. Defaults to `support`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**current_account_id:** `Option<Option<String>>` — The unique identifier of the account to set as context for the AI chat (e.g., "biz_XXXXX").
     
 </dd>
 </dl>
@@ -5620,7 +6306,7 @@ async fn main() {
 <dl>
 <dd>
 
-Update an AI chat's title, notification preferences, or associated company context.
+Update an AI chat's title, notification preferences, or associated account context.
 
 Required permissions:
  - `ai_chat:update`
@@ -5680,7 +6366,7 @@ async fn main() {
 <dl>
 <dd>
 
-**current_company_id:** `Option<Option<String>>` — The unique identifier of the company to set as context for the AI chat (e.g., "biz_XXXXX").
+**current_account_id:** `Option<Option<String>>` — The unique identifier of the account to set as context for the AI chat (e.g., "biz_XXXXX").
     
 </dd>
 </dl>
@@ -5810,7 +6496,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of API keys to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -5818,7 +6504,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns API keys after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -5826,7 +6512,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of API keys to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -5834,7 +6520,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns API keys before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -6344,6 +7030,159 @@ async fn main() {
 </dl>
 </details>
 
+## Api Logs
+<details><summary><code>client.api_logs.<a href="/src/api/resources/api_logs/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, operation_name: Option&lt;Option&lt;String&gt;&gt;, http_method: Option&lt;Option&lt;ListApiLogsRequestHttpMethod&gt;&gt;, status: Option&lt;Option&lt;ListApiLogsRequestStatus&gt;&gt;, api_key_id: Option&lt;Option&lt;String&gt;&gt;, min_duration_ms: Option&lt;Option&lt;i64&gt;&gt;, max_duration_ms: Option&lt;Option&lt;i64&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListApiLogsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the requests served by Whop's API with the account's API keys, newest first — every surface (GraphQL, REST, and native /api/v1), reads and failed requests included.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .api_logs
+        .list(
+            &APILogsListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The account (biz_*) whose API logs to list. Defaults to the authenticated account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_after:** `Option<String>` — Only return requests served at or after this ISO 8601 timestamp. Defaults to 7 days before created_before, or 7 days ago.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_before:** `Option<String>` — Only return requests served before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**operation_name:** `Option<String>` — Only return requests for this operation, matched exactly against the operation_name shown on each log row (for example api/v1/products#create).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**http_method:** `Option<ListApiLogsRequestHttpMethod>` — Only return requests made with this HTTP method.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListApiLogsRequestStatus>` — Only return requests that finished with this status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**api_key_id:** `Option<String>` — Only return requests made with this API key (apik_…).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**min_duration_ms:** `Option<i64>` — Only return requests that took at least this many milliseconds.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**max_duration_ms:** `Option<i64>` — Only return requests that took at most this many milliseconds.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## App Builds
 <details><summary><code>client.app_builds.<a href="/src/api/resources/app_builds/client.rs">list</a>(app_id: Option&lt;String&gt;, platform: Option&lt;Option&lt;ListAppBuildsRequestPlatform&gt;&gt;, status: Option&lt;Option&lt;ListAppBuildsRequestStatus&gt;&gt;, created_before: Option&lt;Option&lt;ListAppBuildsRequestCreatedBefore&gt;&gt;, created_after: Option&lt;Option&lt;ListAppBuildsRequestCreatedAfter&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAppBuildsResponse, ApiError&gt;</code></summary>
 <dl>
@@ -6453,7 +7292,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of builds to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -6461,7 +7300,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns builds after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -6469,7 +7308,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of builds to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -6477,7 +7316,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns builds before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -6746,7 +7585,7 @@ async fn main() {
 </details>
 
 ## Apps
-<details><summary><code>client.apps.<a href="/src/api/resources/apps/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, app_type: Option&lt;Option&lt;ListAppsRequestAppType&gt;&gt;, view_type: Option&lt;Option&lt;ListAppsRequestViewType&gt;&gt;, verified_apps_only: Option&lt;Option&lt;bool&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListAppsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListAppsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAppsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.apps.<a href="/src/api/resources/apps/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, app_type: Option&lt;Option&lt;ListAppsRequestAppType&gt;&gt;, view_type: Option&lt;Option&lt;ListAppsRequestViewType&gt;&gt;, verified: Option&lt;Option&lt;bool&gt;&gt;, verified_apps_only: Option&lt;Option&lt;bool&gt;&gt;, recommended: Option&lt;Option&lt;bool&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListAppsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListAppsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAppsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -6758,7 +7597,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication, except for the publicly readable lists: `verified_apps_only=true`, and `app_type=website` with no `account_id`, which returns every live deployed website that Whop has not verified — verified templates are the curated `verified_apps_only=true` list instead.
+Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication except for Whop's public app and website discovery lists. Public website discovery includes built official blueprints (verified apps with a product) and built, live community blueprints that Whop recommends.
 </dd>
 </dl>
 </dd>
@@ -6830,7 +7669,23 @@ async fn main() {
 <dl>
 <dd>
 
-**verified_apps_only:** `Option<bool>` — Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
+**verified:** `Option<bool>` — Only return apps whose Whop verification status matches this value. Omit this filter to include every verification status the caller can see.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verified_apps_only:** `Option<bool>` — Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recommended:** `Option<bool>` — Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
     
 </dd>
 </dl>
@@ -6846,7 +7701,7 @@ async fn main() {
 <dl>
 <dd>
 
-**order:** `Option<ListAppsRequestOrder>` — The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
+**order:** `Option<ListAppsRequestOrder>` — The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
     
 </dd>
 </dl>
@@ -6862,7 +7717,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of apps to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -6870,7 +7725,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns apps after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -6878,7 +7733,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of apps to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -6886,7 +7741,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns apps before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -7012,96 +7867,7 @@ async fn main() {
 <dl>
 <dd>
 
-**route:** `Option<Option<String>>` — The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.app.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.apps.<a href="/src/api/resources/apps/client.rs">update_permissions_app</a>(app_id: String, request: UpdatePermissionsAppRequest) -> Result&lt;bool, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Updates the permission requirements for an app
-
-Required permissions:
- - `developer:update_app_authorization`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .apps
-        .update_permissions_app(
-            &"app_id".to_string(),
-            &UpdatePermissionsAppRequest {
-                requested_permissions: vec![UpdatePermissionsAppRequestRequestedPermissionsItem {
-                    action: "action".to_string(),
-                    is_required: true,
-                    justification: "justification".to_string(),
-                    ..Default::default()
-                }],
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**app_id:** `String` — The ID of the app the permission requirements are being updated for
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requested_permissions:** `Vec<UpdatePermissionsAppRequestRequestedPermissionsItem>` — The permissions that the app will request off of users when a user installs the app.
+**route:** `Option<Option<String>>` — The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
     
 </dd>
 </dl>
@@ -7125,7 +7891,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retrieves an app by ID, claimed route, or proxy domain id. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
+Retrieves an app by ID, claimed route, active verified custom hostname, or proxy domain id. Custom hostnames return 404 for inactive assignments, suspended accounts, or deleted apps. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
 </dd>
 </dl>
 </dd>
@@ -7165,7 +7931,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+**id:** `String` — App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     
 </dd>
 </dl>
@@ -7229,7 +7995,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+**id:** `String` — App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     
 </dd>
 </dl>
@@ -7302,7 +8068,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+**id:** `String` — App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     
 </dd>
 </dl>
@@ -7567,7 +8333,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.app hosting. Logs are retained for 7 days.
+Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.site hosting. Logs are retained for 7 days.
 </dd>
 </dl>
 </dd>
@@ -7664,7 +8430,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of log lines to return (max 500).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -7672,7 +8438,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor for fetching logs after a previous page.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -7680,7 +8446,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor for fetching logs before a later page.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -7792,7 +8558,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists uploaded customer-list audiences for an account. Pass `audience_id` to return a specific audience.
+List custom and lookalike audiences for an account. Pass `audience_id` to return a specific audience.
 </dd>
 </dl>
 </dd>
@@ -7861,7 +8627,7 @@ async fn main() {
 <dl>
 <dd>
 
-**audience_type:** `Option<ListAudiencesRequestAudienceType>` — Filter by audience type: `custom` (uploaded lists) or `lookalike`.
+**audience_type:** `Option<ListAudiencesRequestAudienceType>` — Filter by custom or lookalike audiences.
     
 </dd>
 </dl>
@@ -7869,7 +8635,7 @@ async fn main() {
 <dl>
 <dd>
 
-**source_type:** `Option<ListAudiencesRequestSourceType>` — Filter by member source: `csv_upload` (uploaded lists) or `people_filter` (automatic audiences built from saved People filters).
+**source_type:** `Option<ListAudiencesRequestSourceType>` — Filter by uploaded customer lists, Whop People filters, or social engagement.
     
 </dd>
 </dl>
@@ -7877,7 +8643,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of audiences to return. Defaults to 20; maximum 100.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -7885,7 +8651,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor for the next page of audiences.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -7909,7 +8675,7 @@ async fn main() {
 <dl>
 <dd>
 
-Creates an audience. Default (`audience_type` omitted or `custom`): creates one audience from an uploaded customer identity CSV file (`name`, `column_mapping`, and `file_id` required) and starts processing it; responds with the audience object. With `filters`: creates an audience from saved People filters (`name` required) — membership is built from the account's People data, and `auto_refresh` decides whether it keeps tracking the filters or keeps whoever matched at creation. With `audience_type: lookalike`: creates a ladder of Meta lookalike audiences from an existing ready custom audience (`source_audience_id`, `count`, and `percentage` required) — `count` equal similarity bands slicing the top `percentage`% (3 audiences at 6% = 0–2%, 2–4%, 4–6%), each returned as its own audience in a `{ data: [...] }` envelope.
+Create an audience from a customer list, your account's Whop People data, or engagement with videos, lead forms, Instagram profiles, or Facebook pages. Create lookalike audiences to reach people similar to an existing audience. Processing runs asynchronously. Custom creation returns one audience; lookalike creation returns the requested similarity bands in `data`.
 </dd>
 </dl>
 </dd>
@@ -7938,13 +8704,25 @@ async fn main() {
         .create(
             &CreateAudiencesRequest {
                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                engagement: Some(CreateAudiencesRequestEngagement {
+                    exclude: None,
+                    include: vec![AudienceEngagementRule::FacebookPage {
+                        data: AudienceEngagementFacebookPageRule {
+                            event: AudienceEngagementFacebookPageRuleEvent::Engaged,
+                            retention_days: 30,
+                            social_account_id: "sacc_xxxxxxxxxxxxxx".to_string(),
+                        },
+                    }],
+                    platform: CreateAudiencesRequestEngagementPlatform::Meta,
+                }),
+                name: Some("Page engagers".to_string()),
+                source_type: Some(CreateAudiencesRequestSourceType::Engagement),
                 audience_type: None,
                 auto_refresh: None,
                 column_mapping: None,
                 count: None,
                 file_id: None,
                 filters: None,
-                name: None,
                 percentage: None,
                 source_audience_id: None,
             },
@@ -7974,7 +8752,7 @@ async fn main() {
 <dl>
 <dd>
 
-**audience_type:** `Option<CreateAudiencesRequestAudienceType>` — What to create. Defaults to `custom` (CSV upload).
+**audience_type:** `Option<CreateAudiencesRequestAudienceType>` — Audience type. Defaults to `custom`.
     
 </dd>
 </dl>
@@ -7990,7 +8768,7 @@ async fn main() {
 <dl>
 <dd>
 
-**column_mapping:** `Option<CreateAudiencesRequestColumnMapping>` — Custom audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+**column_mapping:** `Option<CreateAudiencesRequestColumnMapping>` — CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
     
 </dd>
 </dl>
@@ -8006,7 +8784,7 @@ async fn main() {
 <dl>
 <dd>
 
-**file_id:** `Option<String>` — Custom audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
+**engagement:** `Option<CreateAudiencesRequestEngagement>` — Rules for membership based on social engagement. Requires a connected social account with advertising access.
     
 </dd>
 </dl>
@@ -8014,7 +8792,15 @@ async fn main() {
 <dl>
 <dd>
 
-**filters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Filter audiences only. The People filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. Date filters must be rolling windows — `first_seen_within_days` or `last_seen_within_days` — so the audience re-anchors on every refresh; fixed dates such as `first_seen_after` are rejected. Source values are canonical source paths (`whop:<campaign>:<group>:<ad>`, `ext:<platform>:...`, `referrer:<domain>`, `direct`), exact or with a trailing `:*` wildcard.
+**file_id:** `Option<String>` — CSV audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Filter audiences only. The People filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. Activity dates `event_from` and `event_to` are inclusive and remain fixed on refresh. Use `event_within_days`, `first_seen_within_days` or `last_seen_within_days` for a rolling window. Source values are canonical source paths (`whop:<campaign>:<group>:<ad>`, `ext:<platform>:...`, `referrer:<domain>`, `direct`), exact or with a trailing `:*` wildcard.
     
 </dd>
 </dl>
@@ -8030,7 +8816,7 @@ async fn main() {
 <dl>
 <dd>
 
-**percentage:** `Option<i64>` — Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`.
+**percentage:** `Option<i64>` — Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`. For example, 3 audiences at 6% creates 0–2%, 2–4%, and 4–6% bands.
     
 </dd>
 </dl>
@@ -8038,7 +8824,15 @@ async fn main() {
 <dl>
 <dd>
 
-**source_audience_id:** `Option<String>` — Lookalikes only. The ready custom audience (`adaud_`) to build from; it needs at least 100 matched people.
+**source_audience_id:** `Option<String>` — Lookalikes only. The ready custom audience (`adaud_`) to build from; uploaded and People audiences need at least 100 matched people. Meta validates engagement audience eligibility when creating the lookalike.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_type:** `Option<CreateAudiencesRequestSourceType>` — Custom audience source. Inferred from `engagement`, then `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
     
 </dd>
 </dl>
@@ -8264,7 +9058,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — Audience ID, prefixed `adaud_`.
+**id:** `String` 
     
 </dd>
 </dl>
@@ -8285,7 +9079,7 @@ async fn main() {
 </details>
 
 ## AuthorizedUsers
-<details><summary><code>client.authorized_users.<a href="/src/api/resources/authorized_users/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, role: Option&lt;Option&lt;AuthorizedUserRoles&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAuthorizedUsersResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.authorized_users.<a href="/src/api/resources/authorized_users/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, role: Option&lt;Option&lt;AuthorizedUserRoles&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListAuthorizedUsersResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -8331,10 +9125,10 @@ async fn main() {
             &AuthorizedUsersListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -8387,14 +9181,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to list authorized users for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **user_id:** `Option<String>` — Filter results to a specific user to check if they are an authorized team member.
     
 </dd>
@@ -8420,6 +9206,14 @@ async fn main() {
 <dd>
 
 **created_after:** `Option<String>` — Only return authorized users created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company to list authorized users for.
     
 </dd>
 </dl>
@@ -8475,7 +9269,7 @@ async fn main() {
         .authorized_users
         .create(
             &CreateAuthorizedUsersRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 role: GrantableAuthorizedUserRoles::Owner,
                 user_id: "user_xxxxxxxxxxxxx".to_string(),
                 elevation: None,
@@ -8499,7 +9293,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The ID of the company to add the authorized user to.
+**account_id:** `String` — The ID of the company to add the authorized user to.
     
 </dd>
 </dl>
@@ -8614,7 +9408,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.authorized_users.<a href="/src/api/resources/authorized_users/client.rs">delete</a>(id: String, company_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;bool, ApiError&gt;</code></summary>
+<details><summary><code>client.authorized_users.<a href="/src/api/resources/authorized_users/client.rs">delete</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;bool, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -8658,7 +9452,7 @@ async fn main() {
         .delete(
             &"ausr_xxxxxxxxxxxxx".to_string(),
             &AuthorizedUsersDeleteQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -8687,7 +9481,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
+**account_id:** `Option<String>` — The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
     
 </dd>
 </dl>
@@ -8848,7 +9642,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of bounties to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -8856,7 +9650,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -8864,7 +9658,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of bounties to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -8872,7 +9666,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -9456,7 +10250,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of submissions to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -9464,7 +10258,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -9472,7 +10266,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of submissions to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -9480,7 +10274,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -9965,7 +10759,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of card transactions to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -9973,7 +10767,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns card transactions after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -9981,7 +10775,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of card transactions to return, counting back from the end.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -9989,7 +10783,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns card transactions before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -10175,7 +10969,7 @@ async fn main() {
 <dl>
 <dd>
 
-Issue a virtual card, or apply for card issuing.
+Issue a virtual card, or apply for card issuing. An account with no application files one here and gets back a `202`; call again to issue the card once it is approved.
 </dd>
 </dl>
 </dd>
@@ -10231,7 +11025,7 @@ async fn main() {
 <dl>
 <dd>
 
-**assigned_user_id:** `Option<String>` — The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts.
+**assigned_user_id:** `Option<String>` — The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts, and whenever a company API key files an account's first card application.
     
 </dd>
 </dl>
@@ -10449,7 +11243,7 @@ async fn main() {
 <dl>
 <dd>
 
-**billing:** `Option<UpdateCardsRequestBilling>` — New billing address. Requires line1, city, region, postal_code, and country_code. On an invited card, passing billing alone (as the invited user) completes onboarding and starts card provisioning.
+**billing:** `Option<UpdateCardsRequestBilling>` — The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
     
 </dd>
 </dl>
@@ -10458,6 +11252,14 @@ async fn main() {
 <dd>
 
 **canceled:** `Option<bool>` — Pass `true` to permanently cancel the card. A canceled card cannot be uncanceled. Cannot be combined with other fields.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cardholder:** `Option<UpdateCardsRequestCardholder>` — Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
     
 </dd>
 </dl>
@@ -10533,8 +11335,352 @@ async fn main() {
 </dl>
 </details>
 
+## Cashback Rules
+<details><summary><code>client.cashback_rules.<a href="/src/api/resources/cashback_rules/client.rs">create</a>(request: CreateCashbackRulesRequest) -> Result&lt;CashbackRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a future-dated card cashback rule funded by the authenticated platform account. Requires payout:transfer_funds. Both the raw merchant name and four-digit MCC are required. Optionally limit the rule to one direct connected account. The funding account is derived from the credential and cannot be supplied. Creation does not transfer funds. Supports Idempotency-Key for safe retries.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .cashback_rules
+        .create(
+            &CreateCashbackRulesRequest {
+                merchant_category_code: "5734".to_string(),
+                merchant_name: "ACME SOFTWARE".to_string(),
+                rate_bps: 500,
+                starts_at: DateTime::parse_from_rfc3339("2026-01-01T12:00:00Z").unwrap(),
+                description: None,
+                expires_at: None,
+                scoped_account_id: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**description:** `Option<Option<String>>` — Optional description of the rule.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expires_at:** `Option<Option<String>>` — Exclusive end, strictly later than starts_at. Omit or set null for no expiration.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchant_category_code:** `String` — Four-digit MCC, including leading zeros. Must match together with merchant_name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchant_name:** `String` — Raw merchant name reported by the card provider, not the enriched display name. Matched with the MCC; not a substring or wildcard.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**rate_bps:** `i64` — Cashback rate in basis points: 500 means 5%.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scoped_account_id:** `Option<Option<String>>` — Account ID prefixed biz_ belonging to a direct connected account. Omit or set null to designate all direct connected accounts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**starts_at:** `String` — Inclusive start, strictly later than the current time, as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.cashback_rules.<a href="/src/api/resources/cashback_rules/client.rs">list</a>(first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListCashbackRulesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListCashbackRulesRequestDirection&gt;&gt;) -> Result&lt;ListCashbackRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists all cashback rules funded by the authenticated platform account. Includes scheduled, expired, and discarded rules. Requires payout:transfer:read. Account-scoped credentials are required; there is no caller-supplied funding-account filter.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .cashback_rules
+        .list(
+            &CashbackRulesListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListCashbackRulesRequestOrder>` — Field to sort by. Defaults to created_at.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListCashbackRulesRequestDirection>` — Sort direction. Defaults to desc.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.cashback_rules.<a href="/src/api/resources/cashback_rules/client.rs">update</a>(id: String, request: UpdateCashbackRulesRequest) -> Result&lt;CashbackRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates a cashback rule funded by the authenticated platform account. Requires payout:transfer_funds. Only merchant_name, merchant_category_code, description, and expires_at can change; starts_at, rate_bps, funding_account_id, and scoped_account_id are immutable. Omitted fields stay unchanged. Scheduled, active, and expired rules can be updated; discarded rules cannot. Updating a rule does not transfer funds.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .cashback_rules
+        .update(
+            &"id".to_string(),
+            &UpdateCashbackRulesRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — ID of the cashback rule, prefixed cicbr_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Option<Option<String>>` — Description of the rule. Set null to clear it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expires_at:** `Option<Option<String>>` — Exclusive end as an ISO 8601 timestamp, strictly later than the original starts_at. May be in the past to end an active rule. Set null to remove the expiration.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchant_category_code:** `Option<String>` — Four-digit MCC, including leading zeros. Must match together with merchant_name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchant_name:** `Option<String>` — Raw merchant name reported by the card provider. Must contain a non-whitespace character. Matched with the MCC; not a substring or wildcard.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## ChatChannels
-<details><summary><code>client.chat_channels.<a href="/src/api/resources/chat_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListChatChannelsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.chat_channels.<a href="/src/api/resources/chat_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListChatChannelsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -10579,8 +11725,8 @@ async fn main() {
             &ChatChannelsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 product_id: Some("prod_xxxxxxxxxxxxx".to_string()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -10634,7 +11780,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list chat channels for.
+**product_id:** `Option<String>` — The unique identifier of a product to filter by. When set, only chat channels connected to this product are returned.
     
 </dd>
 </dl>
@@ -10642,7 +11788,7 @@ async fn main() {
 <dl>
 <dd>
 
-**product_id:** `Option<String>` — The unique identifier of a product to filter by. When set, only chat channels connected to this product are returned.
+**account_id:** `String` — The unique identifier of the company to list chat channels for.
     
 </dd>
 </dl>
@@ -10817,7 +11963,7 @@ async fn main() {
 <dl>
 <dd>
 
-**user_posts_cooldown_seconds:** `Option<Option<i64>>` — The minimum number of seconds a user must wait between sending messages in this chat channel.
+**user_posts_cooldown_seconds:** `Option<Option<i64>>` — The minimum number of seconds a user must wait between sending messages in this chat channel. Pass null or 0 to remove the cooldown.
     
 </dd>
 </dl>
@@ -10961,7 +12107,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of checkout configurations to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -10969,7 +12115,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor for the next page of results.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -11115,7 +12261,7 @@ async fn main() {
 <dl>
 <dd>
 
-**three_ds_level:** `Option<Option<CreateCheckoutConfigurationsRequestThreeDsLevel>>` — 3D Secure behavior for this checkout.
+**three_ds_level:** `Option<Option<CreateCheckoutConfigurationsRequestThreeDsLevel>>` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
     
 </dd>
 </dl>
@@ -11261,626 +12407,8 @@ async fn main() {
 </dl>
 </details>
 
-## Companies
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, parent_company_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListCompaniesResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a paginated list of companies. When parent_company_id is provided, lists connected accounts under that platform. When omitted, lists companies the current user has access to.
-
-Required permissions:
- - `company:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .companies
-        .list(
-            &CompaniesListQueryRequest {
-                first: Some(42),
-                last: Some(42),
-                created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**parent_company_id:** `Option<String>` — The unique identifier of the parent platform company. When provided, lists connected accounts under that platform. Omit to list the current user's own companies.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**direction:** `Option<Direction>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_before:** `Option<String>` — Only return companies created before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_after:** `Option<String>` — Only return companies created after this timestamp.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client.rs">create</a>(request: CreateCompaniesRequest) -> Result&lt;Company, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Create a new company. Pass parent_company_id to create a connected account under a platform, or omit it to create a company for the current user.
-
-Required permissions:
- - `company:create`
- - `company:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .companies
-        .create(
-            &CreateCompaniesRequest {
-                title: "title".to_string(),
-                country: None,
-                description: None,
-                email: None,
-                logo: None,
-                metadata: None,
-                parent_company_id: None,
-                send_customer_emails: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**country:** `Option<Option<Countries>>` — The country the company is located in. Defaults to the parent company's country for connected accounts, or the owner's IP-derived country.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**description:** `Option<Option<String>>` — A promotional pitch displayed to potential customers on the company's store page.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**email:** `Option<Option<String>>` — The email address of the user who will own the connected account. Required when parent_company_id is provided.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**logo:** `Option<Option<CreateCompaniesRequestLogo>>` — The company's logo image. Accepts PNG, JPEG, or GIF format.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `Option<Option<std::collections::HashMap<String, serde_json::Value>>>` — A key-value JSON object of custom metadata to store on the company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**parent_company_id:** `Option<Option<String>>` — The unique identifier of the parent platform company. When provided, creates a connected account under that platform. Omit to create a company for the current user.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**send_customer_emails:** `Option<Option<bool>>` — Whether Whop sends transactional emails to customers on behalf of this company. Only applies when creating a connected account.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**title:** `String` — The display name of the company shown to customers.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client.rs">retrieve</a>(id: String) -> Result&lt;Company, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Retrieves the details of an existing company.
-
-Required permissions:
- - `company:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .companies
-        .retrieve(&"biz_xxxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier or route slug of the company.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client.rs">update</a>(id: String, request: UpdateCompaniesRequest) -> Result&lt;Company, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Update a company's title, description, logo, and other settings.
-
-Required permissions:
- - `company:update`
- - `company:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .companies
-        .update(
-            &"biz_xxxxxxxxxxxxxx".to_string(),
-            &UpdateCompaniesRequest {
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the company to update.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**affiliate_application_required:** `Option<Option<bool>>` — Whether prospective affiliates must submit an application before they can promote this company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**affiliate_instructions:** `Option<Option<String>>` — Guidelines and instructions shown to affiliates explaining how to promote this company's products.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**banner_image:** `Option<Option<UpdateCompaniesRequestBannerImage>>` — The company's banner image. Accepts PNG or JPEG format.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**description:** `Option<Option<String>>` — A promotional pitch displayed to potential customers on the company's store page.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**featured_affiliate_product_id:** `Option<Option<String>>` — The ID of the product to feature on this company's affiliate page. Pass null to clear.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**logo:** `Option<Option<UpdateCompaniesRequestLogo>>` — The company's logo image. Accepts PNG, JPEG, or GIF format.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**route:** `Option<Option<String>>` — The unique URL slug for the company's store page. Must be lowercase and can include hyphens (e.g., 'my-company'). If not provided, the route will remain unchanged.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**send_customer_emails:** `Option<Option<bool>>` — Whether Whop sends transactional emails (receipts, renewals, cancelations) to customers on behalf of this company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**social_links:** `Option<Option<Vec<UpdateCompaniesRequestSocialLinksItem>>>` — The social media links to display on the company's store page. Pass the full list of desired social links — any existing links not included will be removed.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**target_audience:** `Option<Option<String>>` — The target audience for this company (e.g., 'beginner day traders aged 18-25 looking to learn options').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**title:** `Option<Option<String>>` — The display name of the company shown to customers.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client.rs">create_api_key</a>(parent_company_id: String, request: CreateApiKeyCompaniesRequest) -> Result&lt;CreateApiKeyCompaniesResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Create an API key for a connected account (child company) owned by a parent company.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .companies
-        .create_api_key(
-            &"parent_company_id".to_string(),
-            &CreateAPIKeyCompaniesRequest {
-                child_company_id: "child_company_id".to_string(),
-                name: None,
-                permissions: None,
-                role: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**parent_company_id:** `String` — The unique identifier of the parent platform company (e.g. 'biz_xxx').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**child_company_id:** `String` — The unique identifier of the connected account to create the API key for (e.g. 'biz_xxx').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**name:** `Option<Option<String>>` — A human-readable name for the API key, such as 'Production API Key'.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**permissions:** `Option<Option<Vec<CreateApiKeyCompaniesRequestPermissionsItem>>>` — Granular permission statements defining which actions this API key can perform. Either permissions or role must be provided.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**role:** `Option<Option<PermissionSystemRoles>>` — A system role to inherit permissions from (e.g. owner, admin, moderator). Either role or permissions must be provided.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## CompanyTokenTransactions
-<details><summary><code>client.company_token_transactions.<a href="/src/api/resources/company_token_transactions/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, transaction_type: Option&lt;Option&lt;CompanyTokenTransactionTypes&gt;&gt;) -> Result&lt;ListCompanyTokenTransactionsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.company_token_transactions.<a href="/src/api/resources/company_token_transactions/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, transaction_type: Option&lt;Option&lt;CompanyTokenTransactionTypes&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListCompanyTokenTransactionsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -11927,8 +12455,8 @@ async fn main() {
             &CompanyTokenTransactionsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 transaction_type: None,
@@ -11983,14 +12511,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list token transactions for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **user_id:** `Option<String>` — Filter transactions to only those involving this specific user.
     
 </dd>
@@ -12003,6 +12523,14 @@ async fn main() {
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list token transactions for.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -12011,7 +12539,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.company_token_transactions.<a href="/src/api/resources/company_token_transactions/client.rs">create</a>(request: CreateCompanyTokenTransactionsRequest) -> Result&lt;CompanyTokenTransaction, ApiError&gt;</code></summary>
+<details><summary><code>client.company_token_transactions.<a href="/src/api/resources/company_token_transactions/client.rs">create</a>(request: CreateCompanyTokenTransactionsRequestBody) -> Result&lt;CompanyTokenTransaction, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -12055,10 +12583,10 @@ async fn main() {
     client
         .company_token_transactions
         .create(
-            &CreateCompanyTokenTransactionsRequest::Transfer {
-                data: CreateCompanyTokenTransactionsRequestTransfer {
+            &CreateCompanyTokenTransactionsRequestBody::Transfer {
+                data: CreateCompanyTokenTransactionsRequestBodyTransfer {
+                    account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     amount: 6.9,
-                    company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     destination_user_id: "destination_user_id".to_string(),
                     user_id: "user_xxxxxxxxxxxxx".to_string(),
                     ..Default::default()
@@ -12140,6 +12668,88 @@ async fn main() {
 <dd>
 
 **id:** `String` — The unique identifier of the token transaction to retrieve.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Confirmation Tokens
+<details><summary><code>client.confirmation_tokens.<a href="/src/api/resources/confirmation_tokens/client.rs">retrieve</a>(id: String, account_id: Option&lt;String&gt;) -> Result&lt;ConfirmationToken, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a token's display-safe preview — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .confirmation_tokens
+        .retrieve(
+            &"id".to_string(),
+            &ConfirmationTokensRetrieveQueryRequest {
+                account_id: "account_id".to_string(),
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Confirmation token ID, prefixed `ctok_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The account (biz_) the token was minted for.
     
 </dd>
 </dl>
@@ -13778,7 +14388,7 @@ async fn main() {
 </details>
 
 ## Courses
-<details><summary><code>client.courses.<a href="/src/api/resources/courses/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, experience_id: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListCoursesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.courses.<a href="/src/api/resources/courses/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, experience_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListCoursesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -13824,7 +14434,7 @@ async fn main() {
                 first: Some(42),
                 last: Some(42),
                 experience_id: Some("exp_xxxxxxxxxxxxxx".to_string()),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -13885,7 +14495,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to list courses for.
+**account_id:** `Option<String>` — The unique identifier of the company to list courses for.
     
 </dd>
 </dl>
@@ -14344,7 +14954,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retrieve the deposit methods for an account, including crypto and bank transfer.
+Retrieve the deposit methods for an account, including crypto and bank transfer. Bitcoin deposits are converted by Relay directly to USDT on Plasma in the destination account's wallet. Crypto deposits require a $10 minimum.
 </dd>
 </dl>
 </dd>
@@ -14372,10 +14982,8 @@ async fn main() {
         .deposits
         .create(
             &CreateDepositsRequest {
-                destination: CreateDepositsRequestDestination::String("destination".to_string()),
+                destination: "biz_xxxxxxxxxxxxxx".to_string(),
                 amount: None,
-                metadata: None,
-                network: None,
             },
             None,
         )
@@ -14395,7 +15003,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `Option<f64>` — Amount to prefill on hosted deposit page.
+**amount:** `Option<f64>` — Amount to prefill on hosted deposit page. Crypto deposits require a $10 minimum.
     
 </dd>
 </dl>
@@ -14403,23 +15011,7 @@ async fn main() {
 <dl>
 <dd>
 
-**destination:** `CreateDepositsRequestDestination` — Destination account ID or wallet address. Object form is supported for compatibility. Any business resolves by its account ID without authentication; a user account resolves only for that same authenticated user.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Metadata to include with the deposit response.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**network:** `Option<Option<CreateDepositsRequestNetwork>>` — Destination network override. Defaults to the destination wallet's own network.
+**destination:** `String` — Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
     
 </dd>
 </dl>
@@ -14516,7 +15108,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of alerts to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -14524,7 +15116,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns alerts after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -14532,7 +15124,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of alerts to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -14540,7 +15132,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns alerts before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -14730,7 +15322,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of disputes to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -14738,7 +15330,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns disputes after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -14746,7 +15338,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of disputes to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -14754,7 +15346,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns disputes before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -15140,278 +15732,6 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.disputes.<a href="/src/api/resources/disputes/client.rs">submit_evidence_dispute</a>(id: String) -> Result&lt;Dispute, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Submit a payment dispute to the payment processor for review. Once submitted, no further edits can be made.
-
-Required permissions:
- - `payment:dispute`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `company:basic:read`
- - `payment:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .disputes
-        .submit_evidence_dispute(&"dspt_xxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the dispute to submit to the payment processor for review.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.disputes.<a href="/src/api/resources/disputes/client.rs">update_evidence_dispute</a>(id: String, request: UpdateEvidenceDisputeRequest) -> Result&lt;Dispute, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Update a dispute with evidence data to attempt to win the dispute.
-
-Required permissions:
- - `payment:dispute`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `company:basic:read`
- - `payment:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .disputes
-        .update_evidence_dispute(
-            &"dspt_xxxxxxxxxxxxx".to_string(),
-            &UpdateEvidenceDisputeRequest {
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the dispute to update.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**access_activity_log:** `Option<Option<String>>` — An IP access activity log showing the customer used the service.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**billing_address:** `Option<Option<String>>` — The billing address associated with the customer's payment method.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cancellation_policy_attachment:** `Option<Option<UpdateEvidenceDisputeRequestCancellationPolicyAttachment>>` — A file upload containing the company's cancellation policy document.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cancellation_policy_disclosure:** `Option<Option<String>>` — The company's cancellation policy text to submit as evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customer_communication_attachment:** `Option<Option<UpdateEvidenceDisputeRequestCustomerCommunicationAttachment>>` — A file upload containing evidence of customer communication. Must be a JPEG, PNG, GIF, or PDF.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customer_email_address:** `Option<Option<String>>` — The email address of the customer associated with the disputed payment.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customer_name:** `Option<Option<String>>` — The full name of the customer associated with the disputed payment.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**notes:** `Option<Option<String>>` — Additional notes or context to submit as part of the dispute evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**product_description:** `Option<Option<String>>` — A description of the product or service that was provided to the customer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refund_policy_attachment:** `Option<Option<UpdateEvidenceDisputeRequestRefundPolicyAttachment>>` — A file upload containing the company's refund policy document.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refund_policy_disclosure:** `Option<Option<String>>` — The company's refund policy text to submit as evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refund_refusal_explanation:** `Option<Option<String>>` — An explanation of why the refund request was refused.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**service_date:** `Option<Option<String>>` — The date when the product or service was delivered to the customer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**uncategorized_attachment:** `Option<Option<UpdateEvidenceDisputeRequestUncategorizedAttachment>>` — A file upload for evidence that does not fit into the other categories.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.disputes.<a href="/src/api/resources/disputes/client.rs">upload_evidence</a>(id: String, request: UploadEvidenceDisputesRequest) -> Result&lt;Dispute, ApiError&gt;</code></summary>
 <dl>
 <dd>
@@ -15424,7 +15744,7 @@ async fn main() {
 <dl>
 <dd>
 
-Replaces the full set of uploaded evidence documents on a dispute, beyond the four fixed evidence slots. Send the files as multipart file parts to upload and attach in one call, or reference files already stored by `id`/`direct_upload_id`. Send every document the packet should carry — up to 10, 10MB each and 25MB in total; an empty list removes them all. Accepted content types: application/pdf, application/json, image/jpeg, image/png, image/webp — any other type is rejected.
+Replaces the full set of uploaded evidence documents on a dispute, beyond the four fixed evidence slots. Upload files through `POST /files` and reference them by `id`, or send the files as multipart file parts to upload and attach in one call. Send every document the packet should carry — up to 10, 10MB each and 25MB in total; an empty list removes them all. Accepted content types: application/pdf, application/json, image/jpeg, image/png, image/webp — any other type is rejected.
 </dd>
 </dl>
 </dd>
@@ -15500,7 +15820,7 @@ async fn main() {
 </details>
 
 ## DmChannels
-<details><summary><code>client.dm_channels.<a href="/src/api/resources/dm_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListDmChannelsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.dm_channels.<a href="/src/api/resources/dm_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListDmChannelsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -15545,7 +15865,7 @@ async fn main() {
             &DmChannelsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -15598,7 +15918,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
+**account_id:** `Option<String>` — The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
     
 </dd>
 </dl>
@@ -15654,7 +15974,7 @@ async fn main() {
         .create(
             &CreateDmChannelsRequest {
                 with_user_ids: vec!["with_user_ids".to_string()],
-                company_id: None,
+                account_id: None,
                 custom_name: None,
                 notifications_enabled: None,
             },
@@ -15676,7 +15996,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<Option<String>>` — The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
+**account_id:** `Option<Option<String>>` — The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
     
 </dd>
 </dl>
@@ -16360,8 +16680,8 @@ async fn main() {
 </dl>
 </details>
 
-## Entries
-<details><summary><code>client.entries.<a href="/src/api/resources/entries/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;EntriesSortableColumns&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListEntriesResponse, ApiError&gt;</code></summary>
+## Domains
+<details><summary><code>client.domains.<a href="/src/api/resources/domains/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, app_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListDomainsRequestStatus&gt;&gt;, order: Option&lt;Option&lt;ListDomainsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListDomainsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListDomainsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -16373,11 +16693,7 @@ async fn main() {
 <dl>
 <dd>
 
-Returns a paginated list of waitlist entries for a company, with optional filtering by product, plan, status, and creation date.
-
-Required permissions:
- - `plan:waitlist:read`
- - `member:email:read`
+Lists the caller's domain claims and assignments. Filter by account, app, or lifecycle status.
 </dd>
 </dl>
 </dd>
@@ -16402,21 +16718,10 @@ async fn main() {
     };
     let client = Whop::new(config).expect("Failed to build client");
     client
-        .entries
+        .domains
         .list(
-            &EntriesListQueryRequest {
-                first: Some(42),
-                last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                after: None,
-                before: None,
-                direction: None,
-                order: None,
-                product_ids: vec![],
-                plan_ids: vec![],
-                statuses: vec![],
+            &DomainsListQueryRequest {
+                ..Default::default()
             },
             None,
         )
@@ -16436,7 +16741,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
+**account_id:** `Option<String>` — Only domains belonging to this account, prefixed biz_.
     
 </dd>
 </dl>
@@ -16444,7 +16749,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
+**app_id:** `Option<String>` — Only domains assigned to this app, prefixed app_.
     
 </dd>
 </dl>
@@ -16452,7 +16757,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
+**status:** `Option<ListDomainsRequestStatus>` — Only domains with this lifecycle status.
     
 </dd>
 </dl>
@@ -16460,7 +16765,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
+**order:** `Option<ListDomainsRequestOrder>` — Field to sort by.
     
 </dd>
 </dl>
@@ -16468,7 +16773,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list waitlist entries for.
+**direction:** `Option<ListDomainsRequestDirection>` — Sort direction.
     
 </dd>
 </dl>
@@ -16476,7 +16781,7 @@ async fn main() {
 <dl>
 <dd>
 
-**direction:** `Option<Direction>` 
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -16484,7 +16789,7 @@ async fn main() {
 <dl>
 <dd>
 
-**order:** `Option<EntriesSortableColumns>` 
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -16492,7 +16797,7 @@ async fn main() {
 <dl>
 <dd>
 
-**product_ids:** `Option<String>` — Filter entries to only those for specific products.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -16500,31 +16805,7 @@ async fn main() {
 <dl>
 <dd>
 
-**plan_ids:** `Option<String>` — Filter entries to only those for specific plans.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**statuses:** `Option<EntryStatus>` — Filter entries by their current status.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_before:** `Option<String>` — Only return entries created before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_after:** `Option<String>` — Only return entries created after this timestamp.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -16536,7 +16817,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.entries.<a href="/src/api/resources/entries/client.rs">retrieve</a>(id: String) -> Result&lt;Entry, ApiError&gt;</code></summary>
+<details><summary><code>client.domains.<a href="/src/api/resources/domains/client.rs">create</a>(request: CreateDomainsRequest) -> Result&lt;Domain, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -16548,11 +16829,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retrieves the details of an existing waitlist entry.
-
-Required permissions:
- - `plan:waitlist:read`
- - `member:email:read`
+Creates an unverified claim and returns DNS instructions. A claim does not reserve the hostname globally. Publish its unique TXT record; ownership verification, DNS checks, and certificate provisioning run automatically. Unverified claims are deleted after 48 hours.
 </dd>
 </dl>
 </dd>
@@ -16577,8 +16854,17 @@ async fn main() {
     };
     let client = Whop::new(config).expect("Failed to build client");
     client
-        .entries
-        .retrieve(&"entry_xxxxxxxxxxxx".to_string(), None)
+        .domains
+        .create(
+            &CreateDomainsRequest {
+                app_id: "app_xxxxxxxxxxxxxx".to_string(),
+                domain: "store.example.com".to_string(),
+                account_id: None,
+                metadata: None,
+                replace_existing: None,
+            },
+            None,
+        )
         .await;
 }
 ```
@@ -16595,7 +16881,39 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the waitlist entry to retrieve.
+**account_id:** `Option<String>` — Account ID, prefixed biz_. Required for user credentials; otherwise defaults to the credential's account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**app_id:** `String` — App ID, prefixed app_. The app must belong to the account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**domain:** `String` — Bare hostname, such as example.com or checkout.example.com. Wildcards, paths, schemes, and ports are not accepted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` — Custom string keys and values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replace_existing:** `Option<bool>` — Explicitly transfer a domain from its current owner after publishing this new claim's TXT proof. Create the claim after the current owner verified.
     
 </dd>
 </dl>
@@ -16607,7 +16925,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.entries.<a href="/src/api/resources/entries/client.rs">approve</a>(id: String) -> Result&lt;ApproveEntriesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.domains.<a href="/src/api/resources/domains/client.rs">retrieve</a>(id: String) -> Result&lt;Domain, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -16619,10 +16937,135 @@ async fn main() {
 <dl>
 <dd>
 
-Approve a pending waitlist entry, triggering the checkout process to grant the user access to the plan.
+Retrieves the claim, app assignment, DNS instructions, and the latest hostname and certificate state. For domains still connecting, needing attention, or being deleted, requests an immediate background check.
+</dd>
+</dl>
+</dd>
+</dl>
 
-Required permissions:
- - `plan:waitlist:manage`
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.domains.retrieve(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Domain ID, prefixed dom_.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.domains.<a href="/src/api/resources/domains/client.rs">delete</a>(id: String) -> Result&lt;Domain, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stops resolving the domain to its app and queues Cloudflare cleanup. The response is deleting; retrieve the resource until it is removed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.domains.delete(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Domain ID, prefixed dom_.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.domains.<a href="/src/api/resources/domains/client.rs">update</a>(id: String, request: UpdateDomainsRequest) -> Result&lt;Domain, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Reassigns a domain to another app in the same account or replaces its metadata. The hostname and owning account cannot be edited.
 </dd>
 </dl>
 </dd>
@@ -16647,8 +17090,14 @@ async fn main() {
     };
     let client = Whop::new(config).expect("Failed to build client");
     client
-        .entries
-        .approve(&"entry_xxxxxxxxxxxx".to_string(), None)
+        .domains
+        .update(
+            &"id".to_string(),
+            &UpdateDomainsRequest {
+                ..Default::default()
+            },
+            None,
+        )
         .await;
 }
 ```
@@ -16665,7 +17114,23 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the waitlist entry to approve.
+**id:** `String` — Domain ID, prefixed dom_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**app_id:** `Option<String>` — App ID, prefixed app_. Must belong to the same account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` — Replacement custom string keys and values.
     
 </dd>
 </dl>
@@ -16677,7 +17142,8 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.entries.<a href="/src/api/resources/entries/client.rs">deny</a>(id: String) -> Result&lt;Entry, ApiError&gt;</code></summary>
+## Economic Intelligence
+<details><summary><code>client.economic_intelligence.<a href="/src/api/resources/economic_intelligence/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListEconomicIntelligenceRequestStatus&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListEconomicIntelligenceResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -16689,12 +17155,7 @@ async fn main() {
 <dl>
 <dd>
 
-Deny a pending waitlist entry, preventing the user from gaining access to the plan.
-
-Required permissions:
- - `plan:waitlist:manage`
- - `plan:basic:read`
- - `member:email:read`
+Lists an account's recommendations and generation requests, newest first. Without an account, signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation.
 </dd>
 </dl>
 </dd>
@@ -16719,8 +17180,13 @@ async fn main() {
     };
     let client = Whop::new(config).expect("Failed to build client");
     client
-        .entries
-        .deny(&"entry_xxxxxxxxxxxx".to_string(), None)
+        .economic_intelligence
+        .list(
+            &EconomicIntelligenceListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
         .await;
 }
 ```
@@ -16737,7 +17203,227 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the waitlist entry to deny.
+**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListEconomicIntelligenceRequestStatus>` — Filter recommendations by their current status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.economic_intelligence.<a href="/src/api/resources/economic_intelligence/client.rs">create</a>(request: CreateEconomicIntelligenceRequest) -> Result&lt;EconomicIntelligence, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates a recommendation based on your input. Returns immediately; poll the list endpoint until its `status` is `ready`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.economic_intelligence.create(&CreateEconomicIntelligenceRequest {
+        input: "I sell $79 customized gym straps. The number of purchases per day fell from 84 to 66 since June and my ads cost per signup doubled to $38. Half the leads never open the checkout. I want to win back churned visitors and lift conversion without cutting the price, and I can spend up to $500 this month on it.".to_string(),
+        account_id: None
+    }, None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**input:** `String` — What the owner wants, in their own words. Up to 1000 characters.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.economic_intelligence.<a href="/src/api/resources/economic_intelligence/client.rs">update</a>(id: String, request: UpdateEconomicIntelligenceRequest, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;EconomicIntelligence, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates a recommendation status, records feedback, or both. Send `sentiment` to rate it. Include `status: superseded` to retire it and request replacements; a rating alone leaves its status unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .economic_intelligence
+        .update(
+            &"id".to_string(),
+            &UpdateEconomicIntelligenceRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Recommendation ID, prefixed `reca_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sentiment:** `Option<UpdateEconomicIntelligenceRequestSentiment>` — A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<UpdateEconomicIntelligenceRequestStatus>` — Use `executed` to record approval, or `superseded` to reject the recommendation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_feedback:** `Option<String>` — An optional explanation of the rating or rejection. Negative feedback informs replacement recommendations.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
     
 </dd>
 </dl>
@@ -16842,7 +17528,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of events to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -16850,7 +17536,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor for fetching events after a previous page.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -16858,7 +17544,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor for fetching events before a later page.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -16882,7 +17568,7 @@ async fn main() {
 <dl>
 <dd>
 
-**source:** `Option<String>` — Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct). Restricts the list to conversion targets attributed to that source — the debuggability twin of a metric cell's source parameter.
+**source:** `Option<String>` — Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct, unknown). Selects conversions credited to this source.
     
 </dd>
 </dl>
@@ -17009,6 +17695,8 @@ async fn main() {
                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 event_name: "coating_deposit_paid".to_string(),
                 action_source: None,
+                app_build_id: None,
+                app_id: None,
                 context: None,
                 currency: None,
                 custom_name: None,
@@ -17052,6 +17740,22 @@ async fn main() {
 <dd>
 
 **action_source:** `Option<Option<CreateEventsRequestActionSource>>` — Where the event originated.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**app_build_id:** `Option<Option<String>>` — The build of the hosted app that served the page where the event occurred.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**app_id:** `Option<Option<String>>` — The hosted app that served the page where the event occurred.
     
 </dd>
 </dl>
@@ -17263,7 +17967,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of events to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -17271,7 +17975,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor for fetching events after a previous page.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -17279,7 +17983,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor for fetching events before a later page.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -17372,7 +18076,7 @@ async fn main() {
 </details>
 
 ## Experiences
-<details><summary><code>client.experiences.<a href="/src/api/resources/experiences/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, app_id: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListExperiencesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.experiences.<a href="/src/api/resources/experiences/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, app_id: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListExperiencesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -17414,11 +18118,11 @@ async fn main() {
             &ExperiencesListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 product_id: Some("prod_xxxxxxxxxxxxx".to_string()),
                 app_id: Some("app_xxxxxxxxxxxxxx".to_string()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -17472,14 +18176,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list experiences for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **product_id:** `Option<String>` — Filter to only experiences attached to this product identifier.
     
 </dd>
@@ -17505,6 +18201,14 @@ async fn main() {
 <dd>
 
 **created_after:** `Option<String>` — Only return experiences created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list experiences for.
     
 </dd>
 </dl>
@@ -17557,8 +18261,8 @@ async fn main() {
         .experiences
         .create(
             &CreateExperiencesRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 app_id: "app_xxxxxxxxxxxxxx".to_string(),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 is_public: None,
                 logo: None,
                 name: None,
@@ -17583,7 +18287,7 @@ async fn main() {
 <dl>
 <dd>
 
-**app_id:** `String` — The unique identifier of the app that powers this experience.
+**account_id:** `String` — The unique identifier of the company to create this experience for.
     
 </dd>
 </dl>
@@ -17591,7 +18295,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to create this experience for.
+**app_id:** `String` — The unique identifier of the app that powers this experience.
     
 </dd>
 </dl>
@@ -18163,6 +18867,887 @@ async fn main() {
 </dl>
 </details>
 
+## Experiments
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, related_resource: Option&lt;Option&lt;ExperimentResourceReference&gt;&gt;, status: Option&lt;Option&lt;ListExperimentsRequestStatus&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListExperimentsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListExperimentsRequestDirection&gt;&gt;) -> Result&lt;ListExperimentsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists experiments for one account with experiment:read permission. Omit account_id or pass internal to list internal experiments, which requires Whop internal access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .experiments
+        .list(
+            &ExperimentsListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Owning account ID. Omit or pass internal for Whop internal experiments; internal access is required.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**related_resource:** `Option<ExperimentResourceReference>` — Filter by related resource; requires account_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListExperimentsRequestStatus>` — Only experiments with this status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListExperimentsRequestOrder>` — The field to sort experiments by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListExperimentsRequestDirection>` — Sort direction.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">create</a>(request: CreateExperimentsRequest) -> Result&lt;Experiment, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a draft experiment for the specified account. Use internal for a Whop platform experiment.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .experiments
+        .create(
+            &CreateExperimentsRequest {
+                account_id: "internal".to_string(),
+                flag_key: "checkout_redesign_v2".to_string(),
+                bucket_by: None,
+                control: None,
+                feature_flag_only: None,
+                hypothesis: None,
+                name: None,
+                related_resource: None,
+                targeting_rules: None,
+                variants: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — Owning account tag or internal. Required; ownership cannot change.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bucket_by:** `Option<CreateExperimentsRequestBucketBy>` — Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]` for account experiments and the signed-in user for internal experiments; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**control:** `Option<CreateExperimentsRequestControl>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**feature_flag_only:** `Option<bool>` — When `true`, creates a binary feature flag rather than a full experiment. Feature flags expose the same evaluation API but do not collect metric results. Defaults to `false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**flag_key:** `String` — Developer-chosen handle referenced from code, used in evaluation and results calls. Interchangeable with the returned `expt_` id anywhere the API takes an experiment identifier.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hypothesis:** `Option<Option<String>>` — Required for full experiments; rejected on feature flags. Structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." Evidence should be something real — a baseline number, a funnel breakdown — not a guess, and [name] is you, not something to leave blank.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `Option<String>` — Human-readable display name. Defaults to `flag_key` when omitted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**related_resource:** `Option<ExperimentResourceReference>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targeting_rules:** `Option<Vec<CreateExperimentsRequestTargetingRulesItem>>` — Rules that determine which subjects qualify for the experiment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variants:** `Option<Vec<CreateExperimentsRequestVariantsItem>>` — Treatment arms to create. Users outside every arm form the implicit `control` group. Required unless `feature_flag_only` is `true`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">exposures</a>(subject: Option&lt;Option&lt;ExposuresExperimentsRequestSubject&gt;&gt;, related_resource: Option&lt;Option&lt;ExperimentResourceReference&gt;&gt;, flag_key: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;, properties: Option&lt;Option&lt;String&gt;&gt;, log_exposure: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;ExposuresExperimentsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Evaluates and records an exposure without requiring authentication. When credentials resolve, their authentication method, API key ID, and signed-in user ID are recorded on the exposure event. Pass subject for bucketing identity and account_id for experiment ownership.
+
+Pass `flag_key` to check a single flag, or omit it to fetch active flags in the account and related resource scope. Internal anonymous callers may use the `x-whop-anonymous-id` header or `ajs_anonymous_id` cookie; explicit `subject[anonymous_id]` takes precedence.
+
+Assignments use exactly the configured `bucket_by`: `subject[user_id]`, `subject[account_id]`, or `subject[anonymous_id]`. Internal user experiments derive identity from the signed-in session. Missing the required identity fails single evaluation and omits the experiment from batch evaluation. Subjects outside all treatment ranges receive control.
+
+Pass `subject[account_id]` to enable account-level targeting rules. Pass `properties` as a JSON object to supply the values that `property` targeting conditions match against.
+
+Pass `log_exposure=false` to read an assignment without recording an exposure, for a client that caches assignments up front and records the exposure when the arm is actually rendered. Omitted records the exposure, so pinned callers are unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .experiments
+        .exposures(
+            &ExposuresQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**subject:** `Option<ExposuresExperimentsRequestSubject>` — Bucketing subject. Ownership is the top-level account_id. Account experiments accept caller-supplied subject IDs; internal experiments derive the user from the session.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**related_resource:** `Option<ExperimentResourceReference>` — Restricts batch evaluation to this related resource; omitted batches contain only unbound experiments.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**flag_key:** `Option<String>` — Flag or experiment to evaluate — the flag_key handle or the `expt_` id. Omit to return all flags the caller qualifies for.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Owning account ID or internal. Required when evaluating by flag_key or in a batch; optional for an expt_ ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**properties:** `Option<String>` — JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[plan]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**log_exposure:** `Option<bool>` — Set false to evaluate without recording an exposure. Omitted records it.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">retrieve</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;Experiment, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a single experiment or feature flag by its `expt_` id or flag_key handle. Requires the corresponding experiment permission on the owning account, or Whop internal access for internal experiments.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .experiments
+        .retrieve(
+            &"id".to_string(),
+            &ExperimentsRetrieveQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The experiment identifier — the `expt_` id or the flag_key handle.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">update</a>(id: String, request: UpdateExperimentsRequest, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;Experiment, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates the targeting rules, treatment allocation, metrics, or hypothesis of an existing experiment or feature flag. Weights and metrics can only grow, so enrolled users never change arms and an existing metric is never dropped. Lifecycle moves through the transition endpoints (`activate`, `pause`, `end`), never through this update. Requires the corresponding experiment permission on the owning account, or Whop internal access for internal experiments.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .experiments
+        .update(
+            &"id".to_string(),
+            &UpdateExperimentsRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The experiment identifier — the `expt_` id or the flag_key handle.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**control:** `Option<UpdateExperimentsRequestControl>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hypothesis:** `Option<Option<String>>` — Omit to leave unchanged. Send an empty string to clear it. Not accepted on feature flags. When setting it, structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." same as on create.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**related_resource:** `Option<ExperimentResourceReference>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targeting_rules:** `Option<Vec<UpdateExperimentsRequestTargetingRulesItem>>` — Replace the targeting rules with this set. Omit to leave unchanged.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variants:** `Option<Vec<UpdateExperimentsRequestVariantsItem>>` — Grow treatment allocation. Pass every existing treatment with an equal-or-higher weight; append new names to add arms. Weights never decrease and arms are never removed. Omit to leave unchanged.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">activate</a>(id: String, request: ActivateExperimentsRequest, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;Experiment, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts (or resumes) an experiment or feature flag so evaluation begins serving it. Activating a draft stamps `started_at`; resuming a paused experiment keeps the original start. Only drafts and paused experiments can be activated. Requires the corresponding experiment permission on the owning account, or Whop internal access for internal experiments.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .experiments
+        .activate(
+            &"id".to_string(),
+            &ActivateExperimentsRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The experiment identifier — the `expt_` id or the flag_key handle.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**duration_days:** `Option<Option<i64>>` — Reporting window length in days. Omit to use the default. This does not automatically end the experiment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">end</a>(id: String, request: EndExperimentsRequest, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;Experiment, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Concludes the experiment and records required `findings`. Pass `winning_arm` to serve the winning treatment to everyone; omit it when control won. Ended experiments cannot restart, but may be ended again to correct the winner. Requires experiment:manage on the account, or internal access for platform experiments.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .experiments
+        .end(
+            &"id".to_string(),
+            &EndExperimentsRequest {
+                findings: "Treatment lifted signups 12%, shipping it to everyone.".to_string(),
+                account_id: None,
+                winning_arm: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The experiment identifier — the `expt_` id or the flag_key handle.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**findings:** `String` — What you learned and why you chose this outcome. Required.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**winning_arm:** `Option<Option<String>>` — The treatment that won. Setting it rolls that arm out: every later evaluation returns it to every caller, ignoring targeting and allocation, and exposures stop being recorded. Omit it when control won — an ended experiment with no winning arm evaluates to `control` for everyone, so ending again without one also reverts a rollout recorded by mistake. Not accepted on feature flags, which evaluate to disabled once ended.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.experiments.<a href="/src/api/resources/experiments/client.rs">pause</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;Experiment, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Pauses an active experiment or feature flag: evaluation stops serving it and exposures stop flowing. Assignments are keyed on stable identity, so users return to their original arm when the experiment resumes. Requires the corresponding experiment permission on the owning account, or Whop internal access for internal experiments.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .experiments
+        .pause(
+            &"id".to_string(),
+            &PauseQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The experiment identifier — the `expt_` id or the flag_key handle.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Exports
 <details><summary><code>client.exports.<a href="/src/api/resources/exports/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, resource: Option&lt;Option&lt;ListExportsRequestResource&gt;&gt;, status: Option&lt;Option&lt;ListExportsRequestStatus&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListExportsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListExportsRequestDirection&gt;&gt;) -> Result&lt;ListExportsResponse, ApiError&gt;</code></summary>
 <dl>
@@ -18296,7 +19881,7 @@ async fn main() {
 <dl>
 <dd>
 
-Starts an asynchronous CSV export of a resource for an account. Returns the export in `pending`; poll `GET /exports/{id}` until `download_url` is set.
+Starts an asynchronous export of a resource for an account. Returns the export in `pending`; poll `GET /exports/{id}` until `download_url` is set.
 </dd>
 </dl>
 </dd>
@@ -18364,7 +19949,7 @@ async fn main() {
 <dl>
 <dd>
 
-**filters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Resource-specific filters. For native REST resources (`payouts`, `transfers`, `memberships`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
+**filters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Resource-specific filters. For native REST resources (`payouts`, `transfers`, `products`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
     
 </dd>
 </dl>
@@ -18457,7 +20042,7 @@ async fn main() {
 </details>
 
 ## FeeMarkups
-<details><summary><code>client.fee_markups.<a href="/src/api/resources/fee_markups/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;) -> Result&lt;ListFeeMarkupsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.fee_markups.<a href="/src/api/resources/fee_markups/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListFeeMarkupsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -18502,7 +20087,7 @@ async fn main() {
             &FeeMarkupsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -18556,7 +20141,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
+**account_id:** `String` — The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
     
 </dd>
 </dl>
@@ -18611,7 +20196,7 @@ async fn main() {
         .fee_markups
         .create(
             &CreateFeeMarkupsRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 fee_type: FeeMarkupTypes::CryptoWithdrawalMarkup,
                 fixed_fee_usd: None,
                 metadata: None,
@@ -18636,7 +20221,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to create or update the fee markup for.
+**account_id:** `String` — The unique identifier of the company to create or update the fee markup for.
     
 </dd>
 </dl>
@@ -18756,7 +20341,7 @@ async fn main() {
 </details>
 
 ## Files
-<details><summary><code>client.files.<a href="/src/api/resources/files/client.rs">create</a>(request: CreateFilesRequest) -> Result&lt;CreateFilesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.files.<a href="/src/api/resources/files/client.rs">list</a>(order: Option&lt;Option&lt;ListFilesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListFilesRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFilesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -18768,7 +20353,133 @@ async fn main() {
 <dl>
 <dd>
 
-Create a new file record and receive a presigned URL for uploading content to S3.
+Returns the files with the given IDs, newest first — fetch a batch in one request instead of retrieving each file individually. Only files you created are returned; IDs that do not exist, or that another credential created, are omitted. A request for up to 100 IDs answers in a single page by default; a larger batch pages at up to 100 files per response — follow `page_info` with the same `file_ids` to walk the rest.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .files
+        .list(
+            &FilesListQueryRequest {
+                file_ids: vec![Some("file_xxxxxxxxxxxxx".to_string())],
+                order: None,
+                direction: None,
+                first: None,
+                after: None,
+                last: None,
+                before: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**file_ids:** `Option<String>` — The files to return, each prefixed `file_`. Repeat the parameter to pass several, up to 250 per request. Batches of up to 100 answer in one page by default; larger batches page at up to 100 per response.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListFilesRequestOrder>` — The field to sort by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListFilesRequestDirection>` — The sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.files.<a href="/src/api/resources/files/client.rs">create</a>(request: CreateFilesRequest) -> Result&lt;File, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a file and returns a presigned destination to upload its bytes to. PUT the bytes to `upload_url` (single-part), or to each of `multipart_upload_urls` and then call Complete File Multipart Upload. Once the bytes land the file becomes `ready`, and its ID can be attached wherever a file is accepted — account legal documents, dispute evidence documents. For a step-by-step walkthrough of single-part and multipart uploads, see the [direct file uploads guide](/developer/guides/direct-file-uploads).
 </dd>
 </dl>
 </dd>
@@ -18796,7 +20507,9 @@ async fn main() {
         .files
         .create(
             &CreateFilesRequest {
-                filename: "filename".to_string(),
+                filename: "terms.pdf".to_string(),
+                byte_size: None,
+                multipart: None,
                 visibility: None,
             },
             None,
@@ -18817,7 +20530,7 @@ async fn main() {
 <dl>
 <dd>
 
-**filename:** `String` — The name of the file including its extension (e.g., "photo.png" or "document.pdf").
+**byte_size:** `Option<i64>` — The file's size in bytes. Required when `multipart` is `true`. Multipart uploads support at most 10,000 parts of 5MB each (about 50 GB).
     
 </dd>
 </dl>
@@ -18825,7 +20538,23 @@ async fn main() {
 <dl>
 <dd>
 
-**visibility:** `Option<Option<FileVisibility>>` — Controls whether the file is publicly accessible via CDN or requires authentication. Defaults to private.
+**filename:** `String` — The name of the file including its extension, e.g. `terms.pdf`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**multipart:** `Option<bool>` — Upload the file in 5MB parts. Required for files larger than 5GB; useful above ~100MB. The file must be larger than 5MB.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**visibility:** `Option<CreateFilesRequestVisibility>` — `public` files are served via an unsigned CDN URL — use for assets anyone may see. `private` files are served via a signed, expiring URL — use for sensitive documents. Defaults to `private`.
     
 </dd>
 </dl>
@@ -18849,7 +20578,71 @@ async fn main() {
 <dl>
 <dd>
 
-Retrieves the details of an existing file.
+Retrieves a file you uploaded — poll it after uploading the bytes to see `upload_status` become `ready`. Only the creator can retrieve a file this way; a file attached to another resource is read through that resource.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.files.retrieve(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The unique identifier of the file, prefixed `file_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.files.<a href="/src/api/resources/files/client.rs">complete</a>(id: String, request: CompleteFilesRequest) -> Result&lt;File, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Assembles the parts of a multipart upload after every part has been PUT to its presigned URL. Pass the `multipart_upload_id` from Create File and each part's `ETag` response header. For a step-by-step walkthrough of multipart uploads, see the [direct file uploads guide](/developer/guides/direct-file-uploads).
 </dd>
 </dl>
 </dd>
@@ -18875,7 +20668,18 @@ async fn main() {
     let client = Whop::new(config).expect("Failed to build client");
     client
         .files
-        .retrieve(&"file_xxxxxxxxxxxxx".to_string(), None)
+        .complete(
+            &"id".to_string(),
+            &CompleteFilesRequest {
+                multipart_parts: vec![CompleteFilesRequestMultipartPartsItem {
+                    etag: "etag-1".to_string(),
+                    part_number: 1,
+                    ..Default::default()
+                }],
+                multipart_upload_id: "upload-id".to_string(),
+            },
+            None,
+        )
         .await;
 }
 ```
@@ -18892,7 +20696,23 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the file to retrieve.
+**id:** `String` — The unique identifier of the file, prefixed `file_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**multipart_parts:** `Vec<CompleteFilesRequestMultipartPartsItem>` — Every uploaded part, in order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**multipart_upload_id:** `String` — The ID of the multipart upload, returned by Create File.
     
 </dd>
 </dl>
@@ -18905,7 +20725,7 @@ async fn main() {
 </details>
 
 ## FinancialActivity
-<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.financial_activity.<a href="/src/api/resources/financial_activity/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, include_owned_accounts: Option&lt;Option&lt;bool&gt;&gt;, include_resource: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;ListFinancialActivityRequestDirection&gt;&gt;, resource_id: Option&lt;Option&lt;String&gt;&gt;, activity_id: Option&lt;Option&lt;String&gt;&gt;, exclude_internal_movements: Option&lt;Option&lt;bool&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, posted_after: Option&lt;Option&lt;String&gt;&gt;, posted_before: Option&lt;Option&lt;String&gt;&gt;, available_after: Option&lt;Option&lt;String&gt;&gt;, available_before: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListFinancialActivityResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -18950,6 +20770,10 @@ async fn main() {
                 include_owned_accounts: None,
                 include_resource: None,
                 line_types: vec![],
+                direction: None,
+                resource_id: None,
+                activity_id: None,
+                exclude_internal_movements: None,
                 currency: None,
                 posted_after: None,
                 posted_before: None,
@@ -19009,6 +20833,38 @@ async fn main() {
 <dd>
 
 **line_types:** `Option<ListFinancialActivityRequestLineTypesItem>` — Optional ledger line categories to include. Some categories (for example `onchain_deposit`, which covers inbound crypto deposits such as MoonPay onramps) are only returned when explicitly requested here.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListFinancialActivityRequestDirection>` — Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resource_id:** `Option<String>` — Optional prefixed resource ID. Returns activity associated with that resource.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**activity_id:** `Option<String>` — Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**exclude_internal_movements:** `Option<bool>` — Whether to exclude balance reservations and balanced movements between the account's own balances.
     
 </dd>
 </dl>
@@ -19076,8 +20932,8 @@ async fn main() {
 </dl>
 </details>
 
-## Ledgers
-<details><summary><code>client.ledgers.<a href="/src/api/resources/ledgers/client.rs">get_financial_report</a>(account_id: Option&lt;String&gt;, report_type: Option&lt;GetFinancialReportRequestReportType&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, in_currency: Option&lt;Option&lt;String&gt;&gt;, from_date: Option&lt;Option&lt;String&gt;&gt;, to_date: Option&lt;Option&lt;String&gt;&gt;, group_by: Option&lt;Option&lt;GetFinancialReportRequestGroupBy&gt;&gt;, timezone: Option&lt;Option&lt;String&gt;&gt;, cumulative: Option&lt;Option&lt;bool&gt;&gt;, scope_account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;GetFinancialReportResponse, ApiError&gt;</code></summary>
+## FinancialReports
+<details><summary><code>client.financial_reports.<a href="/src/api/resources/financial_reports/client.rs">retrieve</a>(account_id: Option&lt;String&gt;, report_type: Option&lt;RetrieveFinancialReportsRequestReportType&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, in_currency: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, group_by: Option&lt;Option&lt;RetrieveFinancialReportsRequestGroupBy&gt;&gt;, timezone: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;RetrieveFinancialReportsRequestDirection&gt;&gt;, cumulative: Option&lt;Option&lt;bool&gt;&gt;, scope_account_id: Option&lt;Option&lt;String&gt;&gt;, include_payment_fee_breakdown: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;RetrieveFinancialReportsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -19114,19 +20970,22 @@ async fn main() {
     };
     let client = Whop::new(config).expect("Failed to build client");
     client
-        .ledgers
-        .get_financial_report(
-            &GetFinancialReportQueryRequest {
+        .financial_reports
+        .retrieve(
+            &FinancialReportsRetrieveQueryRequest {
                 account_id: "account_id".to_string(),
-                report_type: GetFinancialReportRequestReportType::BalanceSummary,
+                report_type: RetrieveFinancialReportsRequestReportType::BalanceSummary,
                 currency: None,
                 in_currency: None,
-                from_date: None,
-                to_date: None,
+                from: None,
+                to: None,
                 group_by: None,
                 timezone: None,
+                line_types: vec![],
+                direction: None,
                 cumulative: None,
                 scope_account_id: None,
+                include_payment_fee_breakdown: None,
             },
             None,
         )
@@ -19154,7 +21013,7 @@ async fn main() {
 <dl>
 <dd>
 
-**report_type:** `GetFinancialReportRequestReportType` — The type of financial report to generate.
+**report_type:** `RetrieveFinancialReportsRequestReportType` — The type of financial report to generate.
     
 </dd>
 </dl>
@@ -19178,7 +21037,7 @@ async fn main() {
 <dl>
 <dd>
 
-**from_date:** `Option<String>` — Start of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
+**from:** `Option<String>` — Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
     
 </dd>
 </dl>
@@ -19186,7 +21045,7 @@ async fn main() {
 <dl>
 <dd>
 
-**to_date:** `Option<String>` — End of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
+**to:** `Option<String>` — Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
     
 </dd>
 </dl>
@@ -19194,7 +21053,7 @@ async fn main() {
 <dl>
 <dd>
 
-**group_by:** `Option<GetFinancialReportRequestGroupBy>` — Grouping granularity for report rows.
+**group_by:** `Option<RetrieveFinancialReportsRequestGroupBy>` — Grouping granularity for report rows. Hourly grouping is supported for account-level balance activity reports only; hourly periods are timestamps in the requested timezone.
     
 </dd>
 </dl>
@@ -19202,7 +21061,7 @@ async fn main() {
 <dl>
 <dd>
 
-**timezone:** `Option<String>` — IANA timezone (for example `America/New_York`) used to bucket report periods and to interpret calendar-day boundaries for balance snapshots. Defaults to UTC. from_date/to_date remain exact instants regardless of this setting.
+**timezone:** `Option<String>` — IANA timezone (for example `America/New_York`) used to bucket report periods. Defaults to UTC. `from` and `to` remain exact instants.
     
 </dd>
 </dl>
@@ -19210,7 +21069,23 @@ async fn main() {
 <dl>
 <dd>
 
-**cumulative:** `Option<bool>` — Platform-wide (global) reports only: when true, return cumulative balances as of to_date (all history, no lower bound) instead of activity within the period.
+**line_types:** `Option<RetrieveFinancialReportsRequestLineTypesItem>` — Account-level balance activity only: ledger line categories to include.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<RetrieveFinancialReportsRequestDirection>` — Account-level balance activity only: include money moving in or money moving out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cumulative:** `Option<bool>` — Platform-wide (global) reports only: when true, return cumulative balances as of to (all history, no lower bound) instead of activity within the period.
     
 </dd>
 </dl>
@@ -19219,6 +21094,14 @@ async fn main() {
 <dd>
 
 **scope_account_id:** `Option<String>` — Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_payment_fee_breakdown:** `Option<bool>` — Balance activity only: include payment costs grouped by payment method and provider.
     
 </dd>
 </dl>
@@ -19381,7 +21264,7 @@ async fn main() {
 <dl>
 <dd>
 
-Create a new forum post or comment within an experience. Supports text content, attachments, polls, paywalling, and pinning. Pass experience_id 'public' with a company_id to post to a company's public forum.
+Create a new forum post or comment within an experience. Supports text content, attachments, polls, paywalling, and pinning. Pass experience_id 'public' with an account_id to post to an account's public forum.
 
 Required permissions:
  - `forum:post:create`
@@ -19413,8 +21296,8 @@ async fn main() {
         .create(
             &CreateForumPostsRequest {
                 experience_id: "exp_xxxxxxxxxxxxxx".to_string(),
+                account_id: None,
                 attachments: None,
-                company_id: None,
                 content: None,
                 is_mention: None,
                 parent_id: None,
@@ -19444,7 +21327,7 @@ async fn main() {
 <dl>
 <dd>
 
-**attachments:** `Option<Option<Vec<CreateForumPostsRequestAttachmentsItem>>>` — A list of file attachments to include with the post, such as images or videos.
+**account_id:** `Option<Option<String>>` — The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
     
 </dd>
 </dl>
@@ -19452,7 +21335,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<Option<String>>` — The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
+**attachments:** `Option<Option<Vec<CreateForumPostsRequestAttachmentsItem>>>` — A list of file attachments to include with the post, such as images or videos.
     
 </dd>
 </dl>
@@ -19468,7 +21351,7 @@ async fn main() {
 <dl>
 <dd>
 
-**experience_id:** `String` — The unique identifier of the experience to create this post in. For example, 'exp_xxxxx'. Pass 'public' along with company_id to automatically use the company's public forum.
+**experience_id:** `String` — The unique identifier of the experience to create this post in. For example, 'exp_xxxxx'. Pass 'public' along with account_id to automatically use the account's public forum.
     
 </dd>
 </dl>
@@ -19733,7 +21616,7 @@ async fn main() {
 </details>
 
 ## Forums
-<details><summary><code>client.forums.<a href="/src/api/resources/forums/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListForumsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.forums.<a href="/src/api/resources/forums/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListForumsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -19778,8 +21661,8 @@ async fn main() {
             &ForumsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 product_id: Some("prod_xxxxxxxxxxxxx".to_string()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -19833,7 +21716,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list forums for.
+**product_id:** `Option<String>` — The unique identifier of a product to filter by. When set, only forums connected to this product are returned.
     
 </dd>
 </dl>
@@ -19841,7 +21724,7 @@ async fn main() {
 <dl>
 <dd>
 
-**product_id:** `Option<String>` — The unique identifier of a product to filter by. When set, only forums connected to this product are returned.
+**account_id:** `String` — The unique identifier of the company to list forums for.
     
 </dd>
 </dl>
@@ -20037,7 +21920,7 @@ async fn main() {
 </details>
 
 ## IdentityProfiles
-<details><summary><code>client.identity_profiles.<a href="/src/api/resources/identity_profiles/client.rs">list_identity_profile</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, profile_type: Option&lt;Option&lt;IdentityProfileKinds&gt;&gt;, status: Option&lt;Option&lt;IdentityProfileStatuses&gt;&gt;) -> Result&lt;ListIdentityProfileResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.identity_profiles.<a href="/src/api/resources/identity_profiles/client.rs">list_identity_profile</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, profile_type: Option&lt;Option&lt;IdentityProfileKinds&gt;&gt;, status: Option&lt;Option&lt;IdentityProfileStatuses&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListIdentityProfileResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -20049,7 +21932,7 @@ async fn main() {
 <dl>
 <dd>
 
-Returns a paginated list of identity profiles. When company_id is provided, lists IPs currently linked to that company's ledger. When omitted, lists IPs linked to any ledger the actor can read (including child companies under a parent).
+Returns a paginated list of identity profiles. When account_id is provided, lists IPs currently linked to that account's ledger. When omitted, lists IPs linked to any ledger the actor can read (including child accounts under a parent).
 
 Required permissions:
  - `identity:read`
@@ -20082,7 +21965,7 @@ async fn main() {
             &ListIdentityProfileQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -20135,14 +22018,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **profile_type:** `Option<IdentityProfileKinds>` 
     
 </dd>
@@ -20152,6 +22027,14 @@ async fn main() {
 <dd>
 
 **status:** `Option<IdentityProfileStatuses>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
     
 </dd>
 </dl>
@@ -20425,7 +22308,7 @@ async fn main() {
 </details>
 
 ## Invoices
-<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;InvoicesSortableColumns&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListInvoicesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;InvoicesSortableColumns&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListInvoicesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -20470,9 +22353,9 @@ async fn main() {
             &InvoicesListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 after: None,
                 before: None,
                 direction: None,
@@ -20524,14 +22407,6 @@ async fn main() {
 <dd>
 
 **last:** `Option<i64>` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `Option<String>` — The unique identifier of the company to list invoices for.
     
 </dd>
 </dl>
@@ -20591,6 +22466,14 @@ async fn main() {
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company to list invoices for.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -20599,7 +22482,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client.rs">create</a>(request: CreateInvoicesRequest) -> Result&lt;Invoice, ApiError&gt;</code></summary>
+<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client.rs">create</a>(request: CreateInvoicesRequestBody) -> Result&lt;Invoice, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -20644,30 +22527,32 @@ async fn main() {
     client
         .invoices
         .create(
-            &CreateInvoicesRequest::CreateInvoicesRequestProduct(CreateInvoicesRequestProduct {
-                automatically_finalizes_at: None,
-                billing_address: None,
-                charge_buyer_fee: None,
-                collection_method: InvoiceCollectionMethods::SendInvoice,
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                customer_name: None,
-                due_date: None,
-                email_address: None,
-                line_items: None,
-                mailing_address_id: None,
-                member_id: None,
-                payment_method_id: None,
-                payment_token_id: None,
-                plan: CreateInvoicesRequestProductPlan {
-                    ..Default::default()
+            &CreateInvoicesRequestBody::CreateInvoicesRequestBodyProduct(
+                CreateInvoicesRequestBodyProduct {
+                    account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                    automatically_finalizes_at: None,
+                    billing_address: None,
+                    charge_buyer_fee: None,
+                    collection_method: InvoiceCollectionMethods::SendInvoice,
+                    customer_name: None,
+                    due_date: None,
+                    email_address: None,
+                    line_items: None,
+                    mailing_address_id: None,
+                    member_id: None,
+                    payment_method_id: None,
+                    payment_token_id: None,
+                    plan: CreateInvoicesRequestBodyProductPlan {
+                        ..Default::default()
+                    },
+                    product: CreateInvoicesRequestBodyProductProduct {
+                        title: "title".to_string(),
+                        ..Default::default()
+                    },
+                    save_as_draft: None,
+                    subscription_billing_anchor_at: None,
                 },
-                product: CreateInvoicesRequestProductProduct {
-                    title: "title".to_string(),
-                    ..Default::default()
-                },
-                save_as_draft: None,
-                subscription_billing_anchor_at: None,
-            }),
+            ),
             None,
         )
         .await;
@@ -20957,7 +22842,7 @@ async fn main() {
 <dl>
 <dd>
 
-**line_items:** `Option<Option<Vec<UpdateInvoicesRequestLineItemsItem>>>` — Line items that break down the invoice total.
+**line_items:** `Option<Option<Vec<UpdateInvoicesRequestLineItemsItem>>>` — Line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge. Pass an empty list to remove the breakdown.
     
 </dd>
 </dl>
@@ -21298,7 +23183,7 @@ async fn main() {
 </details>
 
 ## Leads
-<details><summary><code>client.leads.<a href="/src/api/resources/leads/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListLeadsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.leads.<a href="/src/api/resources/leads/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListLeadsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -21346,9 +23231,9 @@ async fn main() {
             &LeadsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 product_ids: vec![],
@@ -21403,14 +23288,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list leads for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **created_after:** `Option<String>` — Only return leads created after this timestamp.
     
 </dd>
@@ -21428,6 +23305,14 @@ async fn main() {
 <dd>
 
 **product_ids:** `Option<String>` — Filter leads to only those associated with these specific product identifiers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list leads for.
     
 </dd>
 </dl>
@@ -21485,7 +23370,7 @@ async fn main() {
         .leads
         .create(
             &CreateLeadsRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 metadata: None,
                 product_id: None,
                 referrer: None,
@@ -21509,7 +23394,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to create the lead for, starting with 'biz_'.
+**account_id:** `String` — The unique identifier of the company to create the lead for, starting with 'biz_'.
     
 </dd>
 </dl>
@@ -22016,7 +23901,19 @@ async fn main() {
         .members
         .list(
             &MembersListQueryRequest {
-                ..Default::default()
+                user_ids: vec![Some("user_xxxxxxxxxxxxxx".to_string())],
+                account_id: None,
+                access_level: None,
+                status: None,
+                query: None,
+                created_after: None,
+                created_before: None,
+                order: None,
+                direction: None,
+                first: None,
+                after: None,
+                last: None,
+                before: None,
             },
             None,
         )
@@ -22053,6 +23950,14 @@ async fn main() {
 <dd>
 
 **status:** `Option<ListMembersRequestStatus>` — Filter by whether the member is still part of the account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_ids:** `Option<String>` — Only return members whose users match these `user_` identifiers.
     
 </dd>
 </dl>
@@ -22100,7 +24005,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of members to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -22108,7 +24013,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -22116,7 +24021,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of members to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -22124,7 +24029,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -22333,7 +24238,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of memberships to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -22341,7 +24246,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -22349,7 +24254,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of memberships to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -22357,7 +24262,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -22572,90 +24477,6 @@ async fn main() {
 <dd>
 
 **metadata:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Key-value pairs to merge into the membership's metadata. Pass an empty object to clear it.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">add_free_days_membership</a>(id: String, request: AddFreeDaysMembershipRequest) -> Result&lt;Membership, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add free days to extend a membership's current billing period, expiration date, or Stripe trial.
-
-Required permissions:
- - `member:manage`
- - `member:email:read`
- - `member:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .memberships
-        .add_free_days_membership(
-            &"mem_xxxxxxxxxxxxxx".to_string(),
-            &AddFreeDaysMembershipRequest { free_days: 42 },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the membership.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**free_days:** `i64` — The number of free days to add (1-1095). Extends the billing period, expiration date, or Stripe trial depending on plan type.
     
 </dd>
 </dl>
@@ -22980,7 +24801,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">resync_access_membership</a>(id: String) -> Result&lt;Membership, ApiError&gt;</code></summary>
+<details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">resync_access</a>(id: String) -> Result&lt;Membership, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -22992,12 +24813,7 @@ async fn main() {
 <dl>
 <dd>
 
-Re-run access fulfillment for a membership. Recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and cannot be resynced here. The outcome is written to the membership's logs.
-
-Required permissions:
- - `membership:resync_access`
- - `member:email:read`
- - `member:basic:read`
+Re-runs access fulfillment for a membership: recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and is not resynced. The work runs in the background and the outcome is written to the membership's logs.
 </dd>
 </dl>
 </dd>
@@ -23023,7 +24839,7 @@ async fn main() {
     let client = Whop::new(config).expect("Failed to build client");
     client
         .memberships
-        .resync_access_membership(&"mem_xxxxxxxxxxxxxx".to_string(), None)
+        .resync_access(&"id".to_string(), None)
         .await;
 }
 ```
@@ -23040,7 +24856,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the membership to resync access for.
+**id:** `String` — Membership ID (`mem_` tag).
     
 </dd>
 </dl>
@@ -23105,78 +24921,6 @@ async fn main() {
 <dd>
 
 **id:** `String` — Membership ID (`mem_` tag).
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.memberships.<a href="/src/api/resources/memberships/client.rs">uncancel_membership</a>(id: String) -> Result&lt;Membership, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Reverse a pending cancellation for a membership that was scheduled to cancel at period end.
-
-Required permissions:
- - `member:manage`
- - `member:email:read`
- - `member:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .memberships
-        .uncancel_membership(&"mem_xxxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the membership to uncancel.
     
 </dd>
 </dl>
@@ -23690,7 +25434,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of.
+Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of. The `after` cursor is a notification `id` from a previous response; subsequent pages contain older notifications.
 </dd>
 </dl>
 </dd>
@@ -23770,7 +25514,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of notifications to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -23778,7 +25522,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor (a notification `id` from a previous page); returns notifications older than it.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -24151,6 +25895,471 @@ async fn main() {
 </dl>
 </details>
 
+## Partner Referral Requests
+<details><summary><code>client.partner_referral_requests.<a href="/src/api/resources/partner_referral_requests/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, partner_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListPartnerReferralRequestsRequestStatus&gt;&gt;, request_type: Option&lt;Option&lt;ListPartnerReferralRequestsRequestRequestType&gt;&gt;, order: Option&lt;Option&lt;ListPartnerReferralRequestsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPartnerReferralRequestsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPartnerReferralRequestsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists requests sent by an eligible partner and requests for accounts where the authenticated user currently holds the owner role. Filters narrow that combined view. Use a Whop login session or an account API key with `partner:referral_request:read`. The key must have been created by the account's current owner. Account API keys return their owner's sent requests and incoming requests for the key's account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .partner_referral_requests
+        .list(
+            &PartnerReferralRequestsListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Only requests for this business ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**partner_id:** `Option<String>` — Only requests sent by this partner's user ID, prefixed `user_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListPartnerReferralRequestsRequestStatus>` — Only requests with this approval status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_type:** `Option<ListPartnerReferralRequestsRequestRequestType>` — Only requests initiated in this way.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListPartnerReferralRequestsRequestOrder>` — Field used to sort requests.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListPartnerReferralRequestsRequestDirection>` — Sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.partner_referral_requests.<a href="/src/api/resources/partner_referral_requests/client.rs">create</a>(request: CreatePartnerReferralRequestsRequestBody) -> Result&lt;PartnerReferralRequest, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a pending manual request for an existing business as the authenticated, enrolled, verified Whop partner. Provide exactly one of account_id or account_url. Whop business and product links resolve to their business. A business owner must accept before attribution changes. An existing pending manual request from the same partner returns 200; a new request returns 201. Use a Whop login session or an account API key with `partner:referral_request:create`. The key must have been created by the account's current owner. Account API keys submit requests as their account owner, who must be enrolled, verified, and not suspended.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.partner_referral_requests.create(&CreatePartnerReferralRequestsRequestBody::CreatePartnerReferralRequestsRequestBodyAccountID(CreatePartnerReferralRequestsRequestBodyAccountID {
+        account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+        ..Default::default()
+    }), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.partner_referral_requests.<a href="/src/api/resources/partner_referral_requests/client.rs">retrieve</a>(id: String) -> Result&lt;PartnerReferralRequest, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a request visible to its eligible sender or a current owner of the receiving account. Use a Whop login session or an account API key with `partner:referral_request:read`. The key must have been created by the account's current owner. Account API keys can retrieve their owner's sent requests and incoming requests for the key's account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .partner_referral_requests
+        .retrieve(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Partner referral request ID, prefixed `prfr_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.partner_referral_requests.<a href="/src/api/resources/partner_referral_requests/client.rs">accept</a>(id: String) -> Result&lt;PartnerReferralRequest, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Accepts a pending manual request as a current business owner and attributes the business to the verified requesting partner. Existing active attribution blocks acceptance. Repeating acceptance returns the accepted request. Use a Whop login session or an account API key with `partner:referral_request:accept`. The key must have been created by the account's current owner. Account API keys can respond only to requests for the key's account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .partner_referral_requests
+        .accept(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Partner referral request ID, prefixed `prfr_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.partner_referral_requests.<a href="/src/api/resources/partner_referral_requests/client.rs">cancel</a>(id: String) -> Result&lt;PartnerReferralRequest, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Cancels a pending manual request as its eligible requesting partner. Repeating cancellation returns the cancelled request. Use a Whop login session or an account API key with `partner:referral_request:cancel`. The key must have been created by the account's current owner. Account API keys cancel requests as their account owner.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .partner_referral_requests
+        .cancel(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Partner referral request ID, prefixed `prfr_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.partner_referral_requests.<a href="/src/api/resources/partner_referral_requests/client.rs">decline</a>(id: String) -> Result&lt;PartnerReferralRequest, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Denies a pending manual request as a current business owner. Repeating denial returns the denied request. Use a Whop login session or an account API key with `partner:referral_request:decline`. The key must have been created by the account's current owner. Account API keys can respond only to requests for the key's account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .partner_referral_requests
+        .decline(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Partner referral request ID, prefixed `prfr_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Partners
 <details><summary><code>client.partners.<a href="/src/api/resources/partners/client.rs">create</a>() -> Result&lt;CreatePartnersResponse, ApiError&gt;</code></summary>
 <dl>
@@ -24349,7 +26558,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of referred users to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -24357,7 +26566,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -24365,7 +26574,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of referred users to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -24373,7 +26582,71 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.partners.<a href="/src/api/resources/partners/client.rs">retrieve</a>(id: String) -> Result&lt;Partner, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves the authenticated user's public profile, enrollment date, partner verification timestamp, verification waitlist status, active direct business referral count, and default payout rates. Use me or the authenticated user's own user ID; other users are not accessible. Users who have not enrolled have a null joined_at. Retrieve referral URLs and promotion links from GET /partners/links.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.partners.retrieve(&"me".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The authenticated partner's user ID, prefixed user_, or me. Other users' profiles are not accessible.
     
 </dd>
 </dl>
@@ -24510,7 +26783,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of domains to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -24518,7 +26791,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -24526,7 +26799,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of domains to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -24534,7 +26807,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -24607,7 +26880,7 @@ async fn main() {
 <dl>
 <dd>
 
-**account_id:** `Option<String>` — Account to register the domain for (`biz_` tag). Defaults to the caller's account.
+**account_id:** `Option<String>` — Account to register the domain for (`biz_` tag). Required when authenticating as a user; an account API key supplies its own account.
     
 </dd>
 </dl>
@@ -24829,7 +27102,7 @@ async fn main() {
 </details>
 
 ## PaymentMethods
-<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, future_usage: Option&lt;Option&lt;FutureUsageTypes&gt;&gt;, has_payer_document: Option&lt;Option&lt;bool&gt;&gt;, expired: Option&lt;Option&lt;bool&gt;&gt;, broken: Option&lt;Option&lt;bool&gt;&gt;) -> Result&lt;ListPaymentMethodsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, future_usage: Option&lt;Option&lt;FutureUsageTypes&gt;&gt;, has_payer_document: Option&lt;Option&lt;bool&gt;&gt;, expired: Option&lt;Option&lt;bool&gt;&gt;, broken: Option&lt;Option&lt;bool&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPaymentMethodsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -24875,9 +27148,9 @@ async fn main() {
                 first: Some(42),
                 last: Some(42),
                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 after: None,
                 before: None,
                 direction: None,
@@ -24939,15 +27212,7 @@ async fn main() {
 <dl>
 <dd>
 
-**member_id:** `Option<String>` — The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+**member_id:** `Option<String>` — The unique identifier of the member to list payment methods for. Omit this and account_id to list your own saved payment methods.
     
 </dd>
 </dl>
@@ -25031,6 +27296,14 @@ async fn main() {
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -25039,7 +27312,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">retrieve</a>(id: String, company_id: Option&lt;Option&lt;String&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;PaymentMethod, ApiError&gt;</code></summary>
+<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">retrieve</a>(id: String, member_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;PaymentMethod, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -25051,7 +27324,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retrieves the details of an existing payment method. Addresses a member's wallet when member_id or company_id is given, otherwise your own.
+Retrieves the details of an existing payment method. Addresses a member's wallet when member_id or account_id is given, otherwise your own.
 
 Required permissions:
  - `member:payment_methods:read`
@@ -25083,8 +27356,8 @@ async fn main() {
         .retrieve(
             &"payt_xxxxxxxxxxxxx".to_string(),
             &PaymentMethodsRetrieveQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -25113,7 +27386,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+**member_id:** `Option<String>` — The unique identifier of the member. Provide either this or account_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -25121,7 +27394,7 @@ async fn main() {
 <dl>
 <dd>
 
-**member_id:** `Option<String>` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+**account_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -25133,7 +27406,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">delete_payment_method</a>(id: String, company_id: Option&lt;Option&lt;String&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;bool, ApiError&gt;</code></summary>
+<details><summary><code>client.payment_methods.<a href="/src/api/resources/payment_methods/client.rs">delete_payment_method</a>(id: String, member_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;bool, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -25177,8 +27450,8 @@ async fn main() {
         .delete_payment_method(
             &"payt_xxxxxxxxxxxxx".to_string(),
             &DeletePaymentMethodQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 member_id: Some("mber_xxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -25207,7 +27480,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+**member_id:** `Option<String>` — The unique identifier of the member. Provide either this or account_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -25215,7 +27488,697 @@ async fn main() {
 <dl>
 <dd>
 
-**member_id:** `Option<String>` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+**account_id:** `Option<String>` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Payment Rules
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListPaymentRulesRequestStatus&gt;&gt;, action: Option&lt;Option&lt;ListPaymentRulesRequestAction&gt;&gt;, order: Option&lt;Option&lt;ListPaymentRulesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPaymentRulesRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPaymentRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .list(
+            &PaymentRulesListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Only return rules belonging to this account. Defaults to the account the request is acting for.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListPaymentRulesRequestStatus>` — Only return rules with this status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**action:** `Option<ListPaymentRulesRequestAction>` — Only return rules that take this action.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListPaymentRulesRequestOrder>` — The field to sort by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListPaymentRulesRequestDirection>` — The sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">create</a>(request: CreatePaymentRulesRequest) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .create(
+            &CreatePaymentRulesRequest {
+                action: CreatePaymentRulesRequestAction::Allow,
+                conditions: CreatePaymentRulesRequestConditions {
+                    all: vec![CreatePaymentRulesRequestConditionsAllItem {
+                        field: CreatePaymentRulesRequestConditionsAllItemField::RiskScore,
+                        operator: CreatePaymentRulesRequestConditionsAllItemOperator::Gte,
+                        value: PaymentRuleConditionValue::Integer(70),
+                    }],
+                    ..Default::default()
+                },
+                name: "Review risky cards".to_string(),
+                account_id: None,
+                metadata: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The account to create the rule on. Defaults to the account the request is acting for.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**action:** `CreatePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conditions:** `CreatePaymentRulesRequestConditions` — The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` — Custom string-to-string values for your integration. Maximum 50 keys, 40 characters per key, 500 characters per value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` — A name for this rule. Up to 255 characters.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">list_fields</a>() -> Result&lt;ListFieldsPaymentRulesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Small and returned in full on one page.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payment_rules.list_fields(None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">retrieve</a>(id: String) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payment_rules.retrieve(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">delete</a>(id: String) -> Result&lt;(), ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+The rule stops applying to new payments and is kept, so the payments it already decided still name it.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payment_rules.delete(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">update</a>(id: String, request: UpdatePaymentRulesRequest) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes the rule's name or metadata, keeping its ID and everything recorded against it. What the rule *does* is fixed once created, so the payments it decided keep naming the rule that decided them; use replace to change that.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .update(
+            &"id".to_string(),
+            &UpdatePaymentRulesRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` — Custom string-to-string values for your integration. Maximum 50 keys, 40 characters per key, 500 characters per value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `Option<String>` — A name for this rule. Up to 255 characters.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">activate</a>(id: String) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payment_rules.activate(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">deactivate</a>(id: String) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+The rule stops applying to new payments. It keeps its ID and can be activated again.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .deactivate(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payment_rules.<a href="/src/api/resources/payment_rules/client.rs">replace</a>(id: String, request: ReplacePaymentRulesRequest) -> Result&lt;PaymentRule, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes this rule and creates its successor in one step. The successor carries a new ID and the metadata of the rule it replaced,.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payment_rules
+        .replace(
+            &"id".to_string(),
+            &ReplacePaymentRulesRequest {
+                action: ReplacePaymentRulesRequestAction::Allow,
+                conditions: ReplacePaymentRulesRequestConditions {
+                    all: vec![ReplacePaymentRulesRequestConditionsAllItem {
+                        field: ReplacePaymentRulesRequestConditionsAllItemField::RiskScore,
+                        operator: ReplacePaymentRulesRequestConditionsAllItemOperator::Gte,
+                        value: PaymentRuleConditionValue::Integer(70),
+                    }],
+                    ..Default::default()
+                },
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment rule ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**action:** `ReplacePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conditions:** `ReplacePaymentRulesRequestConditions` — The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
     
 </dd>
 </dl>
@@ -25228,7 +28191,7 @@ async fn main() {
 </details>
 
 ## Payments
-<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;ReceiptV2Order&gt;&gt;, include_free: Option&lt;Option&lt;bool&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, updated_before: Option&lt;Option&lt;String&gt;&gt;, updated_after: Option&lt;Option&lt;String&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPaymentsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListPaymentsRequestStatus&gt;&gt;, billing_reason: Option&lt;Option&lt;ListPaymentsRequestBillingReason&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, member_id: Option&lt;Option&lt;String&gt;&gt;, membership_id: Option&lt;Option&lt;String&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, plan_id: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListPaymentsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPaymentsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPaymentsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -25240,17 +28203,7 @@ async fn main() {
 <dl>
 <dd>
 
-Returns a paginated list of payments for the actor in context, with optional filtering by product, plan, status, billing reason, currency, and creation date.
-
-Required permissions:
- - `payment:basic:read`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
+Lists payments, newest first. Without filters this is every payment the caller can read: a company credential's own account, or for a user every account they can read payments for. Filters narrow by account, buyer, product, plan, membership, status, billing reason, currency, and creation window. Filtering by `billing_reason=subscription_cycle` also matches renewals recorded as `subscription_update`. `settlement_time_at` is null on list rows — retrieve the payment for it.
 </dd>
 </dl>
 </dd>
@@ -25278,26 +28231,7 @@ async fn main() {
         .payments
         .list(
             &PaymentsListQueryRequest {
-                first: Some(42),
-                last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-                created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                updated_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                updated_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                after: None,
-                before: None,
-                direction: None,
-                order: None,
-                product_ids: vec![],
-                billing_reasons: vec![],
-                currencies: vec![],
-                plan_ids: vec![],
-                statuses: vec![],
-                substatuses: vec![],
-                include_free: None,
-                query: None,
-                checkout_configuration_ids: vec![],
+                ..Default::default()
             },
             None,
         )
@@ -25317,7 +28251,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
+**account_id:** `Option<String>` — Only payments charged by this account, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -25325,7 +28259,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
+**status:** `Option<ListPaymentsRequestStatus>` — Only payments in this lifecycle state.
     
 </dd>
 </dl>
@@ -25333,7 +28267,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
+**billing_reason:** `Option<ListPaymentsRequestBillingReason>` — Only payments charged for this reason.
     
 </dd>
 </dl>
@@ -25341,7 +28275,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
+**currency:** `Option<String>` — Only payments presented in this three-letter currency, such as `usd`.
     
 </dd>
 </dl>
@@ -25349,111 +28283,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to list payments for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**direction:** `Option<Direction>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**order:** `Option<ReceiptV2Order>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**product_ids:** `Option<String>` — Filter payments to only those associated with these specific product identifiers.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**billing_reasons:** `Option<BillingReasons>` — Filter payments by their billing reason.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**currencies:** `Option<Currencies>` — Filter payments by their currency code.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**plan_ids:** `Option<String>` — Filter payments to only those associated with these specific plan identifiers.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**statuses:** `Option<ReceiptStatus>` — Filter payments by their current status.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**substatuses:** `Option<FriendlyReceiptStatus>` — Filter payments by their current substatus for more granular filtering.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**include_free:** `Option<bool>` — Whether to include payments with a zero amount.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_before:** `Option<String>` — Only return payments created before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_after:** `Option<String>` — Only return payments created after this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**updated_before:** `Option<String>` — Only return payments last updated before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**updated_after:** `Option<String>` — Only return payments last updated after this timestamp.
+**user_id:** `Option<String>` — Only payments made by this buyer, prefixed `user_`.
     
 </dd>
 </dl>
@@ -25469,7 +28299,95 @@ async fn main() {
 <dl>
 <dd>
 
-**checkout_configuration_ids:** `Option<String>` — Only return payments from these checkout configurations.
+**member_id:** `Option<String>` — Only payments made by this member, prefixed `mber_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**membership_id:** `Option<String>` — Only payments billed under this membership, prefixed `mem_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**product_id:** `Option<String>` — Only payments for this product, prefixed `prod_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan_id:** `Option<String>` — Only payments priced by this plan, prefixed `plan_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_before:** `Option<String>` — Only payments created before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_after:** `Option<String>` — Only payments created after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListPaymentsRequestOrder>` — The field to sort by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListPaymentsRequestDirection>` — The sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -25481,7 +28399,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">create</a>(request: CreatePaymentsRequest) -> Result&lt;CreatePaymentsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">create</a>(request: CreatePaymentsRequest) -> Result&lt;Payment, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -25493,22 +28411,7 @@ async fn main() {
 <dl>
 <dd>
 
-Charge an existing member off-session using one of their stored payment methods. You can provide an existing plan, or create a new one in-line. This endpoint will respond with a payment object immediately, but the payment is processed asynchronously in the background. Use webhooks to be notified when the payment succeeds or fails.
-
-Required permissions:
- - `payment:charge`
- - `plan:create`
- - `access_pass:create`
- - `access_pass:update`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+Charges a buyer for one or more plans. Pass a payment method already on file (`member_id` and `payment_method_id`), or a `confirmation_token` describing a method the buyer just supplied. Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and, for a confirmation-token payment, what the buyer must still do. Pass `line_items` for one or more plans with quantities, `plan_id` for an existing plan, or `plan` to find or create one inline. These inputs are mutually exclusive.
 </dd>
 </dl>
 </dd>
@@ -25535,173 +28438,22 @@ async fn main() {
     client
         .payments
         .create(
-            &CreatePaymentsRequest::CreatePaymentsRequestZero(CreatePaymentsRequestZero {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                confirmation_token: "confirmation_token".to_string(),
+            &CreatePaymentsRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                auto_capture_after_minutes: None,
+                capture: None,
+                confirmation_token: None,
                 email: None,
+                line_items: None,
+                member_id: None,
                 metadata: None,
                 payment_method_id: None,
-                plan: CreatePaymentsRequestZeroPlan {
-                    application_fee_amount: None,
-                    billing_period: None,
-                    currency: Currencies::Usd,
-                    description: None,
-                    expiration_days: None,
-                    force_create_new_plan: None,
-                    initial_price: None,
-                    internal_notes: None,
-                    plan_type: None,
-                    product: None,
-                    product_id: None,
-                    renewal_price: None,
-                    title: None,
-                    trial_period_days: None,
-                    visibility: None,
-                },
+                plan: None,
+                plan_id: None,
                 promo_code_id: None,
                 return_url: None,
-            }),
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">retrieve</a>(id: String) -> Result&lt;RetrievePaymentsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Retrieves the details of an existing payment.
-
-Required permissions:
- - `payment:basic:read`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .payments
-        .retrieve(&"pay_xxxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the payment.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">list_fees</a>(id: String, after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;) -> Result&lt;ListFeesPaymentsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns the list of fees associated with a specific payment, including platform fees and processing fees.
-
-Required permissions:
- - `payment:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .payments
-        .list_fees(
-            &"pay_xxxxxxxxxxxxxx".to_string(),
-            &ListFeesQueryRequest {
-                first: Some(42),
-                last: Some(42),
-                ..Default::default()
+                shipping_address: None,
+                statement_descriptor: None,
             },
             None,
         )
@@ -25721,7 +28473,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the payment to list fees for.
+**account_id:** `String` — The account to charge for, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -25729,7 +28481,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
+**auto_capture_after_minutes:** `Option<Option<i64>>` — Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
     
 </dd>
 </dl>
@@ -25737,7 +28489,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
+**capture:** `Option<Option<bool>>` — Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
     
 </dd>
 </dl>
@@ -25745,7 +28497,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
+**confirmation_token:** `Option<Option<String>>` — A confirmation token describing a payment method the buyer just supplied. Provide this instead of `member_id` and `payment_method_id`; the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete — poll the payment's status for what to do next.
     
 </dd>
 </dl>
@@ -25753,7 +28505,279 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
+**email:** `Option<Option<String>>` — Overrides the buyer email carried on the confirmation token, resolving or creating the user the payment belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**line_items:** `Option<Vec<CreatePaymentsRequestLineItemsItem>>` — What the buyer is purchasing. One entry charges that plan; several entries form a cart, which requires every plan to be a compatible plan from this account in the same currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**member_id:** `Option<Option<String>>` — The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<Option<std::collections::HashMap<String, Option<String>>>>` — Custom metadata to attach to the payment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payment_method_id:** `Option<Option<String>>` — The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan:** `Option<CreatePaymentsRequestPlan>` — Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan_id:** `Option<String>` — The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**promo_code_id:** `Option<Option<String>>` — An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**return_url:** `Option<Option<String>>` — Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**shipping_address:** `Option<Option<CreatePaymentsRequestShippingAddress>>` — Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**statement_descriptor:** `Option<Option<String>>` — Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">retrieve</a>(id: String) -> Result&lt;Payment, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one payment, including every purchased line item with its quantity and subtotal. Related records are ids — resolve a plan, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payments.retrieve(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment to retrieve, prefixed `pay_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">capture</a>(id: String) -> Result&lt;PaymentStatus, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Captures the full amount of a card payment created with `capture: false`. The payment must still be in `requires_capture` before `capture_expires_at`. Partial capture, multiple captures, capturing more than the authorized amount, and tips are not supported.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payments.capture(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">list_fees</a>(id: String) -> Result&lt;ListFeesPaymentsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the fee breakdown of one payment — Whop's fee, processing, affiliate and other lines — each in the currency it was collected in and converted to the payment's settlement currency. The list is complete in one page.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payments.list_fees(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment whose fees to list, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -25777,19 +28801,7 @@ async fn main() {
 <dl>
 <dd>
 
-Issue a full or partial refund for a payment. The refund is processed through the original payment processor and the membership status is updated accordingly.
-
-Required permissions:
- - `payment:manage`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+Issues a full or partial refund for a payment. The refund is processed through the original payment processor and the membership status is updated accordingly.
 </dd>
 </dl>
 </dd>
@@ -25816,7 +28828,7 @@ async fn main() {
     client
         .payments
         .refund(
-            &"pay_xxxxxxxxxxxxxx".to_string(),
+            &"id".to_string(),
             &RefundPaymentsRequest {
                 ..Default::default()
             },
@@ -25838,7 +28850,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the payment to refund.
+**id:** `String` — The payment to refund, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -25870,19 +28882,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retry a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
-
-Required permissions:
- - `payment:manage`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+Retries a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
 </dd>
 </dl>
 </dd>
@@ -25906,10 +28906,7 @@ async fn main() {
         ..Default::default()
     };
     let client = Whop::new(config).expect("Failed to build client");
-    client
-        .payments
-        .retry(&"pay_xxxxxxxxxxxxxx".to_string(), None)
-        .await;
+    client.payments.retry(&"id".to_string(), None).await;
 }
 ```
 </dd>
@@ -25925,7 +28922,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the payment to retry.
+**id:** `String` — The payment to retry, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -25949,19 +28946,71 @@ async fn main() {
 <dl>
 <dd>
 
-Void a payment that has not yet been settled. Voiding cancels the payment before it is captured by the payment processor.
+Voids a payment that has not yet been settled. Voiding cancels the payment before it is captured by the payment processor.
+</dd>
+</dl>
+</dd>
+</dl>
 
-Required permissions:
- - `payment:manage`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.payments.void(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The payment to void, prefixed `pay_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payments.<a href="/src/api/resources/payments/client.rs">resume</a>(payment_id: String) -> Result&lt;PaymentStatus, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts a fresh on-session attempt with the saved card for a subscription renewal that is waiting on the customer to authenticate; the bank's step then arrives in `next_action` on the following status reads. Only the payment's own customer may call it — with the payment's `client_secret` or their own session — and it is a no-op for any payment that is not a parked renewal.
 </dd>
 </dl>
 </dd>
@@ -25987,7 +29036,7 @@ async fn main() {
     let client = Whop::new(config).expect("Failed to build client");
     client
         .payments
-        .void(&"pay_xxxxxxxxxxxxxx".to_string(), None)
+        .resume(&"payment_id".to_string(), None)
         .await;
 }
 ```
@@ -26004,7 +29053,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the payment to void.
+**payment_id:** `String` 
     
 </dd>
 </dl>
@@ -26236,7 +29285,7 @@ async fn main() {
 </details>
 
 ## PayoutMethods
-<details><summary><code>client.payout_methods.<a href="/src/api/resources/payout_methods/client.rs">list_payout_method</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;) -> Result&lt;ListPayoutMethodResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.payout_methods.<a href="/src/api/resources/payout_methods/client.rs">list_payout_method</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListPayoutMethodResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -26281,7 +29330,7 @@ async fn main() {
             &ListPayoutMethodQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
             },
@@ -26335,7 +29384,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list payout methods for.
+**account_id:** `String` — The unique identifier of the company to list payout methods for.
     
 </dd>
 </dl>
@@ -26542,7 +29591,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of payouts to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -26550,7 +29599,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -26558,7 +29607,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of payouts to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -26566,7 +29615,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -26578,7 +29627,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.payouts.<a href="/src/api/resources/payouts/client.rs">create</a>(request: CreatePayoutsRequestBody) -> Result&lt;CreatePayoutsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.payouts.<a href="/src/api/resources/payouts/client.rs">create</a>(request: CreatePayoutsRequest) -> Result&lt;CreatePayoutsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -26617,12 +29666,263 @@ async fn main() {
     client
         .payouts
         .create(
-            &CreatePayoutsRequestBody::Unknown(serde_json::json!({"key":"value"})),
+            &CreatePayoutsRequest {
+                amount: 50.0,
+                payout_method_id: "potk_xxxxxxxxxxxxxx".to_string(),
+                account_id: None,
+                acknowledge_bank_warning: None,
+                currency: None,
+                metadata: None,
+                notes: None,
+                platform_covers_fees: None,
+                quote_token: None,
+                speed: None,
+                statement_descriptor: None,
+                user_id: None,
+            },
             None,
         )
         .await;
 }
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**acknowledge_bank_warning:** `Option<bool>` — Set to `true` to continue when the destination bank could not confirm the payout method account holder's name, or `false` to have the payout refused in that case so the account holder can correct the name or link their bank first. Omitting the field skips the warning gate — a client that cannot show the warning keeps its pre-gate behavior.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**amount:** `String` — The amount to pay out in the specified currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `Option<String>` — The currency to pay out. Balances are held per currency and the payout draws only from the balance in this currency, so match the currency the funds arrived in — for example `cad` for an account funded by CAD transfers. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, String>>` — Key-value data to attach to the payout, echoed on every read and in webhook payloads. At most 50 keys, key names up to 40 characters, string values up to 500 characters. Never store secrets or regulated personal data here — webhook bodies are retained for delivery inspection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notes:** `Option<Option<String>>` — Free-form notes to attach to the payout, with a maximum of 255 characters. Omit or pass `null` for no notes.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payout_method_id:** `String` — The saved payout method to deliver to (a potk_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform_covers_fees:** `Option<bool>` — Whether the parent platform covers the payout fee instead of the account being paid out. Omit to use the platform's configured fee coverage policy; pass `false` to opt out of it. `true` is only accepted for accounts that belong to a platform, and requires the platform's policy to cover this payout method's category or a caller authorized to manage the platform's child account fees.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**quote_token:** `Option<String>` — The server-signed quote_token returned by POST /payouts/quotes. Required when the ledger account's payout_quote_required is true; a payout without it is refused with the invalid_payout_quote error type. When provided, Whop will not commit a provider payout below the destination amount the quote showed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**speed:** `Option<CreatePayoutsRequestSpeed>` — How fast the funds should arrive. `instant` is only accepted when the account and payout method are eligible; otherwise the payout is rejected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**statement_descriptor:** `Option<Option<String>>` — Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `Option<String>` — User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.payouts.<a href="/src/api/resources/payouts/client.rs">create_quote</a>(request: CreateQuotePayoutsRequest) -> Result&lt;CreateQuotePayoutsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a short-lived, provider-backed quote for a payout. No funds move until the returned quote_token is submitted to POST /payouts. An Idempotency-Key header is required.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payouts
+        .create_quote(
+            &CreateQuotePayoutsRequest {
+                amount: 6762.41,
+                payout_method_id: "potk_xxxxxxxxxxxxxx".to_string(),
+                account_id: None,
+                currency: None,
+                platform_covers_fees: None,
+                speed: None,
+                statement_descriptor: None,
+                user_id: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**amount:** `String` — The amount to pay out in the specified currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `Option<String>` — The currency to pay out. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payout_method_id:** `String` — The saved payout method to quote (a potk_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform_covers_fees:** `Option<bool>` — Whether the parent platform covers the payout fee instead of the account being paid out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**speed:** `Option<CreateQuotePayoutsRequestSpeed>` — How fast the funds should arrive.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**statement_descriptor:** `Option<Option<String>>` — Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Omit or pass `null` to use the default descriptor.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `Option<String>` — User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+    
 </dd>
 </dl>
 </dd>
@@ -26722,8 +30022,89 @@ async fn main() {
 </dl>
 </details>
 
+<details><summary><code>client.payouts.<a href="/src/api/resources/payouts/client.rs">cancel</a>(id: String, user_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;CancelPayoutsResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Cancels a payout that is still in review and returns the funds, fees included, to the balance. A payout can be canceled while its status is `in_review`. A `requested` payout is still being prepared (its funds may be converting) and answers 409 until it reaches review; from `processing` on, the money is on its way and the answer is 409 with error type `not_cancelable`. Canceling a payout that is already canceled succeeds and returns it unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .payouts
+        .cancel(
+            &"id".to_string(),
+            &CancelQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Payout ID, prefixed `wdrl_`, or the `cofr_` payout request ID returned by `POST /payouts` — both cancel the same payout.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `Option<String>` — Owning user ID, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## People
-<details><summary><code>client.people.<a href="/src/api/resources/people/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, attribution_model: Option&lt;Option&lt;ListPeopleRequestAttributionModel&gt;&gt;, custom_event: Option&lt;Option&lt;String&gt;&gt;, event_from: Option&lt;Option&lt;String&gt;&gt;, event_to: Option&lt;Option&lt;String&gt;&gt;, audience_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, email: Option&lt;Option&lt;String&gt;&gt;, phone: Option&lt;Option&lt;String&gt;&gt;, country: Option&lt;Option&lt;String&gt;&gt;, has_purchased: Option&lt;Option&lt;bool&gt;&gt;, contactable: Option&lt;Option&lt;bool&gt;&gt;, first_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, last_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, first_seen_after: Option&lt;Option&lt;String&gt;&gt;, first_seen_before: Option&lt;Option&lt;String&gt;&gt;, last_seen_after: Option&lt;Option&lt;String&gt;&gt;, last_seen_before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListPeopleRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPeopleRequestDirection&gt;&gt;) -> Result&lt;ListPeopleResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.people.<a href="/src/api/resources/people/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, attribution_model: Option&lt;Option&lt;ListPeopleRequestAttributionModel&gt;&gt;, custom_event: Option&lt;Option&lt;String&gt;&gt;, event_within_days: Option&lt;Option&lt;i64&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, event_from: Option&lt;Option&lt;String&gt;&gt;, event_to: Option&lt;Option&lt;String&gt;&gt;, audience_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, email: Option&lt;Option&lt;String&gt;&gt;, phone: Option&lt;Option&lt;String&gt;&gt;, country: Option&lt;Option&lt;String&gt;&gt;, has_purchased: Option&lt;Option&lt;bool&gt;&gt;, contactable: Option&lt;Option&lt;bool&gt;&gt;, first_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, last_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, first_seen_after: Option&lt;Option&lt;String&gt;&gt;, first_seen_before: Option&lt;Option&lt;String&gt;&gt;, last_seen_after: Option&lt;Option&lt;String&gt;&gt;, last_seen_before: Option&lt;Option&lt;String&gt;&gt;, ltv_gt: Option&lt;Option&lt;f64&gt;&gt;, ltv_gte: Option&lt;Option&lt;f64&gt;&gt;, ltv_lt: Option&lt;Option&lt;f64&gt;&gt;, ltv_lte: Option&lt;Option&lt;f64&gt;&gt;, aov_gt: Option&lt;Option&lt;f64&gt;&gt;, aov_gte: Option&lt;Option&lt;f64&gt;&gt;, aov_lt: Option&lt;Option&lt;f64&gt;&gt;, aov_lte: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_gt: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_gte: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_lt: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_lte: Option&lt;Option&lt;f64&gt;&gt;, event_count_gt: Option&lt;Option&lt;f64&gt;&gt;, event_count_gte: Option&lt;Option&lt;f64&gt;&gt;, event_count_lt: Option&lt;Option&lt;f64&gt;&gt;, event_count_lte: Option&lt;Option&lt;f64&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListPeopleRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListPeopleRequestDirection&gt;&gt;) -> Result&lt;ListPeopleResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -26769,6 +30150,9 @@ async fn main() {
                 query: None,
                 attribution_model: None,
                 custom_event: None,
+                event_within_days: None,
+                from: None,
+                to: None,
                 event_from: None,
                 event_to: None,
                 audience_id: None,
@@ -26784,6 +30168,22 @@ async fn main() {
                 first_seen_before: None,
                 last_seen_after: None,
                 last_seen_before: None,
+                ltv_gt: None,
+                ltv_gte: None,
+                ltv_lt: None,
+                ltv_lte: None,
+                aov_gt: None,
+                aov_gte: None,
+                aov_lt: None,
+                aov_lte: None,
+                purchase_count_gt: None,
+                purchase_count_gte: None,
+                purchase_count_lt: None,
+                purchase_count_lte: None,
+                event_count_gt: None,
+                event_count_gte: None,
+                event_count_lt: None,
+                event_count_lte: None,
                 first: None,
                 after: None,
                 before: None,
@@ -26856,7 +30256,7 @@ async fn main() {
 <dl>
 <dd>
 
-**event_from:** `Option<String>` — With event_to plus an event or source filter, switches to exact-population mode: person ids are resolved and paginated on the events side within this window (the same query the people metric counts), then hydrated per page.
+**event_within_days:** `Option<i64>` — Match activity within a rolling number of days. Cannot be combined with event_from/event_to.
     
 </dd>
 </dl>
@@ -26864,7 +30264,31 @@ async fn main() {
 <dl>
 <dd>
 
-**event_to:** `Option<String>` — The inclusive end of the event window for exact-population mode.
+**from:** `Option<String>` — Inclusive activity-window start. Alias for event_from.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to:** `Option<String>` — Inclusive activity-window end. Alias for event_to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_from:** `Option<String>` — The inclusive start of the matching activity window.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_to:** `Option<String>` — The inclusive end of the matching activity window, for both stats drilldowns and saved audiences.
     
 </dd>
 </dl>
@@ -26904,7 +30328,7 @@ async fn main() {
 <dl>
 <dd>
 
-**country:** `Option<String>` — Only include people whose most recent visit came from this ISO 3166-1 alpha-2 country code.
+**country:** `Option<String>` — Only include people with activity from this ISO 3166-1 alpha-2 country code.
     
 </dd>
 </dl>
@@ -26976,7 +30400,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of people to return (default 100, max 100).
+**ltv_gt:** `Option<f64>` — Select people whose lifetime ltv is greater than this value. LTV and AOV are in USD.
     
 </dd>
 </dl>
@@ -26984,7 +30408,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor for fetching people after a previous page.
+**ltv_gte:** `Option<f64>` — Select people whose lifetime ltv is at least this value. LTV and AOV are in USD.
     
 </dd>
 </dl>
@@ -26992,7 +30416,135 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor for fetching people before a later page.
+**ltv_lt:** `Option<f64>` — Select people whose lifetime ltv is less than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_lte:** `Option<f64>` — Select people whose lifetime ltv is at most this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_gt:** `Option<f64>` — Select people whose lifetime aov is greater than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_gte:** `Option<f64>` — Select people whose lifetime aov is at least this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_lt:** `Option<f64>` — Select people whose lifetime aov is less than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_lte:** `Option<f64>` — Select people whose lifetime aov is at most this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_gt:** `Option<f64>` — Select people whose lifetime purchase_count is greater than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_gte:** `Option<f64>` — Select people whose lifetime purchase_count is at least this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_lt:** `Option<f64>` — Select people whose lifetime purchase_count is less than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_lte:** `Option<f64>` — Select people whose lifetime purchase_count is at most this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_gt:** `Option<f64>` — Select people whose lifetime event_count is greater than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_gte:** `Option<f64>` — Select people whose lifetime event_count is at least this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_lt:** `Option<f64>` — Select people whose lifetime event_count is less than this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_lte:** `Option<f64>` — Select people whose lifetime event_count is at most this value. LTV and AOV are in USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -27184,7 +30736,7 @@ async fn main() {
 </details>
 
 ## Plans
-<details><summary><code>client.plans.<a href="/src/api/resources/plans/client.rs">list</a>(account_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;ListPlansRequestDirection&gt;&gt;, order: Option&lt;Option&lt;ListPlansRequestOrder&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPlansResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.plans.<a href="/src/api/resources/plans/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;ListPlansRequestDirection&gt;&gt;, order: Option&lt;Option&lt;ListPlansRequestOrder&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListPlansResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -27196,7 +30748,7 @@ async fn main() {
 <dl>
 <dd>
 
-Returns a paginated list of plans belonging to an account, with optional filtering by visibility, type, release method, and product.
+Returns a paginated list of plans. Omit `account_id` and pass `product_ids` to list a product's public buyable plans.
 </dd>
 </dl>
 </dd>
@@ -27224,11 +30776,11 @@ async fn main() {
         .plans
         .list(
             &PlansListQueryRequest {
-                account_id: "account_id".to_string(),
                 release_methods: vec![Some("buy_now".to_string())],
                 visibilities: vec![Some("visible".to_string())],
                 plan_types: vec![Some("renewal".to_string())],
                 product_ids: vec![Some("prod_xxxxxxxxxxxxxx".to_string())],
+                account_id: None,
                 direction: None,
                 order: None,
                 created_before: None,
@@ -27256,7 +30808,7 @@ async fn main() {
 <dl>
 <dd>
 
-**account_id:** `String` — The unique identifier of the account to list plans for.
+**account_id:** `Option<String>` — The unique identifier of the account to list plans for. Required unless `product_ids` is provided for a public product-plan read.
     
 </dd>
 </dl>
@@ -27304,7 +30856,7 @@ async fn main() {
 <dl>
 <dd>
 
-**product_ids:** `Option<String>` — Filter to only plans belonging to these product identifiers.
+**product_ids:** `Option<String>` — Filter to only plans belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice plans are returned.
     
 </dd>
 </dl>
@@ -27328,7 +30880,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of plans to return (default and max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -27336,7 +30888,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns plans after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -27344,7 +30896,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of plans to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -27352,7 +30904,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns plans before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -27424,7 +30976,7 @@ async fn main() {
 <dl>
 <dd>
 
-**account_id:** `Option<String>` — The unique identifier of the account to create this plan for. Defaults to the caller's account.
+**account_id:** `Option<String>` — The unique identifier of the account to create this plan for. Required when authenticating as a user; an account API key supplies its own account.
     
 </dd>
 </dl>
@@ -27496,7 +31048,7 @@ async fn main() {
 <dl>
 <dd>
 
-**initial_price:** `Option<Option<f64>>` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+**initial_price:** `Option<Option<f64>>` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
     
 </dd>
 </dl>
@@ -27560,7 +31112,7 @@ async fn main() {
 <dl>
 <dd>
 
-**renewal_price:** `Option<Option<f64>>` — The amount charged each billing period for recurring plans, in the plan's currency.
+**renewal_price:** `Option<Option<f64>>` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
     
 </dd>
 </dl>
@@ -27584,7 +31136,7 @@ async fn main() {
 <dl>
 <dd>
 
-**three_ds_level:** `Option<Option<CreatePlansRequestThreeDsLevel>>` — 3D Secure behavior for this plan. Send `null` to inherit the account default.
+**three_ds_level:** `Option<Option<CreatePlansRequestThreeDsLevel>>` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
     
 </dd>
 </dl>
@@ -27704,7 +31256,7 @@ async fn main() {
 <dl>
 <dd>
 
-Permanently delete a plan from a product. Existing memberships on this plan will not be affected.
+Delete a plan from a product. It stops selling immediately; existing memberships on this plan will not be affected.
 </dd>
 </dl>
 </dd>
@@ -27905,7 +31457,7 @@ async fn main() {
 <dl>
 <dd>
 
-**initial_price:** `Option<Option<f64>>` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+**initial_price:** `Option<Option<f64>>` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
     
 </dd>
 </dl>
@@ -27961,7 +31513,7 @@ async fn main() {
 <dl>
 <dd>
 
-**renewal_price:** `Option<Option<f64>>` — The amount charged each billing period for recurring plans, in the plan's currency.
+**renewal_price:** `Option<Option<f64>>` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
     
 </dd>
 </dl>
@@ -27993,7 +31545,7 @@ async fn main() {
 <dl>
 <dd>
 
-**three_ds_level:** `Option<Option<UpdatePlansRequestThreeDsLevel>>` — 3D Secure behavior for this plan. Send `null` to inherit the account default.
+**three_ds_level:** `Option<Option<UpdatePlansRequestThreeDsLevel>>` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
     
 </dd>
 </dl>
@@ -28140,7 +31692,7 @@ async fn main() {
 </details>
 
 ## Products
-<details><summary><code>client.products.<a href="/src/api/resources/products/client.rs">list</a>(account_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;ListProductsRequestDirection&gt;&gt;, order: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListProductsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.products.<a href="/src/api/resources/products/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, query: Option&lt;Option&lt;String&gt;&gt;, marketplace_category_route: Option&lt;Option&lt;String&gt;&gt;, price_minimum: Option&lt;Option&lt;f64&gt;&gt;, price_maximum: Option&lt;Option&lt;f64&gt;&gt;, direction: Option&lt;Option&lt;ListProductsRequestDirection&gt;&gt;, order: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListProductsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -28152,7 +31704,7 @@ async fn main() {
 <dl>
 <dd>
 
-Returns a paginated list of products belonging to an account.
+Returns a paginated list of products. Omit `account_id` to search the public marketplace.
 </dd>
 </dl>
 </dd>
@@ -28180,9 +31732,14 @@ async fn main() {
         .products
         .list(
             &ProductsListQueryRequest {
-                account_id: "account_id".to_string(),
                 visibilities: vec![Some("visible".to_string())],
                 access_pass_types: vec![Some("regular".to_string())],
+                account_id: None,
+                query: None,
+                marketplace_category_route: None,
+                plan_types: vec![],
+                price_minimum: None,
+                price_maximum: None,
                 labels: vec![],
                 direction: None,
                 order: None,
@@ -28190,6 +31747,8 @@ async fn main() {
                 after: None,
                 last: None,
                 before: None,
+                created_after: None,
+                created_before: None,
             },
             None,
         )
@@ -28209,7 +31768,7 @@ async fn main() {
 <dl>
 <dd>
 
-**account_id:** `String` — The unique identifier of the account to list products for.
+**account_id:** `Option<String>` — The unique identifier of the account to list products for. Omit to search the public marketplace.
     
 </dd>
 </dl>
@@ -28217,7 +31776,47 @@ async fn main() {
 <dl>
 <dd>
 
-**visibilities:** `Option<String>` — Filter to only products matching these visibility states.
+**query:** `Option<String>` — Ranked search against product title and headline. Omit to browse by recency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**marketplace_category_route:** `Option<String>` — Only return marketplace products assigned to this category route, such as `trading`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan_types:** `Option<ListProductsRequestPlanTypesItem>` — Filter to products with a buyable plan of these billing models, such as `one_time` or `renewal`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**price_minimum:** `Option<f64>` — Only return products whose advertised buyable plan has a displayed price of at least this amount. Recurring plans use renewal price.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**price_maximum:** `Option<f64>` — Only return products whose advertised buyable plan has a displayed price of at most this amount. Recurring plans use renewal price.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**visibilities:** `Option<String>` — Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products.
     
 </dd>
 </dl>
@@ -28249,7 +31848,7 @@ async fn main() {
 <dl>
 <dd>
 
-**order:** `Option<String>` — The field to sort results by. Defaults to created_at.
+**order:** `Option<String>` — The field to sort results by. Account lists default to `created_at`. Marketplace lists default to `discoverable_at` and accept `created_at` or `discoverable_at`. Cannot be combined with `query`.
     
 </dd>
 </dl>
@@ -28257,7 +31856,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of products to return (default and max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -28265,7 +31864,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns products after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -28273,7 +31872,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of products to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -28281,7 +31880,23 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns products before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_after:** `Option<String>` — Only return products created after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_before:** `Option<String>` — Only return products created before this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -28340,6 +31955,7 @@ async fn main() {
                 custom_cta_url: None,
                 custom_statement_descriptor: None,
                 description: None,
+                gallery_images: None,
                 global_affiliate_percentage: None,
                 global_affiliate_status: None,
                 headline: None,
@@ -28412,6 +32028,14 @@ async fn main() {
 <dd>
 
 **description:** `Option<Option<String>>` — A written description displayed on the product page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**gallery_images:** `Option<Option<Vec<CreateProductsRequestGalleryImagesItem>>>` — Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
     
 </dd>
 </dl>
@@ -28539,7 +32163,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retrieves the details of an existing product. This endpoint is publicly accessible.
+Retrieves a product. Public — no credentials.
 </dd>
 </dl>
 </dd>
@@ -28740,6 +32364,14 @@ async fn main() {
 <dl>
 <dd>
 
+**gallery_images:** `Option<Option<Vec<UpdateProductsRequestGalleryImagesItem>>>` — Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **headline:** `Option<Option<String>>` — A short marketing headline for the product page.
     
 </dd>
@@ -28812,7 +32444,7 @@ async fn main() {
 <dl>
 <dd>
 
-Submits a product to the whop.com marketplace for review. The product moves to `pending_review`; a Whop reviewer approves it before it goes live.
+Submits a product to the whop.com marketplace for review. The product moves to `pending_review`; a Whop reviewer approves it before it goes live. Requires a logo, a headline, and at least one gallery image or video; the request fails naming whichever is missing.
 </dd>
 </dl>
 </dd>
@@ -29064,7 +32696,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of promo codes to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -29072,7 +32704,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -29080,7 +32712,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of promo codes to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -29088,7 +32720,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -29929,324 +33561,8 @@ async fn main() {
 </dl>
 </details>
 
-## Recommended Actions
-<details><summary><code>client.recommended_actions.<a href="/src/api/resources/recommended_actions/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListRecommendedActionsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Lists the recommended action chains for an account — short sequences of actions (create a product, price it, publish it) the account should run next, gated on what it already has.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .recommended_actions
-        .list(
-            &RecommendedActionsListQueryRequest {
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.recommended_actions.<a href="/src/api/resources/recommended_actions/client.rs">retrieve</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;AccountRecommendedActionChain, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Retrieves a recommended action chain by id, including chains that have already been run. Seeded chains are reconstructed from their hard-coded chain; generated chains are read from the account's stored chain, with each step's filled-in input.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .recommended_actions
-        .retrieve(
-            &"id".to_string(),
-            &RecommendedActionsRetrieveQueryRequest {
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Chain ID from the list endpoint, e.g. `rac_seed_start_selling_9f2c1a7b04`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.recommended_actions.<a href="/src/api/resources/recommended_actions/client.rs">run</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;RunRecommendedActionsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Records that the caller ran a recommended action chain. Nothing is executed server-side yet — the client follows the chain's step CTAs itself; this writes the `recommended_action_chain.executed` analytics event.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .recommended_actions
-        .run(
-            &"id".to_string(),
-            &RunQueryRequest {
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Chain ID from the list endpoint, e.g. `rac_seed_start_selling_9f2c1a7b04`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.recommended_actions.<a href="/src/api/resources/recommended_actions/client.rs">list_executions</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListExecutionsRecommendedActionsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Lists the per-step record of a recommended action chain the server ran — one entry per step in position order, each carrying its current status and, once the step completed, the API response it produced. A chain that was never run server-side returns an empty list.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .recommended_actions
-        .list_executions(
-            &"id".to_string(),
-            &ListExecutionsQueryRequest {
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — Chain ID from the list endpoint.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**account_id:** `Option<String>` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Refunds
-<details><summary><code>client.refunds.<a href="/src/api/resources/refunds/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, payment_id: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListRefundsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.refunds.<a href="/src/api/resources/refunds/client.rs">list</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, payment_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListRefundsRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListRefundsRequestDirection&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListRefundsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -30258,10 +33574,7 @@ async fn main() {
 <dl>
 <dd>
 
-Returns a paginated list of refunds, with optional filtering by payment, company, user, and creation date.
-
-Required permissions:
- - `payment:basic:read`
+Lists refunds, newest first. Without filters this is every refund the caller can read; narrow it to one payment with `payment_id`, one account with `account_id`, or one buyer with `user_id`.
 </dd>
 </dl>
 </dd>
@@ -30289,13 +33602,6 @@ async fn main() {
         .refunds
         .list(
             &RefundsListQueryRequest {
-                first: Some(42),
-                last: Some(42),
-                payment_id: Some("pay_xxxxxxxxxxxxxx".to_string()),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-                user_id: Some("user_xxxxxxxxxxxxx".to_string()),
-                created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 ..Default::default()
             },
             None,
@@ -30316,7 +33622,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
+**account_id:** `Option<String>` — Only refunds issued by this account, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -30324,7 +33630,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
+**payment_id:** `Option<String>` — Only refunds of this payment, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -30332,7 +33638,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
+**user_id:** `Option<String>` — Only refunds to this buyer, prefixed `user_`.
     
 </dd>
 </dl>
@@ -30340,7 +33646,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
+**created_before:** `Option<String>` — Only refunds requested before this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -30348,7 +33654,7 @@ async fn main() {
 <dl>
 <dd>
 
-**payment_id:** `Option<String>` — Filter refunds to only those associated with this specific payment.
+**created_after:** `Option<String>` — Only refunds requested after this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -30356,7 +33662,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — Filter refunds to only those belonging to this company.
+**order:** `Option<ListRefundsRequestOrder>` — The field to sort by.
     
 </dd>
 </dl>
@@ -30364,7 +33670,7 @@ async fn main() {
 <dl>
 <dd>
 
-**user_id:** `Option<String>` — Filter refunds to only those associated with this specific user.
+**direction:** `Option<ListRefundsRequestDirection>` — The sort direction.
     
 </dd>
 </dl>
@@ -30372,7 +33678,7 @@ async fn main() {
 <dl>
 <dd>
 
-**direction:** `Option<Direction>` 
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -30380,7 +33686,7 @@ async fn main() {
 <dl>
 <dd>
 
-**created_before:** `Option<String>` — Only return refunds created before this timestamp.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -30388,7 +33694,15 @@ async fn main() {
 <dl>
 <dd>
 
-**created_after:** `Option<String>` — Only return refunds created after this timestamp.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -30412,15 +33726,7 @@ async fn main() {
 <dl>
 <dd>
 
-Retrieves the details of an existing refund.
-
-Required permissions:
- - `payment:basic:read`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
+Returns one refund.
 </dd>
 </dl>
 </dd>
@@ -30444,10 +33750,7 @@ async fn main() {
         ..Default::default()
     };
     let client = Whop::new(config).expect("Failed to build client");
-    client
-        .refunds
-        .retrieve(&"rf_xxxxxxxxxxxxxxx".to_string(), None)
-        .await;
+    client.refunds.retrieve(&"id".to_string(), None).await;
 }
 ```
 </dd>
@@ -30463,7 +33766,7 @@ async fn main() {
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the refund.
+**id:** `String` — The refund to retrieve, prefixed `rf_`.
     
 </dd>
 </dl>
@@ -30564,7 +33867,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of cases to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -30572,7 +33875,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns cases after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -30580,7 +33883,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of cases to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -30588,7 +33891,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns cases before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -31306,7 +34609,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of events to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -31314,7 +34617,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns events after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -31322,7 +34625,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of events to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -31330,7 +34633,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns events before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -31801,7 +35104,7 @@ async fn main() {
 </details>
 
 ## Setup Intents
-<details><summary><code>client.setup_intents.<a href="/src/api/resources/setup_intents/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListSetupIntentsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.setup_intents.<a href="/src/api/resources/setup_intents/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;String&gt;) -> Result&lt;ListSetupIntentsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -31848,9 +35151,9 @@ async fn main() {
             &SetupIntentsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 after: None,
                 before: None,
                 direction: None,
@@ -31905,14 +35208,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list setup intents for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **direction:** `Option<Direction>` 
     
 </dd>
@@ -31933,6 +35228,14 @@ async fn main() {
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The unique identifier of the company to list setup intents for.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -31941,7 +35244,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.setup_intents.<a href="/src/api/resources/setup_intents/client.rs">create</a>(request: CreateSetupIntentsRequest) -> Result&lt;CreateSetupIntentsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.setup_intents.<a href="/src/api/resources/setup_intents/client.rs">create</a>(request: CreateSetupIntentsRequestBody) -> Result&lt;CreateSetupIntentsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -31985,9 +35288,9 @@ async fn main() {
     client
         .setup_intents
         .create(
-            &CreateSetupIntentsRequest::CreateSetupIntentsRequestConfirmationToken(
-                CreateSetupIntentsRequestConfirmationToken {
-                    company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+            &CreateSetupIntentsRequestBody::CreateSetupIntentsRequestBodyConfirmationToken(
+                CreateSetupIntentsRequestBodyConfirmationToken {
+                    account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                     confirmation_token: "ctok_xxxxxxxxxxxxxx".to_string(),
                     ..Default::default()
                 },
@@ -32354,7 +35657,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of shipments to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -32362,7 +35665,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns shipments after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -32370,7 +35673,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of shipments to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -32378,7 +35681,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns shipments before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -32736,7 +36039,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of social accounts to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -32744,7 +36047,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -32752,7 +36055,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of social accounts to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -32760,7 +36063,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -32800,7 +36103,7 @@ async fn main() {
 <dl>
 <dd>
 
-Creates or returns a Whop-managed Facebook page for an account.
+Creates or returns a Whop-managed Facebook page or TikTok account for an account.
 </dd>
 </dl>
 </dd>
@@ -32857,7 +36160,7 @@ async fn main() {
 <dl>
 <dd>
 
-**platform:** `CreateSocialAccountsRequestPlatform` — The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account).
+**platform:** `CreateSocialAccountsRequestPlatform` — The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
     
 </dd>
 </dl>
@@ -32910,8 +36213,8 @@ async fn main() {
         .connect(
             &ConnectSocialAccountsRequest {
                 platform: ConnectSocialAccountsRequestPlatform::MetaBusiness,
+                redirect_url: "https://example.com/settings/social-accounts".to_string(),
                 account_id: None,
-                redirect_url: None,
                 scopes: None,
             },
             None,
@@ -32940,7 +36243,7 @@ async fn main() {
 <dl>
 <dd>
 
-**platform:** `ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Supported options are `meta_business` and `tiktok`.
+**platform:** `ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
     
 </dd>
 </dl>
@@ -32948,7 +36251,7 @@ async fn main() {
 <dl>
 <dd>
 
-**redirect_url:** `Option<String>` — The Whop URL to redirect the user to after they finish connecting.
+**redirect_url:** `String` — Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. If the connection fails, the user is redirected with a `social_account_error` query param.
     
 </dd>
 </dl>
@@ -32956,7 +36259,7 @@ async fn main() {
 <dl>
 <dd>
 
-**scopes:** `Option<Vec<ConnectSocialAccountsRequestScopesItem>>` — Capabilities to grant for the connected social account. Use `advertise` when connecting a Meta Business or TikTok account for ads.
+**scopes:** `Option<Vec<ConnectSocialAccountsRequestScopesItem>>` — Capabilities to grant for the connected social account. `advertise` is required for both `meta_business` and `tiktok` connections — it is not conditional on whether you intend to run ads, and omitting it fails the request.
     
 </dd>
 </dl>
@@ -33226,7 +36529,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of posts to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -33234,7 +36537,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -33296,394 +36599,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">describe_stats</a>(resource: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;DescribeStatsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Describe available stats schema. Without resource returns root nodes and metrics. With resource returns node columns, associations, and available metrics.
-
-Required permissions:
- - `stats:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .stats
-        .describe_stats(
-            &DescribeStatsQueryRequest {
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-                user_id: Some("user_xxxxxxxxxxxxx".to_string()),
-                ..Default::default()
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**resource:** `Option<String>` — Resource path using : as separator (e.g., 'receipts', 'payments:membership', 'receipts:gross_revenue').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `Option<String>` — Scope query to a specific company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `Option<String>` — Scope query to a specific user.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">metric_stats</a>(resource: Option&lt;String&gt;, granularity: Option&lt;Option&lt;String&gt;&gt;, filters: Option&lt;Option&lt;std::collections::HashMap&lt;String, serde_json::Value&gt;&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;MetricStatsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Query an aggregated metric. Returns data grouped by period with optional breakdowns.
-
-Required permissions:
- - `stats:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .stats
-        .metric_stats(
-            &MetricStatsQueryRequest {
-                resource: "resource".to_string(),
-                from: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                to: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-                user_id: Some("user_xxxxxxxxxxxxx".to_string()),
-                granularity: None,
-                breakdowns: vec![],
-                filters: None,
-                time_zone: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**resource:** `String` — Metric resource using : as separator (e.g., 'receipts:gross_revenue', 'members:new_users').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**granularity:** `Option<String>` — Time granularity (daily, weekly, monthly).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**breakdowns:** `Option<String>` — Columns to break down the metric by.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**filters:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Key-value pairs to filter the data.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**time_zone:** `Option<String>` — IANA timezone for period bucketing (e.g. 'America/New_York'). Defaults to UTC. Only applies to ClickHouse metrics.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**from:** `Option<String>` — Start of time range (unix timestamp).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**to:** `Option<String>` — End of time range (unix timestamp).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `Option<String>` — Scope query to a specific company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `Option<String>` — Scope query to a specific user.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">raw_stats</a>(resource: Option&lt;String&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, limit: Option&lt;Option&lt;i64&gt;&gt;, cursor: Option&lt;Option&lt;String&gt;&gt;, sort: Option&lt;Option&lt;String&gt;&gt;, sort_direction: Option&lt;Option&lt;Direction&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;RawStatsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Query raw data from a resource. Returns paginated rows with all columns.
-
-Required permissions:
- - `stats:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .stats
-        .raw_stats(
-            &RawStatsQueryRequest {
-                resource: "resource".to_string(),
-                from: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                to: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                limit: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-                user_id: Some("user_xxxxxxxxxxxxx".to_string()),
-                cursor: None,
-                sort: None,
-                sort_direction: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**resource:** `String` — Resource path using : as separator (e.g., 'members', 'payments:membership').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**from:** `Option<String>` — Start of time range (unix timestamp).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**to:** `Option<String>` — End of time range (unix timestamp).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `Option<i64>` — Number of records to return (max 10000).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cursor:** `Option<String>` — Pagination cursor for next page.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**sort:** `Option<String>` — Column to sort by.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**sort_direction:** `Option<Direction>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**company_id:** `Option<String>` — Scope query to a specific company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `Option<String>` — Scope query to a specific user.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">retrieve</a>(metric: String, account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;String&gt;, to: Option&lt;String&gt;, interval: Option&lt;Option&lt;RetrieveStatsRequestInterval&gt;&gt;, breakdown_by: Option&lt;Option&lt;String&gt;&gt;, convert_to: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, payment_method: Option&lt;Option&lt;String&gt;&gt;, card_network: Option&lt;Option&lt;String&gt;&gt;, dispute_reason: Option&lt;Option&lt;String&gt;&gt;, source: Option&lt;Option&lt;String&gt;&gt;, hostname: Option&lt;Option&lt;String&gt;&gt;, page: Option&lt;Option&lt;String&gt;&gt;, device_type: Option&lt;Option&lt;String&gt;&gt;, country_code: Option&lt;Option&lt;String&gt;&gt;, event_name: Option&lt;Option&lt;String&gt;&gt;, event_type: Option&lt;Option&lt;RetrieveStatsRequestEventType&gt;&gt;, custom_name: Option&lt;Option&lt;String&gt;&gt;, segment: Option&lt;Option&lt;String&gt;&gt;, category: Option&lt;Option&lt;String&gt;&gt;, merchant: Option&lt;Option&lt;String&gt;&gt;, fee_type: Option&lt;Option&lt;String&gt;&gt;, product: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;String&gt;&gt;, access_level: Option&lt;Option&lt;String&gt;&gt;, most_recent_action: Option&lt;Option&lt;String&gt;&gt;, referred_user_id: Option&lt;Option&lt;String&gt;&gt;, snapshot_window: Option&lt;Option&lt;RetrieveStatsRequestSnapshotWindow&gt;&gt;, event: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;RetrieveStatsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.stats.<a href="/src/api/resources/stats/client.rs">retrieve</a>(metric: String, account_id: Option&lt;Option&lt;String&gt;&gt;, user_id: Option&lt;Option&lt;String&gt;&gt;, from: Option&lt;String&gt;, to: Option&lt;String&gt;, interval: Option&lt;Option&lt;RetrieveStatsRequestInterval&gt;&gt;, breakdown_by: Option&lt;Option&lt;String&gt;&gt;, convert_to: Option&lt;Option&lt;String&gt;&gt;, currency: Option&lt;Option&lt;String&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;, payment_method: Option&lt;Option&lt;String&gt;&gt;, card_network: Option&lt;Option&lt;String&gt;&gt;, dispute_reason: Option&lt;Option&lt;String&gt;&gt;, source: Option&lt;Option&lt;String&gt;&gt;, hostname: Option&lt;Option&lt;String&gt;&gt;, page: Option&lt;Option&lt;String&gt;&gt;, device_type: Option&lt;Option&lt;String&gt;&gt;, country_code: Option&lt;Option&lt;String&gt;&gt;, event_name: Option&lt;Option&lt;String&gt;&gt;, event_type: Option&lt;Option&lt;RetrieveStatsRequestEventType&gt;&gt;, custom_name: Option&lt;Option&lt;String&gt;&gt;, segment: Option&lt;Option&lt;String&gt;&gt;, category: Option&lt;Option&lt;String&gt;&gt;, merchant: Option&lt;Option&lt;String&gt;&gt;, fee_type: Option&lt;Option&lt;String&gt;&gt;, product: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;String&gt;&gt;, access_level: Option&lt;Option&lt;String&gt;&gt;, most_recent_action: Option&lt;Option&lt;String&gt;&gt;, referred_user_id: Option&lt;Option&lt;String&gt;&gt;, snapshot_window: Option&lt;Option&lt;RetrieveStatsRequestSnapshotWindow&gt;&gt;, event: Option&lt;Option&lt;String&gt;&gt;, contactable: Option&lt;Option&lt;bool&gt;&gt;, has_purchased: Option&lt;Option&lt;bool&gt;&gt;, first_seen_after: Option&lt;Option&lt;String&gt;&gt;, first_seen_before: Option&lt;Option&lt;String&gt;&gt;, last_seen_after: Option&lt;Option&lt;String&gt;&gt;, last_seen_before: Option&lt;Option&lt;String&gt;&gt;, first_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, last_seen_within_days: Option&lt;Option&lt;i64&gt;&gt;, known: Option&lt;Option&lt;bool&gt;&gt;, has_email: Option&lt;Option&lt;bool&gt;&gt;, has_phone: Option&lt;Option&lt;bool&gt;&gt;, ltv_gt: Option&lt;Option&lt;f64&gt;&gt;, ltv_gte: Option&lt;Option&lt;f64&gt;&gt;, ltv_lt: Option&lt;Option&lt;f64&gt;&gt;, ltv_lte: Option&lt;Option&lt;f64&gt;&gt;, aov_gt: Option&lt;Option&lt;f64&gt;&gt;, aov_gte: Option&lt;Option&lt;f64&gt;&gt;, aov_lt: Option&lt;Option&lt;f64&gt;&gt;, aov_lte: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_gt: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_gte: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_lt: Option&lt;Option&lt;f64&gt;&gt;, purchase_count_lte: Option&lt;Option&lt;f64&gt;&gt;, event_count_gt: Option&lt;Option&lt;f64&gt;&gt;, event_count_gte: Option&lt;Option&lt;f64&gt;&gt;, event_count_lt: Option&lt;Option&lt;f64&gt;&gt;, event_count_lte: Option&lt;Option&lt;f64&gt;&gt;) -> Result&lt;RetrieveStatsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -33758,6 +36674,33 @@ async fn main() {
                 referred_user_id: None,
                 snapshot_window: None,
                 event: None,
+                contactable: None,
+                has_purchased: None,
+                first_seen_after: None,
+                first_seen_before: None,
+                last_seen_after: None,
+                last_seen_before: None,
+                first_seen_within_days: None,
+                last_seen_within_days: None,
+                known: None,
+                has_email: None,
+                has_phone: None,
+                ltv_gt: None,
+                ltv_gte: None,
+                ltv_lt: None,
+                ltv_lte: None,
+                aov_gt: None,
+                aov_gte: None,
+                aov_lt: None,
+                aov_lte: None,
+                purchase_count_gt: None,
+                purchase_count_gte: None,
+                purchase_count_lt: None,
+                purchase_count_lte: None,
+                event_count_gt: None,
+                event_count_gte: None,
+                event_count_lt: None,
+                event_count_lte: None,
             },
             None,
         )
@@ -34049,7 +36992,223 @@ async fn main() {
 <dl>
 <dd>
 
-**event:** `Option<String>` — Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separate several to break the metric down by each event. Available on metrics that list event.
+**event:** `Option<String>` — Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**contactable:** `Option<bool>` — People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**has_purchased:** `Option<bool>` — People metric only: has_purchased equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first_seen_after:** `Option<String>` — People metric only: first_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first_seen_before:** `Option<String>` — People metric only: first_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last_seen_after:** `Option<String>` — People metric only: last_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last_seen_before:** `Option<String>` — People metric only: last_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first_seen_within_days:** `Option<i64>` — People metric only: first_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last_seen_within_days:** `Option<i64>` — People metric only: last_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**known:** `Option<bool>` — People metric only: known equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**has_email:** `Option<bool>` — People metric only: has_email equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**has_phone:** `Option<bool>` — People metric only: has_phone equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_gt:** `Option<f64>` — People metric only: ltv greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_gte:** `Option<f64>` — People metric only: ltv greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_lt:** `Option<f64>` — People metric only: ltv less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ltv_lte:** `Option<f64>` — People metric only: ltv less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_gt:** `Option<f64>` — People metric only: aov greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_gte:** `Option<f64>` — People metric only: aov greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_lt:** `Option<f64>` — People metric only: aov less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aov_lte:** `Option<f64>` — People metric only: aov less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_gt:** `Option<f64>` — People metric only: purchase_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_gte:** `Option<f64>` — People metric only: purchase_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_lt:** `Option<f64>` — People metric only: purchase_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purchase_count_lte:** `Option<f64>` — People metric only: purchase_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_gt:** `Option<f64>` — People metric only: event_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_gte:** `Option<f64>` — People metric only: event_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_lt:** `Option<f64>` — People metric only: event_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_count_lte:** `Option<f64>` — People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
     
 </dd>
 </dl>
@@ -34062,7 +37221,7 @@ async fn main() {
 </details>
 
 ## SupportChannels
-<details><summary><code>client.support_channels.<a href="/src/api/resources/support_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;Option&lt;String&gt;&gt;, view: Option&lt;Option&lt;SupportChannelView&gt;&gt;, open: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;MessageChannelOrder&gt;&gt;) -> Result&lt;ListSupportChannelsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.support_channels.<a href="/src/api/resources/support_channels/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, view: Option&lt;Option&lt;SupportChannelView&gt;&gt;, open: Option&lt;Option&lt;bool&gt;&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, order: Option&lt;Option&lt;MessageChannelOrder&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListSupportChannelsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -34107,7 +37266,7 @@ async fn main() {
             &SupportChannelsListQueryRequest {
                 first: Some(42),
                 last: Some(42),
-                company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+                account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
                 ..Default::default()
             },
             None,
@@ -34160,14 +37319,6 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `Option<String>` — The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **view:** `Option<SupportChannelView>` 
     
 </dd>
@@ -34193,6 +37344,14 @@ async fn main() {
 <dd>
 
 **order:** `Option<MessageChannelOrder>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
     
 </dd>
 </dl>
@@ -34247,7 +37406,7 @@ async fn main() {
         .support_channels
         .create(
             &CreateSupportChannelsRequest {
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 user_id: "user_xxxxxxxxxxxxx".to_string(),
                 custom_name: None,
                 notifications_enabled: None,
@@ -34270,7 +37429,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to create the support channel in.
+**account_id:** `String` — The unique identifier of the company to create the support channel in.
     
 </dd>
 </dl>
@@ -34928,7 +38087,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of members to return. Defaults to 20; maximum 100.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -34936,7 +38095,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor for the next page of members.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -34944,7 +38103,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of members to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -34952,7 +38111,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -35043,7 +38202,7 @@ async fn main() {
 <dl>
 <dd>
 
-**role:** `CreateTeamMembersRequestRole` — The system role to grant.
+**role:** `CreateTeamMembersRequestRole` — The system role to grant. Partners must pass all certification quizzes.
     
 </dd>
 </dl>
@@ -35260,7 +38419,7 @@ async fn main() {
 <dl>
 <dd>
 
-**role:** `UpdateTeamMembersRequestRole` — The system role to grant.
+**role:** `UpdateTeamMembersRequestRole` — The system role to grant. Partners must pass all certification quizzes.
     
 </dd>
 </dl>
@@ -35316,8 +38475,8 @@ async fn main() {
         .topups
         .create(
             &CreateTopupsRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 amount: 6.9,
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
                 currency: Currencies::Usd,
                 payment_method_id: "pmt_xxxxxxxxxxxxxx".to_string(),
             },
@@ -35339,7 +38498,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `f64` — The amount to add to the balance in the specified currency. For example, 50.00 for $50.00 USD.
+**account_id:** `String` — The unique identifier of the company to add funds to, starting with 'biz_'.
     
 </dd>
 </dl>
@@ -35347,7 +38506,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to add funds to, starting with 'biz_'.
+**amount:** `f64` — The amount to add to the balance in the specified currency. For example, 50.00 for $50.00 USD.
     
 </dd>
 </dl>
@@ -35484,7 +38643,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of transfers to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -35492,7 +38651,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -35500,7 +38659,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of transfers to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -35508,7 +38667,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -35565,6 +38724,8 @@ async fn main() {
                 currency: None,
                 destination_id: None,
                 expires_at: None,
+                feed_id: None,
+                feed_type: None,
                 idempotence_key: None,
                 metadata: None,
                 notes: None,
@@ -35614,6 +38775,22 @@ async fn main() {
 <dd>
 
 **expires_at:** `Option<Option<String>>` — claim_link only. Link expiry as an ISO 8601 timestamp. Defaults to 24 hours from creation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**feed_id:** `Option<Option<String>>` — Ledger transfers only. The feed the transfer was initiated from. Given with `feed_type`, the payment receipt posts into that feed instead of a direct message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**feed_type:** `Option<Option<CreateTransfersRequestFeedType>>` — Ledger transfers only. The type of the feed named by `feed_id`.
     
 </dd>
 </dl>
@@ -35744,7 +38921,7 @@ async fn main() {
 <dl>
 <dd>
 
-**query:** `Option<String>` — Search anyone on Whop by name or username, plus your own accounts by name or ID. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches.
+**query:** `Option<String>` — Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches. Search results are limited to 20 recipients.
     
 </dd>
 </dl>
@@ -35752,7 +38929,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of recipients per page. Search queries preserve the dashboard's 20-result maximum.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -35760,7 +38937,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -35905,7 +39082,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of users to return (max 50).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -35913,7 +39090,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns users after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -35921,7 +39098,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of users to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -35929,7 +39106,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns users before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -35941,7 +39118,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.users.<a href="/src/api/resources/users/client.rs">me</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, include_balance_history: Option&lt;Option&lt;bool&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, interval: Option&lt;Option&lt;MeUsersRequestInterval&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;User, ApiError&gt;</code></summary>
+<details><summary><code>client.users.<a href="/src/api/resources/users/client.rs">me</a>(account_id: Option&lt;Option&lt;String&gt;&gt;, include_balance: Option&lt;Option&lt;bool&gt;&gt;, include_balance_history: Option&lt;Option&lt;bool&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, interval: Option&lt;Option&lt;MeUsersRequestInterval&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;User, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -36002,6 +39179,14 @@ async fn main() {
 <dd>
 
 **account_id:** `Option<String>` — When set, returns your account-specific profile overrides for this account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_balance:** `Option<bool>` — Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
     
 </dd>
 </dl>
@@ -36165,7 +39350,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.users.<a href="/src/api/resources/users/client.rs">retrieve</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;, include_balance_history: Option&lt;Option&lt;bool&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, interval: Option&lt;Option&lt;RetrieveUsersRequestInterval&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;User, ApiError&gt;</code></summary>
+<details><summary><code>client.users.<a href="/src/api/resources/users/client.rs">retrieve</a>(id: String, account_id: Option&lt;Option&lt;String&gt;&gt;, include_balance: Option&lt;Option&lt;bool&gt;&gt;, include_balance_history: Option&lt;Option&lt;bool&gt;&gt;, from: Option&lt;Option&lt;String&gt;&gt;, to: Option&lt;Option&lt;String&gt;&gt;, interval: Option&lt;Option&lt;RetrieveUsersRequestInterval&gt;&gt;, time_zone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;User, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -36235,6 +39420,14 @@ async fn main() {
 <dd>
 
 **account_id:** `Option<String>` — When set, returns the user's account-specific profile overrides for this account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_balance:** `Option<bool>` — Compute live wallet and owned-account balances on the self view (default true). Set false for identity-only reads. Ignored when the id is not `me` or the caller lacks balance-read scope.
     
 </dd>
 </dl>
@@ -36640,7 +39833,7 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.verifications.<a href="/src/api/resources/verifications/client.rs">create</a>(request: CreateVerificationsRequestBody, account_id: Option&lt;String&gt;) -> Result&lt;CreateVerificationsResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.verifications.<a href="/src/api/resources/verifications/client.rs">create</a>(request: CreateVerificationsRequestBody) -> Result&lt;CreateVerificationsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -36652,7 +39845,7 @@ async fn main() {
 <dl>
 <dd>
 
-Starts a hosted verification session for an account or user, or returns the active session when one already exists. Any fields you include in the request body are used to prefill the session. Send `documents` (with `document_type`) to instead verify the person from identity documents included in this request — no hosted session involved. Send `share_token` to reuse a verification another Sumsub account has already completed for this person, instead of verifying them again. If the account already has an `approved` verification the request is rejected; unlink it first to start a new one.
+Starts a hosted verification session for an account or user, or returns the active session when one already exists. Any fields you include in the request body are used to prefill the session. Send `documents` (with `document_type`) to instead verify the person from identity documents included in this request — no hosted session involved. Send `share_token` to reuse a verification another Sumsub account has already completed for this person, instead of verifying them again. Send `verification_id` to reuse a verification the signed-in user already completed on Whop. Every mode except `verification_id` is rejected once the account has an `approved` verification — unlink it first to start a new one — while `verification_id` replaces whichever verification of that kind the account currently has.
 </dd>
 </dl>
 </dd>
@@ -36679,12 +39872,9 @@ async fn main() {
     client
         .verifications
         .create(
-            &CreateRequest {
-                account_id: "account_id".to_string(),
-                body: CreateVerificationsRequestBody::Individual {
-                    data: CreateVerificationsRequestBodyIndividual {
-                        ..Default::default()
-                    },
+            &CreateVerificationsRequestBody::Individual {
+                data: CreateVerificationsRequestBodyIndividual {
+                    ..Default::default()
                 },
             },
             None,
@@ -36692,21 +39882,6 @@ async fn main() {
         .await;
 }
 ```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**account_id:** `String` — Account or user ID whose identity you want to verify. Use a `biz_` account ID for account verifications, or the caller's `user_` ID for personal verification.
-    
 </dd>
 </dl>
 </dd>
@@ -36856,6 +40031,603 @@ async fn main() {
 </dl>
 </details>
 
+## Waitlist Entries
+<details><summary><code>client.waitlist_entries.<a href="/src/api/resources/waitlist_entries/client.rs">list</a>(first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, plan_id: Option&lt;Option&lt;String&gt;&gt;, account_id: Option&lt;Option&lt;String&gt;&gt;, product_id: Option&lt;Option&lt;String&gt;&gt;, status: Option&lt;Option&lt;ListWaitlistEntriesRequestStatus&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListWaitlistEntriesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListWaitlistEntriesRequestDirection&gt;&gt;) -> Result&lt;ListWaitlistEntriesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists visible waitlist signups. waitlist_entry:read grants the user's own signups; plan:waitlist:read grants signups for authorized seller accounts. With both permissions, returns their union. Account credentials are limited to their account. Filters narrow this set.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .waitlist_entries
+        .list(
+            &WaitlistEntriesListQueryRequest {
+                ..Default::default()
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan_id:** `Option<String>` — Only return signups for this plan, prefixed `plan_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**account_id:** `Option<String>` — Only return signups submitted to this seller account, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**product_id:** `Option<String>` — Only return signups for plans on this product, prefixed `prod_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Option<ListWaitlistEntriesRequestStatus>` — Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_before:** `Option<String>` — Only return signups submitted at or before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_after:** `Option<String>` — Only return signups submitted at or after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Option<ListWaitlistEntriesRequestOrder>` — The field to sort results by. Defaults to `created_at`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Option<ListWaitlistEntriesRequestDirection>` — The sort direction for results. Defaults to descending.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.waitlist_entries.<a href="/src/api/resources/waitlist_entries/client.rs">create</a>(request: CreateWaitlistEntriesRequest) -> Result&lt;WaitlistEntry, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Joins a free waitlist plan as the authenticated user. Requires waitlist_entry:create. Repeated joins return the existing pending entry, or an approved entry with a valid membership. Paid plans are rejected; no payment method is collected and no membership is granted.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .waitlist_entries
+        .create(
+            &CreateWaitlistEntriesRequest {
+                plan_id: "plan_xxxxxxxxxxxxxx".to_string(),
+                custom_field_responses: None,
+                metadata: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**custom_field_responses:** `Option<Vec<CreateWaitlistEntriesRequestCustomFieldResponsesItem>>` — Answers to the plan's checkout questions. Every required question must be answered.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `Option<std::collections::HashMap<String, serde_json::Value>>` — Custom key-value pairs to store on the signup. Max 50 keys, 100 chars per key, 500 chars per string value. Ignored when the request returns an existing signup.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan_id:** `String` — The free waitlist plan to join, prefixed `plan_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.waitlist_entries.<a href="/src/api/resources/waitlist_entries/client.rs">approve_all</a>(request: ApproveAllWaitlistEntriesRequest) -> Result&lt;ApproveAllWaitlistEntriesResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues approval of every pending signup for an account, optionally narrowed to a plan. Requires plan:waitlist:manage. Paid signups may charge saved payment methods. Approval runs asynchronously: list signups with `status` set to `pending` to follow progress, and retrieve a signup to read its outcome. Signups created after this request are excluded.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .waitlist_entries
+        .approve_all(
+            &ApproveAllWaitlistEntriesRequest {
+                account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+                plan_id: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The seller account whose pending signups to approve, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan_id:** `Option<String>` — Only approve signups for this plan, prefixed `plan_`. Omit to include every waitlist plan on the account.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.waitlist_entries.<a href="/src/api/resources/waitlist_entries/client.rs">retrieve</a>(id: String) -> Result&lt;WaitlistEntry, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a signup owned by the caller with waitlist_entry:read, or submitted to an account they can read with plan:waitlist:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .waitlist_entries
+        .retrieve(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Waitlist signup ID, prefixed `entry_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.waitlist_entries.<a href="/src/api/resources/waitlist_entries/client.rs">approve</a>(id: String) -> Result&lt;WaitlistEntry, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues approval of a pending signup. Requires plan:waitlist:manage on its seller account. Paid signups may charge their saved payment method. Returns the signup's current state; retrieve it to read `status` and `approval_failure_reason` after processing.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .waitlist_entries
+        .approve(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Waitlist signup ID, prefixed `entry_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.waitlist_entries.<a href="/src/api/resources/waitlist_entries/client.rs">cancel</a>(id: String) -> Result&lt;WaitlistEntry, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Withdraws the caller's pending personal signup. Requires waitlist_entry:cancel. Does not cancel an approved membership.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .waitlist_entries
+        .cancel(&"id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Waitlist signup ID, prefixed `entry_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.waitlist_entries.<a href="/src/api/resources/waitlist_entries/client.rs">deny</a>(id: String) -> Result&lt;WaitlistEntry, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Denies a pending signup. Requires plan:waitlist:manage on its seller account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client.waitlist_entries.deny(&"id".to_string(), None).await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Waitlist signup ID, prefixed `entry_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Webhooks
 <details><summary><code>client.webhooks.<a href="/src/api/resources/webhooks/client.rs">list</a>(account_id: Option&lt;String&gt;, app_id: Option&lt;Option&lt;String&gt;&gt;, include_app_webhooks: Option&lt;Option&lt;bool&gt;&gt;, has_failures: Option&lt;Option&lt;bool&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListWebhooksResponse, ApiError&gt;</code></summary>
 <dl>
@@ -36956,7 +40728,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of webhooks to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36964,7 +40736,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns webhooks after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36972,7 +40744,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of webhooks to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36980,7 +40752,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns webhooks before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -37419,7 +41191,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of deliveries to return (default 50, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -37427,7 +41199,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns deliveries after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -37727,7 +41499,8 @@ async fn main() {
 </dl>
 </details>
 
-<details><summary><code>client.webhooks.<a href="/src/api/resources/webhooks/client.rs">deliveries_webhook</a>(webhook_id: String, after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;) -> Result&lt;DeliveriesWebhookResponse, ApiError&gt;</code></summary>
+## Accounts Fees
+<details><summary><code>client.accounts().fees.<a href="/src/api/resources/accounts/fees/client.rs">retrieve</a>(account_id: String) -> Result&lt;AccountFees, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -37739,10 +41512,7 @@ async fn main() {
 <dl>
 <dd>
 
-Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
-
-Required permissions:
- - `developer:manage_webhook`
+Retrieves the account's fees: a singleton document keyed by fee, with any markups its platform adds. `adjustable` on each fee says what the caller may change.
 </dd>
 </dl>
 </dd>
@@ -37767,12 +41537,79 @@ async fn main() {
     };
     let client = Whop::new(config).expect("Failed to build client");
     client
-        .webhooks
-        .deliveries_webhook(
-            &"webhook_id".to_string(),
-            &DeliveriesWebhookQueryRequest {
-                first: Some(42),
-                last: Some(42),
+        .accounts
+        .fees
+        .retrieve(&"account_id".to_string(), None)
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — Account ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.accounts().fees.<a href="/src/api/resources/accounts/fees/client.rs">update</a>(account_id: String, request: UpdateFeesRequest) -> Result&lt;AccountFees, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates the account's fees. Each key present in the body is replaced; omitted keys are left untouched. Only fees the document reports as `adjustable` can be changed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .accounts
+        .fees
+        .update(
+            &"account_id".to_string(),
+            &UpdateFeesRequest {
                 ..Default::default()
             },
             None,
@@ -37793,7 +41630,7 @@ async fn main() {
 <dl>
 <dd>
 
-**webhook_id:** `String` — The unique identifier of the webhook to list deliveries for.
+**account_id:** `String` — Account ID, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -37801,7 +41638,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
+**bank_deposit:** `Option<UpdateFeesRequestBankDeposit>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37809,7 +41646,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
+**billing:** `Option<UpdateFeesRequestBilling>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37817,7 +41654,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
+**buyer:** `Option<UpdateFeesRequestBuyer>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37825,90 +41662,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Withdrawals
-<details><summary><code>client.withdrawals.<a href="/src/api/resources/withdrawals/client.rs">list</a>(after: Option&lt;Option&lt;String&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, company_id: Option&lt;String&gt;, direction: Option&lt;Option&lt;Direction&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListWithdrawalsResponse, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a paginated list of withdrawals for a company, with optional sorting and date filtering.
-
-Required permissions:
- - `payout:withdrawal:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .withdrawals
-        .list(
-            &WithdrawalsListQueryRequest {
-                first: Some(42),
-                last: Some(42),
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-                after: None,
-                before: None,
-                direction: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**after:** `Option<String>` — Returns the elements in the list that come after the specified cursor.
+**card_processing:** `Option<UpdateFeesRequestCardProcessing>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37916,7 +41670,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Returns the elements in the list that come before the specified cursor.
+**child_markups:** `Option<UpdateFeesRequestChildMarkups>` — This platform's default markups for every account connected to it.
     
 </dd>
 </dl>
@@ -37924,7 +41678,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Returns the first _n_ elements from the list.
+**cross_border:** `Option<UpdateFeesRequestCrossBorder>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37932,7 +41686,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Returns the last _n_ elements from the list.
+**dispute:** `Option<UpdateFeesRequestDispute>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37940,7 +41694,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The unique identifier of the company to list withdrawals for.
+**dispute_alert:** `Option<UpdateFeesRequestDisputeAlert>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37948,7 +41702,7 @@ async fn main() {
 <dl>
 <dd>
 
-**direction:** `Option<Direction>` 
+**dispute_alert_cdrn:** `Option<UpdateFeesRequestDisputeAlertCdrn>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37956,7 +41710,7 @@ async fn main() {
 <dl>
 <dd>
 
-**created_before:** `Option<String>` — Only return withdrawals created before this timestamp.
+**dispute_alert_ethoca:** `Option<UpdateFeesRequestDisputeAlertEthoca>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -37964,91 +41718,7 @@ async fn main() {
 <dl>
 <dd>
 
-**created_after:** `Option<String>` — Only return withdrawals created after this timestamp.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.withdrawals.<a href="/src/api/resources/withdrawals/client.rs">create</a>(request: CreateWithdrawalsRequest) -> Result&lt;Withdrawal, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Creates a withdrawal request for a ledger account
-
-Required permissions:
- - `payout:withdraw_funds`
- - `payout:destination:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .withdrawals
-        .create(
-            &CreateWithdrawalsRequest {
-                amount: 6.9,
-                company_id: "biz_xxxxxxxxxxxxxx".to_string(),
-                currency: Currencies::Usd,
-                acknowledge_bank_warning: None,
-                idempotency_key: None,
-                payout_method_id: None,
-                platform_covers_fees: None,
-                speed: None,
-                statement_descriptor: None,
-            },
-            None,
-        )
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**acknowledge_bank_warning:** `Option<Option<bool>>` — Set to true to continue when the bank could not confirm the account holder's name, or false to be refused in that case so the creator can fix the account or link their bank first. Omitting the argument skips the warning gate — a client that cannot show the warning keeps its pre-gate behavior.
+**dispute_alert_rdr:** `Option<UpdateFeesRequestDisputeAlertRdr>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -38056,7 +41726,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `f64` — The amount to withdraw in the specified currency
+**dispute_representment:** `Option<UpdateFeesRequestDisputeRepresentment>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -38064,7 +41734,7 @@ async fn main() {
 <dl>
 <dd>
 
-**company_id:** `String` — The ID of the company to withdraw from.
+**foreign_exchange:** `Option<UpdateFeesRequestForeignExchange>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -38072,7 +41742,7 @@ async fn main() {
 <dl>
 <dd>
 
-**currency:** `Currencies` — The currency that is being withdrawn.
+**fraud_screening:** `Option<UpdateFeesRequestFraudScreening>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -38080,7 +41750,7 @@ async fn main() {
 <dl>
 <dd>
 
-**idempotency_key:** `Option<Option<String>>` — A client-generated key that makes retries safe. Retrying with the same key returns the original withdrawal instead of creating a second one.
+**high_risk:** `Option<UpdateFeesRequestHighRisk>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -38088,7 +41758,7 @@ async fn main() {
 <dl>
 <dd>
 
-**payout_method_id:** `Option<Option<String>>` — The ID of the payout method to use for the withdrawal.
+**marketplace:** `Option<UpdateFeesRequestMarketplace>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -38096,7 +41766,7 @@ async fn main() {
 <dl>
 <dd>
 
-**platform_covers_fees:** `Option<Option<bool>>` — Whether the platform covers the payout fees.
+**markups:** `Option<UpdateFeesRequestMarkups>` — Markups on this connected account, set by the platform it is connected to.
     
 </dd>
 </dl>
@@ -38104,7 +41774,7 @@ async fn main() {
 <dl>
 <dd>
 
-**speed:** `Option<Option<WithdrawalSpeeds>>` — The processing speed for the withdrawal. Either standard or instant.
+**notes:** `Option<String>` — Why the fees are changing, recorded with the change. Required when a Whop Verified Partner edits the fee schedule; ignored for markups.
     
 </dd>
 </dl>
@@ -38112,148 +41782,87 @@ async fn main() {
 <dl>
 <dd>
 
-**statement_descriptor:** `Option<Option<String>>` — Custom statement descriptor for the withdrawal. Must be between 5 and 22 characters and contain only alphanumeric characters.
+**orchestration:** `Option<UpdateFeesRequestOrchestration>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.withdrawals.<a href="/src/api/resources/withdrawals/client.rs">retrieve</a>(id: String) -> Result&lt;Withdrawal, ApiError&gt;</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
 
 <dl>
 <dd>
 
-<dl>
-<dd>
-
-Retrieves the details of an existing withdrawal.
-
-Required permissions:
- - `payout:withdrawal:read`
- - `payout:destination:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .withdrawals
-        .retrieve(&"wdrl_xxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `String` — The unique identifier of the withdrawal to retrieve.
+**payment_methods:** `Option<std::collections::HashMap<String, UpdateFeesRequestPaymentMethodsValue>>` — Changes to non-card payment method fees, keyed by payment method type.
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**payouts:** `Option<std::collections::HashMap<String, UpdateFeesRequestPayoutsValue>>` — Changes to withdrawal fees, keyed by payout method.
+    
 </dd>
 </dl>
 
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.withdrawals.<a href="/src/api/resources/withdrawals/client.rs">generate_pdf</a>(id: String) -> Result&lt;GeneratePdfWithdrawalsResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Generates a withdrawal PDF invoice and returns a temporary download URL.
-
-Required permissions:
- - `payout:withdrawal:read`
-</dd>
-</dl>
+**pending_auto_topup:** `Option<UpdateFeesRequestPendingAutoTopup>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
 </dd>
 </dl>
 
-#### 🔌 Usage
-
 <dl>
 <dd>
 
-<dl>
-<dd>
-
-```rust
-use whop_sdk::prelude::*;
-
-#[tokio::main]
-async fn main() {
-    let config = ClientConfig {
-        token: Some("<token>".to_string()),
-        ..Default::default()
-    };
-    let client = Whop::new(config).expect("Failed to build client");
-    client
-        .withdrawals
-        .generate_pdf(&"wdrl_xxxxxxxxxxxxx".to_string(), None)
-        .await;
-}
-```
-</dd>
-</dl>
+**platform_processing:** `Option<UpdateFeesRequestPlatformProcessing>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
 </dd>
 </dl>
 
-#### ⚙️ Parameters
+<dl>
+<dd>
+
+**pool_payout:** `Option<UpdateFeesRequestPoolPayout>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
 
+**revshare:** `Option<UpdateFeesRequestRevshare>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
 <dl>
 <dd>
 
-**id:** `String` — The unique identifier of the withdrawal to generate a PDF for.
+**tax_calculation:** `Option<UpdateFeesRequestTaxCalculation>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tax_service:** `Option<UpdateFeesRequestTaxService>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**three_ds:** `Option<UpdateFeesRequestThreeDs>` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transfers:** `Option<UpdateFeesRequestTransfers>` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
 </dl>
@@ -38346,7 +41955,7 @@ async fn main() {
 <dl>
 <dd>
 
-Updates the account's preferences. Each top-level key present in the body is replaced as a whole; omitted keys are left untouched. `ads_triple_whale_integration` takes the Data-In API key to connect with, or `null` to disconnect. `ads_payment_methods` always requires a `primary` entry. `backup` is optional and any pairing is allowed — two cards, `card`+`platform_balance`, or a single method — so a card-only advertiser can fund ads without a platform balance. The `primary` and `backup` must be different sources. A `platform_balance` entry may omit `id` to use the account's default Whop balance. Configuring a `card` requires a user token; account API keys can set up platform-balance billing only.
+Updates the account's preferences. Each top-level key present in the body is replaced as a whole; omitted keys are left untouched.
 </dd>
 </dl>
 </dd>
@@ -38404,7 +42013,15 @@ async fn main() {
 <dl>
 <dd>
 
-**ads_payment_methods:** `Option<UpdatePreferencesRequestAdsPaymentMethods>` — How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
+**ads_certifications:** `Option<std::collections::HashMap<String, UpdatePreferencesRequestAdsCertificationsValue>>` — Opens an advertising certification application. Keyed by certification type (`prescription_drug_ads`); set the entry's `status` to `pending_information` to start, then answer the requested fields via `PATCH /verifications/{id}`. Only one application per type can be open at a time; every other status is set by Whop's review.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ads_payment_methods:** `Option<UpdatePreferencesRequestAdsPaymentMethods>` — How the account pays for Whop Ads spend. Requires `primary`; `backup` is optional and covers the charge when the primary fails. Configuring a `card` requires a user token; account API keys can configure only `platform_balance` sources.
     
 </dd>
 </dl>
@@ -38428,7 +42045,7 @@ async fn main() {
 <dl>
 <dd>
 
-**ads_triple_whale_integration:** `Option<UpdatePreferencesRequestAdsTripleWhaleIntegration>` — Connects or disconnects the Triple Whale integration. Requires a connected Shopify store, since Triple Whale keys spend records by Shopify shop.
+**ads_triple_whale_integration:** `Option<UpdatePreferencesRequestAdsTripleWhaleIntegration>` — Connects or disconnects the Triple Whale integration. Requires the `ad_campaign:create` scope. Connecting requires a shop domain to report spend against — either an explicit `shop_domain` (required for any merchant without a connected Shopify store, e.g. WooCommerce, a custom checkout, or a white-label platform's merchant) or a Shopify store connected on the Fulfillment page.
     
 </dd>
 </dl>
@@ -38444,7 +42061,23 @@ async fn main() {
 <dl>
 <dd>
 
+**cards_notifications:** `Option<bool>` — Whether Whop Card notifications reach this account's team. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected. Requires a cards balance on the account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **dispute_fighter_enabled:** `Option<bool>` — Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**economic_intelligence:** `Option<bool>` — Whether economic intelligence is enabled for the account. Requires company:update permission and an existing ledger account.
     
 </dd>
 </dl>
@@ -39122,7 +42755,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of submissions to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -39130,7 +42763,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -39138,7 +42771,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of submissions to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -39146,7 +42779,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -39234,6 +42867,143 @@ async fn main() {
 </dl>
 </details>
 
+## FinancialReports Breakdown
+<details><summary><code>client.financial_reports().breakdown.<a href="/src/api/resources/financial_reports/breakdown/client.rs">retrieve</a>(account_id: Option&lt;String&gt;, bucket: Option&lt;RetrieveBreakdownRequestBucket&gt;, direction: Option&lt;RetrieveBreakdownRequestDirection&gt;, currency: Option&lt;String&gt;, from: Option&lt;String&gt;, to: Option&lt;String&gt;, group_by: Option&lt;Option&lt;RetrieveBreakdownRequestGroupBy&gt;&gt;, timezone: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;RetrieveBreakdownResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the top entities behind one high-level financial report bucket and an aggregate remainder.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .financial_reports
+        .breakdown
+        .retrieve(
+            &FinancialReportsBreakdownRetrieveQueryRequest {
+                account_id: "account_id".to_string(),
+                bucket: RetrieveBreakdownRequestBucket::Transfers,
+                direction: RetrieveBreakdownRequestDirection::MoneyIn,
+                currency: "currency".to_string(),
+                from: DateTime::parse_from_rfc3339("2024-01-15T09:30:00Z").unwrap(),
+                to: DateTime::parse_from_rfc3339("2024-01-15T09:30:00Z").unwrap(),
+                group_by: None,
+                timezone: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**account_id:** `String` — The owning account ID (a biz_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bucket:** `RetrieveBreakdownRequestBucket` — The high-level report bucket to explain.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `RetrieveBreakdownRequestDirection` — Whether to explain money received or money sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `String` — The report currency to explain.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**from:** `String` — Start of the report window as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to:** `String` — Exclusive end of the report window as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_by:** `Option<RetrieveBreakdownRequestGroupBy>` — Period grouping used by the parent report.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**timezone:** `Option<String>` — IANA timezone used by the parent report to bucket periods. Defaults to UTC.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Members Logs
 <details><summary><code>client.members().logs.<a href="/src/api/resources/members/logs/client.rs">list</a>(id: String, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListLogsResponse, ApiError&gt;</code></summary>
 <dl>
@@ -39305,7 +43075,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of log entries to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -39313,7 +43083,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to paginate forwards from.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -39321,7 +43091,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of log entries to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -39329,7 +43099,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to paginate backwards from.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -39411,7 +43181,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of topics to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -39419,7 +43189,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns topics after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -39432,7 +43202,7 @@ async fn main() {
 </details>
 
 ## Partners Businesses
-<details><summary><code>client.partners().businesses.<a href="/src/api/resources/partners/businesses/client.rs">list</a>(status: Option&lt;Option&lt;ListBusinessesRequestStatus&gt;&gt;, has_earnings: Option&lt;Option&lt;bool&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListBusinessesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListBusinessesRequestDirection&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, referred_user_id: Option&lt;Option&lt;String&gt;&gt;, referred_username: Option&lt;Option&lt;String&gt;&gt;, tier: Option&lt;Option&lt;ListBusinessesRequestTier&gt;&gt;) -> Result&lt;ListBusinessesResponse, ApiError&gt;</code></summary>
+<details><summary><code>client.partners().businesses.<a href="/src/api/resources/partners/businesses/client.rs">list</a>(status: Option&lt;Option&lt;ListBusinessesRequestStatus&gt;&gt;, has_earnings: Option&lt;Option&lt;bool&gt;&gt;, first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;, order: Option&lt;Option&lt;ListBusinessesRequestOrder&gt;&gt;, direction: Option&lt;Option&lt;ListBusinessesRequestDirection&gt;&gt;, created_before: Option&lt;Option&lt;String&gt;&gt;, created_after: Option&lt;Option&lt;String&gt;&gt;, referred_user_id: Option&lt;Option&lt;String&gt;&gt;, referred_username: Option&lt;Option&lt;String&gt;&gt;, tier: Option&lt;Option&lt;ListBusinessesRequestTier&gt;&gt;, business_prefix_query: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListBusinessesResponse, ApiError&gt;</code></summary>
 <dl>
 <dd>
 
@@ -39509,7 +43279,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of partner businesses to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -39517,7 +43287,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -39525,7 +43295,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of partner businesses to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -39533,7 +43303,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -39589,7 +43359,15 @@ async fn main() {
 <dl>
 <dd>
 
-**tier:** `Option<ListBusinessesRequestTier>` — Filter to only first-tier referrals or only second-tier referrals.
+**tier:** `Option<ListBusinessesRequestTier>` — Filter to referrals from a single tier: first, second, or blueprint.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**business_prefix_query:** `Option<String>` — Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
     
 </dd>
 </dl>
@@ -39658,6 +43436,116 @@ async fn main() {
 <dd>
 
 **id:** `String` — The partner business ID (a coma_ identifier).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Partners Links
+<details><summary><code>client.partners().links.<a href="/src/api/resources/partners/links/client.rs">list</a>(first: Option&lt;Option&lt;i64&gt;&gt;, after: Option&lt;Option&lt;String&gt;&gt;, last: Option&lt;Option&lt;i64&gt;&gt;, before: Option&lt;Option&lt;String&gt;&gt;) -> Result&lt;ListLinksResponse, ApiError&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the authenticated user's standard referral URL and a page of their balance reward links, newest first. Expired and fully claimed rewards are included by default; deleted rewards are excluded. Filter status to narrow the promotion links. Users do not need to be enrolled to retrieve their links.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```rust
+use whop_sdk::prelude::*;
+
+#[tokio::main]
+async fn main() {
+    let config = ClientConfig {
+        token: Some("<token>".to_string()),
+        ..Default::default()
+    };
+    let client = Whop::new(config).expect("Failed to build client");
+    client
+        .partners
+        .links
+        .list(
+            &PartnersLinksListQueryRequest {
+                status: vec![],
+                first: None,
+                after: None,
+                last: None,
+                before: None,
+            },
+            None,
+        )
+        .await;
+}
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**status:** `Option<ListLinksRequestStatusItem>` — Filter promotion links by availability. Repeat the status parameter for multiple values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `Option<i64>` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `Option<i64>` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -39766,7 +43654,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` 
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -39774,7 +43662,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` 
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -39782,7 +43670,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` 
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -39790,7 +43678,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` 
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -39847,7 +43735,7 @@ async fn main() {
 <dl>
 <dd>
 
-Lists the bank accounts, wallets, and crypto addresses an account or user can withdraw to, newest first.
+Lists the bank accounts, wallets, and crypto addresses an account or user can pay out to, newest first.
 </dd>
 </dl>
 </dd>
@@ -39920,7 +43808,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `Option<f64>` — Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
+**amount:** `Option<f64>` — Optional payout amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
     
 </dd>
 </dl>
@@ -39944,7 +43832,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of payout methods to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -39952,7 +43840,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -39960,7 +43848,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of payout methods to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -39968,7 +43856,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -39992,7 +43880,7 @@ async fn main() {
 <dl>
 <dd>
 
-Saves a new place an account or user can withdraw to. Sensitive details are vaulted in transit and never stored raw.
+Saves a new place an account or user can pay out to. Sensitive details are vaulted in transit and never stored raw.
 </dd>
 </dl>
 </dd>
@@ -40183,7 +44071,7 @@ async fn main() {
 <dl>
 <dd>
 
-Changes the label used to identify a saved payout method.
+Changes the label used to identify a saved payout method or makes it the account's default payout method.
 </dd>
 </dl>
 </dd>
@@ -40213,7 +44101,7 @@ async fn main() {
         .update(
             &"id".to_string(),
             &UpdateMethodsRequest {
-                nickname: "Primary checking".to_string(),
+                ..Default::default()
             },
             None,
         )
@@ -40241,7 +44129,15 @@ async fn main() {
 <dl>
 <dd>
 
-**nickname:** `String` — New label for the payout method, with at least one non-whitespace character and a maximum of 100 characters.
+**is_default:** `Option<bool>` — Set to `true` to make this the account's default payout method. `false` is not accepted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nickname:** `Option<String>` — New label for the payout method, with at least one non-whitespace character and a maximum of 100 characters.
     
 </dd>
 </dl>
@@ -40339,7 +44235,7 @@ async fn main() {
 <dl>
 <dd>
 
-**amount:** `Option<f64>` — Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
+**amount:** `Option<f64>` — Optional payout amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
     
 </dd>
 </dl>
@@ -40371,7 +44267,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — Number of supported payout methods to return from the start of the window.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40379,7 +44275,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40387,7 +44283,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — Number of supported payout methods to return from the end of the window.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -40395,7 +44291,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -40477,7 +44373,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of grants to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40485,7 +44381,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns grants after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40493,7 +44389,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of grants to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -40501,7 +44397,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns grants before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -40745,7 +44641,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of passkeys to return (default 20, max 100).
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -40753,7 +44649,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns passkeys after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -40761,7 +44657,7 @@ async fn main() {
 <dl>
 <dd>
 
-**last:** `Option<i64>` — The number of passkeys to return from the end of the range.
+**last:** `Option<i64>` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -40769,7 +44665,7 @@ async fn main() {
 <dl>
 <dd>
 
-**before:** `Option<String>` — A cursor; returns passkeys before this position.
+**before:** `Option<String>` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -41233,7 +45129,7 @@ async fn main() {
 
 Sets the authenticated user's notification preferences. Each preference is addressed by `scope`, not by id, so a scope read back from either list endpoint can be sent straight here.
 
-A scope naming an experience with no topic sets that experience's level, and accepts all three levels. Any other scope sets a topic override, which is binary — `all` or `nothing` — and requires a `channel`.
+A scope naming an experience with no topic sets that experience's level, and accepts all three levels. Any other scope sets a topic override, which is binary — `all` or `nothing`. A topic override with no `channel` applies to every delivery channel.
 
 `level: null` clears the preference. Preferences are stored as overrides, so clearing one means the scope inherits its default again rather than being switched off.
 
@@ -41368,7 +45264,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of preferences to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -41376,7 +45272,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns preferences after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -41492,7 +45388,7 @@ async fn main() {
 <dl>
 <dd>
 
-**first:** `Option<i64>` — The number of preferences to return.
+**first:** `Option<i64>` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -41500,7 +45396,7 @@ async fn main() {
 <dl>
 <dd>
 
-**after:** `Option<String>` — A cursor; returns preferences after this position.
+**after:** `Option<String>` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>

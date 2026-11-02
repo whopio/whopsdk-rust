@@ -3,6 +3,8 @@ pub use crate::prelude::*;
 /// An AI-powered chat conversation belonging to a user, with optional scheduled automation.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct AiChatListItem {
+    /// The AI agent that handles this chat. Set when the chat is created and fixed for its lifetime.
+    pub agent_identifier: AiChatAgentIdentifiers,
     /// The total number of tokens consumed across all messages in this conversation.
     #[serde(default)]
     pub blended_token_usage: String,
@@ -44,6 +46,7 @@ impl AiChatListItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct AiChatListItemBuilder {
+    agent_identifier: Option<AiChatAgentIdentifiers>,
     blended_token_usage: Option<String>,
     created_at: Option<DateTime<FixedOffset>>,
     id: Option<String>,
@@ -56,6 +59,11 @@ pub struct AiChatListItemBuilder {
 }
 
 impl AiChatListItemBuilder {
+    pub fn agent_identifier(mut self, value: AiChatAgentIdentifiers) -> Self {
+        self.agent_identifier = Some(value);
+        self
+    }
+
     pub fn blended_token_usage(mut self, value: impl Into<String>) -> Self {
         self.blended_token_usage = Some(value.into());
         self
@@ -103,6 +111,7 @@ impl AiChatListItemBuilder {
 
     /// Consumes the builder and constructs a [`AiChatListItem`].
     /// This method will fail if any of the following fields are not set:
+    /// - [`agent_identifier`](AiChatListItemBuilder::agent_identifier)
     /// - [`blended_token_usage`](AiChatListItemBuilder::blended_token_usage)
     /// - [`created_at`](AiChatListItemBuilder::created_at)
     /// - [`id`](AiChatListItemBuilder::id)
@@ -112,6 +121,9 @@ impl AiChatListItemBuilder {
     /// - [`user`](AiChatListItemBuilder::user)
     pub fn build(self) -> Result<AiChatListItem, BuildError> {
         Ok(AiChatListItem {
+            agent_identifier: self
+                .agent_identifier
+                .ok_or_else(|| BuildError::missing_field("agent_identifier"))?,
             blended_token_usage: self
                 .blended_token_usage
                 .ok_or_else(|| BuildError::missing_field("blended_token_usage"))?,

@@ -42,226 +42,15 @@ impl StatsClient {
         &self,
         options: Option<RequestOptions>,
     ) -> Result<ListStatsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, "stats", None, None, options)
-            .await
-    }
-
-    /// Describe available stats schema. Without resource returns root nodes and metrics. With resource returns node columns, associations, and available metrics.
-    ///
-    /// Required permissions:
-    /// - `stats:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `resource` - Resource path using : as separator (e.g., 'receipts', 'payments:membership', 'receipts:gross_revenue').
-    /// * `company_id` - Scope query to a specific company.
-    /// * `user_id` - Scope query to a specific user.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .stats
-    ///         .describe_stats(
-    ///             &DescribeStatsQueryRequest {
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-    ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
-    ///                 ..Default::default()
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn describe_stats(
-        &self,
-        request: &DescribeStatsQueryRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<DescribeStatsResponse, ApiError> {
-        self.http_client
-            .execute_request(
-                Method::GET,
-                "stats/describe",
-                None,
-                QueryBuilder::new()
-                    .string("resource", request.resource.clone())
-                    .string("company_id", request.company_id.clone())
-                    .string("user_id", request.user_id.clone())
-                    .build(),
-                options,
-            )
-            .await
-    }
-
-    /// Query an aggregated metric. Returns data grouped by period with optional breakdowns.
-    ///
-    /// Required permissions:
-    /// - `stats:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `resource` - Metric resource using : as separator (e.g., 'receipts:gross_revenue', 'members:new_users').
-    /// * `granularity` - Time granularity (daily, weekly, monthly).
-    /// * `breakdowns` - Columns to break down the metric by.
-    /// * `filters` - Key-value pairs to filter the data.
-    /// * `time_zone` - IANA timezone for period bucketing (e.g. 'America/New_York'). Defaults to UTC. Only applies to ClickHouse metrics.
-    /// * `from` - Start of time range (unix timestamp).
-    /// * `to` - End of time range (unix timestamp).
-    /// * `company_id` - Scope query to a specific company.
-    /// * `user_id` - Scope query to a specific user.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .stats
-    ///         .metric_stats(
-    ///             &MetricStatsQueryRequest {
-    ///                 resource: "resource".to_string(),
-    ///                 from: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 to: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-    ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
-    ///                 granularity: None,
-    ///                 breakdowns: vec![],
-    ///                 filters: None,
-    ///                 time_zone: None,
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn metric_stats(
-        &self,
-        request: &MetricStatsQueryRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<MetricStatsResponse, ApiError> {
-        self.http_client
-            .execute_request(
-                Method::GET,
-                "stats/metric",
-                None,
-                QueryBuilder::new()
-                    .string("resource", request.resource.clone())
-                    .string("granularity", request.granularity.clone())
-                    .string_array("breakdowns", request.breakdowns.clone())
-                    .serialize("filters", request.filters.clone())
-                    .string("time_zone", request.time_zone.clone())
-                    .datetime("from", request.from.clone())
-                    .datetime("to", request.to.clone())
-                    .string("company_id", request.company_id.clone())
-                    .string("user_id", request.user_id.clone())
-                    .build(),
-                options,
-            )
-            .await
-    }
-
-    /// Query raw data from a resource. Returns paginated rows with all columns.
-    ///
-    /// Required permissions:
-    /// - `stats:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `resource` - Resource path using : as separator (e.g., 'members', 'payments:membership').
-    /// * `from` - Start of time range (unix timestamp).
-    /// * `to` - End of time range (unix timestamp).
-    /// * `limit` - Number of records to return (max 10000).
-    /// * `cursor` - Pagination cursor for next page.
-    /// * `sort` - Column to sort by.
-    /// * `company_id` - Scope query to a specific company.
-    /// * `user_id` - Scope query to a specific user.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .stats
-    ///         .raw_stats(
-    ///             &RawStatsQueryRequest {
-    ///                 resource: "resource".to_string(),
-    ///                 from: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 to: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 limit: Some(42),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
-    ///                 user_id: Some("user_xxxxxxxxxxxxx".to_string()),
-    ///                 cursor: None,
-    ///                 sort: None,
-    ///                 sort_direction: None,
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn raw_stats(
-        &self,
-        request: &RawStatsQueryRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<RawStatsResponse, ApiError> {
-        self.http_client
-            .execute_request(
-                Method::GET,
-                "stats/raw",
-                None,
-                QueryBuilder::new()
-                    .string("resource", request.resource.clone())
-                    .datetime("from", request.from.clone())
-                    .datetime("to", request.to.clone())
-                    .int("limit", request.limit.clone())
-                    .string("cursor", request.cursor.clone())
-                    .string("sort", request.sort.clone())
-                    .serialize("sort_direction", request.sort_direction.clone())
-                    .string("company_id", request.company_id.clone())
-                    .string("user_id", request.user_id.clone())
-                    .build(),
-                options,
-            )
             .await
     }
 
@@ -303,7 +92,34 @@ impl StatsClient {
     /// * `ad_group_ids` - Ad group ids (adgrp_...) to scope the report to; stats are summed across them. Available on metrics that list ad_group_ids.
     /// * `ad_ids` - Ad ids (ad_...) to scope the report to; stats are summed across them. Available on metrics that list ad_ids.
     /// * `snapshot_window` - Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
-    /// * `event` - Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separate several to break the metric down by each event. Available on metrics that list event.
+    /// * `event` - Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
+    /// * `contactable` - People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `has_purchased` - People metric only: has_purchased equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `first_seen_after` - People metric only: first_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `first_seen_before` - People metric only: first_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `last_seen_after` - People metric only: last_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `last_seen_before` - People metric only: last_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `first_seen_within_days` - People metric only: first_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `last_seen_within_days` - People metric only: last_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `known` - People metric only: known equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `has_email` - People metric only: has_email equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `has_phone` - People metric only: has_phone equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `ltv_gt` - People metric only: ltv greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `ltv_gte` - People metric only: ltv greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `ltv_lt` - People metric only: ltv less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `ltv_lte` - People metric only: ltv less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `aov_gt` - People metric only: aov greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `aov_gte` - People metric only: aov greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `aov_lt` - People metric only: aov less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `aov_lte` - People metric only: aov less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `purchase_count_gt` - People metric only: purchase_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `purchase_count_gte` - People metric only: purchase_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `purchase_count_lt` - People metric only: purchase_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `purchase_count_lte` - People metric only: purchase_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `event_count_gt` - People metric only: event_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `event_count_gte` - People metric only: event_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `event_count_lt` - People metric only: event_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    /// * `event_count_lte` - People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -361,6 +177,33 @@ impl StatsClient {
     ///                 referred_user_id: None,
     ///                 snapshot_window: None,
     ///                 event: None,
+    ///                 contactable: None,
+    ///                 has_purchased: None,
+    ///                 first_seen_after: None,
+    ///                 first_seen_before: None,
+    ///                 last_seen_after: None,
+    ///                 last_seen_before: None,
+    ///                 first_seen_within_days: None,
+    ///                 last_seen_within_days: None,
+    ///                 known: None,
+    ///                 has_email: None,
+    ///                 has_phone: None,
+    ///                 ltv_gt: None,
+    ///                 ltv_gte: None,
+    ///                 ltv_lt: None,
+    ///                 ltv_lte: None,
+    ///                 aov_gt: None,
+    ///                 aov_gte: None,
+    ///                 aov_lt: None,
+    ///                 aov_lte: None,
+    ///                 purchase_count_gt: None,
+    ///                 purchase_count_gte: None,
+    ///                 purchase_count_lt: None,
+    ///                 purchase_count_lte: None,
+    ///                 event_count_gt: None,
+    ///                 event_count_gte: None,
+    ///                 event_count_lt: None,
+    ///                 event_count_lte: None,
     ///             },
     ///             None,
     ///         )
@@ -373,6 +216,13 @@ impl StatsClient {
         request: &StatsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<RetrieveStatsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -413,6 +263,39 @@ impl StatsClient {
                     .string_array("ad_ids", request.ad_ids.clone())
                     .serialize("snapshot_window", request.snapshot_window.clone())
                     .string("event", request.event.clone())
+                    .bool("contactable", request.contactable.clone())
+                    .bool("has_purchased", request.has_purchased.clone())
+                    .datetime("first_seen_after", request.first_seen_after.clone())
+                    .datetime("first_seen_before", request.first_seen_before.clone())
+                    .datetime("last_seen_after", request.last_seen_after.clone())
+                    .datetime("last_seen_before", request.last_seen_before.clone())
+                    .int(
+                        "first_seen_within_days",
+                        request.first_seen_within_days.clone(),
+                    )
+                    .int(
+                        "last_seen_within_days",
+                        request.last_seen_within_days.clone(),
+                    )
+                    .bool("known", request.known.clone())
+                    .bool("has_email", request.has_email.clone())
+                    .bool("has_phone", request.has_phone.clone())
+                    .float("ltv_gt", request.ltv_gt.clone())
+                    .float("ltv_gte", request.ltv_gte.clone())
+                    .float("ltv_lt", request.ltv_lt.clone())
+                    .float("ltv_lte", request.ltv_lte.clone())
+                    .float("aov_gt", request.aov_gt.clone())
+                    .float("aov_gte", request.aov_gte.clone())
+                    .float("aov_lt", request.aov_lt.clone())
+                    .float("aov_lte", request.aov_lte.clone())
+                    .float("purchase_count_gt", request.purchase_count_gt.clone())
+                    .float("purchase_count_gte", request.purchase_count_gte.clone())
+                    .float("purchase_count_lt", request.purchase_count_lt.clone())
+                    .float("purchase_count_lte", request.purchase_count_lte.clone())
+                    .float("event_count_gt", request.event_count_gt.clone())
+                    .float("event_count_gte", request.event_count_gte.clone())
+                    .float("event_count_lt", request.event_count_lt.clone())
+                    .float("event_count_lte", request.event_count_lte.clone())
                     .build(),
                 options,
             )

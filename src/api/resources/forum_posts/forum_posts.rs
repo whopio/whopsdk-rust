@@ -69,6 +69,13 @@ impl ForumPostsClient {
         request: &ForumPostsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListForumPostsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -92,7 +99,7 @@ impl ForumPostsClient {
             .await
     }
 
-    /// Create a new forum post or comment within an experience. Supports text content, attachments, polls, paywalling, and pinning. Pass experience_id 'public' with a company_id to post to a company's public forum.
+    /// Create a new forum post or comment within an experience. Supports text content, attachments, polls, paywalling, and pinning. Pass experience_id 'public' with an account_id to post to an account's public forum.
     ///
     /// Required permissions:
     /// - `forum:post:create`
@@ -122,8 +129,8 @@ impl ForumPostsClient {
     ///         .create(
     ///             &CreateForumPostsRequest {
     ///                 experience_id: "exp_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: None,
     ///                 attachments: None,
-    ///                 company_id: None,
     ///                 content: None,
     ///                 is_mention: None,
     ///                 parent_id: None,
@@ -145,6 +152,13 @@ impl ForumPostsClient {
         request: &CreateForumPostsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ForumPost, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -190,6 +204,13 @@ impl ForumPostsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ForumPost, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -242,6 +263,13 @@ impl ForumPostsClient {
         request: &UpdateForumPostsRequest,
         options: Option<RequestOptions>,
     ) -> Result<ForumPost, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

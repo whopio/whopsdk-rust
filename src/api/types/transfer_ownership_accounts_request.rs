@@ -8,6 +8,9 @@ pub struct TransferOwnershipAccountsRequest {
     /// The user to transfer ownership to: a user ID (`user_*`) or an email address. An email address with no Whop account yet is sent an invite to create one.
     #[serde(default)]
     pub identifier: String,
+    /// A note from the partner, shown as a quote in the invite email and signed with their name. Requires `as_partner`; sending it on an ordinary transfer is a 400. Omit it and the email sends without a note.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub message: Option<String>,
 }
 
 impl TransferOwnershipAccountsRequest {
@@ -21,6 +24,7 @@ impl TransferOwnershipAccountsRequest {
 pub struct TransferOwnershipAccountsRequestBuilder {
     as_partner: Option<bool>,
     identifier: Option<String>,
+    message: Option<String>,
 }
 
 impl TransferOwnershipAccountsRequestBuilder {
@@ -34,6 +38,11 @@ impl TransferOwnershipAccountsRequestBuilder {
         self
     }
 
+    pub fn message(mut self, value: impl Into<String>) -> Self {
+        self.message = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`TransferOwnershipAccountsRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`identifier`](TransferOwnershipAccountsRequestBuilder::identifier)
@@ -43,6 +52,7 @@ impl TransferOwnershipAccountsRequestBuilder {
             identifier: self
                 .identifier
                 .ok_or_else(|| BuildError::missing_field("identifier"))?,
+            message: self.message,
         })
     }
 }

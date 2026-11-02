@@ -6,7 +6,7 @@ pub struct SetNotificationsRequestPreferencesItemScope {
     /// Account to scope the preference to (member notifications), `biz_` tag.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// Delivery channel the preference applies to. Required when setting a topic override.
+    /// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channel: Option<SetNotificationsRequestPreferencesItemScopeChannel>,
     /// Experience to scope the preference to (`exp_` tag). Requires `account_id` when a `topic_id` is also given.

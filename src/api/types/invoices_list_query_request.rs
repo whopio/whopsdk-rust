@@ -15,9 +15,6 @@ pub struct InvoicesListQueryRequest {
     /// Returns the last _n_ elements from the list.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// The unique identifier of the company to list invoices for.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<Direction>,
     /// Filter invoices to only those associated with these specific product identifiers.
@@ -41,6 +38,9 @@ pub struct InvoicesListQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub created_after: Option<DateTime<FixedOffset>>,
+    /// The unique identifier of the company to list invoices for.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
 }
 
 impl InvoicesListQueryRequest {
@@ -56,7 +56,6 @@ pub struct InvoicesListQueryRequestBuilder {
     before: Option<String>,
     first: Option<i64>,
     last: Option<i64>,
-    company_id: Option<String>,
     direction: Option<Direction>,
     product_ids: Option<Vec<Option<String>>>,
     collection_methods: Option<Vec<Option<InvoiceCollectionMethods>>>,
@@ -64,6 +63,7 @@ pub struct InvoicesListQueryRequestBuilder {
     order: Option<InvoicesSortableColumns>,
     created_before: Option<DateTime<FixedOffset>>,
     created_after: Option<DateTime<FixedOffset>>,
+    account_id: Option<String>,
 }
 
 impl InvoicesListQueryRequestBuilder {
@@ -84,11 +84,6 @@ impl InvoicesListQueryRequestBuilder {
 
     pub fn last(mut self, value: i64) -> Self {
         self.last = Some(value);
-        self
-    }
-
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
         self
     }
 
@@ -127,6 +122,11 @@ impl InvoicesListQueryRequestBuilder {
         self
     }
 
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`InvoicesListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`product_ids`](InvoicesListQueryRequestBuilder::product_ids)
@@ -138,7 +138,6 @@ impl InvoicesListQueryRequestBuilder {
             before: self.before,
             first: self.first,
             last: self.last,
-            company_id: self.company_id,
             direction: self.direction,
             product_ids: self
                 .product_ids
@@ -152,6 +151,7 @@ impl InvoicesListQueryRequestBuilder {
             order: self.order,
             created_before: self.created_before,
             created_after: self.created_after,
+            account_id: self.account_id,
         })
     }
 }

@@ -13,7 +13,7 @@ impl AccessTokensClient {
         })
     }
 
-    /// Create a short-lived access token for authenticating API requests. When using API key authentication, provide company_id or user_id. When using OAuth, the user is derived from the token. Use this token with Whop's web and mobile embedded components.
+    /// Create a short-lived access token for authenticating API requests. When using API key authentication, provide account_id or user_id. When using OAuth, the user is derived from the token. Use this token with Whop's web and mobile embedded components.
     ///
     /// # Arguments
     ///
@@ -51,6 +51,13 @@ impl AccessTokensClient {
         request: &CreateAccessTokensRequest,
         options: Option<RequestOptions>,
     ) -> Result<AccessToken, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

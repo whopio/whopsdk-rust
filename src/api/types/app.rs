@@ -45,6 +45,10 @@ pub struct App {
     /// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
     #[serde(default)]
     pub domain_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub domains: Option<Vec<AppDomain>>,
+    #[serde(default)]
+    pub elements_used: Vec<AppElementsUsedItem>,
     /// URL path for the member-facing hub view, or `null` when not configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub experience_path: Option<String>,
@@ -71,6 +75,11 @@ pub struct App {
     /// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub origin: Option<String>,
+    /// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub preview_token: Option<String>,
+    #[serde(default)]
+    pub previous_hosted_urls: Vec<String>,
     /// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
@@ -89,7 +98,7 @@ pub struct App {
     pub requested_permissions: Vec<AppRequestedPermission>,
     #[serde(default)]
     pub required_scopes: Vec<AppRequiredScopesItem>,
-    /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.app), or `null` if no route is claimed.
+    /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
     /// The app's production secrets as an object of string values, injected into the hosted server runtime. `null` when the caller lacks the `developer:update_app` permission.
@@ -129,6 +138,8 @@ pub struct AppBuilder {
     description: Option<String>,
     discover_path: Option<String>,
     domain_id: Option<String>,
+    domains: Option<Vec<AppDomain>>,
+    elements_used: Option<Vec<AppElementsUsedItem>>,
     experience_path: Option<String>,
     hosted_url: Option<String>,
     icon: Option<AppIcon>,
@@ -138,6 +149,8 @@ pub struct AppBuilder {
     oauth_client_type: Option<AppOauthClientType>,
     openapi_path: Option<String>,
     origin: Option<String>,
+    preview_token: Option<String>,
+    previous_hosted_urls: Option<Vec<String>>,
     product_id: Option<String>,
     production_android_build: Option<AppProductionBuild>,
     production_ios_build: Option<AppProductionBuild>,
@@ -228,6 +241,16 @@ impl AppBuilder {
         self
     }
 
+    pub fn domains(mut self, value: Vec<AppDomain>) -> Self {
+        self.domains = Some(value);
+        self
+    }
+
+    pub fn elements_used(mut self, value: Vec<AppElementsUsedItem>) -> Self {
+        self.elements_used = Some(value);
+        self
+    }
+
     pub fn experience_path(mut self, value: impl Into<String>) -> Self {
         self.experience_path = Some(value.into());
         self
@@ -270,6 +293,16 @@ impl AppBuilder {
 
     pub fn origin(mut self, value: impl Into<String>) -> Self {
         self.origin = Some(value.into());
+        self
+    }
+
+    pub fn preview_token(mut self, value: impl Into<String>) -> Self {
+        self.preview_token = Some(value.into());
+        self
+    }
+
+    pub fn previous_hosted_urls(mut self, value: Vec<String>) -> Self {
+        self.previous_hosted_urls = Some(value);
         self
     }
 
@@ -341,10 +374,12 @@ impl AppBuilder {
     /// - [`businesses_created_logo_urls`](AppBuilder::businesses_created_logo_urls)
     /// - [`creator`](AppBuilder::creator)
     /// - [`domain_id`](AppBuilder::domain_id)
+    /// - [`elements_used`](AppBuilder::elements_used)
     /// - [`icon`](AppBuilder::icon)
     /// - [`id`](AppBuilder::id)
     /// - [`name`](AppBuilder::name)
     /// - [`oauth_client_type`](AppBuilder::oauth_client_type)
+    /// - [`previous_hosted_urls`](AppBuilder::previous_hosted_urls)
     /// - [`redirect_uris`](AppBuilder::redirect_uris)
     /// - [`requested_permissions`](AppBuilder::requested_permissions)
     /// - [`required_scopes`](AppBuilder::required_scopes)
@@ -379,6 +414,10 @@ impl AppBuilder {
             domain_id: self
                 .domain_id
                 .ok_or_else(|| BuildError::missing_field("domain_id"))?,
+            domains: self.domains,
+            elements_used: self
+                .elements_used
+                .ok_or_else(|| BuildError::missing_field("elements_used"))?,
             experience_path: self.experience_path,
             hosted_url: self.hosted_url,
             icon: self.icon.ok_or_else(|| BuildError::missing_field("icon"))?,
@@ -390,6 +429,10 @@ impl AppBuilder {
                 .ok_or_else(|| BuildError::missing_field("oauth_client_type"))?,
             openapi_path: self.openapi_path,
             origin: self.origin,
+            preview_token: self.preview_token,
+            previous_hosted_urls: self
+                .previous_hosted_urls
+                .ok_or_else(|| BuildError::missing_field("previous_hosted_urls"))?,
             product_id: self.product_id,
             production_android_build: self.production_android_build,
             production_ios_build: self.production_ios_build,

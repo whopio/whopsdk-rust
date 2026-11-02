@@ -5,8 +5,10 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum FriendlyReceiptStatus {
     Succeeded,
+    RequiresCapture,
     Pending,
     Failed,
+    Blocked,
     PastDue,
     Canceled,
     PriceTooLow,
@@ -41,8 +43,10 @@ impl Serialize for FriendlyReceiptStatus {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::Succeeded => serializer.serialize_str("succeeded"),
+            Self::RequiresCapture => serializer.serialize_str("requires_capture"),
             Self::Pending => serializer.serialize_str("pending"),
             Self::Failed => serializer.serialize_str("failed"),
+            Self::Blocked => serializer.serialize_str("blocked"),
             Self::PastDue => serializer.serialize_str("past_due"),
             Self::Canceled => serializer.serialize_str("canceled"),
             Self::PriceTooLow => serializer.serialize_str("price_too_low"),
@@ -82,8 +86,10 @@ impl<'de> Deserialize<'de> for FriendlyReceiptStatus {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
             "succeeded" => Ok(Self::Succeeded),
+            "requires_capture" => Ok(Self::RequiresCapture),
             "pending" => Ok(Self::Pending),
             "failed" => Ok(Self::Failed),
+            "blocked" => Ok(Self::Blocked),
             "past_due" => Ok(Self::PastDue),
             "canceled" => Ok(Self::Canceled),
             "price_too_low" => Ok(Self::PriceTooLow),
@@ -118,8 +124,10 @@ impl fmt::Display for FriendlyReceiptStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Succeeded => write!(f, "succeeded"),
+            Self::RequiresCapture => write!(f, "requires_capture"),
             Self::Pending => write!(f, "pending"),
             Self::Failed => write!(f, "failed"),
+            Self::Blocked => write!(f, "blocked"),
             Self::PastDue => write!(f, "past_due"),
             Self::Canceled => write!(f, "canceled"),
             Self::PriceTooLow => write!(f, "price_too_low"),

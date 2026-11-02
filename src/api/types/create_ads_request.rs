@@ -11,12 +11,15 @@ pub struct CreateAdsRequest {
     /// The call-to-action button shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub call_to_action: Option<CreateAdsRequestCallToAction>,
-    /// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Two or more entries with no format become a carousel (2-10 attachments), in order, sharing the ad's copy.
+    /// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub creatives: Option<Vec<CreateAdsRequestCreativesItem>>,
     /// The description variants shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub descriptions: Option<Vec<String>>,
+    /// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub existing_post_id: Option<String>,
     /// The headline variants shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub headlines: Option<Vec<String>>,
@@ -32,10 +35,10 @@ pub struct CreateAdsRequest {
     /// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_advertiser_ads: Option<bool>,
-    /// Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+    /// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_id: Option<String>,
-    /// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+    pub music: Option<CreateAdsRequestMusic>,
+    /// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_source: Option<CreateAdsRequestPostSource>,
     /// The primary text variants shown in the ad body.
@@ -50,7 +53,7 @@ pub struct CreateAdsRequest {
     /// The URL the ad links to. Query parameters are merged into url_parameters, so the stored URL is always bare.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+    /// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url_parameters: Option<HashMap<String, serde_json::Value>>,
 }
@@ -69,12 +72,13 @@ pub struct CreateAdsRequestBuilder {
     call_to_action: Option<CreateAdsRequestCallToAction>,
     creatives: Option<Vec<CreateAdsRequestCreativesItem>>,
     descriptions: Option<Vec<String>>,
+    existing_post_id: Option<String>,
     headlines: Option<Vec<String>>,
     lead_form: Option<CreateAdsRequestLeadForm>,
     lead_form_id: Option<String>,
     messaging_config: Option<CreateAdsRequestMessagingConfig>,
     multi_advertiser_ads: Option<bool>,
-    post_id: Option<String>,
+    music: Option<CreateAdsRequestMusic>,
     post_source: Option<CreateAdsRequestPostSource>,
     primary_texts: Option<Vec<String>>,
     social_accounts: Option<Vec<CreateAdsRequestSocialAccountsItem>>,
@@ -109,6 +113,11 @@ impl CreateAdsRequestBuilder {
         self
     }
 
+    pub fn existing_post_id(mut self, value: impl Into<String>) -> Self {
+        self.existing_post_id = Some(value.into());
+        self
+    }
+
     pub fn headlines(mut self, value: Vec<String>) -> Self {
         self.headlines = Some(value);
         self
@@ -134,8 +143,8 @@ impl CreateAdsRequestBuilder {
         self
     }
 
-    pub fn post_id(mut self, value: impl Into<String>) -> Self {
-        self.post_id = Some(value.into());
+    pub fn music(mut self, value: CreateAdsRequestMusic) -> Self {
+        self.music = Some(value);
         self
     }
 
@@ -177,12 +186,13 @@ impl CreateAdsRequestBuilder {
             call_to_action: self.call_to_action,
             creatives: self.creatives,
             descriptions: self.descriptions,
+            existing_post_id: self.existing_post_id,
             headlines: self.headlines,
             lead_form: self.lead_form,
             lead_form_id: self.lead_form_id,
             messaging_config: self.messaging_config,
             multi_advertiser_ads: self.multi_advertiser_ads,
-            post_id: self.post_id,
+            music: self.music,
             post_source: self.post_source,
             primary_texts: self.primary_texts,
             social_accounts: self.social_accounts,

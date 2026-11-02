@@ -28,8 +28,8 @@ impl AffiliatesClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to list affiliates for.
     /// * `query` - Search affiliates by username.
+    /// * `account_id` - The unique identifier of the company to list affiliates for.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -54,7 +54,7 @@ impl AffiliatesClient {
     ///             &AffiliatesListQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 after: None,
     ///                 before: None,
     ///                 direction: None,
@@ -72,6 +72,13 @@ impl AffiliatesClient {
         request: &AffiliatesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAffiliatesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -82,11 +89,11 @@ impl AffiliatesClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .serialize("direction", request.direction.clone())
                     .serialize("order", request.order.clone())
                     .structured_query("query", request.query.clone())
                     .serialize("status", request.status.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -122,7 +129,7 @@ impl AffiliatesClient {
     ///         .affiliates
     ///         .create(
     ///             &CreateAffiliatesRequest {
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 user_identifier: "user_identifier".to_string(),
     ///             },
     ///             None,
@@ -135,6 +142,13 @@ impl AffiliatesClient {
         request: &CreateAffiliatesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Affiliate, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -183,6 +197,13 @@ impl AffiliatesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Affiliate, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -231,6 +252,13 @@ impl AffiliatesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -279,6 +307,13 @@ impl AffiliatesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<bool, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

@@ -3,12 +3,12 @@ pub use crate::prelude::*;
 /// Payment method overrides for this checkout. `null` uses the plan or platform defaults.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateCheckoutConfigurationsRequestPaymentMethodConfiguration {
-    /// Payment methods explicitly disabled for checkout.
+    /// Payment method types explicitly disabled for checkout — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub disabled: Option<Vec<String>>,
-    /// Payment methods explicitly enabled for checkout.
+    pub disabled: Option<Vec<PaymentMethodTypes>>,
+    /// Payment method types explicitly enabled for checkout — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub enabled: Option<Vec<String>>,
+    pub enabled: Option<Vec<PaymentMethodTypes>>,
     /// Whether platform default payment methods are included.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub include_platform_defaults: Option<bool>,
@@ -23,18 +23,18 @@ impl CreateCheckoutConfigurationsRequestPaymentMethodConfiguration {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateCheckoutConfigurationsRequestPaymentMethodConfigurationBuilder {
-    disabled: Option<Vec<String>>,
-    enabled: Option<Vec<String>>,
+    disabled: Option<Vec<PaymentMethodTypes>>,
+    enabled: Option<Vec<PaymentMethodTypes>>,
     include_platform_defaults: Option<bool>,
 }
 
 impl CreateCheckoutConfigurationsRequestPaymentMethodConfigurationBuilder {
-    pub fn disabled(mut self, value: Vec<String>) -> Self {
+    pub fn disabled(mut self, value: Vec<PaymentMethodTypes>) -> Self {
         self.disabled = Some(value);
         self
     }
 
-    pub fn enabled(mut self, value: Vec<String>) -> Self {
+    pub fn enabled(mut self, value: Vec<PaymentMethodTypes>) -> Self {
         self.enabled = Some(value);
         self
     }

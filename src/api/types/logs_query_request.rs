@@ -22,13 +22,13 @@ pub struct LogsQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub created_before: Option<DateTime<FixedOffset>>,
-    /// The number of log lines to return (max 500).
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// A cursor for fetching logs after a previous page.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// A cursor for fetching logs before a later page.
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
 }

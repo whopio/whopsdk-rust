@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The platform to connect the social account on. Supported options are `meta_business` and `tiktok`.
+/// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ConnectSocialAccountsRequestPlatform {

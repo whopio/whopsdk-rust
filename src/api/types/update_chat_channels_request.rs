@@ -11,7 +11,7 @@ pub struct UpdateChatChannelsRequest {
     /// A list of words that are automatically blocked from messages in this chat channel. For example, ['spam', 'scam'].
     #[serde(skip_serializing_if = "Option::is_none")]
     pub banned_words: Option<Vec<String>>,
-    /// The minimum number of seconds a user must wait between sending messages in this chat channel.
+    /// The minimum number of seconds a user must wait between sending messages in this chat channel. Pass null or 0 to remove the cooldown.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_posts_cooldown_seconds: Option<i64>,
     /// Controls which roles are allowed to send messages in this chat channel.

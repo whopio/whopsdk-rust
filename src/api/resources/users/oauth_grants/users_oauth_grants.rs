@@ -18,10 +18,10 @@ impl OauthGrantsClient {
     /// # Arguments
     ///
     /// * `app_id` - Only return grants for this app, prefixed `app_`. An app the user has never authorized returns an empty list.
-    /// * `first` - The number of grants to return (default 20, max 100).
-    /// * `after` - A cursor; returns grants after this position.
-    /// * `last` - The number of grants to return from the end of the range.
-    /// * `before` - A cursor; returns grants before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort grants by.
     /// * `direction` - Sort direction.
     /// * `options` - Additional request options such as headers, timeout, etc.
@@ -59,6 +59,13 @@ impl OauthGrantsClient {
         request: &UsersOauthGrantsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListOauthGrantsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -126,6 +133,13 @@ impl OauthGrantsClient {
         request: &CreateOauthGrantsRequest,
         options: Option<RequestOptions>,
     ) -> Result<OauthGrant, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

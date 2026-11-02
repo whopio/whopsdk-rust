@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// What to create. Defaults to `custom` (CSV upload).
+/// Audience type. Defaults to `custom`.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CreateAudiencesRequestAudienceType {

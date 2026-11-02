@@ -21,10 +21,10 @@ pub struct CheckoutConfigurationsListQueryRequest {
     /// Sort direction. Defaults to `desc`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<ListCheckoutConfigurationsRequestDirection>,
-    /// Number of checkout configurations to return.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// Cursor for the next page of results.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
 }

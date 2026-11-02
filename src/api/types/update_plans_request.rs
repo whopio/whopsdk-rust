@@ -32,7 +32,7 @@ pub struct UpdatePlansRequest {
     /// An image displayed on the product page to represent this plan.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub image: Option<UpdatePlansRequestImage>,
-    /// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+    /// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub initial_price: Option<f64>,
     /// Private notes visible only to the account owner. Not shown to customers.
@@ -53,7 +53,7 @@ pub struct UpdatePlansRequest {
     /// Sales method for this plan.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_method: Option<String>,
-    /// The amount charged each billing period for recurring plans, in the plan's currency.
+    /// The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub renewal_price: Option<f64>,
     /// The maximum number of units available for purchase. Ignored when unlimited_stock is true.
@@ -65,7 +65,7 @@ pub struct UpdatePlansRequest {
     /// A comparison price displayed with a strikethrough for the renewal price.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub strike_through_renewal_price: Option<f64>,
-    /// 3D Secure behavior for this plan. Send `null` to inherit the account default.
+    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<UpdatePlansRequestThreeDsLevel>,
     /// The display name of the plan shown to customers on the product page.

@@ -22,10 +22,10 @@ impl AppBuildsClient {
     /// * `status` - Filter builds by review status.
     /// * `created_before` - Only return builds created before this ISO 8601 timestamp.
     /// * `created_after` - Only return builds created after this ISO 8601 timestamp.
-    /// * `first` - The number of builds to return (default 20, max 100).
-    /// * `after` - A cursor; returns builds after this position.
-    /// * `last` - The number of builds to return from the end of the range.
-    /// * `before` - A cursor; returns builds before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -68,6 +68,13 @@ impl AppBuildsClient {
         request: &AppBuildsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAppBuildsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -135,6 +142,13 @@ impl AppBuildsClient {
         request: &CreateAppBuildsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AppBuild, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -177,6 +191,13 @@ impl AppBuildsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AppBuild, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -219,6 +240,13 @@ impl AppBuildsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<AppBuild, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

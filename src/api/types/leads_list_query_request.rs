@@ -15,9 +15,6 @@ pub struct LeadsListQueryRequest {
     /// Returns the last _n_ elements from the list.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// The unique identifier of the company to list leads for.
-    #[serde(default)]
-    pub company_id: String,
     /// Only return leads created after this timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -31,6 +28,9 @@ pub struct LeadsListQueryRequest {
     /// Filter leads to only those associated with these specific product identifiers.
     #[serde(default)]
     pub product_ids: Vec<Option<String>>,
+    /// The unique identifier of the company to list leads for.
+    #[serde(default)]
+    pub account_id: String,
 }
 
 impl LeadsListQueryRequest {
@@ -46,10 +46,10 @@ pub struct LeadsListQueryRequestBuilder {
     before: Option<String>,
     first: Option<i64>,
     last: Option<i64>,
-    company_id: Option<String>,
     created_after: Option<DateTime<FixedOffset>>,
     created_before: Option<DateTime<FixedOffset>>,
     product_ids: Option<Vec<Option<String>>>,
+    account_id: Option<String>,
 }
 
 impl LeadsListQueryRequestBuilder {
@@ -73,11 +73,6 @@ impl LeadsListQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
-        self
-    }
-
     pub fn created_after(mut self, value: DateTime<FixedOffset>) -> Self {
         self.created_after = Some(value);
         self
@@ -93,24 +88,29 @@ impl LeadsListQueryRequestBuilder {
         self
     }
 
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`LeadsListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](LeadsListQueryRequestBuilder::company_id)
     /// - [`product_ids`](LeadsListQueryRequestBuilder::product_ids)
+    /// - [`account_id`](LeadsListQueryRequestBuilder::account_id)
     pub fn build(self) -> Result<LeadsListQueryRequest, BuildError> {
         Ok(LeadsListQueryRequest {
             after: self.after,
             before: self.before,
             first: self.first,
             last: self.last,
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
             created_after: self.created_after,
             created_before: self.created_before,
             product_ids: self
                 .product_ids
                 .ok_or_else(|| BuildError::missing_field("product_ids"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
         })
     }
 }

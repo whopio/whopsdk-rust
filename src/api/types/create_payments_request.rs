@@ -1,0 +1,178 @@
+pub use crate::prelude::*;
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+pub struct CreatePaymentsRequest {
+    /// The account to charge for, prefixed `biz_`.
+    #[serde(default)]
+    pub account_id: String,
+    /// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub auto_capture_after_minutes: Option<i64>,
+    /// Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub capture: Option<bool>,
+    /// A confirmation token describing a payment method the buyer just supplied. Provide this instead of `member_id` and `payment_method_id`; the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete — poll the payment's status for what to do next.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub confirmation_token: Option<String>,
+    /// Overrides the buyer email carried on the confirmation token, resolving or creating the user the payment belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub email: Option<String>,
+    /// What the buyer is purchasing. One entry charges that plan; several entries form a cart, which requires every plan to be a compatible plan from this account in the same currency.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub line_items: Option<Vec<CreatePaymentsRequestLineItemsItem>>,
+    /// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub member_id: Option<String>,
+    /// Custom metadata to attach to the payment.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<HashMap<String, Option<String>>>,
+    /// The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_method_id: Option<String>,
+    /// Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan: Option<CreatePaymentsRequestPlan>,
+    /// The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan_id: Option<String>,
+    /// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub promo_code_id: Option<String>,
+    /// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub return_url: Option<String>,
+    /// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_address: Option<CreatePaymentsRequestShippingAddress>,
+    /// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub statement_descriptor: Option<String>,
+}
+
+impl CreatePaymentsRequest {
+    pub fn builder() -> CreatePaymentsRequestBuilder {
+        <CreatePaymentsRequestBuilder as Default>::default()
+    }
+}
+
+#[derive(Clone, PartialEq, Default, Debug)]
+#[non_exhaustive]
+pub struct CreatePaymentsRequestBuilder {
+    account_id: Option<String>,
+    auto_capture_after_minutes: Option<i64>,
+    capture: Option<bool>,
+    confirmation_token: Option<String>,
+    email: Option<String>,
+    line_items: Option<Vec<CreatePaymentsRequestLineItemsItem>>,
+    member_id: Option<String>,
+    metadata: Option<HashMap<String, Option<String>>>,
+    payment_method_id: Option<String>,
+    plan: Option<CreatePaymentsRequestPlan>,
+    plan_id: Option<String>,
+    promo_code_id: Option<String>,
+    return_url: Option<String>,
+    shipping_address: Option<CreatePaymentsRequestShippingAddress>,
+    statement_descriptor: Option<String>,
+}
+
+impl CreatePaymentsRequestBuilder {
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
+    pub fn auto_capture_after_minutes(mut self, value: i64) -> Self {
+        self.auto_capture_after_minutes = Some(value);
+        self
+    }
+
+    pub fn capture(mut self, value: bool) -> Self {
+        self.capture = Some(value);
+        self
+    }
+
+    pub fn confirmation_token(mut self, value: impl Into<String>) -> Self {
+        self.confirmation_token = Some(value.into());
+        self
+    }
+
+    pub fn email(mut self, value: impl Into<String>) -> Self {
+        self.email = Some(value.into());
+        self
+    }
+
+    pub fn line_items(mut self, value: Vec<CreatePaymentsRequestLineItemsItem>) -> Self {
+        self.line_items = Some(value);
+        self
+    }
+
+    pub fn member_id(mut self, value: impl Into<String>) -> Self {
+        self.member_id = Some(value.into());
+        self
+    }
+
+    pub fn metadata(mut self, value: HashMap<String, Option<String>>) -> Self {
+        self.metadata = Some(value);
+        self
+    }
+
+    pub fn payment_method_id(mut self, value: impl Into<String>) -> Self {
+        self.payment_method_id = Some(value.into());
+        self
+    }
+
+    pub fn plan(mut self, value: CreatePaymentsRequestPlan) -> Self {
+        self.plan = Some(value);
+        self
+    }
+
+    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
+        self.plan_id = Some(value.into());
+        self
+    }
+
+    pub fn promo_code_id(mut self, value: impl Into<String>) -> Self {
+        self.promo_code_id = Some(value.into());
+        self
+    }
+
+    pub fn return_url(mut self, value: impl Into<String>) -> Self {
+        self.return_url = Some(value.into());
+        self
+    }
+
+    pub fn shipping_address(mut self, value: CreatePaymentsRequestShippingAddress) -> Self {
+        self.shipping_address = Some(value);
+        self
+    }
+
+    pub fn statement_descriptor(mut self, value: impl Into<String>) -> Self {
+        self.statement_descriptor = Some(value.into());
+        self
+    }
+
+    /// Consumes the builder and constructs a [`CreatePaymentsRequest`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`account_id`](CreatePaymentsRequestBuilder::account_id)
+    pub fn build(self) -> Result<CreatePaymentsRequest, BuildError> {
+        Ok(CreatePaymentsRequest {
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            auto_capture_after_minutes: self.auto_capture_after_minutes,
+            capture: self.capture,
+            confirmation_token: self.confirmation_token,
+            email: self.email,
+            line_items: self.line_items,
+            member_id: self.member_id,
+            metadata: self.metadata,
+            payment_method_id: self.payment_method_id,
+            plan: self.plan,
+            plan_id: self.plan_id,
+            promo_code_id: self.promo_code_id,
+            return_url: self.return_url,
+            shipping_address: self.shipping_address,
+            statement_descriptor: self.statement_descriptor,
+        })
+    }
+}

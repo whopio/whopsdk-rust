@@ -19,7 +19,7 @@ pub struct UpdateAccountsRequest {
     pub business_name: Option<String>,
     /// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub business_type: Option<UpdateAccountsRequestBusinessType>,
+    pub business_type: Option<String>,
     /// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub collect_vat_id: Option<bool>,
@@ -37,7 +37,7 @@ pub struct UpdateAccountsRequest {
     pub home_preferences: Option<Vec<UpdateAccountsRequestHomePreferencesItem>>,
     /// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub industry_group: Option<UpdateAccountsRequestIndustryGroup>,
+    pub industry_group: Option<String>,
     /// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub industry_type: Option<String>,
@@ -109,7 +109,7 @@ pub struct UpdateAccountsRequest {
     /// Determines whether tax is included in the listed price or added at checkout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_type: Option<UpdateAccountsRequestTaxType>,
-    /// Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
+    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<UpdateAccountsRequestThreeDsLevel>,
     /// The display name of the account.
@@ -118,6 +118,9 @@ pub struct UpdateAccountsRequest {
     /// Whether the account uses its logo as the fallback Open Graph image.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub use_logo_as_opengraph_image_fallback: Option<bool>,
+    /// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub website: Option<String>,
 }
 
 impl UpdateAccountsRequest {
@@ -134,13 +137,13 @@ pub struct UpdateAccountsRequestBuilder {
     banner_image: Option<UpdateAccountsRequestBannerImage>,
     business_address: Option<UpdateAccountsRequestBusinessAddress>,
     business_name: Option<String>,
-    business_type: Option<UpdateAccountsRequestBusinessType>,
+    business_type: Option<String>,
     collect_vat_id: Option<bool>,
     country: Option<String>,
     description: Option<String>,
     featured_affiliate_product_id: Option<String>,
     home_preferences: Option<Vec<UpdateAccountsRequestHomePreferencesItem>>,
-    industry_group: Option<UpdateAccountsRequestIndustryGroup>,
+    industry_group: Option<String>,
     industry_type: Option<String>,
     invoice_prefix: Option<String>,
     logo: Option<UpdateAccountsRequestLogo>,
@@ -167,6 +170,7 @@ pub struct UpdateAccountsRequestBuilder {
     three_ds_level: Option<UpdateAccountsRequestThreeDsLevel>,
     title: Option<String>,
     use_logo_as_opengraph_image_fallback: Option<bool>,
+    website: Option<String>,
 }
 
 impl UpdateAccountsRequestBuilder {
@@ -195,8 +199,8 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
-    pub fn business_type(mut self, value: UpdateAccountsRequestBusinessType) -> Self {
-        self.business_type = Some(value);
+    pub fn business_type(mut self, value: impl Into<String>) -> Self {
+        self.business_type = Some(value.into());
         self
     }
 
@@ -228,8 +232,8 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
-    pub fn industry_group(mut self, value: UpdateAccountsRequestIndustryGroup) -> Self {
-        self.industry_group = Some(value);
+    pub fn industry_group(mut self, value: impl Into<String>) -> Self {
+        self.industry_group = Some(value.into());
         self
     }
 
@@ -369,6 +373,11 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
+    pub fn website(mut self, value: impl Into<String>) -> Self {
+        self.website = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`UpdateAccountsRequest`].
     pub fn build(self) -> Result<UpdateAccountsRequest, BuildError> {
         Ok(UpdateAccountsRequest {
@@ -410,6 +419,7 @@ impl UpdateAccountsRequestBuilder {
             three_ds_level: self.three_ds_level,
             title: self.title,
             use_logo_as_opengraph_image_fallback: self.use_logo_as_opengraph_image_fallback,
+            website: self.website,
         })
     }
 }

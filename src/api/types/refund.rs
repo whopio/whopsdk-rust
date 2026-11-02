@@ -1,42 +1,57 @@
 pub use crate::prelude::*;
 
-/// A refund represents a full or partial reversal of a payment, including the amount, status, and payment provider.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Refund {
-    /// The refunded amount as a decimal in the specified currency, such as 10.43 for $10.43 USD.
+    /// The account that issued the refund, prefixed `biz_`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
+    /// The refunded amount as it settled, in the payment's settlement currency, so pages of refunds net against the payment's `refunded_amount`. Converted at the rate in force when the refund was issued, not the payment's original rate. Null only when no exchange rate is recorded for a legacy multi-currency payment.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<Money>,
+    /// When the refund was requested, as an ISO 8601 timestamp.
     #[serde(default)]
-    #[serde(with = "crate::core::number_serializers")]
-    pub amount: f64,
-    /// The datetime the refund was created.
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset")]
-    pub created_at: DateTime<FixedOffset>,
-    /// The three-letter ISO currency code for the refunded amount.
-    pub currency: Currencies,
-    /// The unique identifier for the refund.
+    pub created_at: String,
+    /// The provider's own explanation of the failure, or null.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub failure_message: Option<String>,
+    /// Why the refund failed, normalized across providers. Null unless the refund failed or was canceled.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub failure_reason: Option<RefundFailureReason>,
+    /// Refund ID, prefixed `rf_`.
     #[serde(default)]
     pub id: String,
-    /// The original payment that this refund was issued against. Null if the payment is no longer available.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment: Option<RefundPayment>,
-    /// The payment provider that processed the refund.
-    pub provider: PaymentProviders,
-    /// The timestamp when the refund was created in the payment provider's system. Null if not available from the provider.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    /// The refunded amount in the currency the processor moved.
     #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub provider_created_at: Option<DateTime<FixedOffset>>,
-    /// The availability status of the refund tracking reference from the payment processor. Null if no reference was provided.
+    pub original_amount: Money,
+    /// The payment this refund reverses, prefixed `pay_`.
+    #[serde(default)]
+    pub payment_id: String,
+    /// The payment provider that processed the refund, such as `paypal` or `coinbase`.
+    #[serde(default)]
+    pub provider: String,
+    /// When the provider created the refund, as an ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reference_status: Option<RefundReferenceStatuses>,
-    /// The type of tracking reference provided by the payment processor, such as an acquirer reference number. Null if no reference was provided.
+    pub provider_created_at: Option<String>,
+    /// Why the refund was issued, when recorded.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reference_type: Option<RefundReferenceTypes>,
-    /// The tracking reference value from the payment processor, used to trace the refund through banking networks. Null if no reference was provided.
+    pub reason: Option<RefundReason>,
+    /// Whether a banking-network tracking reference is available for this refund.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reference_status: Option<RefundReferenceStatus>,
+    /// The kind of tracking reference, such as an acquirer reference number.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reference_type: Option<RefundReferenceType>,
+    /// The tracking reference the buyer's bank can trace the refund by.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reference_value: Option<String>,
-    /// The current processing status of the refund, such as pending, succeeded, or failed.
-    pub status: RefundStatuses,
+    /// Where the refund stands with the processor: `pending`, `requires_action`, `succeeded`, `failed`, or `canceled`.
+    pub status: RefundStatus,
+    /// When the refund last changed, as an ISO 8601 timestamp.
+    #[serde(default)]
+    pub updated_at: String,
+    /// True when the card network initiated the refund through Rapid Dispute Resolution.
+    #[serde(default)]
+    pub visa_rdr: bool,
 }
 
 impl Refund {
@@ -48,32 +63,48 @@ impl Refund {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct RefundBuilder {
-    amount: Option<f64>,
-    created_at: Option<DateTime<FixedOffset>>,
-    currency: Option<Currencies>,
+    account_id: Option<String>,
+    amount: Option<Money>,
+    created_at: Option<String>,
+    failure_message: Option<String>,
+    failure_reason: Option<RefundFailureReason>,
     id: Option<String>,
-    payment: Option<RefundPayment>,
-    provider: Option<PaymentProviders>,
-    provider_created_at: Option<DateTime<FixedOffset>>,
-    reference_status: Option<RefundReferenceStatuses>,
-    reference_type: Option<RefundReferenceTypes>,
+    original_amount: Option<Money>,
+    payment_id: Option<String>,
+    provider: Option<String>,
+    provider_created_at: Option<String>,
+    reason: Option<RefundReason>,
+    reference_status: Option<RefundReferenceStatus>,
+    reference_type: Option<RefundReferenceType>,
     reference_value: Option<String>,
-    status: Option<RefundStatuses>,
+    status: Option<RefundStatus>,
+    updated_at: Option<String>,
+    visa_rdr: Option<bool>,
 }
 
 impl RefundBuilder {
-    pub fn amount(mut self, value: f64) -> Self {
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
+    pub fn amount(mut self, value: Money) -> Self {
         self.amount = Some(value);
         self
     }
 
-    pub fn created_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.created_at = Some(value);
+    pub fn created_at(mut self, value: impl Into<String>) -> Self {
+        self.created_at = Some(value.into());
         self
     }
 
-    pub fn currency(mut self, value: Currencies) -> Self {
-        self.currency = Some(value);
+    pub fn failure_message(mut self, value: impl Into<String>) -> Self {
+        self.failure_message = Some(value.into());
+        self
+    }
+
+    pub fn failure_reason(mut self, value: RefundFailureReason) -> Self {
+        self.failure_reason = Some(value);
         self
     }
 
@@ -82,27 +113,37 @@ impl RefundBuilder {
         self
     }
 
-    pub fn payment(mut self, value: RefundPayment) -> Self {
-        self.payment = Some(value);
+    pub fn original_amount(mut self, value: Money) -> Self {
+        self.original_amount = Some(value);
         self
     }
 
-    pub fn provider(mut self, value: PaymentProviders) -> Self {
-        self.provider = Some(value);
+    pub fn payment_id(mut self, value: impl Into<String>) -> Self {
+        self.payment_id = Some(value.into());
         self
     }
 
-    pub fn provider_created_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.provider_created_at = Some(value);
+    pub fn provider(mut self, value: impl Into<String>) -> Self {
+        self.provider = Some(value.into());
         self
     }
 
-    pub fn reference_status(mut self, value: RefundReferenceStatuses) -> Self {
+    pub fn provider_created_at(mut self, value: impl Into<String>) -> Self {
+        self.provider_created_at = Some(value.into());
+        self
+    }
+
+    pub fn reason(mut self, value: RefundReason) -> Self {
+        self.reason = Some(value);
+        self
+    }
+
+    pub fn reference_status(mut self, value: RefundReferenceStatus) -> Self {
         self.reference_status = Some(value);
         self
     }
 
-    pub fn reference_type(mut self, value: RefundReferenceTypes) -> Self {
+    pub fn reference_type(mut self, value: RefundReferenceType) -> Self {
         self.reference_type = Some(value);
         self
     }
@@ -112,42 +153,64 @@ impl RefundBuilder {
         self
     }
 
-    pub fn status(mut self, value: RefundStatuses) -> Self {
+    pub fn status(mut self, value: RefundStatus) -> Self {
         self.status = Some(value);
+        self
+    }
+
+    pub fn updated_at(mut self, value: impl Into<String>) -> Self {
+        self.updated_at = Some(value.into());
+        self
+    }
+
+    pub fn visa_rdr(mut self, value: bool) -> Self {
+        self.visa_rdr = Some(value);
         self
     }
 
     /// Consumes the builder and constructs a [`Refund`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`amount`](RefundBuilder::amount)
     /// - [`created_at`](RefundBuilder::created_at)
-    /// - [`currency`](RefundBuilder::currency)
     /// - [`id`](RefundBuilder::id)
+    /// - [`original_amount`](RefundBuilder::original_amount)
+    /// - [`payment_id`](RefundBuilder::payment_id)
     /// - [`provider`](RefundBuilder::provider)
     /// - [`status`](RefundBuilder::status)
+    /// - [`updated_at`](RefundBuilder::updated_at)
+    /// - [`visa_rdr`](RefundBuilder::visa_rdr)
     pub fn build(self) -> Result<Refund, BuildError> {
         Ok(Refund {
-            amount: self
-                .amount
-                .ok_or_else(|| BuildError::missing_field("amount"))?,
+            account_id: self.account_id,
+            amount: self.amount,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
-            currency: self
-                .currency
-                .ok_or_else(|| BuildError::missing_field("currency"))?,
+            failure_message: self.failure_message,
+            failure_reason: self.failure_reason,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
-            payment: self.payment,
+            original_amount: self
+                .original_amount
+                .ok_or_else(|| BuildError::missing_field("original_amount"))?,
+            payment_id: self
+                .payment_id
+                .ok_or_else(|| BuildError::missing_field("payment_id"))?,
             provider: self
                 .provider
                 .ok_or_else(|| BuildError::missing_field("provider"))?,
             provider_created_at: self.provider_created_at,
+            reason: self.reason,
             reference_status: self.reference_status,
             reference_type: self.reference_type,
             reference_value: self.reference_value,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
+            updated_at: self
+                .updated_at
+                .ok_or_else(|| BuildError::missing_field("updated_at"))?,
+            visa_rdr: self
+                .visa_rdr
+                .ok_or_else(|| BuildError::missing_field("visa_rdr"))?,
         })
     }
 }

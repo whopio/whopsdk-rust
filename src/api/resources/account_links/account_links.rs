@@ -39,7 +39,7 @@ impl AccountLinksClient {
     ///         .account_links
     ///         .create(
     ///             &CreateAccountLinksRequest {
-    ///                 company_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 refresh_url: "refresh_url".to_string(),
     ///                 return_url: "return_url".to_string(),
     ///                 use_case: AccountLinkUseCases::AccountOnboarding,
@@ -54,6 +54,13 @@ impl AccountLinksClient {
         request: &CreateAccountLinksRequest,
         options: Option<RequestOptions>,
     ) -> Result<AccountLink, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

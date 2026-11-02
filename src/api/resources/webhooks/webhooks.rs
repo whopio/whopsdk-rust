@@ -21,10 +21,10 @@ impl WebhooksClient {
     /// * `app_id` - Only return webhooks attached to this app. Omit to list the account's own webhooks.
     /// * `include_app_webhooks` - Also return webhooks attached to the account's apps, not just the account's own. Cannot be combined with `app_id`.
     /// * `has_failures` - Only return webhooks whose endpoint is currently failing — every delivery since the current failure streak began has been rejected. Clears as soon as a delivery succeeds.
-    /// * `first` - The number of webhooks to return (default 20, max 100).
-    /// * `after` - A cursor; returns webhooks after this position.
-    /// * `last` - The number of webhooks to return from the end of the range.
-    /// * `before` - A cursor; returns webhooks before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -66,6 +66,13 @@ impl WebhooksClient {
         request: &WebhooksListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -129,6 +136,13 @@ impl WebhooksClient {
         request: &CreateWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<Webhook, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -171,6 +185,13 @@ impl WebhooksClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Webhook, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -213,6 +234,13 @@ impl WebhooksClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -265,6 +293,13 @@ impl WebhooksClient {
         request: &UpdateWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<Webhook, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -281,8 +316,8 @@ impl WebhooksClient {
     /// # Arguments
     ///
     /// * `id` - Webhook ID, prefixed `hook_`.
-    /// * `first` - The number of deliveries to return (default 50, max 100).
-    /// * `after` - A cursor; returns deliveries after this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -319,6 +354,13 @@ impl WebhooksClient {
         request: &ListDeliveriesQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListDeliveriesWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -377,6 +419,13 @@ impl WebhooksClient {
         request: &ReplayDeliveryWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<ReplayDeliveryWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -433,6 +482,13 @@ impl WebhooksClient {
         request: &ReplayWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<ReplayWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -485,78 +541,19 @@ impl WebhooksClient {
         request: &TestWebhooksRequest,
         options: Option<RequestOptions>,
     ) -> Result<TestWebhooksResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
                 &format!("webhooks/{}/test", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
                 None,
-                options,
-            )
-            .await
-    }
-
-    /// Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
-    ///
-    /// Required permissions:
-    /// - `developer:manage_webhook`
-    ///
-    /// # Arguments
-    ///
-    /// * `webhook_id` - The unique identifier of the webhook to list deliveries for.
-    /// * `after` - Returns the elements in the list that come after the specified cursor.
-    /// * `before` - Returns the elements in the list that come before the specified cursor.
-    /// * `first` - Returns the first _n_ elements from the list.
-    /// * `last` - Returns the last _n_ elements from the list.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .webhooks
-    ///         .deliveries_webhook(
-    ///             &"webhook_id".to_string(),
-    ///             &DeliveriesWebhookQueryRequest {
-    ///                 first: Some(42),
-    ///                 last: Some(42),
-    ///                 ..Default::default()
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn deliveries_webhook(
-        &self,
-        webhook_id: &str,
-        request: &DeliveriesWebhookQueryRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<DeliveriesWebhookResponse, ApiError> {
-        self.http_client
-            .execute_request(
-                Method::GET,
-                &format!("webhooks/{}/deliveries", webhook_id),
-                None,
-                QueryBuilder::new()
-                    .string("after", request.after.clone())
-                    .string("before", request.before.clone())
-                    .int("first", request.first.clone())
-                    .int("last", request.last.clone())
-                    .build(),
                 options,
             )
             .await

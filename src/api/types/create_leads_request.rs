@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct CreateLeadsRequest {
     /// The unique identifier of the company to create the lead for, starting with 'biz_'.
     #[serde(default)]
-    pub company_id: String,
+    pub account_id: String,
     /// A JSON object of custom metadata to attach to the lead for tracking purposes.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<HashMap<String, serde_json::Value>>,
@@ -28,7 +28,7 @@ impl CreateLeadsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateLeadsRequestBuilder {
-    company_id: Option<String>,
+    account_id: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
     product_id: Option<String>,
     referrer: Option<String>,
@@ -36,8 +36,8 @@ pub struct CreateLeadsRequestBuilder {
 }
 
 impl CreateLeadsRequestBuilder {
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -63,12 +63,12 @@ impl CreateLeadsRequestBuilder {
 
     /// Consumes the builder and constructs a [`CreateLeadsRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](CreateLeadsRequestBuilder::company_id)
+    /// - [`account_id`](CreateLeadsRequestBuilder::account_id)
     pub fn build(self) -> Result<CreateLeadsRequest, BuildError> {
         Ok(CreateLeadsRequest {
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
             metadata: self.metadata,
             product_id: self.product_id,
             referrer: self.referrer,

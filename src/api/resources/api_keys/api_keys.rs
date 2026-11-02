@@ -21,10 +21,10 @@ impl ApiKeysClient {
     /// * `resource_type` - The type of resource that owns the API keys.
     /// * `created_before` - Only return API keys created before this ISO 8601 timestamp.
     /// * `created_after` - Only return API keys created after this ISO 8601 timestamp.
-    /// * `first` - The number of API keys to return (default 20, max 100).
-    /// * `after` - A cursor; returns API keys after this position.
-    /// * `last` - The number of API keys to return from the end of the range.
-    /// * `before` - A cursor; returns API keys before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort API keys by.
     /// * `direction` - Sort direction.
     /// * `options` - Additional request options such as headers, timeout, etc.
@@ -70,6 +70,13 @@ impl ApiKeysClient {
         request: &ApiKeysListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListApiKeysResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -138,6 +145,13 @@ impl ApiKeysClient {
         request: &CreateApiKeysRequest,
         options: Option<RequestOptions>,
     ) -> Result<ApiKey, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -178,6 +192,13 @@ impl ApiKeysClient {
         &self,
         options: Option<RequestOptions>,
     ) -> Result<ListPermissionsApiKeysResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, "api_keys/permissions", None, None, options)
             .await
@@ -214,6 +235,13 @@ impl ApiKeysClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ApiKey, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -256,6 +284,13 @@ impl ApiKeysClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteApiKeysResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -308,6 +343,13 @@ impl ApiKeysClient {
         request: &UpdateApiKeysRequest,
         options: Option<RequestOptions>,
     ) -> Result<ApiKey, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -350,6 +392,13 @@ impl ApiKeysClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<ApiKey, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

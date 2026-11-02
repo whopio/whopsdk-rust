@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// New billing address. Requires line1, city, region, postal_code, and country_code. On an invited card, passing billing alone (as the invited user) completes onboarding and starts card provisioning.
+/// The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdateCardsRequestBilling {
     /// Billing city.
@@ -18,9 +18,9 @@ pub struct UpdateCardsRequestBilling {
     /// Billing postal code.
     #[serde(default)]
     pub postal_code: String,
-    /// Billing region or state.
-    #[serde(default)]
-    pub region: String,
+    /// Billing region or state. Required when updating an issued card's billing address.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub region: Option<String>,
 }
 
 impl UpdateCardsRequestBilling {
@@ -77,7 +77,6 @@ impl UpdateCardsRequestBillingBuilder {
     /// - [`country_code`](UpdateCardsRequestBillingBuilder::country_code)
     /// - [`line1`](UpdateCardsRequestBillingBuilder::line1)
     /// - [`postal_code`](UpdateCardsRequestBillingBuilder::postal_code)
-    /// - [`region`](UpdateCardsRequestBillingBuilder::region)
     pub fn build(self) -> Result<UpdateCardsRequestBilling, BuildError> {
         Ok(UpdateCardsRequestBilling {
             city: self.city.ok_or_else(|| BuildError::missing_field("city"))?,
@@ -91,9 +90,7 @@ impl UpdateCardsRequestBillingBuilder {
             postal_code: self
                 .postal_code
                 .ok_or_else(|| BuildError::missing_field("postal_code"))?,
-            region: self
-                .region
-                .ok_or_else(|| BuildError::missing_field("region"))?,
+            region: self.region,
         })
     }
 }

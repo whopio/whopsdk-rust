@@ -4,9 +4,12 @@ use reqwest::Method;
 
 pub mod businesses;
 pub use businesses::BusinessesClient;
+pub mod links;
+pub use links::LinksClient;
 pub struct PartnersClient {
     pub http_client: HttpClient,
     pub businesses: BusinessesClient,
+    pub links: LinksClient,
 }
 
 impl PartnersClient {
@@ -14,6 +17,7 @@ impl PartnersClient {
         Ok(Self {
             http_client: HttpClient::new(config.clone())?,
             businesses: BusinessesClient::new(config.clone())?,
+            links: LinksClient::new(config.clone())?,
         })
     }
 
@@ -46,6 +50,13 @@ impl PartnersClient {
         &self,
         options: Option<RequestOptions>,
     ) -> Result<CreatePartnersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::POST, "partners", None, None, options)
             .await
@@ -90,6 +101,13 @@ impl PartnersClient {
         request: &LeaderboardQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<LeaderboardPartnersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -109,10 +127,10 @@ impl PartnersClient {
     ///
     /// * `has_businesses` - When true, only referred users who brought at least one business onto Whop.
     /// * `has_earning_businesses` - When true, only referred users with at least one business that has generated earnings.
-    /// * `first` - Number of referred users to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of referred users to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -147,6 +165,13 @@ impl PartnersClient {
         request: &ReferredUsersQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ReferredUsersPartnersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -163,6 +188,55 @@ impl PartnersClient {
                     .int("last", request.last.clone())
                     .string("before", request.before.clone())
                     .build(),
+                options,
+            )
+            .await
+    }
+
+    /// Retrieves the authenticated user's public profile, enrollment date, partner verification timestamp, verification waitlist status, active direct business referral count, and default payout rates. Use me or the authenticated user's own user ID; other users are not accessible. Users who have not enrolled have a null joined_at. Retrieve referral URLs and promotion links from GET /partners/links.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - The authenticated partner's user ID, prefixed user_, or me. Other users' profiles are not accessible.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client.partners.retrieve(&"me".to_string(), None).await;
+    /// }
+    /// ```
+    pub async fn retrieve(
+        &self,
+        id: &str,
+        options: Option<RequestOptions>,
+    ) -> Result<Partner, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::GET,
+                &format!("partners/{}", id),
+                None,
+                None,
                 options,
             )
             .await

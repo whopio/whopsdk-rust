@@ -8,7 +8,7 @@ pub struct RetrieveStatsResponseData {
     /// One entry per period, oldest first.
     #[serde(default)]
     pub points: Vec<RetrieveStatsResponseDataPointsItem>,
-    /// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and unique-people counts exist only at window level.
+    /// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and whole-window unique people are distinct across every bucket.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub totals: Option<Vec<RetrieveStatsResponseDataTotalsItem>>,
 }

@@ -19,13 +19,13 @@ pub struct EventsListQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub to: Option<DateTime<FixedOffset>>,
-    /// The number of events to return.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// A cursor for fetching events after a previous page.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// A cursor for fetching events before a later page.
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
     /// The order events are returned in by time. Defaults to desc (most recent first); asc reads a journey forwards from where it starts. after and before always page forwards and backwards through that order.
@@ -34,7 +34,7 @@ pub struct EventsListQueryRequest {
     /// Full event names to filter by, comma-separated (payment.completed, pixel.lead, pixel.page, pixel.custom:<name>) — the same vocabulary the events / people metrics use.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub event: Option<String>,
-    /// Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct). Restricts the list to conversion targets attributed to that source — the debuggability twin of a metric cell's source parameter.
+    /// Canonical source path, exact or with a trailing :* prefix (whop:<campaign>:*, ext:meta:*, referrer:<domain>, direct, unknown). Selects conversions credited to this source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<String>,
     /// Attribution model for the source filter (defaults to last_touch).

@@ -21,6 +21,7 @@ pub enum SpecificFeeOrigins {
     StripePayoutFee,
     DisputeFee,
     DisputeAlertFee,
+    DisputeRepresentmentFee,
     AppleProcessingFee,
     BuyerFee,
     SezzleProcessingFee,
@@ -36,6 +37,7 @@ pub enum SpecificFeeOrigins {
     RevsharePercentageFee,
     ApplicationFee,
     HighRiskMerchantFee,
+    EconomicIntelligencePercentageFee,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -71,6 +73,7 @@ impl Serialize for SpecificFeeOrigins {
             Self::StripePayoutFee => serializer.serialize_str("stripe_payout_fee"),
             Self::DisputeFee => serializer.serialize_str("dispute_fee"),
             Self::DisputeAlertFee => serializer.serialize_str("dispute_alert_fee"),
+            Self::DisputeRepresentmentFee => serializer.serialize_str("dispute_representment_fee"),
             Self::AppleProcessingFee => serializer.serialize_str("apple_processing_fee"),
             Self::BuyerFee => serializer.serialize_str("buyer_fee"),
             Self::SezzleProcessingFee => serializer.serialize_str("sezzle_processing_fee"),
@@ -96,6 +99,9 @@ impl Serialize for SpecificFeeOrigins {
             Self::RevsharePercentageFee => serializer.serialize_str("revshare_percentage_fee"),
             Self::ApplicationFee => serializer.serialize_str("application_fee"),
             Self::HighRiskMerchantFee => serializer.serialize_str("high_risk_merchant_fee"),
+            Self::EconomicIntelligencePercentageFee => {
+                serializer.serialize_str("economic_intelligence_percentage_fee")
+            }
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -122,6 +128,7 @@ impl<'de> Deserialize<'de> for SpecificFeeOrigins {
             "stripe_payout_fee" => Ok(Self::StripePayoutFee),
             "dispute_fee" => Ok(Self::DisputeFee),
             "dispute_alert_fee" => Ok(Self::DisputeAlertFee),
+            "dispute_representment_fee" => Ok(Self::DisputeRepresentmentFee),
             "apple_processing_fee" => Ok(Self::AppleProcessingFee),
             "buyer_fee" => Ok(Self::BuyerFee),
             "sezzle_processing_fee" => Ok(Self::SezzleProcessingFee),
@@ -137,6 +144,7 @@ impl<'de> Deserialize<'de> for SpecificFeeOrigins {
             "revshare_percentage_fee" => Ok(Self::RevsharePercentageFee),
             "application_fee" => Ok(Self::ApplicationFee),
             "high_risk_merchant_fee" => Ok(Self::HighRiskMerchantFee),
+            "economic_intelligence_percentage_fee" => Ok(Self::EconomicIntelligencePercentageFee),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -164,6 +172,7 @@ impl fmt::Display for SpecificFeeOrigins {
             Self::StripePayoutFee => write!(f, "stripe_payout_fee"),
             Self::DisputeFee => write!(f, "dispute_fee"),
             Self::DisputeAlertFee => write!(f, "dispute_alert_fee"),
+            Self::DisputeRepresentmentFee => write!(f, "dispute_representment_fee"),
             Self::AppleProcessingFee => write!(f, "apple_processing_fee"),
             Self::BuyerFee => write!(f, "buyer_fee"),
             Self::SezzleProcessingFee => write!(f, "sezzle_processing_fee"),
@@ -179,6 +188,9 @@ impl fmt::Display for SpecificFeeOrigins {
             Self::RevsharePercentageFee => write!(f, "revshare_percentage_fee"),
             Self::ApplicationFee => write!(f, "application_fee"),
             Self::HighRiskMerchantFee => write!(f, "high_risk_merchant_fee"),
+            Self::EconomicIntelligencePercentageFee => {
+                write!(f, "economic_intelligence_percentage_fee")
+            }
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

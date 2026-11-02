@@ -5,6 +5,7 @@ pub use crate::prelude::*;
 pub enum ListBusinessesRequestTier {
     First,
     Second,
+    Blueprint,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -15,6 +16,7 @@ impl Serialize for ListBusinessesRequestTier {
         match self {
             Self::First => serializer.serialize_str("first"),
             Self::Second => serializer.serialize_str("second"),
+            Self::Blueprint => serializer.serialize_str("blueprint"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -26,6 +28,7 @@ impl<'de> Deserialize<'de> for ListBusinessesRequestTier {
         match value.as_str() {
             "first" => Ok(Self::First),
             "second" => Ok(Self::Second),
+            "blueprint" => Ok(Self::Blueprint),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -36,6 +39,7 @@ impl fmt::Display for ListBusinessesRequestTier {
         match self {
             Self::First => write!(f, "first"),
             Self::Second => write!(f, "second"),
+            Self::Blueprint => write!(f, "blueprint"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

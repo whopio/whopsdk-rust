@@ -13,21 +13,23 @@ impl AppsClient {
         })
     }
 
-    /// Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication, except for the publicly readable lists: `verified_apps_only=true`, and `app_type=website` with no `account_id`, which returns every live deployed website that Whop has not verified — verified templates are the curated `verified_apps_only=true` list instead.
+    /// Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication except for Whop's public app and website discovery lists. Public website discovery includes built official blueprints (verified apps with a product) and built, live community blueprints that Whop recommends.
     ///
     /// # Arguments
     ///
     /// * `account_id` - Only return apps created by this account (`biz_` tag). With developer access to the account this includes its unlisted and hidden apps.
     /// * `app_type` - Filter apps by the type of end-user they are built for. Apps of type `website` are left out unless you ask for them by name.
     /// * `view_type` - Only return apps supporting this view type, such as `dashboard` or `hub`.
-    /// * `verified_apps_only` - Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
+    /// * `verified` - Only return apps whose Whop verification status matches this value. Omit this filter to include every verification status the caller can see.
+    /// * `verified_apps_only` - Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
+    /// * `recommended` - Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
     /// * `query` - A search string matched against app names.
-    /// * `order` - The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
+    /// * `order` - The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
     /// * `direction` - Sort direction.
-    /// * `first` - The number of apps to return (default 20, max 100).
-    /// * `after` - A cursor; returns apps after this position.
-    /// * `last` - The number of apps to return from the end of the range.
-    /// * `before` - A cursor; returns apps before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -62,6 +64,13 @@ impl AppsClient {
         request: &AppsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListAppsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -71,7 +80,9 @@ impl AppsClient {
                     .string("account_id", request.account_id.clone())
                     .serialize("app_type", request.app_type.clone())
                     .serialize("view_type", request.view_type.clone())
+                    .bool("verified", request.verified.clone())
                     .bool("verified_apps_only", request.verified_apps_only.clone())
+                    .bool("recommended", request.recommended.clone())
                     .structured_query("query", request.query.clone())
                     .serialize("order", request.order.clone())
                     .serialize("direction", request.direction.clone())
@@ -129,6 +140,13 @@ impl AppsClient {
         request: &CreateAppsRequest,
         options: Option<RequestOptions>,
     ) -> Result<App, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -140,71 +158,11 @@ impl AppsClient {
             .await
     }
 
-    /// Updates the permission requirements for an app
-    ///
-    /// Required permissions:
-    /// - `developer:update_app_authorization`
+    /// Retrieves an app by ID, claimed route, active verified custom hostname, or proxy domain id. Custom hostnames return 404 for inactive assignments, suspended accounts, or deleted apps. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
     ///
     /// # Arguments
     ///
-    /// * `app_id` - The ID of the app the permission requirements are being updated for
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .apps
-    ///         .update_permissions_app(
-    ///             &"app_id".to_string(),
-    ///             &UpdatePermissionsAppRequest {
-    ///                 requested_permissions: vec![UpdatePermissionsAppRequestRequestedPermissionsItem {
-    ///                     action: "action".to_string(),
-    ///                     is_required: true,
-    ///                     justification: "justification".to_string(),
-    ///                     ..Default::default()
-    ///                 }],
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn update_permissions_app(
-        &self,
-        app_id: &str,
-        request: &UpdatePermissionsAppRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<bool, ApiError> {
-        self.http_client
-            .execute_request(
-                Method::PATCH,
-                &format!("apps/{}/permissions", app_id),
-                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Retrieves an app by ID, claimed route, or proxy domain id. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+    /// * `id` - App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -231,6 +189,13 @@ impl AppsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<App, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::GET, &format!("apps/{}", id), None, None, options)
             .await
@@ -240,7 +205,7 @@ impl AppsClient {
     ///
     /// # Arguments
     ///
-    /// * `id` - App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+    /// * `id` - App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -267,6 +232,13 @@ impl AppsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeleteAppsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(Method::DELETE, &format!("apps/{}", id), None, None, options)
             .await
@@ -276,7 +248,7 @@ impl AppsClient {
     ///
     /// # Arguments
     ///
-    /// * `id` - App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+    /// * `id` - App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -313,6 +285,13 @@ impl AppsClient {
         request: &UpdateAppsRequest,
         options: Option<RequestOptions>,
     ) -> Result<App, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -365,6 +344,13 @@ impl AppsClient {
         request: &DeployAppsRequest,
         options: Option<RequestOptions>,
     ) -> Result<AppDeployment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -376,7 +362,7 @@ impl AppsClient {
             .await
     }
 
-    /// Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.app hosting. Logs are retained for 7 days.
+    /// Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.site hosting. Logs are retained for 7 days.
     ///
     /// # Arguments
     ///
@@ -386,9 +372,9 @@ impl AppsClient {
     /// * `query` - Only return logs whose message contains this text (case-insensitive).
     /// * `created_after` - Start of the time window as an ISO 8601 timestamp. Defaults to 7 days before created_before.
     /// * `created_before` - End of the time window as an ISO 8601 timestamp. Defaults to now.
-    /// * `first` - The number of log lines to return (max 500).
-    /// * `after` - A cursor for fetching logs after a previous page.
-    /// * `before` - A cursor for fetching logs before a later page.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -425,6 +411,13 @@ impl AppsClient {
         request: &LogsQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<LogsAppsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -492,6 +485,13 @@ impl AppsClient {
         request: &UpdatePermissionsAppsRequest,
         options: Option<RequestOptions>,
     ) -> Result<App, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

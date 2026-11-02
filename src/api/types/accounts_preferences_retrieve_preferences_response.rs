@@ -4,6 +4,9 @@ pub use crate::prelude::*;
 pub struct RetrievePreferencesResponse {
     /// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
     pub ads_agreement: RetrievePreferencesResponseAdsAgreement,
+    /// The account's advertising certifications, one entry per certification type Whop offers. Start an application by setting a type's `status` to `pending_information` via `PATCH`, then answer the fields it requests via `GET`/`PATCH /verifications/{id}`.
+    #[serde(default)]
+    pub ads_certifications: Vec<RetrievePreferencesResponseAdsCertificationsItem>,
     /// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ads_payment_methods: Option<RetrievePreferencesResponseAdsPaymentMethods>,
@@ -13,14 +16,20 @@ pub struct RetrievePreferencesResponse {
     /// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Defaults to `America/New_York` until explicitly overridden.
     #[serde(default)]
     pub ads_scheduling_timezone: String,
-    /// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
+    /// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
     pub ads_triple_whale_integration: RetrievePreferencesResponseAdsTripleWhaleIntegration,
     /// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
     #[serde(default)]
     pub cards_auto_top_up: bool,
+    /// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
+    #[serde(default)]
+    pub cards_notifications: bool,
     /// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
     #[serde(default)]
     pub dispute_fighter_enabled: bool,
+    /// Whether economic intelligence is enabled for the account.
+    #[serde(default)]
+    pub economic_intelligence: bool,
 }
 
 impl RetrievePreferencesResponse {
@@ -33,17 +42,28 @@ impl RetrievePreferencesResponse {
 #[non_exhaustive]
 pub struct RetrievePreferencesResponseBuilder {
     ads_agreement: Option<RetrievePreferencesResponseAdsAgreement>,
+    ads_certifications: Option<Vec<RetrievePreferencesResponseAdsCertificationsItem>>,
     ads_payment_methods: Option<RetrievePreferencesResponseAdsPaymentMethods>,
     ads_reporting_currency: Option<String>,
     ads_scheduling_timezone: Option<String>,
     ads_triple_whale_integration: Option<RetrievePreferencesResponseAdsTripleWhaleIntegration>,
     cards_auto_top_up: Option<bool>,
+    cards_notifications: Option<bool>,
     dispute_fighter_enabled: Option<bool>,
+    economic_intelligence: Option<bool>,
 }
 
 impl RetrievePreferencesResponseBuilder {
     pub fn ads_agreement(mut self, value: RetrievePreferencesResponseAdsAgreement) -> Self {
         self.ads_agreement = Some(value);
+        self
+    }
+
+    pub fn ads_certifications(
+        mut self,
+        value: Vec<RetrievePreferencesResponseAdsCertificationsItem>,
+    ) -> Self {
+        self.ads_certifications = Some(value);
         self
     }
 
@@ -78,24 +98,40 @@ impl RetrievePreferencesResponseBuilder {
         self
     }
 
+    pub fn cards_notifications(mut self, value: bool) -> Self {
+        self.cards_notifications = Some(value);
+        self
+    }
+
     pub fn dispute_fighter_enabled(mut self, value: bool) -> Self {
         self.dispute_fighter_enabled = Some(value);
+        self
+    }
+
+    pub fn economic_intelligence(mut self, value: bool) -> Self {
+        self.economic_intelligence = Some(value);
         self
     }
 
     /// Consumes the builder and constructs a [`RetrievePreferencesResponse`].
     /// This method will fail if any of the following fields are not set:
     /// - [`ads_agreement`](RetrievePreferencesResponseBuilder::ads_agreement)
+    /// - [`ads_certifications`](RetrievePreferencesResponseBuilder::ads_certifications)
     /// - [`ads_reporting_currency`](RetrievePreferencesResponseBuilder::ads_reporting_currency)
     /// - [`ads_scheduling_timezone`](RetrievePreferencesResponseBuilder::ads_scheduling_timezone)
     /// - [`ads_triple_whale_integration`](RetrievePreferencesResponseBuilder::ads_triple_whale_integration)
     /// - [`cards_auto_top_up`](RetrievePreferencesResponseBuilder::cards_auto_top_up)
+    /// - [`cards_notifications`](RetrievePreferencesResponseBuilder::cards_notifications)
     /// - [`dispute_fighter_enabled`](RetrievePreferencesResponseBuilder::dispute_fighter_enabled)
+    /// - [`economic_intelligence`](RetrievePreferencesResponseBuilder::economic_intelligence)
     pub fn build(self) -> Result<RetrievePreferencesResponse, BuildError> {
         Ok(RetrievePreferencesResponse {
             ads_agreement: self
                 .ads_agreement
                 .ok_or_else(|| BuildError::missing_field("ads_agreement"))?,
+            ads_certifications: self
+                .ads_certifications
+                .ok_or_else(|| BuildError::missing_field("ads_certifications"))?,
             ads_payment_methods: self.ads_payment_methods,
             ads_reporting_currency: self
                 .ads_reporting_currency
@@ -109,9 +145,15 @@ impl RetrievePreferencesResponseBuilder {
             cards_auto_top_up: self
                 .cards_auto_top_up
                 .ok_or_else(|| BuildError::missing_field("cards_auto_top_up"))?,
+            cards_notifications: self
+                .cards_notifications
+                .ok_or_else(|| BuildError::missing_field("cards_notifications"))?,
             dispute_fighter_enabled: self
                 .dispute_fighter_enabled
                 .ok_or_else(|| BuildError::missing_field("dispute_fighter_enabled"))?,
+            economic_intelligence: self
+                .economic_intelligence
+                .ok_or_else(|| BuildError::missing_field("economic_intelligence"))?,
         })
     }
 }

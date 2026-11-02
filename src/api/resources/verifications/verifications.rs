@@ -56,6 +56,13 @@ impl VerificationsClient {
         request: &VerificationsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListVerificationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -71,11 +78,10 @@ impl VerificationsClient {
             .await
     }
 
-    /// Starts a hosted verification session for an account or user, or returns the active session when one already exists. Any fields you include in the request body are used to prefill the session. Send `documents` (with `document_type`) to instead verify the person from identity documents included in this request — no hosted session involved. Send `share_token` to reuse a verification another Sumsub account has already completed for this person, instead of verifying them again. If the account already has an `approved` verification the request is rejected; unlink it first to start a new one.
+    /// Starts a hosted verification session for an account or user, or returns the active session when one already exists. Any fields you include in the request body are used to prefill the session. Send `documents` (with `document_type`) to instead verify the person from identity documents included in this request — no hosted session involved. Send `share_token` to reuse a verification another Sumsub account has already completed for this person, instead of verifying them again. Send `verification_id` to reuse a verification the signed-in user already completed on Whop. Every mode except `verification_id` is rejected once the account has an `approved` verification — unlink it first to start a new one — while `verification_id` replaces whichever verification of that kind the account currently has.
     ///
     /// # Arguments
     ///
-    /// * `account_id` - Account or user ID whose identity you want to verify. Use a `biz_` account ID for account verifications, or the caller's `user_` ID for personal verification.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -97,12 +103,9 @@ impl VerificationsClient {
     ///     client
     ///         .verifications
     ///         .create(
-    ///             &CreateRequest {
-    ///                 account_id: "account_id".to_string(),
-    ///                 body: CreateVerificationsRequestBody::Individual {
-    ///                     data: CreateVerificationsRequestBodyIndividual {
-    ///                         ..Default::default()
-    ///                     },
+    ///             &CreateVerificationsRequestBody::Individual {
+    ///                 data: CreateVerificationsRequestBodyIndividual {
+    ///                     ..Default::default()
     ///                 },
     ///             },
     ///             None,
@@ -112,17 +115,22 @@ impl VerificationsClient {
     /// ```
     pub async fn create(
         &self,
-        request: &CreateRequest,
+        request: &CreateVerificationsRequestBody,
         options: Option<RequestOptions>,
     ) -> Result<CreateVerificationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
                 "verifications",
-                Some(serde_json::to_value(&request.body).map_err(ApiError::Serialization)?),
-                QueryBuilder::new()
-                    .string("account_id", request.account_id.clone())
-                    .build(),
+                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
+                None,
                 options,
             )
             .await
@@ -159,6 +167,13 @@ impl VerificationsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<RetrieveVerificationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -213,6 +228,13 @@ impl VerificationsClient {
         request: &UpdateVerificationsRequestBody,
         options: Option<RequestOptions>,
     ) -> Result<UpdateVerificationsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

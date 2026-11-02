@@ -30,10 +30,10 @@ impl UsersClient {
     /// # Arguments
     ///
     /// * `query` - A search term to filter users by name or username.
-    /// * `first` - The number of users to return (max 50).
-    /// * `after` - A cursor; returns users after this position.
-    /// * `last` - The number of users to return from the end of the range.
-    /// * `before` - A cursor; returns users before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -68,6 +68,13 @@ impl UsersClient {
         request: &UsersListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListUsersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -90,6 +97,7 @@ impl UsersClient {
     /// # Arguments
     ///
     /// * `account_id` - When set, returns your account-specific profile overrides for this account.
+    /// * `include_balance` - Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
     /// * `include_balance_history` - Also compute your balance history (opt-in; runs a heavier query). Ignored for callers without balance-read scope.
     /// * `from` - Balance-history window start, ISO 8601 date or datetime. Defaults to 30 days ago. Only used with `include_balance_history`.
     /// * `to` - Balance-history window end, ISO 8601 date or datetime. Defaults to now. Only used with `include_balance_history`.
@@ -129,6 +137,13 @@ impl UsersClient {
         request: &MeQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<User, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -136,6 +151,7 @@ impl UsersClient {
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .bool("include_balance", request.include_balance.clone())
                     .bool(
                         "include_balance_history",
                         request.include_balance_history.clone(),
@@ -189,6 +205,13 @@ impl UsersClient {
         request: &UpdateMeUsersRequest,
         options: Option<RequestOptions>,
     ) -> Result<User, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -208,6 +231,7 @@ impl UsersClient {
     ///
     /// * `id` - User ID (prefixed `user_`), username, or `me` for the authenticated user.
     /// * `account_id` - When set, returns the user's account-specific profile overrides for this account.
+    /// * `include_balance` - Compute live wallet and owned-account balances on the self view (default true). Set false for identity-only reads. Ignored when the id is not `me` or the caller lacks balance-read scope.
     /// * `include_balance_history` - Also compute your balance history (opt-in; runs a heavier query). Only applies when the id is `me`; ignored for callers without balance-read scope.
     /// * `from` - Balance-history window start, ISO 8601 date or datetime. Defaults to 30 days ago. Only used with `include_balance_history`.
     /// * `to` - Balance-history window end, ISO 8601 date or datetime. Defaults to now. Only used with `include_balance_history`.
@@ -249,6 +273,13 @@ impl UsersClient {
         request: &UsersRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<User, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -256,6 +287,7 @@ impl UsersClient {
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .bool("include_balance", request.include_balance.clone())
                     .bool(
                         "include_balance_history",
                         request.include_balance_history.clone(),
@@ -312,6 +344,13 @@ impl UsersClient {
         request: &UpdateUsersRequest,
         options: Option<RequestOptions>,
     ) -> Result<User, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -361,6 +400,13 @@ impl UsersClient {
         resource_id: &str,
         options: Option<RequestOptions>,
     ) -> Result<CheckAccessUsersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -406,6 +452,13 @@ impl UsersClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<RecommendActionsUsersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

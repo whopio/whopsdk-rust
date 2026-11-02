@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct DisputeEvidence {
     /// Log of the customer's access to the product, such as sign-in or download activity.
     #[serde(skip_serializing_if = "Option::is_none")]

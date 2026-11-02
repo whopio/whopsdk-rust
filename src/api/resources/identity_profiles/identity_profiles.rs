@@ -13,7 +13,7 @@ impl IdentityProfilesClient {
         })
     }
 
-    /// Returns a paginated list of identity profiles. When company_id is provided, lists IPs currently linked to that company's ledger. When omitted, lists IPs linked to any ledger the actor can read (including child companies under a parent).
+    /// Returns a paginated list of identity profiles. When account_id is provided, lists IPs currently linked to that account's ledger. When omitted, lists IPs linked to any ledger the actor can read (including child accounts under a parent).
     ///
     /// Required permissions:
     /// - `identity:read`
@@ -24,7 +24,7 @@ impl IdentityProfilesClient {
     /// * `before` - Returns the elements in the list that come before the specified cursor.
     /// * `first` - Returns the first _n_ elements from the list.
     /// * `last` - Returns the last _n_ elements from the list.
-    /// * `company_id` - The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
+    /// * `account_id` - The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -49,7 +49,7 @@ impl IdentityProfilesClient {
     ///             &ListIdentityProfileQueryRequest {
     ///                 first: Some(42),
     ///                 last: Some(42),
-    ///                 company_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
+    ///                 account_id: Some("biz_xxxxxxxxxxxxxx".to_string()),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -62,6 +62,13 @@ impl IdentityProfilesClient {
         request: &ListIdentityProfileQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListIdentityProfileResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -72,9 +79,9 @@ impl IdentityProfilesClient {
                     .string("before", request.before.clone())
                     .int("first", request.first.clone())
                     .int("last", request.last.clone())
-                    .string("company_id", request.company_id.clone())
                     .serialize("profile_type", request.profile_type.clone())
                     .serialize("status", request.status.clone())
+                    .string("account_id", request.account_id.clone())
                     .build(),
                 options,
             )
@@ -118,6 +125,13 @@ impl IdentityProfilesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<IdentityProfile, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -171,6 +185,13 @@ impl IdentityProfilesClient {
         request: &UnlinkIdentityProfileQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<IdentityProfile, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -234,6 +255,13 @@ impl IdentityProfilesClient {
         request: &ListVerificationsIdentityProfileQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListVerificationsIdentityProfileResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

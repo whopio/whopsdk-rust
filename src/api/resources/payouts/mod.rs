@@ -33,10 +33,10 @@ impl PayoutsClient {
     /// * `payout_method_id` - Filter to payouts sent to one saved payout method (a pytk_ identifier). An unknown id matches nothing.
     /// * `created_before` - Only payouts created before this ISO 8601 time (exclusive).
     /// * `created_after` - Only payouts created at or after this ISO 8601 time (inclusive).
-    /// * `first` - Number of payouts to return from the start of the window.
-    /// * `after` - Cursor to fetch the page after (from page_info.end_cursor).
-    /// * `last` - Number of payouts to return from the end of the window.
-    /// * `before` - Cursor to fetch the page before (from page_info.start_cursor).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -71,6 +71,13 @@ impl PayoutsClient {
         request: &PayoutsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListPayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -120,7 +127,20 @@ impl PayoutsClient {
     ///     client
     ///         .payouts
     ///         .create(
-    ///             &CreatePayoutsRequestBody::Unknown(serde_json::json!({"key":"value"})),
+    ///             &CreatePayoutsRequest {
+    ///                 amount: 50.0,
+    ///                 payout_method_id: "potk_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: None,
+    ///                 acknowledge_bank_warning: None,
+    ///                 currency: None,
+    ///                 metadata: None,
+    ///                 notes: None,
+    ///                 platform_covers_fees: None,
+    ///                 quote_token: None,
+    ///                 speed: None,
+    ///                 statement_descriptor: None,
+    ///                 user_id: None,
+    ///             },
     ///             None,
     ///         )
     ///         .await;
@@ -128,13 +148,83 @@ impl PayoutsClient {
     /// ```
     pub async fn create(
         &self,
-        request: &CreatePayoutsRequestBody,
+        request: &CreatePayoutsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreatePayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
                 "payouts",
+                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
+                None,
+                options,
+            )
+            .await
+    }
+
+    /// Creates a short-lived, provider-backed quote for a payout. No funds move until the returned quote_token is submitted to POST /payouts. An Idempotency-Key header is required.
+    ///
+    /// # Arguments
+    ///
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .payouts
+    ///         .create_quote(
+    ///             &CreateQuotePayoutsRequest {
+    ///                 amount: 6762.41,
+    ///                 payout_method_id: "potk_xxxxxxxxxxxxxx".to_string(),
+    ///                 account_id: None,
+    ///                 currency: None,
+    ///                 platform_covers_fees: None,
+    ///                 speed: None,
+    ///                 statement_descriptor: None,
+    ///                 user_id: None,
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn create_quote(
+        &self,
+        request: &CreateQuotePayoutsRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<CreateQuotePayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::POST,
+                "payouts/quotes",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
                 None,
                 options,
@@ -185,6 +275,13 @@ impl PayoutsClient {
         request: &PayoutsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<RetrievePayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -192,6 +289,68 @@ impl PayoutsClient {
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .string("user_id", request.user_id.clone())
+                    .build(),
+                options,
+            )
+            .await
+    }
+
+    /// Cancels a payout that is still in review and returns the funds, fees included, to the balance. A payout can be canceled while its status is `in_review`. A `requested` payout is still being prepared (its funds may be converting) and answers 409 until it reaches review; from `processing` on, the money is on its way and the answer is 409 with error type `not_cancelable`. Canceling a payout that is already canceled succeeds and returns it unchanged.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Payout ID, prefixed `wdrl_`, or the `cofr_` payout request ID returned by `POST /payouts` — both cancel the same payout.
+    /// * `user_id` - Owning user ID, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .payouts
+    ///         .cancel(
+    ///             &"id".to_string(),
+    ///             &CancelQueryRequest {
+    ///                 ..Default::default()
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn cancel(
+        &self,
+        id: &str,
+        request: &CancelQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<CancelPayoutsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
+        self.http_client
+            .execute_request(
+                Method::POST,
+                &format!("payouts/{}/cancel", id),
+                None,
+                QueryBuilder::new()
                     .string("user_id", request.user_id.clone())
                     .build(),
                 options,

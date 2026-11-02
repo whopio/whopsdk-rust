@@ -7,6 +7,8 @@ pub enum ListEarningsRequestIncomeSourceItem {
     AdSpend,
     Transfer,
     CardInterchange,
+    OnboardingReward,
+    PartnerReward,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -19,6 +21,8 @@ impl Serialize for ListEarningsRequestIncomeSourceItem {
             Self::AdSpend => serializer.serialize_str("ad_spend"),
             Self::Transfer => serializer.serialize_str("transfer"),
             Self::CardInterchange => serializer.serialize_str("card_interchange"),
+            Self::OnboardingReward => serializer.serialize_str("onboarding_reward"),
+            Self::PartnerReward => serializer.serialize_str("partner_reward"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -32,6 +36,8 @@ impl<'de> Deserialize<'de> for ListEarningsRequestIncomeSourceItem {
             "ad_spend" => Ok(Self::AdSpend),
             "transfer" => Ok(Self::Transfer),
             "card_interchange" => Ok(Self::CardInterchange),
+            "onboarding_reward" => Ok(Self::OnboardingReward),
+            "partner_reward" => Ok(Self::PartnerReward),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -44,6 +50,8 @@ impl fmt::Display for ListEarningsRequestIncomeSourceItem {
             Self::AdSpend => write!(f, "ad_spend"),
             Self::Transfer => write!(f, "transfer"),
             Self::CardInterchange => write!(f, "card_interchange"),
+            Self::OnboardingReward => write!(f, "onboarding_reward"),
+            Self::PartnerReward => write!(f, "partner_reward"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

@@ -17,7 +17,7 @@ pub struct FeeMarkupsListQueryRequest {
     pub last: Option<i64>,
     /// The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
     #[serde(default)]
-    pub company_id: String,
+    pub account_id: String,
 }
 
 impl FeeMarkupsListQueryRequest {
@@ -33,7 +33,7 @@ pub struct FeeMarkupsListQueryRequestBuilder {
     before: Option<String>,
     first: Option<i64>,
     last: Option<i64>,
-    company_id: Option<String>,
+    account_id: Option<String>,
 }
 
 impl FeeMarkupsListQueryRequestBuilder {
@@ -57,23 +57,23 @@ impl FeeMarkupsListQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
     /// Consumes the builder and constructs a [`FeeMarkupsListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`company_id`](FeeMarkupsListQueryRequestBuilder::company_id)
+    /// - [`account_id`](FeeMarkupsListQueryRequestBuilder::account_id)
     pub fn build(self) -> Result<FeeMarkupsListQueryRequest, BuildError> {
         Ok(FeeMarkupsListQueryRequest {
             after: self.after,
             before: self.before,
             first: self.first,
             last: self.last,
-            company_id: self
-                .company_id
-                .ok_or_else(|| BuildError::missing_field("company_id"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
         })
     }
 }

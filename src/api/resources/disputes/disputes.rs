@@ -18,10 +18,10 @@ impl DisputesClient {
     /// # Arguments
     ///
     /// * `account_id` - Only disputes filed against this account (`biz_` tag). Omit it to cover every account you can read.
-    /// * `first` - The number of disputes to return (default 20, max 100).
-    /// * `after` - A cursor; returns disputes after this position.
-    /// * `last` - The number of disputes to return from the end of the range.
-    /// * `before` - A cursor; returns disputes before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort disputes by.
     /// * `direction` - Sort direction.
     /// * `status` - Only disputes in these statuses. Repeat the parameter to pass several — one paginated list covers all of them. Covers both chargebacks and inquiries at each stage. A `needs_response` dispute whose evidence deadline has passed reports and filters as `under_review` instead.
@@ -72,6 +72,13 @@ impl DisputesClient {
         request: &DisputesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListDisputesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -144,6 +151,13 @@ impl DisputesClient {
         request: &DisputesSummaryQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<SummaryDisputesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -193,6 +207,13 @@ impl DisputesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -245,6 +266,13 @@ impl DisputesClient {
         request: &UpdateDisputesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,
@@ -287,6 +315,13 @@ impl DisputesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -298,124 +333,7 @@ impl DisputesClient {
             .await
     }
 
-    /// Submit a payment dispute to the payment processor for review. Once submitted, no further edits can be made.
-    ///
-    /// Required permissions:
-    /// - `payment:dispute`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `company:basic:read`
-    /// - `payment:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - The unique identifier of the dispute to submit to the payment processor for review.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .disputes
-    ///         .submit_evidence_dispute(&"dspt_xxxxxxxxxxxxx".to_string(), None)
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn submit_evidence_dispute(
-        &self,
-        id: &str,
-        options: Option<RequestOptions>,
-    ) -> Result<Dispute, ApiError> {
-        self.http_client
-            .execute_request(
-                Method::POST,
-                &format!("disputes/{}/submit_evidence", id),
-                None,
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Update a dispute with evidence data to attempt to win the dispute.
-    ///
-    /// Required permissions:
-    /// - `payment:dispute`
-    /// - `plan:basic:read`
-    /// - `access_pass:basic:read`
-    /// - `company:basic:read`
-    /// - `payment:basic:read`
-    /// - `member:email:read`
-    /// - `member:basic:read`
-    /// - `member:phone:read`
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - The unique identifier of the dispute to update.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .disputes
-    ///         .update_evidence_dispute(
-    ///             &"dspt_xxxxxxxxxxxxx".to_string(),
-    ///             &UpdateEvidenceDisputeRequest {
-    ///                 ..Default::default()
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn update_evidence_dispute(
-        &self,
-        id: &str,
-        request: &UpdateEvidenceDisputeRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<Dispute, ApiError> {
-        self.http_client
-            .execute_request(
-                Method::POST,
-                &format!("disputes/{}/update_evidence", id),
-                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Replaces the full set of uploaded evidence documents on a dispute, beyond the four fixed evidence slots. Send the files as multipart file parts to upload and attach in one call, or reference files already stored by `id`/`direct_upload_id`. Send every document the packet should carry — up to 10, 10MB each and 25MB in total; an empty list removes them all. Accepted content types: application/pdf, application/json, image/jpeg, image/png, image/webp — any other type is rejected.
+    /// Replaces the full set of uploaded evidence documents on a dispute, beyond the four fixed evidence slots. Upload files through `POST /files` and reference them by `id`, or send the files as multipart file parts to upload and attach in one call. Send every document the packet should carry — up to 10, 10MB each and 25MB in total; an empty list removes them all. Accepted content types: application/pdf, application/json, image/jpeg, image/png, image/webp — any other type is rejected.
     ///
     /// # Arguments
     ///
@@ -462,6 +380,13 @@ impl DisputesClient {
         request: &UploadEvidenceDisputesRequest,
         options: Option<RequestOptions>,
     ) -> Result<Dispute, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

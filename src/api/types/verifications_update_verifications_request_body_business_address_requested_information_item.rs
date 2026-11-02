@@ -6,23 +6,32 @@ pub struct UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem
     #[serde(skip_serializing_if = "Option::is_none")]
     pub address:
         Option<UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress>,
+    /// Identity number for an `id_document` answer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub document_number: Option<String>,
     /// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub documents:
         Option<UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments>,
-    /// Answer for a `files` item — one document, as a list of its pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
+    /// Answer for a `files` item, or optional supporting documents for `text_with_files` — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<String>>,
     /// Item ID from `requested_information`.
     #[serde(default)]
     pub id: String,
-    /// Answer for `text`, `date`, `phone`, and `select` items, and the chosen document type for a `file` item that lists `options`.
+    /// Two-letter ISO 3166-1 issuing country for an `id_document` answer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub issuing_country: Option<String>,
+    /// Answer for `text`, `text_with_files`, `date`, `phone`, and `select` items, and the chosen document type for a `file` item that lists `options`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
     /// Whether `value` is raw input or a vault token.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value_type:
         Option<UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemValueType>,
+    /// Every chosen option for a `select` item that accepts more than one answer, such as the countries an advertising certification covers. Use `value` for every other item.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub values: Option<Vec<String>>,
 }
 
 impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem {
@@ -36,13 +45,16 @@ impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem {
 #[non_exhaustive]
 pub struct UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilder {
     address: Option<UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress>,
+    document_number: Option<String>,
     documents:
         Option<UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments>,
     files: Option<Vec<String>>,
     id: Option<String>,
+    issuing_country: Option<String>,
     value: Option<String>,
     value_type:
         Option<UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemValueType>,
+    values: Option<Vec<String>>,
 }
 
 impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilder {
@@ -51,6 +63,11 @@ impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilde
         value: UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress,
     ) -> Self {
         self.address = Some(value);
+        self
+    }
+
+    pub fn document_number(mut self, value: impl Into<String>) -> Self {
+        self.document_number = Some(value.into());
         self
     }
 
@@ -72,6 +89,11 @@ impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilde
         self
     }
 
+    pub fn issuing_country(mut self, value: impl Into<String>) -> Self {
+        self.issuing_country = Some(value.into());
+        self
+    }
+
     pub fn value(mut self, value: impl Into<String>) -> Self {
         self.value = Some(value.into());
         self
@@ -85,6 +107,11 @@ impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilde
         self
     }
 
+    pub fn values(mut self, value: Vec<String>) -> Self {
+        self.values = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem`].
     /// This method will fail if any of the following fields are not set:
     /// - [`id`](UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilder::id)
@@ -95,11 +122,14 @@ impl UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemBuilde
         Ok(
             UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem {
                 address: self.address,
+                document_number: self.document_number,
                 documents: self.documents,
                 files: self.files,
                 id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+                issuing_country: self.issuing_country,
                 value: self.value,
                 value_type: self.value_type,
+                values: self.values,
             },
         )
     }

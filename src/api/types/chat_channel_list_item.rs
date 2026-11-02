@@ -9,7 +9,7 @@ pub struct ChatChannelListItem {
     /// Whether URL links are blocked from being posted in this chat.
     #[serde(default)]
     pub ban_urls: bool,
-    /// A list of words that are automatically filtered from messages in this chat.
+    /// A list of words that are automatically filtered from messages in this chat. Empty unless the caller has permission to moderate this chat.
     #[serde(default)]
     pub banned_words: Vec<String>,
     /// The experience this chat feed is attached to.

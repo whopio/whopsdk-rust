@@ -4,6 +4,11 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PermissionAction {
+    WaitlistEntryRead,
+    WaitlistEntryCreate,
+    WaitlistEntryCancel,
+    ExperimentManage,
+    ExperimentRead,
     AiPromptCreate,
     AccessPassBasicExport,
     AccessPassBasicRead,
@@ -73,6 +78,7 @@ pub enum PermissionAction {
     CompanyTransferOwnership,
     CompanyCreate,
     CompanyCreateChild,
+    CompanySuspendChild,
     CompanyDelete,
     CompanyDeleteChild,
     CompanyUpdateChildFees,
@@ -178,7 +184,13 @@ pub enum PermissionAction {
     ReferralBasicRead,
     ReferralPartnerCreate,
     PartnerBasicRead,
+    PartnerEmailRead,
     PartnerInviteCreate,
+    PartnerReferralRequestRead,
+    PartnerReferralRequestCreate,
+    PartnerReferralRequestAccept,
+    PartnerReferralRequestDecline,
+    PartnerReferralRequestCancel,
     PartnerCreate,
     StatsRead,
     SupportChatRead,
@@ -208,6 +220,7 @@ pub enum PermissionAction {
     WebhookReceiveLedgerAccounts,
     WebhookReceiveAccounts,
     WebhookReceiveDeposits,
+    WebhookReceiveFinancialActivity,
     WebhookReceiveTransfers,
     WebhookReceiveCardTransactions,
     WebhookReceiveCards,
@@ -219,6 +232,7 @@ pub enum PermissionAction {
     WebhookReceiveChat,
     WebhookReceiveEntries,
     WebhookReceiveAdCampaigns,
+    WebhookReceiveAds,
     WebhookReceiveProducts,
     WebhookReceivePlans,
     WebhookReceiveShipments,
@@ -247,6 +261,7 @@ pub enum PermissionAction {
     NotificationCreate,
     UserBalanceRead,
     UserEmailRead,
+    UserPaymentCharge,
     UserStaffRead,
     OauthTokenExchange,
     Openid,
@@ -267,6 +282,11 @@ pub enum PermissionAction {
 impl Serialize for PermissionAction {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::WaitlistEntryRead => serializer.serialize_str("waitlist_entry:read"),
+            Self::WaitlistEntryCreate => serializer.serialize_str("waitlist_entry:create"),
+            Self::WaitlistEntryCancel => serializer.serialize_str("waitlist_entry:cancel"),
+            Self::ExperimentManage => serializer.serialize_str("experiment:manage"),
+            Self::ExperimentRead => serializer.serialize_str("experiment:read"),
             Self::AiPromptCreate => serializer.serialize_str("ai_prompt:create"),
             Self::AccessPassBasicExport => serializer.serialize_str("access_pass:basic:export"),
             Self::AccessPassBasicRead => serializer.serialize_str("access_pass:basic:read"),
@@ -352,6 +372,7 @@ impl Serialize for PermissionAction {
             }
             Self::CompanyCreate => serializer.serialize_str("company:create"),
             Self::CompanyCreateChild => serializer.serialize_str("company:create_child"),
+            Self::CompanySuspendChild => serializer.serialize_str("company:suspend_child"),
             Self::CompanyDelete => serializer.serialize_str("company:delete"),
             Self::CompanyDeleteChild => serializer.serialize_str("company:delete_child"),
             Self::CompanyUpdateChildFees => serializer.serialize_str("company:update_child_fees"),
@@ -479,7 +500,23 @@ impl Serialize for PermissionAction {
             Self::ReferralBasicRead => serializer.serialize_str("referral:basic:read"),
             Self::ReferralPartnerCreate => serializer.serialize_str("referral:partner:create"),
             Self::PartnerBasicRead => serializer.serialize_str("partner:basic:read"),
+            Self::PartnerEmailRead => serializer.serialize_str("partner:email:read"),
             Self::PartnerInviteCreate => serializer.serialize_str("partner:invite:create"),
+            Self::PartnerReferralRequestRead => {
+                serializer.serialize_str("partner:referral_request:read")
+            }
+            Self::PartnerReferralRequestCreate => {
+                serializer.serialize_str("partner:referral_request:create")
+            }
+            Self::PartnerReferralRequestAccept => {
+                serializer.serialize_str("partner:referral_request:accept")
+            }
+            Self::PartnerReferralRequestDecline => {
+                serializer.serialize_str("partner:referral_request:decline")
+            }
+            Self::PartnerReferralRequestCancel => {
+                serializer.serialize_str("partner:referral_request:cancel")
+            }
             Self::PartnerCreate => serializer.serialize_str("partner:create"),
             Self::StatsRead => serializer.serialize_str("stats:read"),
             Self::SupportChatRead => serializer.serialize_str("support_chat:read"),
@@ -519,6 +556,9 @@ impl Serialize for PermissionAction {
             }
             Self::WebhookReceiveAccounts => serializer.serialize_str("webhook_receive:accounts"),
             Self::WebhookReceiveDeposits => serializer.serialize_str("webhook_receive:deposits"),
+            Self::WebhookReceiveFinancialActivity => {
+                serializer.serialize_str("webhook_receive:financial_activity")
+            }
             Self::WebhookReceiveTransfers => serializer.serialize_str("webhook_receive:transfers"),
             Self::WebhookReceiveCardTransactions => {
                 serializer.serialize_str("webhook_receive:card_transactions")
@@ -544,6 +584,7 @@ impl Serialize for PermissionAction {
             Self::WebhookReceiveAdCampaigns => {
                 serializer.serialize_str("webhook_receive:ad_campaigns")
             }
+            Self::WebhookReceiveAds => serializer.serialize_str("webhook_receive:ads"),
             Self::WebhookReceiveProducts => serializer.serialize_str("webhook_receive:products"),
             Self::WebhookReceivePlans => serializer.serialize_str("webhook_receive:plans"),
             Self::WebhookReceiveShipments => serializer.serialize_str("webhook_receive:shipments"),
@@ -588,6 +629,7 @@ impl Serialize for PermissionAction {
             Self::NotificationCreate => serializer.serialize_str("notification:create"),
             Self::UserBalanceRead => serializer.serialize_str("user:balance:read"),
             Self::UserEmailRead => serializer.serialize_str("user:email:read"),
+            Self::UserPaymentCharge => serializer.serialize_str("user:payment:charge"),
             Self::UserStaffRead => serializer.serialize_str("user:staff:read"),
             Self::OauthTokenExchange => serializer.serialize_str("oauth:token_exchange"),
             Self::Openid => serializer.serialize_str("openid"),
@@ -609,6 +651,11 @@ impl<'de> Deserialize<'de> for PermissionAction {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "waitlist_entry:read" => Ok(Self::WaitlistEntryRead),
+            "waitlist_entry:create" => Ok(Self::WaitlistEntryCreate),
+            "waitlist_entry:cancel" => Ok(Self::WaitlistEntryCancel),
+            "experiment:manage" => Ok(Self::ExperimentManage),
+            "experiment:read" => Ok(Self::ExperimentRead),
             "ai_prompt:create" => Ok(Self::AiPromptCreate),
             "access_pass:basic:export" => Ok(Self::AccessPassBasicExport),
             "access_pass:basic:read" => Ok(Self::AccessPassBasicRead),
@@ -678,6 +725,7 @@ impl<'de> Deserialize<'de> for PermissionAction {
             "company:transfer_ownership" => Ok(Self::CompanyTransferOwnership),
             "company:create" => Ok(Self::CompanyCreate),
             "company:create_child" => Ok(Self::CompanyCreateChild),
+            "company:suspend_child" => Ok(Self::CompanySuspendChild),
             "company:delete" => Ok(Self::CompanyDelete),
             "company:delete_child" => Ok(Self::CompanyDeleteChild),
             "company:update_child_fees" => Ok(Self::CompanyUpdateChildFees),
@@ -783,7 +831,13 @@ impl<'de> Deserialize<'de> for PermissionAction {
             "referral:basic:read" => Ok(Self::ReferralBasicRead),
             "referral:partner:create" => Ok(Self::ReferralPartnerCreate),
             "partner:basic:read" => Ok(Self::PartnerBasicRead),
+            "partner:email:read" => Ok(Self::PartnerEmailRead),
             "partner:invite:create" => Ok(Self::PartnerInviteCreate),
+            "partner:referral_request:read" => Ok(Self::PartnerReferralRequestRead),
+            "partner:referral_request:create" => Ok(Self::PartnerReferralRequestCreate),
+            "partner:referral_request:accept" => Ok(Self::PartnerReferralRequestAccept),
+            "partner:referral_request:decline" => Ok(Self::PartnerReferralRequestDecline),
+            "partner:referral_request:cancel" => Ok(Self::PartnerReferralRequestCancel),
             "partner:create" => Ok(Self::PartnerCreate),
             "stats:read" => Ok(Self::StatsRead),
             "support_chat:read" => Ok(Self::SupportChatRead),
@@ -813,6 +867,7 @@ impl<'de> Deserialize<'de> for PermissionAction {
             "webhook_receive:ledger_accounts" => Ok(Self::WebhookReceiveLedgerAccounts),
             "webhook_receive:accounts" => Ok(Self::WebhookReceiveAccounts),
             "webhook_receive:deposits" => Ok(Self::WebhookReceiveDeposits),
+            "webhook_receive:financial_activity" => Ok(Self::WebhookReceiveFinancialActivity),
             "webhook_receive:transfers" => Ok(Self::WebhookReceiveTransfers),
             "webhook_receive:card_transactions" => Ok(Self::WebhookReceiveCardTransactions),
             "webhook_receive:cards" => Ok(Self::WebhookReceiveCards),
@@ -824,6 +879,7 @@ impl<'de> Deserialize<'de> for PermissionAction {
             "webhook_receive:chat" => Ok(Self::WebhookReceiveChat),
             "webhook_receive:entries" => Ok(Self::WebhookReceiveEntries),
             "webhook_receive:ad_campaigns" => Ok(Self::WebhookReceiveAdCampaigns),
+            "webhook_receive:ads" => Ok(Self::WebhookReceiveAds),
             "webhook_receive:products" => Ok(Self::WebhookReceiveProducts),
             "webhook_receive:plans" => Ok(Self::WebhookReceivePlans),
             "webhook_receive:shipments" => Ok(Self::WebhookReceiveShipments),
@@ -852,6 +908,7 @@ impl<'de> Deserialize<'de> for PermissionAction {
             "notification:create" => Ok(Self::NotificationCreate),
             "user:balance:read" => Ok(Self::UserBalanceRead),
             "user:email:read" => Ok(Self::UserEmailRead),
+            "user:payment:charge" => Ok(Self::UserPaymentCharge),
             "user:staff:read" => Ok(Self::UserStaffRead),
             "oauth:token_exchange" => Ok(Self::OauthTokenExchange),
             "openid" => Ok(Self::Openid),
@@ -872,6 +929,11 @@ impl<'de> Deserialize<'de> for PermissionAction {
 impl fmt::Display for PermissionAction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::WaitlistEntryRead => write!(f, "waitlist_entry:read"),
+            Self::WaitlistEntryCreate => write!(f, "waitlist_entry:create"),
+            Self::WaitlistEntryCancel => write!(f, "waitlist_entry:cancel"),
+            Self::ExperimentManage => write!(f, "experiment:manage"),
+            Self::ExperimentRead => write!(f, "experiment:read"),
             Self::AiPromptCreate => write!(f, "ai_prompt:create"),
             Self::AccessPassBasicExport => write!(f, "access_pass:basic:export"),
             Self::AccessPassBasicRead => write!(f, "access_pass:basic:read"),
@@ -941,6 +1003,7 @@ impl fmt::Display for PermissionAction {
             Self::CompanyTransferOwnership => write!(f, "company:transfer_ownership"),
             Self::CompanyCreate => write!(f, "company:create"),
             Self::CompanyCreateChild => write!(f, "company:create_child"),
+            Self::CompanySuspendChild => write!(f, "company:suspend_child"),
             Self::CompanyDelete => write!(f, "company:delete"),
             Self::CompanyDeleteChild => write!(f, "company:delete_child"),
             Self::CompanyUpdateChildFees => write!(f, "company:update_child_fees"),
@@ -1056,7 +1119,13 @@ impl fmt::Display for PermissionAction {
             Self::ReferralBasicRead => write!(f, "referral:basic:read"),
             Self::ReferralPartnerCreate => write!(f, "referral:partner:create"),
             Self::PartnerBasicRead => write!(f, "partner:basic:read"),
+            Self::PartnerEmailRead => write!(f, "partner:email:read"),
             Self::PartnerInviteCreate => write!(f, "partner:invite:create"),
+            Self::PartnerReferralRequestRead => write!(f, "partner:referral_request:read"),
+            Self::PartnerReferralRequestCreate => write!(f, "partner:referral_request:create"),
+            Self::PartnerReferralRequestAccept => write!(f, "partner:referral_request:accept"),
+            Self::PartnerReferralRequestDecline => write!(f, "partner:referral_request:decline"),
+            Self::PartnerReferralRequestCancel => write!(f, "partner:referral_request:cancel"),
             Self::PartnerCreate => write!(f, "partner:create"),
             Self::StatsRead => write!(f, "stats:read"),
             Self::SupportChatRead => write!(f, "support_chat:read"),
@@ -1086,6 +1155,9 @@ impl fmt::Display for PermissionAction {
             Self::WebhookReceiveLedgerAccounts => write!(f, "webhook_receive:ledger_accounts"),
             Self::WebhookReceiveAccounts => write!(f, "webhook_receive:accounts"),
             Self::WebhookReceiveDeposits => write!(f, "webhook_receive:deposits"),
+            Self::WebhookReceiveFinancialActivity => {
+                write!(f, "webhook_receive:financial_activity")
+            }
             Self::WebhookReceiveTransfers => write!(f, "webhook_receive:transfers"),
             Self::WebhookReceiveCardTransactions => write!(f, "webhook_receive:card_transactions"),
             Self::WebhookReceiveCards => write!(f, "webhook_receive:cards"),
@@ -1097,6 +1169,7 @@ impl fmt::Display for PermissionAction {
             Self::WebhookReceiveChat => write!(f, "webhook_receive:chat"),
             Self::WebhookReceiveEntries => write!(f, "webhook_receive:entries"),
             Self::WebhookReceiveAdCampaigns => write!(f, "webhook_receive:ad_campaigns"),
+            Self::WebhookReceiveAds => write!(f, "webhook_receive:ads"),
             Self::WebhookReceiveProducts => write!(f, "webhook_receive:products"),
             Self::WebhookReceivePlans => write!(f, "webhook_receive:plans"),
             Self::WebhookReceiveShipments => write!(f, "webhook_receive:shipments"),
@@ -1125,6 +1198,7 @@ impl fmt::Display for PermissionAction {
             Self::NotificationCreate => write!(f, "notification:create"),
             Self::UserBalanceRead => write!(f, "user:balance:read"),
             Self::UserEmailRead => write!(f, "user:email:read"),
+            Self::UserPaymentCharge => write!(f, "user:payment:charge"),
             Self::UserStaffRead => write!(f, "user:staff:read"),
             Self::OauthTokenExchange => write!(f, "oauth:token_exchange"),
             Self::Openid => write!(f, "openid"),

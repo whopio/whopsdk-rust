@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListVerificationsResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<Vec<ListVerificationsResponseDataItem>>,

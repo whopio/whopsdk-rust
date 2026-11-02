@@ -1,7 +1,7 @@
 pub use crate::prelude::*;
 
 /// Query parameters for retrieve
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct StatsRetrieveQueryRequest {
     /// The account this query concerns, for example biz_AbC123.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -102,9 +102,130 @@ pub struct StatsRetrieveQueryRequest {
     /// Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub snapshot_window: Option<RetrieveStatsRequestSnapshotWindow>,
-    /// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separate several to break the metric down by each event. Available on metrics that list event.
+    /// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub event: Option<String>,
+    /// People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contactable: Option<bool>,
+    /// People metric only: has_purchased equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub has_purchased: Option<bool>,
+    /// People metric only: first_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub first_seen_after: Option<DateTime<FixedOffset>>,
+    /// People metric only: first_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub first_seen_before: Option<DateTime<FixedOffset>>,
+    /// People metric only: last_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub last_seen_after: Option<DateTime<FixedOffset>>,
+    /// People metric only: last_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub last_seen_before: Option<DateTime<FixedOffset>>,
+    /// People metric only: first_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub first_seen_within_days: Option<i64>,
+    /// People metric only: last_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_seen_within_days: Option<i64>,
+    /// People metric only: known equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub known: Option<bool>,
+    /// People metric only: has_email equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub has_email: Option<bool>,
+    /// People metric only: has_phone equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub has_phone: Option<bool>,
+    /// People metric only: ltv greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub ltv_gt: Option<f64>,
+    /// People metric only: ltv greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub ltv_gte: Option<f64>,
+    /// People metric only: ltv less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub ltv_lt: Option<f64>,
+    /// People metric only: ltv less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub ltv_lte: Option<f64>,
+    /// People metric only: aov greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub aov_gt: Option<f64>,
+    /// People metric only: aov greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub aov_gte: Option<f64>,
+    /// People metric only: aov less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub aov_lt: Option<f64>,
+    /// People metric only: aov less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub aov_lte: Option<f64>,
+    /// People metric only: purchase_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub purchase_count_gt: Option<f64>,
+    /// People metric only: purchase_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub purchase_count_gte: Option<f64>,
+    /// People metric only: purchase_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub purchase_count_lt: Option<f64>,
+    /// People metric only: purchase_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub purchase_count_lte: Option<f64>,
+    /// People metric only: event_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub event_count_gt: Option<f64>,
+    /// People metric only: event_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub event_count_gte: Option<f64>,
+    /// People metric only: event_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub event_count_lt: Option<f64>,
+    /// People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub event_count_lte: Option<f64>,
 }
 
 impl StatsRetrieveQueryRequest {
@@ -150,6 +271,33 @@ pub struct StatsRetrieveQueryRequestBuilder {
     ad_ids: Option<Vec<Option<String>>>,
     snapshot_window: Option<RetrieveStatsRequestSnapshotWindow>,
     event: Option<String>,
+    contactable: Option<bool>,
+    has_purchased: Option<bool>,
+    first_seen_after: Option<DateTime<FixedOffset>>,
+    first_seen_before: Option<DateTime<FixedOffset>>,
+    last_seen_after: Option<DateTime<FixedOffset>>,
+    last_seen_before: Option<DateTime<FixedOffset>>,
+    first_seen_within_days: Option<i64>,
+    last_seen_within_days: Option<i64>,
+    known: Option<bool>,
+    has_email: Option<bool>,
+    has_phone: Option<bool>,
+    ltv_gt: Option<f64>,
+    ltv_gte: Option<f64>,
+    ltv_lt: Option<f64>,
+    ltv_lte: Option<f64>,
+    aov_gt: Option<f64>,
+    aov_gte: Option<f64>,
+    aov_lt: Option<f64>,
+    aov_lte: Option<f64>,
+    purchase_count_gt: Option<f64>,
+    purchase_count_gte: Option<f64>,
+    purchase_count_lt: Option<f64>,
+    purchase_count_lte: Option<f64>,
+    event_count_gt: Option<f64>,
+    event_count_gte: Option<f64>,
+    event_count_lt: Option<f64>,
+    event_count_lte: Option<f64>,
 }
 
 impl StatsRetrieveQueryRequestBuilder {
@@ -323,6 +471,141 @@ impl StatsRetrieveQueryRequestBuilder {
         self
     }
 
+    pub fn contactable(mut self, value: bool) -> Self {
+        self.contactable = Some(value);
+        self
+    }
+
+    pub fn has_purchased(mut self, value: bool) -> Self {
+        self.has_purchased = Some(value);
+        self
+    }
+
+    pub fn first_seen_after(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.first_seen_after = Some(value);
+        self
+    }
+
+    pub fn first_seen_before(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.first_seen_before = Some(value);
+        self
+    }
+
+    pub fn last_seen_after(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.last_seen_after = Some(value);
+        self
+    }
+
+    pub fn last_seen_before(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.last_seen_before = Some(value);
+        self
+    }
+
+    pub fn first_seen_within_days(mut self, value: i64) -> Self {
+        self.first_seen_within_days = Some(value);
+        self
+    }
+
+    pub fn last_seen_within_days(mut self, value: i64) -> Self {
+        self.last_seen_within_days = Some(value);
+        self
+    }
+
+    pub fn known(mut self, value: bool) -> Self {
+        self.known = Some(value);
+        self
+    }
+
+    pub fn has_email(mut self, value: bool) -> Self {
+        self.has_email = Some(value);
+        self
+    }
+
+    pub fn has_phone(mut self, value: bool) -> Self {
+        self.has_phone = Some(value);
+        self
+    }
+
+    pub fn ltv_gt(mut self, value: f64) -> Self {
+        self.ltv_gt = Some(value);
+        self
+    }
+
+    pub fn ltv_gte(mut self, value: f64) -> Self {
+        self.ltv_gte = Some(value);
+        self
+    }
+
+    pub fn ltv_lt(mut self, value: f64) -> Self {
+        self.ltv_lt = Some(value);
+        self
+    }
+
+    pub fn ltv_lte(mut self, value: f64) -> Self {
+        self.ltv_lte = Some(value);
+        self
+    }
+
+    pub fn aov_gt(mut self, value: f64) -> Self {
+        self.aov_gt = Some(value);
+        self
+    }
+
+    pub fn aov_gte(mut self, value: f64) -> Self {
+        self.aov_gte = Some(value);
+        self
+    }
+
+    pub fn aov_lt(mut self, value: f64) -> Self {
+        self.aov_lt = Some(value);
+        self
+    }
+
+    pub fn aov_lte(mut self, value: f64) -> Self {
+        self.aov_lte = Some(value);
+        self
+    }
+
+    pub fn purchase_count_gt(mut self, value: f64) -> Self {
+        self.purchase_count_gt = Some(value);
+        self
+    }
+
+    pub fn purchase_count_gte(mut self, value: f64) -> Self {
+        self.purchase_count_gte = Some(value);
+        self
+    }
+
+    pub fn purchase_count_lt(mut self, value: f64) -> Self {
+        self.purchase_count_lt = Some(value);
+        self
+    }
+
+    pub fn purchase_count_lte(mut self, value: f64) -> Self {
+        self.purchase_count_lte = Some(value);
+        self
+    }
+
+    pub fn event_count_gt(mut self, value: f64) -> Self {
+        self.event_count_gt = Some(value);
+        self
+    }
+
+    pub fn event_count_gte(mut self, value: f64) -> Self {
+        self.event_count_gte = Some(value);
+        self
+    }
+
+    pub fn event_count_lt(mut self, value: f64) -> Self {
+        self.event_count_lt = Some(value);
+        self
+    }
+
+    pub fn event_count_lte(mut self, value: f64) -> Self {
+        self.event_count_lte = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`StatsRetrieveQueryRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`from`](StatsRetrieveQueryRequestBuilder::from)
@@ -372,6 +655,33 @@ impl StatsRetrieveQueryRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("ad_ids"))?,
             snapshot_window: self.snapshot_window,
             event: self.event,
+            contactable: self.contactable,
+            has_purchased: self.has_purchased,
+            first_seen_after: self.first_seen_after,
+            first_seen_before: self.first_seen_before,
+            last_seen_after: self.last_seen_after,
+            last_seen_before: self.last_seen_before,
+            first_seen_within_days: self.first_seen_within_days,
+            last_seen_within_days: self.last_seen_within_days,
+            known: self.known,
+            has_email: self.has_email,
+            has_phone: self.has_phone,
+            ltv_gt: self.ltv_gt,
+            ltv_gte: self.ltv_gte,
+            ltv_lt: self.ltv_lt,
+            ltv_lte: self.ltv_lte,
+            aov_gt: self.aov_gt,
+            aov_gte: self.aov_gte,
+            aov_lt: self.aov_lt,
+            aov_lte: self.aov_lte,
+            purchase_count_gt: self.purchase_count_gt,
+            purchase_count_gte: self.purchase_count_gte,
+            purchase_count_lt: self.purchase_count_lt,
+            purchase_count_lte: self.purchase_count_lte,
+            event_count_gt: self.event_count_gt,
+            event_count_gte: self.event_count_gte,
+            event_count_lt: self.event_count_lt,
+            event_count_lte: self.event_count_lte,
         })
     }
 }

@@ -8,6 +8,10 @@ pub struct RetrieveBusinessesResponseVolumeUsd {
     /// GMV awaiting settlement (commission not yet computed), in USD.
     #[serde(default)]
     pub awaiting_settlement: String,
+    /// Credited GMV from the trailing 30 days (awaiting_settlement + settled), in USD.
+    #[serde(rename = "last_30d")]
+    #[serde(default)]
+    pub last30d: String,
     /// GMV of pending + completed payments, in USD.
     #[serde(default)]
     pub settled: String,
@@ -24,6 +28,7 @@ impl RetrieveBusinessesResponseVolumeUsd {
 pub struct RetrieveBusinessesResponseVolumeUsdBuilder {
     attributed: Option<String>,
     awaiting_settlement: Option<String>,
+    last30d: Option<String>,
     settled: Option<String>,
 }
 
@@ -38,6 +43,11 @@ impl RetrieveBusinessesResponseVolumeUsdBuilder {
         self
     }
 
+    pub fn last30d(mut self, value: impl Into<String>) -> Self {
+        self.last30d = Some(value.into());
+        self
+    }
+
     pub fn settled(mut self, value: impl Into<String>) -> Self {
         self.settled = Some(value.into());
         self
@@ -47,6 +57,7 @@ impl RetrieveBusinessesResponseVolumeUsdBuilder {
     /// This method will fail if any of the following fields are not set:
     /// - [`attributed`](RetrieveBusinessesResponseVolumeUsdBuilder::attributed)
     /// - [`awaiting_settlement`](RetrieveBusinessesResponseVolumeUsdBuilder::awaiting_settlement)
+    /// - [`last30d`](RetrieveBusinessesResponseVolumeUsdBuilder::last30d)
     /// - [`settled`](RetrieveBusinessesResponseVolumeUsdBuilder::settled)
     pub fn build(self) -> Result<RetrieveBusinessesResponseVolumeUsd, BuildError> {
         Ok(RetrieveBusinessesResponseVolumeUsd {
@@ -56,6 +67,9 @@ impl RetrieveBusinessesResponseVolumeUsdBuilder {
             awaiting_settlement: self
                 .awaiting_settlement
                 .ok_or_else(|| BuildError::missing_field("awaiting_settlement"))?,
+            last30d: self
+                .last30d
+                .ok_or_else(|| BuildError::missing_field("last30d"))?,
             settled: self
                 .settled
                 .ok_or_else(|| BuildError::missing_field("settled"))?,

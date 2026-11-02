@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListVerificationsResponseDataItem {
     /// Address on the verification profile. `null` when no address is set.
     #[serde(skip_serializing_if = "Option::is_none")]

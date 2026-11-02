@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct AppListItem {
     /// The account that owns the app.
     #[serde(default)]
@@ -33,6 +33,8 @@ pub struct AppListItem {
     /// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
     #[serde(default)]
     pub domain_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub domains: Option<Vec<AppDomain>>,
     /// URL path for the member-facing hub view, or `null` when not configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub experience_path: Option<String>,
@@ -54,7 +56,9 @@ pub struct AppListItem {
     /// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub origin: Option<String>,
-    /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.app), or `null` if no route is claimed.
+    #[serde(default)]
+    pub previous_hosted_urls: Vec<String>,
+    /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
     /// URL path to the app's skills directory, or `null` when not configured.
@@ -87,6 +91,7 @@ pub struct AppListItemBuilder {
     description: Option<String>,
     discover_path: Option<String>,
     domain_id: Option<String>,
+    domains: Option<Vec<AppDomain>>,
     experience_path: Option<String>,
     hosted_url: Option<String>,
     icon: Option<AppIcon>,
@@ -94,6 +99,7 @@ pub struct AppListItemBuilder {
     name: Option<String>,
     openapi_path: Option<String>,
     origin: Option<String>,
+    previous_hosted_urls: Option<Vec<String>>,
     route: Option<String>,
     skills_path: Option<String>,
     status: Option<AppListItemStatus>,
@@ -156,6 +162,11 @@ impl AppListItemBuilder {
         self
     }
 
+    pub fn domains(mut self, value: Vec<AppDomain>) -> Self {
+        self.domains = Some(value);
+        self
+    }
+
     pub fn experience_path(mut self, value: impl Into<String>) -> Self {
         self.experience_path = Some(value.into());
         self
@@ -191,6 +202,11 @@ impl AppListItemBuilder {
         self
     }
 
+    pub fn previous_hosted_urls(mut self, value: Vec<String>) -> Self {
+        self.previous_hosted_urls = Some(value);
+        self
+    }
+
     pub fn route(mut self, value: impl Into<String>) -> Self {
         self.route = Some(value.into());
         self
@@ -222,6 +238,7 @@ impl AppListItemBuilder {
     /// - [`icon`](AppListItemBuilder::icon)
     /// - [`id`](AppListItemBuilder::id)
     /// - [`name`](AppListItemBuilder::name)
+    /// - [`previous_hosted_urls`](AppListItemBuilder::previous_hosted_urls)
     /// - [`status`](AppListItemBuilder::status)
     /// - [`verified`](AppListItemBuilder::verified)
     pub fn build(self) -> Result<AppListItem, BuildError> {
@@ -249,6 +266,7 @@ impl AppListItemBuilder {
             domain_id: self
                 .domain_id
                 .ok_or_else(|| BuildError::missing_field("domain_id"))?,
+            domains: self.domains,
             experience_path: self.experience_path,
             hosted_url: self.hosted_url,
             icon: self.icon.ok_or_else(|| BuildError::missing_field("icon"))?,
@@ -256,6 +274,9 @@ impl AppListItemBuilder {
             name: self.name.ok_or_else(|| BuildError::missing_field("name"))?,
             openapi_path: self.openapi_path,
             origin: self.origin,
+            previous_hosted_urls: self
+                .previous_hosted_urls
+                .ok_or_else(|| BuildError::missing_field("previous_hosted_urls"))?,
             route: self.route,
             skills_path: self.skills_path,
             status: self

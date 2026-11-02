@@ -13,12 +13,17 @@ pub struct Bounty {
     /// How many winner slots one worker can win. Defaults to `1`. Wins plus proofs awaiting review never exceed this number, and a worker runs one attempt at a time. Cannot exceed `accepted_submissions_limit`.
     #[serde(default)]
     pub accepted_submissions_per_user_limit: i64,
+    #[serde(default)]
+    pub active_proof_livestream_feeds: Vec<BountyActiveLivestreamFeed>,
     /// What a referrer earns per accepted submission when the worker arrived through their affiliate link, in whole currency units, at the standard platform fee rate. Taken out of the worker's post-fee reward rather than added on top. `0` when the bounty pays no affiliate share, including bounties tied to no account, which cannot record a referral.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub affiliate_share_amount: f64,
     #[serde(default)]
     pub allowed_country_codes: Vec<String>,
+    /// Submissions delivered and waiting on review. A subset of `unresolved_submissions_count`, which also counts attempts still in progress.
+    #[serde(default)]
+    pub awaiting_review_submissions_count: i64,
     /// Total gross budget committed to the bounty: `gross_reward_amount` times `accepted_submissions_limit`.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -37,6 +42,9 @@ pub struct Bounty {
     pub created_at: String,
     /// Currency for all amounts on the bounty, as a lowercase ISO 4217 code.
     pub currency: BountyCurrency,
+    /// Submissions reviewed and turned down.
+    #[serde(default)]
+    pub denied_submissions_count: i64,
     /// Full task instructions shown to workers.
     #[serde(default)]
     pub description: String,
@@ -69,6 +77,9 @@ pub struct Bounty {
     /// Bounty ID, prefixed `bnty_`.
     #[serde(default)]
     pub id: String,
+    /// Total verified footage a submission must accumulate before it can be submitted, in seconds. Always a whole number of hours. Present only on `data_capture` bounties — it is what `net_reward_amount` pays for, so rate displays divide by it. `null` for every other goal type.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_total_verified_duration_seconds: Option<i64>,
     /// What a worker is quoted per accepted submission after the platform fee, in whole currency units. The exact post-fee figure, at the standard platform fee rate — a worker who locked a different rate, or who arrived through an affiliate link, is paid a different amount.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -117,14 +128,17 @@ pub struct BountyBuilder {
     accepted_submissions_count: Option<i64>,
     accepted_submissions_limit: Option<i64>,
     accepted_submissions_per_user_limit: Option<i64>,
+    active_proof_livestream_feeds: Option<Vec<BountyActiveLivestreamFeed>>,
     affiliate_share_amount: Option<f64>,
     allowed_country_codes: Option<Vec<String>>,
+    awaiting_review_submissions_count: Option<i64>,
     budget_amount: Option<f64>,
     business_goal_type: Option<BountyBusinessGoalType>,
     cancel_requested_at: Option<String>,
     capture_spec: Option<CaptureSpec>,
     created_at: Option<String>,
     currency: Option<BountyCurrency>,
+    denied_submissions_count: Option<i64>,
     description: Option<String>,
     discussion_experience_id: Option<String>,
     discussion_feed_id: Option<String>,
@@ -135,6 +149,7 @@ pub struct BountyBuilder {
     gross_reward_amount: Option<f64>,
     hosting_account: Option<StorefrontAccount>,
     id: Option<String>,
+    min_total_verified_duration_seconds: Option<i64>,
     net_reward_amount: Option<f64>,
     poster: Option<UserSummary>,
     scheduled_frequency: Option<BountyScheduledFrequency>,
@@ -172,6 +187,11 @@ impl BountyBuilder {
         self
     }
 
+    pub fn active_proof_livestream_feeds(mut self, value: Vec<BountyActiveLivestreamFeed>) -> Self {
+        self.active_proof_livestream_feeds = Some(value);
+        self
+    }
+
     pub fn affiliate_share_amount(mut self, value: f64) -> Self {
         self.affiliate_share_amount = Some(value);
         self
@@ -179,6 +199,11 @@ impl BountyBuilder {
 
     pub fn allowed_country_codes(mut self, value: Vec<String>) -> Self {
         self.allowed_country_codes = Some(value);
+        self
+    }
+
+    pub fn awaiting_review_submissions_count(mut self, value: i64) -> Self {
+        self.awaiting_review_submissions_count = Some(value);
         self
     }
 
@@ -209,6 +234,11 @@ impl BountyBuilder {
 
     pub fn currency(mut self, value: BountyCurrency) -> Self {
         self.currency = Some(value);
+        self
+    }
+
+    pub fn denied_submissions_count(mut self, value: i64) -> Self {
+        self.denied_submissions_count = Some(value);
         self
     }
 
@@ -259,6 +289,11 @@ impl BountyBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn min_total_verified_duration_seconds(mut self, value: i64) -> Self {
+        self.min_total_verified_duration_seconds = Some(value);
         self
     }
 
@@ -323,11 +358,14 @@ impl BountyBuilder {
     /// - [`accepted_submissions_count`](BountyBuilder::accepted_submissions_count)
     /// - [`accepted_submissions_limit`](BountyBuilder::accepted_submissions_limit)
     /// - [`accepted_submissions_per_user_limit`](BountyBuilder::accepted_submissions_per_user_limit)
+    /// - [`active_proof_livestream_feeds`](BountyBuilder::active_proof_livestream_feeds)
     /// - [`affiliate_share_amount`](BountyBuilder::affiliate_share_amount)
     /// - [`allowed_country_codes`](BountyBuilder::allowed_country_codes)
+    /// - [`awaiting_review_submissions_count`](BountyBuilder::awaiting_review_submissions_count)
     /// - [`budget_amount`](BountyBuilder::budget_amount)
     /// - [`created_at`](BountyBuilder::created_at)
     /// - [`currency`](BountyBuilder::currency)
+    /// - [`denied_submissions_count`](BountyBuilder::denied_submissions_count)
     /// - [`description`](BountyBuilder::description)
     /// - [`gross_paid_out_amount`](BountyBuilder::gross_paid_out_amount)
     /// - [`gross_reward_amount`](BountyBuilder::gross_reward_amount)
@@ -354,12 +392,18 @@ impl BountyBuilder {
             accepted_submissions_per_user_limit: self
                 .accepted_submissions_per_user_limit
                 .ok_or_else(|| BuildError::missing_field("accepted_submissions_per_user_limit"))?,
+            active_proof_livestream_feeds: self
+                .active_proof_livestream_feeds
+                .ok_or_else(|| BuildError::missing_field("active_proof_livestream_feeds"))?,
             affiliate_share_amount: self
                 .affiliate_share_amount
                 .ok_or_else(|| BuildError::missing_field("affiliate_share_amount"))?,
             allowed_country_codes: self
                 .allowed_country_codes
                 .ok_or_else(|| BuildError::missing_field("allowed_country_codes"))?,
+            awaiting_review_submissions_count: self
+                .awaiting_review_submissions_count
+                .ok_or_else(|| BuildError::missing_field("awaiting_review_submissions_count"))?,
             budget_amount: self
                 .budget_amount
                 .ok_or_else(|| BuildError::missing_field("budget_amount"))?,
@@ -372,6 +416,9 @@ impl BountyBuilder {
             currency: self
                 .currency
                 .ok_or_else(|| BuildError::missing_field("currency"))?,
+            denied_submissions_count: self
+                .denied_submissions_count
+                .ok_or_else(|| BuildError::missing_field("denied_submissions_count"))?,
             description: self
                 .description
                 .ok_or_else(|| BuildError::missing_field("description"))?,
@@ -388,6 +435,7 @@ impl BountyBuilder {
                 .ok_or_else(|| BuildError::missing_field("gross_reward_amount"))?,
             hosting_account: self.hosting_account,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            min_total_verified_duration_seconds: self.min_total_verified_duration_seconds,
             net_reward_amount: self
                 .net_reward_amount
                 .ok_or_else(|| BuildError::missing_field("net_reward_amount"))?,

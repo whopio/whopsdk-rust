@@ -190,7 +190,9 @@ jobs:
           verdict=skip
           summary=""
 
-          if ! git rev-parse --verify --quiet HEAD^ >/dev/null; then
+          if [ "$EVENT" != "push" ]; then
+            echo "::notice::event is ${EVENT}; the only-version-changed check applies to push events."
+          elif ! git rev-parse --verify --quiet HEAD^ >/dev/null; then
             refuse "HEAD has no parent, so the only-version-changed check cannot run at all."
           elif ! git cat-file -e "HEAD^:${MANIFEST}" 2>/dev/null; then
             verdict=bad

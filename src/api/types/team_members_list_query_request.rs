@@ -27,16 +27,16 @@ pub struct TeamMembersListQueryRequest {
     /// Sort direction. Defaults to `desc`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<ListTeamMembersRequestDirection>,
-    /// Number of members to return. Defaults to 20; maximum 100.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// Cursor for the next page of members.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// Number of members to return from the end of the window.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// Cursor to paginate backwards from.
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
 }

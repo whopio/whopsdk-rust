@@ -24,10 +24,10 @@ impl ShipmentsClient {
     /// * `created_after` - Return shipments created after this ISO 8601 timestamp.
     /// * `order` - The field to sort by.
     /// * `direction` - The sort direction.
-    /// * `first` - The number of shipments to return.
-    /// * `after` - A cursor; returns shipments after this position.
-    /// * `last` - The number of shipments to return from the end of the range.
-    /// * `before` - A cursor; returns shipments before this position.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -72,6 +72,13 @@ impl ShipmentsClient {
         request: &ShipmentsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListShipmentsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -135,6 +142,13 @@ impl ShipmentsClient {
         request: &CreateShipmentsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Shipment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -177,6 +191,13 @@ impl ShipmentsClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<Shipment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -229,6 +250,13 @@ impl ShipmentsClient {
         request: &UpdateShipmentsRequest,
         options: Option<RequestOptions>,
     ) -> Result<Shipment, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

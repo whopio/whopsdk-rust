@@ -20,7 +20,7 @@ pub struct CoursesListQueryRequest {
     pub experience_id: Option<String>,
     /// The unique identifier of the company to list courses for.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
+    pub account_id: Option<String>,
 }
 
 impl CoursesListQueryRequest {
@@ -37,7 +37,7 @@ pub struct CoursesListQueryRequestBuilder {
     first: Option<i64>,
     last: Option<i64>,
     experience_id: Option<String>,
-    company_id: Option<String>,
+    account_id: Option<String>,
 }
 
 impl CoursesListQueryRequestBuilder {
@@ -66,8 +66,8 @@ impl CoursesListQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
@@ -79,7 +79,7 @@ impl CoursesListQueryRequestBuilder {
             first: self.first,
             last: self.last,
             experience_id: self.experience_id,
-            company_id: self.company_id,
+            account_id: self.account_id,
         })
     }
 }

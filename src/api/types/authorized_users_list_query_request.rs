@@ -15,9 +15,6 @@ pub struct AuthorizedUsersListQueryRequest {
     /// Returns the last _n_ elements from the list.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// The unique identifier of the company to list authorized users for.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub company_id: Option<String>,
     /// Filter results to a specific user to check if they are an authorized team member.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
@@ -33,6 +30,9 @@ pub struct AuthorizedUsersListQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub created_after: Option<DateTime<FixedOffset>>,
+    /// The unique identifier of the company to list authorized users for.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
 }
 
 impl AuthorizedUsersListQueryRequest {
@@ -48,11 +48,11 @@ pub struct AuthorizedUsersListQueryRequestBuilder {
     before: Option<String>,
     first: Option<i64>,
     last: Option<i64>,
-    company_id: Option<String>,
     user_id: Option<String>,
     role: Option<AuthorizedUserRoles>,
     created_before: Option<DateTime<FixedOffset>>,
     created_after: Option<DateTime<FixedOffset>>,
+    account_id: Option<String>,
 }
 
 impl AuthorizedUsersListQueryRequestBuilder {
@@ -76,11 +76,6 @@ impl AuthorizedUsersListQueryRequestBuilder {
         self
     }
 
-    pub fn company_id(mut self, value: impl Into<String>) -> Self {
-        self.company_id = Some(value.into());
-        self
-    }
-
     pub fn user_id(mut self, value: impl Into<String>) -> Self {
         self.user_id = Some(value.into());
         self
@@ -101,6 +96,11 @@ impl AuthorizedUsersListQueryRequestBuilder {
         self
     }
 
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`AuthorizedUsersListQueryRequest`].
     pub fn build(self) -> Result<AuthorizedUsersListQueryRequest, BuildError> {
         Ok(AuthorizedUsersListQueryRequest {
@@ -108,11 +108,11 @@ impl AuthorizedUsersListQueryRequestBuilder {
             before: self.before,
             first: self.first,
             last: self.last,
-            company_id: self.company_id,
             user_id: self.user_id,
             role: self.role,
             created_before: self.created_before,
             created_after: self.created_after,
+            account_id: self.account_id,
         })
     }
 }

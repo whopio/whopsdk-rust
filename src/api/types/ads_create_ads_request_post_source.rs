@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+/// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CreateAdsRequestPostSource {

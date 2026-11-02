@@ -13,7 +13,7 @@ impl DepositsClient {
         })
     }
 
-    /// Retrieve the deposit methods for an account, including crypto and bank transfer.
+    /// Retrieve the deposit methods for an account, including crypto and bank transfer. Bitcoin deposits are converted by Relay directly to USDT on Plasma in the destination account's wallet. Crypto deposits require a $10 minimum.
     ///
     /// # Arguments
     ///
@@ -39,10 +39,8 @@ impl DepositsClient {
     ///         .deposits
     ///         .create(
     ///             &CreateDepositsRequest {
-    ///                 destination: CreateDepositsRequestDestination::String("destination".to_string()),
+    ///                 destination: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 amount: None,
-    ///                 metadata: None,
-    ///                 network: None,
     ///             },
     ///             None,
     ///         )
@@ -54,6 +52,13 @@ impl DepositsClient {
         request: &CreateDepositsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateDepositsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

@@ -6,6 +6,9 @@ pub struct MeQueryRequest {
     /// When set, returns your account-specific profile overrides for this account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
+    /// Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_balance: Option<bool>,
     /// Also compute your balance history (opt-in; runs a heavier query). Ignored for callers without balance-read scope.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub include_balance_history: Option<bool>,
@@ -33,6 +36,7 @@ impl MeQueryRequest {
 #[non_exhaustive]
 pub struct MeQueryRequestBuilder {
     account_id: Option<String>,
+    include_balance: Option<bool>,
     include_balance_history: Option<bool>,
     from: Option<String>,
     to: Option<String>,
@@ -43,6 +47,11 @@ pub struct MeQueryRequestBuilder {
 impl MeQueryRequestBuilder {
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
+        self
+    }
+
+    pub fn include_balance(mut self, value: bool) -> Self {
+        self.include_balance = Some(value);
         self
     }
 
@@ -75,6 +84,7 @@ impl MeQueryRequestBuilder {
     pub fn build(self) -> Result<MeQueryRequest, BuildError> {
         Ok(MeQueryRequest {
             account_id: self.account_id,
+            include_balance: self.include_balance,
             include_balance_history: self.include_balance_history,
             from: self.from,
             to: self.to,

@@ -25,10 +25,10 @@ impl PromoCodesClient {
     /// * `created_after` - Only promo codes created after this ISO 8601 timestamp.
     /// * `order` - Sort field.
     /// * `direction` - Sort direction.
-    /// * `first` - Number of promo codes to return from the start of the window.
-    /// * `after` - Cursor to paginate forwards from.
-    /// * `last` - Number of promo codes to return from the end of the window.
-    /// * `before` - Cursor to paginate backwards from.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -74,6 +74,13 @@ impl PromoCodesClient {
         request: &PromoCodesListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListPromoCodesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -150,6 +157,13 @@ impl PromoCodesClient {
         request: &CreatePromoCodesRequest,
         options: Option<RequestOptions>,
     ) -> Result<PromoCode, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -192,6 +206,13 @@ impl PromoCodesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<PromoCode, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -234,6 +255,13 @@ impl PromoCodesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<DeletePromoCodesResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::DELETE,
@@ -276,6 +304,13 @@ impl PromoCodesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<PromoCode, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -318,6 +353,13 @@ impl PromoCodesClient {
         id: &str,
         options: Option<RequestOptions>,
     ) -> Result<PromoCode, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,

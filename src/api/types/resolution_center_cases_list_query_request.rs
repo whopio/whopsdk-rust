@@ -9,16 +9,16 @@ pub struct ResolutionCenterCasesListQueryRequest {
     /// Only cases opened by this customer — a `user_` tag, or `me` for the calling user. It narrows what you can already read, so `me` lists the cases you opened without the ones on accounts you are a team member of.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
-    /// The number of cases to return (default 20, max 100).
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// A cursor; returns cases after this position.
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// The number of cases to return from the end of the range.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// A cursor; returns cases before this position.
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
     /// The field to sort cases by.

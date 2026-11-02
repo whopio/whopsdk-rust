@@ -20,6 +20,10 @@ impl EarningsClient {
     /// * `id` - The partner business ID (a coma_ identifier).
     /// * `status` - Filter by earning status.
     /// * `income_source` - Filter to earnings from these income sources. Repeat the parameter for each one (income_source=sales&income_source=ad_spend).
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `order` - The field to sort earnings by.
     /// * `direction` - Sort direction.
     /// * `created_before` - Only return earnings created before this timestamp.
@@ -71,6 +75,13 @@ impl EarningsClient {
         request: &PartnersBusinessesEarningsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListEarningsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,

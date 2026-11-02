@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct AdGroupCustomLocation {
+    /// ISO 3166-1 alpha-2 country the point falls in. Send it under a special ad category, where the campaign must declare the countries its ad sets reach.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub country_code: Option<String>,
     /// Unit for `radius`.
     pub distance_unit: AdGroupCustomLocationDistanceUnit,
     /// Latitude of the center point.
@@ -30,6 +33,7 @@ impl AdGroupCustomLocation {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct AdGroupCustomLocationBuilder {
+    country_code: Option<String>,
     distance_unit: Option<AdGroupCustomLocationDistanceUnit>,
     latitude: Option<f64>,
     longitude: Option<f64>,
@@ -38,6 +42,11 @@ pub struct AdGroupCustomLocationBuilder {
 }
 
 impl AdGroupCustomLocationBuilder {
+    pub fn country_code(mut self, value: impl Into<String>) -> Self {
+        self.country_code = Some(value.into());
+        self
+    }
+
     pub fn distance_unit(mut self, value: AdGroupCustomLocationDistanceUnit) -> Self {
         self.distance_unit = Some(value);
         self
@@ -71,6 +80,7 @@ impl AdGroupCustomLocationBuilder {
     /// - [`radius`](AdGroupCustomLocationBuilder::radius)
     pub fn build(self) -> Result<AdGroupCustomLocation, BuildError> {
         Ok(AdGroupCustomLocation {
+            country_code: self.country_code,
             distance_unit: self
                 .distance_unit
                 .ok_or_else(|| BuildError::missing_field("distance_unit"))?,

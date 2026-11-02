@@ -8,16 +8,11 @@ pub struct LedgerActivity {
     /// Signed amount in the currency's smallest precision units.
     #[serde(default)]
     pub amount: String,
-    /// ISO 8601 timestamp these funds became (or are scheduled to become) withdrawable: the posted time for already-settled funds, or 00:00:00 UTC on the scheduled release date for pending funds. Present only on inflows entering the balance (payments, top-ups, incoming transfers/affiliate); null on withdrawals, refunds, disputes and on-chain rows. The available_after/before filters window on its UTC settlement date.
+    /// ISO 8601 timestamp these funds became (or are scheduled to become) withdrawable: the posted time for already-settled funds, or 00:00:00 UTC on the scheduled release date for pending funds. Present only on inflows entering the balance (payments, top-ups, incoming transfers/affiliate); null on payouts, refunds, disputes and on-chain rows. The available_after/before filters window on its UTC settlement date.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub available_at: Option<DateTime<FixedOffset>>,
-    /// When the activity record was created.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub created_at: Option<DateTime<FixedOffset>>,
     /// Currency for this ledger activity.
     #[serde(default)]
     pub currency: LedgerActivityCurrency,
@@ -30,16 +25,46 @@ pub struct LedgerActivity {
     /// The ledger line category this activity was posted under.
     pub line_type: LedgerActivityLineType,
     pub object: LedgerActivityObject,
+    /// Payment related to this ledger activity. Included when rich resource hydration is enabled and the movement is tied to a payment.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment: Option<LedgerActivityPayment>,
+    /// Payment ID for any payment-related activity, including refunds and disputes.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_id: Option<String>,
+    /// ID of the plan associated with the payment, when applicable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan_id: Option<String>,
+    /// Name of the plan associated with the payment, when applicable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan_name: Option<String>,
     /// When the activity posted to the ledger.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
     pub posted_at: DateTime<FixedOffset>,
+    /// ID of the product associated with the payment, when applicable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_id: Option<String>,
+    /// Name of the product associated with the payment, when applicable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_name: Option<String>,
     /// Resource associated with this ledger activity.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resource: Option<LedgerActivityResource>,
-    /// Source of this ledger activity.
+    /// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<LedgerActivitySource>,
+    /// Dollar value of this movement as a decimal string, signed like `amount`. Converted from the posted amount at the rate that was live when the line posted — the same pricing the wallet balance chart and the financial reports use — so a crypto row carries its dollar value too. `null` for a currency Whop holds no exchange rate for.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub usd_amount: Option<String>,
+    /// Email of the customer associated with the payment. Requires member:email:read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_email: Option<String>,
+    /// ID of the customer associated with the payment.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
+    /// Display name of the customer associated with the payment.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_name: Option<String>,
 }
 
 impl LedgerActivity {
@@ -54,15 +79,24 @@ pub struct LedgerActivityBuilder {
     account: Option<LedgerActivityAccount>,
     amount: Option<String>,
     available_at: Option<DateTime<FixedOffset>>,
-    created_at: Option<DateTime<FixedOffset>>,
     currency: Option<LedgerActivityCurrency>,
     id: Option<String>,
     ledger_account_id: Option<String>,
     line_type: Option<LedgerActivityLineType>,
     object: Option<LedgerActivityObject>,
+    payment: Option<LedgerActivityPayment>,
+    payment_id: Option<String>,
+    plan_id: Option<String>,
+    plan_name: Option<String>,
     posted_at: Option<DateTime<FixedOffset>>,
+    product_id: Option<String>,
+    product_name: Option<String>,
     resource: Option<LedgerActivityResource>,
     source: Option<LedgerActivitySource>,
+    usd_amount: Option<String>,
+    user_email: Option<String>,
+    user_id: Option<String>,
+    user_name: Option<String>,
 }
 
 impl LedgerActivityBuilder {
@@ -78,11 +112,6 @@ impl LedgerActivityBuilder {
 
     pub fn available_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.available_at = Some(value);
-        self
-    }
-
-    pub fn created_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.created_at = Some(value);
         self
     }
 
@@ -111,8 +140,38 @@ impl LedgerActivityBuilder {
         self
     }
 
+    pub fn payment(mut self, value: LedgerActivityPayment) -> Self {
+        self.payment = Some(value);
+        self
+    }
+
+    pub fn payment_id(mut self, value: impl Into<String>) -> Self {
+        self.payment_id = Some(value.into());
+        self
+    }
+
+    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
+        self.plan_id = Some(value.into());
+        self
+    }
+
+    pub fn plan_name(mut self, value: impl Into<String>) -> Self {
+        self.plan_name = Some(value.into());
+        self
+    }
+
     pub fn posted_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.posted_at = Some(value);
+        self
+    }
+
+    pub fn product_id(mut self, value: impl Into<String>) -> Self {
+        self.product_id = Some(value.into());
+        self
+    }
+
+    pub fn product_name(mut self, value: impl Into<String>) -> Self {
+        self.product_name = Some(value.into());
         self
     }
 
@@ -123,6 +182,26 @@ impl LedgerActivityBuilder {
 
     pub fn source(mut self, value: LedgerActivitySource) -> Self {
         self.source = Some(value);
+        self
+    }
+
+    pub fn usd_amount(mut self, value: impl Into<String>) -> Self {
+        self.usd_amount = Some(value.into());
+        self
+    }
+
+    pub fn user_email(mut self, value: impl Into<String>) -> Self {
+        self.user_email = Some(value.into());
+        self
+    }
+
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
+        self
+    }
+
+    pub fn user_name(mut self, value: impl Into<String>) -> Self {
+        self.user_name = Some(value.into());
         self
     }
 
@@ -141,7 +220,6 @@ impl LedgerActivityBuilder {
                 .amount
                 .ok_or_else(|| BuildError::missing_field("amount"))?,
             available_at: self.available_at,
-            created_at: self.created_at,
             currency: self
                 .currency
                 .ok_or_else(|| BuildError::missing_field("currency"))?,
@@ -153,11 +231,21 @@ impl LedgerActivityBuilder {
             object: self
                 .object
                 .ok_or_else(|| BuildError::missing_field("object"))?,
+            payment: self.payment,
+            payment_id: self.payment_id,
+            plan_id: self.plan_id,
+            plan_name: self.plan_name,
             posted_at: self
                 .posted_at
                 .ok_or_else(|| BuildError::missing_field("posted_at"))?,
+            product_id: self.product_id,
+            product_name: self.product_name,
             resource: self.resource,
             source: self.source,
+            usd_amount: self.usd_amount,
+            user_email: self.user_email,
+            user_id: self.user_id,
+            user_name: self.user_name,
         })
     }
 }

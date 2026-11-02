@@ -19,6 +19,9 @@ pub struct LedgerAccount {
     /// The payout account associated with the LedgerAccount, if any.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_account_details: Option<LedgerAccountPayoutAccountDetails>,
+    /// Whether a payout from this account must be confirmed against a provider-backed quote first. When true, create a quote with POST /payouts/quotes and send its quote_token when creating the payout.
+    #[serde(default)]
+    pub payout_quote_required: bool,
     /// The settlement batch most recently posted to this account's available balance, at midnight UTC. Every payment settling in that batch carries the same `settlement_time_at`.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -49,6 +52,7 @@ pub struct LedgerAccountBuilder {
     owner: Option<LedgerAccountOwner>,
     payments_approval_status: Option<PaymentsApprovalStatuses>,
     payout_account_details: Option<LedgerAccountPayoutAccountDetails>,
+    payout_quote_required: Option<bool>,
     settlement_time_at: Option<DateTime<FixedOffset>>,
     transfer_fee: Option<f64>,
     treasury_balance: Option<LedgerAccountTreasuryBalance>,
@@ -85,6 +89,11 @@ impl LedgerAccountBuilder {
         self
     }
 
+    pub fn payout_quote_required(mut self, value: bool) -> Self {
+        self.payout_quote_required = Some(value);
+        self
+    }
+
     pub fn settlement_time_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.settlement_time_at = Some(value);
         self
@@ -106,6 +115,7 @@ impl LedgerAccountBuilder {
     /// - [`id`](LedgerAccountBuilder::id)
     /// - [`ledger_type`](LedgerAccountBuilder::ledger_type)
     /// - [`owner`](LedgerAccountBuilder::owner)
+    /// - [`payout_quote_required`](LedgerAccountBuilder::payout_quote_required)
     pub fn build(self) -> Result<LedgerAccount, BuildError> {
         Ok(LedgerAccount {
             balances: self
@@ -120,6 +130,9 @@ impl LedgerAccountBuilder {
                 .ok_or_else(|| BuildError::missing_field("owner"))?,
             payments_approval_status: self.payments_approval_status,
             payout_account_details: self.payout_account_details,
+            payout_quote_required: self
+                .payout_quote_required
+                .ok_or_else(|| BuildError::missing_field("payout_quote_required"))?,
             settlement_time_at: self.settlement_time_at,
             transfer_fee: self.transfer_fee,
             treasury_balance: self.treasury_balance,

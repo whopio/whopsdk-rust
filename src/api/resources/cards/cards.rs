@@ -53,6 +53,13 @@ impl CardsClient {
         request: &CardsListQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<ListCardsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -67,7 +74,7 @@ impl CardsClient {
             .await
     }
 
-    /// Issue a virtual card, or apply for card issuing.
+    /// Issue a virtual card, or apply for card issuing. An account with no application files one here and gets back a `202`; call again to issue the card once it is approved.
     ///
     /// # Arguments
     ///
@@ -105,6 +112,13 @@ impl CardsClient {
         request: &CreateCardsRequest,
         options: Option<RequestOptions>,
     ) -> Result<CreateCardsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::POST,
@@ -159,6 +173,13 @@ impl CardsClient {
         request: &CardsRetrieveQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<RetrieveCardsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::GET,
@@ -214,6 +235,13 @@ impl CardsClient {
         request: &UpdateCardsRequest,
         options: Option<RequestOptions>,
     ) -> Result<UpdateCardsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-09-15".to_string());
+            Some(o)
+        };
         self.http_client
             .execute_request(
                 Method::PATCH,

@@ -36,16 +36,16 @@ pub struct AdCampaignsListQueryRequest {
     /// Attribution model the conversion stats count under (defaults to last_touch). Under both models a journey with any whop ad touch attributes to whop; the model picks which whop touch credits the entity and which non-whop source wins otherwise.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attribution_model: Option<ListAdCampaignsRequestAttributionModel>,
-    /// The number of campaigns to return.
+    /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
-    /// Cursor to fetch the page after (from page_info.end_cursor).
+    /// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub after: Option<String>,
-    /// The number of campaigns to return from the end of the range.
+    /// Number of results to return from the end of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last: Option<i64>,
-    /// Cursor to fetch the page before (from page_info.start_cursor).
+    /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
 }

@@ -2,18 +2,21 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Audience {
-    /// `custom` = a customer list (uploaded, or built from saved People filters); `lookalike` = Meta lookalike built from a custom audience.
+    /// Whether the audience targets a defined group of people or people similar to an existing audience.
     pub audience_type: AudienceAudienceType,
-    /// Whether membership keeps updating. `true` rebuilds it from the saved filters twice a day, so people join and leave as they start and stop matching. `false` keeps whoever matched when it was built and never rebuilds. Always `false` for uploaded lists and lookalikes.
+    /// Whether Whop rebuilds membership from saved People filters twice a day. When `false`, People audiences keep the members matched at creation. Always `false` for uploaded lists, lookalikes, and engagement audiences. Engagement membership is maintained by Meta.
     #[serde(default)]
     pub auto_refresh: bool,
     /// When the audience was created, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
+    /// Social engagement rules maintained by the ad platform. `null` for other audience sources.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub engagement: Option<AudienceEngagement>,
     /// Processing error message. `null` unless processing is partial or failed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error_message: Option<String>,
-    /// For audiences built from People filters: the filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. `null` for uploaded lists and lookalikes.
+    /// Saved Whop People filters that define membership, using the same keys as `GET /people`. `null` for uploaded lists, engagement audiences, and lookalikes.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub filters: Option<HashMap<String, serde_json::Value>>,
     /// Audience ID, prefixed `adaud_`.
@@ -34,7 +37,7 @@ pub struct Audience {
     pub lookalike_starting_ratio: Option<f64>,
     #[serde(default)]
     pub match_rates: Vec<AudienceMatchRate>,
-    /// Members successfully uploaded to connected ad accounts. Always 0 for lookalikes.
+    /// Members successfully uploaded to connected ad accounts. Always 0 for lookalikes and engagement audiences.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub matched_rows: f64,
@@ -43,7 +46,7 @@ pub struct Audience {
     pub name: String,
     #[serde(default)]
     pub platform_audience_ids: Vec<String>,
-    /// Members processed from the source so far. Always 0 for lookalikes.
+    /// Members processed from the source so far. Always 0 for lookalikes and engagement audiences.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub processed_rows: f64,
@@ -54,11 +57,11 @@ pub struct Audience {
     /// For lookalikes: the audience this lookalike was built from. `null` for custom audiences.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_audience_id: Option<String>,
-    /// Where members come from. `csv_upload` = an uploaded customer list; `people_filter` = built from saved People filters. See `auto_refresh` for whether a `people_filter` audience keeps updating.
+    /// Membership source: an uploaded CSV, Whop People filters, or social engagement.
     pub source_type: AudienceSourceType,
-    /// Current state of the audience import. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
+    /// Current state of audience creation. For engagement audiences, `ready` means the rules were created on Meta; membership may still be populating. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
     pub status: AudienceStatus,
-    /// Total members detected in the source — CSV rows for uploaded lists, matching people for automatic audiences. Always 0 for lookalikes.
+    /// Total members detected in the source — CSV rows for uploaded lists, matching people for automatic audiences. Always 0 for lookalikes and engagement audiences.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub total_rows: f64,
@@ -79,6 +82,7 @@ pub struct AudienceBuilder {
     audience_type: Option<AudienceAudienceType>,
     auto_refresh: Option<bool>,
     created_at: Option<String>,
+    engagement: Option<AudienceEngagement>,
     error_message: Option<String>,
     filters: Option<HashMap<String, serde_json::Value>>,
     id: Option<String>,
@@ -111,6 +115,11 @@ impl AudienceBuilder {
 
     pub fn created_at(mut self, value: impl Into<String>) -> Self {
         self.created_at = Some(value.into());
+        self
+    }
+
+    pub fn engagement(mut self, value: AudienceEngagement) -> Self {
+        self.engagement = Some(value);
         self
     }
 
@@ -226,6 +235,7 @@ impl AudienceBuilder {
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
+            engagement: self.engagement,
             error_message: self.error_message,
             filters: self.filters,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
