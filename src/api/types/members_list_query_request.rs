@@ -15,6 +15,21 @@ pub struct MembersListQueryRequest {
     /// Only return members whose users match these `user_` identifiers.
     #[serde(default)]
     pub user_ids: Vec<Option<String>>,
+    /// Only return members whose `most_recent_action` is one of these values.
+    #[serde(default)]
+    pub most_recent_actions: Vec<Option<ListMembersRequestMostRecentActionsItem>>,
+    /// `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `variant_ids`, or `promo_code_ids`, one membership must match all of them.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub membership_status: Option<ListMembersRequestMembershipStatus>,
+    /// Only return members holding a membership to one of these products, prefixed `prod_`. Unknown IDs match nothing.
+    #[serde(default)]
+    pub product_ids: Vec<Option<String>>,
+    /// Only return members holding a membership on one of these variants, prefixed `plan_`. Unknown IDs match nothing.
+    #[serde(default)]
+    pub variant_ids: Vec<Option<String>>,
+    /// Only return members holding a membership bought with one of these promo codes, prefixed `promo_`. Unknown IDs match nothing.
+    #[serde(default)]
+    pub promo_code_ids: Vec<Option<String>>,
     /// Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
@@ -24,7 +39,7 @@ pub struct MembersListQueryRequest {
     /// Only members who joined before this ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_before: Option<String>,
-    /// Sort field.
+    /// Sort field. `most_recent_action_at` and `last_activity_at` place members without one first when ascending and last when descending.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<ListMembersRequestOrder>,
     /// Sort direction.
@@ -42,6 +57,9 @@ pub struct MembersListQueryRequest {
     /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
+    /// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_total_count: Option<bool>,
 }
 
 impl MembersListQueryRequest {
@@ -57,6 +75,11 @@ pub struct MembersListQueryRequestBuilder {
     access_level: Option<ListMembersRequestAccessLevel>,
     status: Option<ListMembersRequestStatus>,
     user_ids: Option<Vec<Option<String>>>,
+    most_recent_actions: Option<Vec<Option<ListMembersRequestMostRecentActionsItem>>>,
+    membership_status: Option<ListMembersRequestMembershipStatus>,
+    product_ids: Option<Vec<Option<String>>>,
+    variant_ids: Option<Vec<Option<String>>>,
+    promo_code_ids: Option<Vec<Option<String>>>,
     query: Option<String>,
     created_after: Option<String>,
     created_before: Option<String>,
@@ -66,6 +89,7 @@ pub struct MembersListQueryRequestBuilder {
     after: Option<String>,
     last: Option<i64>,
     before: Option<String>,
+    include_total_count: Option<bool>,
 }
 
 impl MembersListQueryRequestBuilder {
@@ -86,6 +110,34 @@ impl MembersListQueryRequestBuilder {
 
     pub fn user_ids(mut self, value: Vec<Option<String>>) -> Self {
         self.user_ids = Some(value);
+        self
+    }
+
+    pub fn most_recent_actions(
+        mut self,
+        value: Vec<Option<ListMembersRequestMostRecentActionsItem>>,
+    ) -> Self {
+        self.most_recent_actions = Some(value);
+        self
+    }
+
+    pub fn membership_status(mut self, value: ListMembersRequestMembershipStatus) -> Self {
+        self.membership_status = Some(value);
+        self
+    }
+
+    pub fn product_ids(mut self, value: Vec<Option<String>>) -> Self {
+        self.product_ids = Some(value);
+        self
+    }
+
+    pub fn variant_ids(mut self, value: Vec<Option<String>>) -> Self {
+        self.variant_ids = Some(value);
+        self
+    }
+
+    pub fn promo_code_ids(mut self, value: Vec<Option<String>>) -> Self {
+        self.promo_code_ids = Some(value);
         self
     }
 
@@ -134,9 +186,18 @@ impl MembersListQueryRequestBuilder {
         self
     }
 
+    pub fn include_total_count(mut self, value: bool) -> Self {
+        self.include_total_count = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`MembersListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`user_ids`](MembersListQueryRequestBuilder::user_ids)
+    /// - [`most_recent_actions`](MembersListQueryRequestBuilder::most_recent_actions)
+    /// - [`product_ids`](MembersListQueryRequestBuilder::product_ids)
+    /// - [`variant_ids`](MembersListQueryRequestBuilder::variant_ids)
+    /// - [`promo_code_ids`](MembersListQueryRequestBuilder::promo_code_ids)
     pub fn build(self) -> Result<MembersListQueryRequest, BuildError> {
         Ok(MembersListQueryRequest {
             account_id: self.account_id,
@@ -145,6 +206,19 @@ impl MembersListQueryRequestBuilder {
             user_ids: self
                 .user_ids
                 .ok_or_else(|| BuildError::missing_field("user_ids"))?,
+            most_recent_actions: self
+                .most_recent_actions
+                .ok_or_else(|| BuildError::missing_field("most_recent_actions"))?,
+            membership_status: self.membership_status,
+            product_ids: self
+                .product_ids
+                .ok_or_else(|| BuildError::missing_field("product_ids"))?,
+            variant_ids: self
+                .variant_ids
+                .ok_or_else(|| BuildError::missing_field("variant_ids"))?,
+            promo_code_ids: self
+                .promo_code_ids
+                .ok_or_else(|| BuildError::missing_field("promo_code_ids"))?,
             query: self.query,
             created_after: self.created_after,
             created_before: self.created_before,
@@ -154,6 +228,7 @@ impl MembersListQueryRequestBuilder {
             after: self.after,
             last: self.last,
             before: self.before,
+            include_total_count: self.include_total_count,
         })
     }
 }

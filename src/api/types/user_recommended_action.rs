@@ -5,7 +5,7 @@ pub struct UserRecommendedAction {
     /// The account (`biz_`) a business recommendation is for, or `null` for personal recommendations
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// The account's display name, or `null`
+    /// The account's display name, or `null` for personal recommendations
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_name: Option<String>,
     /// The recommendation; new values may be added, so handle unknown actions gracefully

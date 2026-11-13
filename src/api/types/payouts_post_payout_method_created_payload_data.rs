@@ -54,6 +54,9 @@ pub struct PostPayoutMethodCreatedPayloadData {
     /// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quote: Option<PostPayoutMethodCreatedPayloadDataQuote>,
+    /// The recipient of a third-party payout method. Present only for recipient payout methods.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recipient: Option<PostPayoutMethodCreatedPayloadDataRecipient>,
     /// Lifecycle status: `created` means saved but unused, `active` means a payout succeeded through it, `broken` means a payout failure disabled it; a later successful payout returns it to `active`.
     pub status: PostPayoutMethodCreatedPayloadDataStatus,
     /// Machine-readable code for why the method is `broken` — the newest disabling failure recorded through it, whether a payout error or a pre-payout rejection. `null` unless the method is broken, or when it was disabled without a recorded failure.
@@ -62,6 +65,8 @@ pub struct PostPayoutMethodCreatedPayloadData {
     /// The supported payout method this saved method was created from.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub supported_payout_method: Option<PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod>,
+    /// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+    pub r#type: PostPayoutMethodCreatedPayloadDataType,
     /// Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unavailable_reason: Option<PostPayoutMethodCreatedPayloadDataUnavailableReason>,
@@ -93,9 +98,11 @@ pub struct PostPayoutMethodCreatedPayloadDataBuilder {
     object: Option<PostPayoutMethodCreatedPayloadDataObject>,
     payer_name: Option<String>,
     quote: Option<PostPayoutMethodCreatedPayloadDataQuote>,
+    recipient: Option<PostPayoutMethodCreatedPayloadDataRecipient>,
     status: Option<PostPayoutMethodCreatedPayloadDataStatus>,
     status_reason: Option<String>,
     supported_payout_method: Option<PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod>,
+    r#type: Option<PostPayoutMethodCreatedPayloadDataType>,
     unavailable_reason: Option<PostPayoutMethodCreatedPayloadDataUnavailableReason>,
 }
 
@@ -191,6 +198,11 @@ impl PostPayoutMethodCreatedPayloadDataBuilder {
         self
     }
 
+    pub fn recipient(mut self, value: PostPayoutMethodCreatedPayloadDataRecipient) -> Self {
+        self.recipient = Some(value);
+        self
+    }
+
     pub fn status(mut self, value: PostPayoutMethodCreatedPayloadDataStatus) -> Self {
         self.status = Some(value);
         self
@@ -206,6 +218,11 @@ impl PostPayoutMethodCreatedPayloadDataBuilder {
         value: PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod,
     ) -> Self {
         self.supported_payout_method = Some(value);
+        self
+    }
+
+    pub fn r#type(mut self, value: PostPayoutMethodCreatedPayloadDataType) -> Self {
+        self.r#type = Some(value);
         self
     }
 
@@ -228,6 +245,7 @@ impl PostPayoutMethodCreatedPayloadDataBuilder {
     /// - [`needs_plaid_reconnect`](PostPayoutMethodCreatedPayloadDataBuilder::needs_plaid_reconnect)
     /// - [`object`](PostPayoutMethodCreatedPayloadDataBuilder::object)
     /// - [`status`](PostPayoutMethodCreatedPayloadDataBuilder::status)
+    /// - [`r#type`](PostPayoutMethodCreatedPayloadDataBuilder::r#type)
     pub fn build(self) -> Result<PostPayoutMethodCreatedPayloadData, BuildError> {
         Ok(PostPayoutMethodCreatedPayloadData {
             account_reference: self.account_reference,
@@ -261,11 +279,15 @@ impl PostPayoutMethodCreatedPayloadDataBuilder {
                 .ok_or_else(|| BuildError::missing_field("object"))?,
             payer_name: self.payer_name,
             quote: self.quote,
+            recipient: self.recipient,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
             status_reason: self.status_reason,
             supported_payout_method: self.supported_payout_method,
+            r#type: self
+                .r#type
+                .ok_or_else(|| BuildError::missing_field("r#type"))?,
             unavailable_reason: self.unavailable_reason,
         })
     }

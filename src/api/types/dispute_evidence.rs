@@ -8,7 +8,7 @@ pub struct DisputeEvidence {
     /// The billing address the customer provided at checkout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub billing_address: Option<String>,
-    /// The cancellation policy document. Falls back to Whop's platform policy when the seller has not uploaded their own.
+    /// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, then its return policy, then Whop's platform policy.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cancellation_policy_attachment: Option<DisputeAttachment>,
     /// How the cancellation policy was shown to the customer before purchase.
@@ -31,7 +31,7 @@ pub struct DisputeEvidence {
     /// What the customer purchased, in the seller's own words.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_description: Option<String>,
-    /// The refund policy document. Falls back to Whop's platform policy when the seller has not uploaded their own.
+    /// The refund policy document. Defaults to the account's return policy, then its terms of service, then Whop's platform policy.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub refund_policy_attachment: Option<DisputeAttachment>,
     /// How the refund policy was shown to the customer before purchase.

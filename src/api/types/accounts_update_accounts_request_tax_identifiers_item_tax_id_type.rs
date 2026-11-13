@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`.
+/// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`. See the [tax IDs guide](/developer/guides/tax-ids) for an example of each type.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpdateAccountsRequestTaxIdentifiersItemTaxIdType {

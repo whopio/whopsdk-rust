@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The system role to grant. Partners must pass all certification quizzes.
+/// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpdateTeamMembersRequestRole {

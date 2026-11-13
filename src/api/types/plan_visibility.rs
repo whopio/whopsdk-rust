@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Controls where this plan can be seen. When `hidden`, the plan is reachable only by its direct link.
+/// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PlanVisibility {

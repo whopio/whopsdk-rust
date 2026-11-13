@@ -2,10 +2,8 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct DeleteSocialAccountsResponse {
-    /// Always true.
     #[serde(default)]
     pub deleted: bool,
-    /// ID of the disconnected social account.
     #[serde(default)]
     pub id: String,
 }

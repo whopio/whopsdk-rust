@@ -22,13 +22,14 @@ pub struct DisputePayment {
     /// Payment ID, prefixed `pay_`.
     #[serde(default)]
     pub id: String,
-    /// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the payment names no method.
+    /// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts, including the network transaction id the account uses for the card, when it was a card. Null when the payment names no method.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_instrument: Option<PaymentInstrument>,
     /// How the customer paid, such as `card` or `paypal`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_type: Option<String>,
-    /// The processor that handled the payment, such as `stripe`.
+    /// Deprecated: no longer populated. Always `null`.
+    /// DEPRECATED: No longer populated. Always null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_processor: Option<String>,
 }

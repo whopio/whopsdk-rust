@@ -13,7 +13,7 @@ pub struct UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem
     #[serde(skip_serializing_if = "Option::is_none")]
     pub documents:
         Option<UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocuments>,
-    /// Answer for a `files` item, or optional supporting documents for `text_with_files` — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
+    /// Answer for a `files` item, optional supporting documents for `text_with_files`, or the document an item's `alternative_document_label` names — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<String>>,
     /// Item ID from `requested_information`.
@@ -29,7 +29,7 @@ pub struct UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value_type:
         Option<UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemValueType>,
-    /// Every chosen option for a `select` item that accepts more than one answer, such as the countries an advertising certification covers. Use `value` for every other item.
+    /// Every chosen option for a `select` item that accepts more than one answer. Use `value` for every other item.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub values: Option<Vec<String>>,
 }

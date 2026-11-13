@@ -4,6 +4,7 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AdDeliveryStatus {
+    InAppeal,
     Rejected,
     InReview,
     Draft,
@@ -24,6 +25,7 @@ pub enum AdDeliveryStatus {
 impl Serialize for AdDeliveryStatus {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::InAppeal => serializer.serialize_str("in_appeal"),
             Self::Rejected => serializer.serialize_str("rejected"),
             Self::InReview => serializer.serialize_str("in_review"),
             Self::Draft => serializer.serialize_str("draft"),
@@ -45,6 +47,7 @@ impl<'de> Deserialize<'de> for AdDeliveryStatus {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "in_appeal" => Ok(Self::InAppeal),
             "rejected" => Ok(Self::Rejected),
             "in_review" => Ok(Self::InReview),
             "draft" => Ok(Self::Draft),
@@ -65,6 +68,7 @@ impl<'de> Deserialize<'de> for AdDeliveryStatus {
 impl fmt::Display for AdDeliveryStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::InAppeal => write!(f, "in_appeal"),
             Self::Rejected => write!(f, "rejected"),
             Self::InReview => write!(f, "in_review"),
             Self::Draft => write!(f, "draft"),

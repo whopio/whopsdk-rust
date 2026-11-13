@@ -2,18 +2,26 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Plan {
-    /// Account that sells this plan; `null` for standalone invoice plans.
+    /// Account that sells this variant; `null` for standalone invoice variants.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account: Option<AccountSummary>,
-    /// Whether adaptive pricing is enabled for this plan. Raw setting — does not check processor compatibility or feature flags.
+    /// Whether adaptive pricing is enabled for this variant. Raw setting — does not check processor compatibility or feature flags.
     #[serde(default)]
     pub adaptive_pricing_enabled: bool,
-    /// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+    /// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+    #[serde(default)]
+    pub allow_multiple_quantity: bool,
+    /// Attribute values that distinguish this variant within its product, as a map of attribute name to value, e.g. `{"color": "Blue", "size": "Large"}`. Names are snake_case identifiers and come back in alphabetical order. Every attributed variant on a product carries the same attribute names and a distinct set of values; the product lists the full option set as `variant_attributes`. `null` when the variant has no attributes.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attributes: Option<HashMap<String, Option<String>>>,
+    /// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub billing_period: Option<f64>,
-    /// Billing intervals the cancellation discount applies to (`0` forever, `1` first payment, or a month count). `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+    /// Billing model for this variant.
+    pub billing_type: PlanBillingType,
+    /// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
@@ -23,123 +31,124 @@ pub struct Plan {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub cancel_discount_percentage: Option<f64>,
-    /// Plan-level checkout styling (`background_color`, `button_color`, `font_family`, `border_style`); `null` inherits the account default.
+    /// Variant-level checkout styling (`background_color`, `button_color`, `font_family`, `border_style`); `null` inherits the account default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub checkout_styling: Option<HashMap<String, serde_json::Value>>,
-    /// Whether tax is collected on purchases of this plan, based on the account's tax configuration.
+    /// Whether tax is collected on purchases of this variant, based on the account's tax configuration.
     #[serde(default)]
     pub collect_tax: bool,
-    /// When the plan was created, as an ISO 8601 timestamp.
+    /// When the variant was created, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
-    /// Three-letter ISO currency code for this plan's prices.
+    /// Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
     pub currency: PlanCurrency,
     #[serde(default)]
     pub custom_fields: Vec<PlanCustomField>,
-    /// Whether the plan can be deleted (it has no memberships or waitlist entries). `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+    /// Whether the variant can be deleted (it has no memberships or waitlist entries). `null` unless the actor has the `plan:basic:read` scope on the variant's account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deletable: Option<bool>,
-    /// Customer-visible plan description. Maximum 1000 characters. `null` if no description is set.
+    /// Customer-visible variant description. Maximum 1000 characters. `null` if no description is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-    /// The configuration governing a checkout for this plan, resolved through every layer (the plan's own and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays the plan's own editable override.
+    /// The configuration governing a checkout for this variant, resolved through every layer (the variant's own and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays the variant's own editable override.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub effective_payment_method_configuration: Option<CheckoutSessionPaymentMethodConfiguration>,
-    /// Access duration in days for expiration-based plans, such as 365 for a one-year pass. `null` for plans without an expiration.
+    /// Access duration in days for expiration-based variants, such as 365 for a one-year pass. `null` for variants without an expiration.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub expiration_days: Option<f64>,
-    /// Human-readable price for display (currency + interval), e.g. "$10 / month".
+    /// Human-readable price for display (currency + interval) in `currency`, e.g. "$10 / month".
     #[serde(default)]
     pub formatted_price: String,
-    /// Plan ID, prefixed `plan_`.
+    /// Variant ID, prefixed `plan_`.
     #[serde(default)]
     pub id: String,
     /// Pricing-tier image (`url`, `blurhash`) shown on the product page; `null` when no image is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub image: Option<HashMap<String, serde_json::Value>>,
-    /// Initial purchase price in plan currency.
+    /// Initial purchase price, in `currency`.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub initial_price: f64,
-    /// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring plans, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this plan.
+    /// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring variants, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this variant. Stated in `currency`.
     #[serde(default)]
     pub initial_price_due: Money,
-    /// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+    /// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub internal_notes: Option<String>,
-    /// Invoice this plan was generated for; `null` unless created for an invoice.
+    /// Invoice this variant was generated for; `null` unless created for an invoice.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub invoice: Option<HashMap<String, serde_json::Value>>,
-    /// Active memberships through this plan. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+    /// Active memberships through this variant. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub member_count: Option<f64>,
-    /// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Maximum 50 keys, 100 characters per key, 500 characters per value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
+    /// Custom key-value pairs stored on the variant. Included in webhook payloads for payment and membership events. Maximum 50 keys, 100 characters per key, 500 characters per value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this variant.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<HashMap<String, serde_json::Value>>,
-    /// Whether a cancellation discount is offered. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+    /// Whether a cancellation discount is offered. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub offer_cancel_discount: Option<bool>,
-    /// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when plan uses default settings.
+    /// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when variant uses default settings.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_configuration: Option<HashMap<String, serde_json::Value>>,
-    /// Billing model for this plan.
-    pub plan_type: PlanPlanType,
-    /// Product this plan belongs to; `null` for standalone plans.
+    /// Product this variant belongs to; `null` for standalone variants.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product: Option<HashMap<String, serde_json::Value>>,
-    /// URL where customers can purchase this plan directly.
+    /// URL where customers can purchase this variant directly.
     #[serde(default)]
     pub purchase_url: String,
-    /// Sales method for this plan.
+    /// Sales method for this variant.
     pub release_method: PlanReleaseMethod,
-    /// Recurring price charged every billing period.
+    /// Recurring price charged every billing period, in `currency`.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub renewal_price: f64,
+    /// Stock keeping unit, free text set by the seller (e.g. `TSHIRT-LARGE-BLUE`). Not enforced unique. `null` when unset.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sku: Option<String>,
     /// Installment payments required before the subscription pauses. Must be greater than 1. `null` if split pay is not configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub split_pay_required_payments: Option<f64>,
-    /// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+    /// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub stock: Option<f64>,
-    /// Original initial price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
+    /// Original initial price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub strike_through_initial_price: Option<f64>,
-    /// Original renewal price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
+    /// Original renewal price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub strike_through_renewal_price: Option<f64>,
-    /// How tax is handled for this plan, including whether tax is included in the price, added at checkout, or not configured.
+    /// How tax is handled for this variant, including whether tax is included in the price, added at checkout, or not configured.
     pub tax_type: PlanTaxType,
     /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<PlanThreeDsLevel>,
-    /// Plan display name shown to customers. Maximum 30 characters. `null` if no title has been set.
+    /// Variant display name shown to customers. Maximum 30 characters. A variant created without one defaults to its attribute values joined with ` / `. `null` if no title has been set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
-    /// Free trial days before the first renewal charge. `null` if no trial is configured or the user has already used a trial for this plan.
+    /// Free trial days before the first renewal charge. `null` if no trial is configured or the user has already used a trial for this variant.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub trial_period_days: Option<f64>,
-    /// Whether the plan has unlimited stock. When `true`, the `stock` field is ignored; waitlist plans always report `true`.
+    /// Whether the variant has unlimited stock. When `true`, the `stock` field is ignored; waitlist variants always report `true`.
     #[serde(default)]
     pub unlimited_stock: bool,
-    /// When the plan was last updated, as an ISO 8601 timestamp.
+    /// When the variant was last updated, as an ISO 8601 timestamp.
     #[serde(default)]
     pub updated_at: String,
-    /// Controls where this plan can be seen. When `hidden`, the plan is reachable only by its direct link.
+    /// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
     pub visibility: PlanVisibility,
 }
 
@@ -154,7 +163,10 @@ impl Plan {
 pub struct PlanBuilder {
     account: Option<AccountSummary>,
     adaptive_pricing_enabled: Option<bool>,
+    allow_multiple_quantity: Option<bool>,
+    attributes: Option<HashMap<String, Option<String>>>,
     billing_period: Option<f64>,
+    billing_type: Option<PlanBillingType>,
     cancel_discount_intervals: Option<f64>,
     cancel_discount_percentage: Option<f64>,
     checkout_styling: Option<HashMap<String, serde_json::Value>>,
@@ -177,11 +189,11 @@ pub struct PlanBuilder {
     metadata: Option<HashMap<String, serde_json::Value>>,
     offer_cancel_discount: Option<bool>,
     payment_method_configuration: Option<HashMap<String, serde_json::Value>>,
-    plan_type: Option<PlanPlanType>,
     product: Option<HashMap<String, serde_json::Value>>,
     purchase_url: Option<String>,
     release_method: Option<PlanReleaseMethod>,
     renewal_price: Option<f64>,
+    sku: Option<String>,
     split_pay_required_payments: Option<f64>,
     stock: Option<f64>,
     strike_through_initial_price: Option<f64>,
@@ -206,8 +218,23 @@ impl PlanBuilder {
         self
     }
 
+    pub fn allow_multiple_quantity(mut self, value: bool) -> Self {
+        self.allow_multiple_quantity = Some(value);
+        self
+    }
+
+    pub fn attributes(mut self, value: HashMap<String, Option<String>>) -> Self {
+        self.attributes = Some(value);
+        self
+    }
+
     pub fn billing_period(mut self, value: f64) -> Self {
         self.billing_period = Some(value);
+        self
+    }
+
+    pub fn billing_type(mut self, value: PlanBillingType) -> Self {
+        self.billing_type = Some(value);
         self
     }
 
@@ -327,11 +354,6 @@ impl PlanBuilder {
         self
     }
 
-    pub fn plan_type(mut self, value: PlanPlanType) -> Self {
-        self.plan_type = Some(value);
-        self
-    }
-
     pub fn product(mut self, value: HashMap<String, serde_json::Value>) -> Self {
         self.product = Some(value);
         self
@@ -349,6 +371,11 @@ impl PlanBuilder {
 
     pub fn renewal_price(mut self, value: f64) -> Self {
         self.renewal_price = Some(value);
+        self
+    }
+
+    pub fn sku(mut self, value: impl Into<String>) -> Self {
+        self.sku = Some(value.into());
         self
     }
 
@@ -410,6 +437,8 @@ impl PlanBuilder {
     /// Consumes the builder and constructs a [`Plan`].
     /// This method will fail if any of the following fields are not set:
     /// - [`adaptive_pricing_enabled`](PlanBuilder::adaptive_pricing_enabled)
+    /// - [`allow_multiple_quantity`](PlanBuilder::allow_multiple_quantity)
+    /// - [`billing_type`](PlanBuilder::billing_type)
     /// - [`collect_tax`](PlanBuilder::collect_tax)
     /// - [`created_at`](PlanBuilder::created_at)
     /// - [`currency`](PlanBuilder::currency)
@@ -418,7 +447,6 @@ impl PlanBuilder {
     /// - [`id`](PlanBuilder::id)
     /// - [`initial_price`](PlanBuilder::initial_price)
     /// - [`initial_price_due`](PlanBuilder::initial_price_due)
-    /// - [`plan_type`](PlanBuilder::plan_type)
     /// - [`purchase_url`](PlanBuilder::purchase_url)
     /// - [`release_method`](PlanBuilder::release_method)
     /// - [`renewal_price`](PlanBuilder::renewal_price)
@@ -432,7 +460,14 @@ impl PlanBuilder {
             adaptive_pricing_enabled: self
                 .adaptive_pricing_enabled
                 .ok_or_else(|| BuildError::missing_field("adaptive_pricing_enabled"))?,
+            allow_multiple_quantity: self
+                .allow_multiple_quantity
+                .ok_or_else(|| BuildError::missing_field("allow_multiple_quantity"))?,
+            attributes: self.attributes,
             billing_period: self.billing_period,
+            billing_type: self
+                .billing_type
+                .ok_or_else(|| BuildError::missing_field("billing_type"))?,
             cancel_discount_intervals: self.cancel_discount_intervals,
             cancel_discount_percentage: self.cancel_discount_percentage,
             checkout_styling: self.checkout_styling,
@@ -469,9 +504,6 @@ impl PlanBuilder {
             metadata: self.metadata,
             offer_cancel_discount: self.offer_cancel_discount,
             payment_method_configuration: self.payment_method_configuration,
-            plan_type: self
-                .plan_type
-                .ok_or_else(|| BuildError::missing_field("plan_type"))?,
             product: self.product,
             purchase_url: self
                 .purchase_url
@@ -482,6 +514,7 @@ impl PlanBuilder {
             renewal_price: self
                 .renewal_price
                 .ok_or_else(|| BuildError::missing_field("renewal_price"))?,
+            sku: self.sku,
             split_pay_required_payments: self.split_pay_required_payments,
             stock: self.stock,
             strike_through_initial_price: self.strike_through_initial_price,

@@ -9,7 +9,7 @@ pub struct UpdateDisputesRequestEvidence {
     /// The billing address the customer provided at checkout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub billing_address: Option<String>,
-    /// The cancellation policy document.
+    /// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, when not set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cancellation_policy_attachment:
         Option<UpdateDisputesRequestEvidenceCancellationPolicyAttachment>,
@@ -26,13 +26,16 @@ pub struct UpdateDisputesRequestEvidence {
     /// The customer's name as given at checkout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub customer_name: Option<String>,
+    /// The full set of evidence documents the dispute should carry, beyond the four fixed evidence slots. Replaces all previously uploaded documents; an empty list removes them all. Send up to 10, 10MB each and 25MB in total. Accepted content types: application/pdf, application/json, image/jpeg, image/png, image/webp — any other type is rejected. Upload files through `POST /files` and reference them by `id`, or send the files as multipart file parts to upload and attach in one call. Policy documents (`return_policy`, `shipping_policy`, `cancellation_policy`, `terms_of_service`) default from the account's own documents; uploading one here replaces the account copy for this dispute, and a `cancellation_policy` or `return_policy` upload also takes precedence over the matching fixed evidence slot.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub documents: Option<Vec<UpdateDisputesRequestEvidenceDocumentsItem>>,
     /// Any additional context for the processor reviewing the dispute.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
     /// What the customer purchased, in the seller's own words.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_description: Option<String>,
-    /// The refund policy document.
+    /// The refund policy document. Defaults to the account's return policy when not set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub refund_policy_attachment: Option<UpdateDisputesRequestEvidenceRefundPolicyAttachment>,
     /// How the refund policy was shown to the customer before purchase.
@@ -67,6 +70,7 @@ pub struct UpdateDisputesRequestEvidenceBuilder {
         Option<UpdateDisputesRequestEvidenceCustomerCommunicationAttachment>,
     customer_email_address: Option<String>,
     customer_name: Option<String>,
+    documents: Option<Vec<UpdateDisputesRequestEvidenceDocumentsItem>>,
     notes: Option<String>,
     product_description: Option<String>,
     refund_policy_attachment: Option<UpdateDisputesRequestEvidenceRefundPolicyAttachment>,
@@ -115,6 +119,11 @@ impl UpdateDisputesRequestEvidenceBuilder {
 
     pub fn customer_name(mut self, value: impl Into<String>) -> Self {
         self.customer_name = Some(value.into());
+        self
+    }
+
+    pub fn documents(mut self, value: Vec<UpdateDisputesRequestEvidenceDocumentsItem>) -> Self {
+        self.documents = Some(value);
         self
     }
 
@@ -169,6 +178,7 @@ impl UpdateDisputesRequestEvidenceBuilder {
             customer_communication_attachment: self.customer_communication_attachment,
             customer_email_address: self.customer_email_address,
             customer_name: self.customer_name,
+            documents: self.documents,
             notes: self.notes,
             product_description: self.product_description,
             refund_policy_attachment: self.refund_policy_attachment,

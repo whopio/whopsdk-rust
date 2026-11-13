@@ -1,7 +1,7 @@
 pub use crate::prelude::*;
 
 /// The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreatePaymentRulesRequestConditions {
     #[serde(default)]
     pub all: Vec<CreatePaymentRulesRequestConditionsAllItem>,

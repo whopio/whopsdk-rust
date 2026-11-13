@@ -1,7 +1,7 @@
 {
-  "cliVersion": "5.90.1",
+  "cliVersion": "5.213.0",
   "generatorName": "fernapi/fern-rust-sdk",
-  "generatorVersion": "0.46.0",
+  "generatorVersion": "0.53.6",
   "generatorConfig": {
     "crateName": "whop-sdk",
     "clientClassName": "Whop",
@@ -20,10 +20,9 @@
       }
     }
   },
-  "originGitCommit": "0233b9cb6d2b389a3bf37200d239c28d704cd7ec",
+  "originGitCommit": "29d2fcb2ed50e6c635eba9cf2023dfb3c5d940b3",
   "originGitCommitIsDirty": false,
   "invokedBy": "ci",
-  "requestedVersion": "1.1.5",
   "ciProvider": "unknown",
-  "sdkVersion": "1.1.5"
+  "sdkVersion": "2.8.1"
 }

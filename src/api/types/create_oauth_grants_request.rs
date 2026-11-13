@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateOauthGrantsRequest {
     /// Authorize the app for one of the user's accounts rather than for the user alone, prefixed `biz_`. The user must have access to it.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -8,14 +8,18 @@ pub struct CreateOauthGrantsRequest {
     /// The app being authorized, prefixed `app_`.
     #[serde(default)]
     pub client_id: String,
-    /// The PKCE code challenge: the base64url-encoded SHA-256 of your code verifier, without padding.
-    #[serde(default)]
-    pub code_challenge: String,
-    /// How `code_challenge` was derived. Only `S256` is accepted.
-    pub code_challenge_method: CreateOauthGrantsRequestCodeChallengeMethod,
-    /// Whether the consent UI listed these scopes for the user. Sending `false` succeeds only when the user has already granted every scope requested.
+    /// The PKCE code challenge: the base64url-encoded SHA-256 of your code verifier, without padding. Required unless the app is confidential; a confidential app that leaves it out redeems the code with its secret instead of a verifier.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code_challenge: Option<String>,
+    /// How `code_challenge` was derived. Only `S256` is accepted. Required with `code_challenge`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code_challenge_method: Option<CreateOauthGrantsRequestCodeChallengeMethod>,
+    /// Whether the consent UI listed these scopes for the user. Sending `false` succeeds only when the user has already granted every scope requested, or when the app is one of Whop's own with the consent skip switched on and asks for `openid` alone.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub consent_shown: Option<bool>,
+    /// The downstream MCP client displayed on the consent screen. Requires explicit consent even when the upstream app already has a grant. Bound to the authorization code and returned on token exchange so the MCP server can verify the approved client.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mcp_client: Option<CreateOauthGrantsRequestMcpClient>,
     /// OIDC nonce, echoed into the resulting ID token. Required when `requested_scopes` includes `openid`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nonce: Option<String>,
@@ -47,6 +51,7 @@ pub struct CreateOauthGrantsRequestBuilder {
     code_challenge: Option<String>,
     code_challenge_method: Option<CreateOauthGrantsRequestCodeChallengeMethod>,
     consent_shown: Option<bool>,
+    mcp_client: Option<CreateOauthGrantsRequestMcpClient>,
     nonce: Option<String>,
     redirect_uri: Option<String>,
     requested_scopes: Option<Vec<String>>,
@@ -83,6 +88,11 @@ impl CreateOauthGrantsRequestBuilder {
         self
     }
 
+    pub fn mcp_client(mut self, value: CreateOauthGrantsRequestMcpClient) -> Self {
+        self.mcp_client = Some(value);
+        self
+    }
+
     pub fn nonce(mut self, value: impl Into<String>) -> Self {
         self.nonce = Some(value.into());
         self
@@ -111,8 +121,6 @@ impl CreateOauthGrantsRequestBuilder {
     /// Consumes the builder and constructs a [`CreateOauthGrantsRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`client_id`](CreateOauthGrantsRequestBuilder::client_id)
-    /// - [`code_challenge`](CreateOauthGrantsRequestBuilder::code_challenge)
-    /// - [`code_challenge_method`](CreateOauthGrantsRequestBuilder::code_challenge_method)
     /// - [`redirect_uri`](CreateOauthGrantsRequestBuilder::redirect_uri)
     /// - [`requested_scopes`](CreateOauthGrantsRequestBuilder::requested_scopes)
     pub fn build(self) -> Result<CreateOauthGrantsRequest, BuildError> {
@@ -121,13 +129,10 @@ impl CreateOauthGrantsRequestBuilder {
             client_id: self
                 .client_id
                 .ok_or_else(|| BuildError::missing_field("client_id"))?,
-            code_challenge: self
-                .code_challenge
-                .ok_or_else(|| BuildError::missing_field("code_challenge"))?,
-            code_challenge_method: self
-                .code_challenge_method
-                .ok_or_else(|| BuildError::missing_field("code_challenge_method"))?,
+            code_challenge: self.code_challenge,
+            code_challenge_method: self.code_challenge_method,
             consent_shown: self.consent_shown,
+            mcp_client: self.mcp_client,
             nonce: self.nonce,
             redirect_uri: self
                 .redirect_uri

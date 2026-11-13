@@ -3,9 +3,12 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct SwapsListQueryRequest {
-    /// Business or user account ID (biz_* / user_*).
-    #[serde(default)]
-    pub account_id: String,
+    /// Business account whose swaps to list, prefixed `biz_`. Provide this or `user_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
+    /// The caller's own user ID, prefixed `user_`, to list swaps in their personal account. Provide this or `account_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
 }
 
 impl SwapsListQueryRequest {
@@ -18,6 +21,7 @@ impl SwapsListQueryRequest {
 #[non_exhaustive]
 pub struct SwapsListQueryRequestBuilder {
     account_id: Option<String>,
+    user_id: Option<String>,
 }
 
 impl SwapsListQueryRequestBuilder {
@@ -26,14 +30,16 @@ impl SwapsListQueryRequestBuilder {
         self
     }
 
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`SwapsListQueryRequest`].
-    /// This method will fail if any of the following fields are not set:
-    /// - [`account_id`](SwapsListQueryRequestBuilder::account_id)
     pub fn build(self) -> Result<SwapsListQueryRequest, BuildError> {
         Ok(SwapsListQueryRequest {
-            account_id: self
-                .account_id
-                .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            account_id: self.account_id,
+            user_id: self.user_id,
         })
     }
 }

@@ -9,9 +9,15 @@ pub enum ListEarningsResponseDataItemResource {
 
     ListEarningsResponseDataItemResourceOne(ListEarningsResponseDataItemResourceOne),
 
-    ListEarningsResponseDataItemResourceCurrency(ListEarningsResponseDataItemResourceCurrency),
+    ListEarningsResponseDataItemResourceTwo(ListEarningsResponseDataItemResourceTwo),
+
+    ListEarningsResponseDataItemResourceMerchantName(
+        ListEarningsResponseDataItemResourceMerchantName,
+    ),
 
     ListEarningsResponseDataItemResourceSlug(ListEarningsResponseDataItemResourceSlug),
+
+    ListEarningsResponseDataItemResourceFive(ListEarningsResponseDataItemResourceFive),
 
     ListEarningsResponseDataItemResourceCreatedAt(ListEarningsResponseDataItemResourceCreatedAt),
 }
@@ -30,12 +36,23 @@ impl ListEarningsResponseDataItemResource {
         matches!(self, Self::ListEarningsResponseDataItemResourceOne(_))
     }
 
-    pub fn is_list_earnings_response_data_item_resource_currency(&self) -> bool {
-        matches!(self, Self::ListEarningsResponseDataItemResourceCurrency(_))
+    pub fn is_list_earnings_response_data_item_resource_two(&self) -> bool {
+        matches!(self, Self::ListEarningsResponseDataItemResourceTwo(_))
+    }
+
+    pub fn is_list_earnings_response_data_item_resource_merchant_name(&self) -> bool {
+        matches!(
+            self,
+            Self::ListEarningsResponseDataItemResourceMerchantName(_)
+        )
     }
 
     pub fn is_list_earnings_response_data_item_resource_slug(&self) -> bool {
         matches!(self, Self::ListEarningsResponseDataItemResourceSlug(_))
+    }
+
+    pub fn is_list_earnings_response_data_item_resource_five(&self) -> bool {
+        matches!(self, Self::ListEarningsResponseDataItemResourceFive(_))
     }
 
     pub fn is_list_earnings_response_data_item_resource_created_at(&self) -> bool {
@@ -82,20 +99,38 @@ impl ListEarningsResponseDataItemResource {
         }
     }
 
-    pub fn as_list_earnings_response_data_item_resource_currency(
+    pub fn as_list_earnings_response_data_item_resource_two(
         &self,
-    ) -> Option<&ListEarningsResponseDataItemResourceCurrency> {
+    ) -> Option<&ListEarningsResponseDataItemResourceTwo> {
         match self {
-            Self::ListEarningsResponseDataItemResourceCurrency(value) => Some(value),
+            Self::ListEarningsResponseDataItemResourceTwo(value) => Some(value),
             _ => None,
         }
     }
 
-    pub fn into_list_earnings_response_data_item_resource_currency(
+    pub fn into_list_earnings_response_data_item_resource_two(
         self,
-    ) -> Option<ListEarningsResponseDataItemResourceCurrency> {
+    ) -> Option<ListEarningsResponseDataItemResourceTwo> {
         match self {
-            Self::ListEarningsResponseDataItemResourceCurrency(value) => Some(value),
+            Self::ListEarningsResponseDataItemResourceTwo(value) => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn as_list_earnings_response_data_item_resource_merchant_name(
+        &self,
+    ) -> Option<&ListEarningsResponseDataItemResourceMerchantName> {
+        match self {
+            Self::ListEarningsResponseDataItemResourceMerchantName(value) => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn into_list_earnings_response_data_item_resource_merchant_name(
+        self,
+    ) -> Option<ListEarningsResponseDataItemResourceMerchantName> {
+        match self {
+            Self::ListEarningsResponseDataItemResourceMerchantName(value) => Some(value),
             _ => None,
         }
     }
@@ -114,6 +149,24 @@ impl ListEarningsResponseDataItemResource {
     ) -> Option<ListEarningsResponseDataItemResourceSlug> {
         match self {
             Self::ListEarningsResponseDataItemResourceSlug(value) => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn as_list_earnings_response_data_item_resource_five(
+        &self,
+    ) -> Option<&ListEarningsResponseDataItemResourceFive> {
+        match self {
+            Self::ListEarningsResponseDataItemResourceFive(value) => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn into_list_earnings_response_data_item_resource_five(
+        self,
+    ) -> Option<ListEarningsResponseDataItemResourceFive> {
+        match self {
+            Self::ListEarningsResponseDataItemResourceFive(value) => Some(value),
             _ => None,
         }
     }

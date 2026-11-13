@@ -25,7 +25,7 @@ pub struct LedgerActivityPayment {
     /// Processor that handled the payment, such as `stripe`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_processor: Option<String>,
-    /// Plan associated with the payment, when applicable.
+    /// Variant associated with the payment, when applicable.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub plan: Option<LedgerActivityPaymentPlan>,
     /// Product associated with the payment, when applicable.

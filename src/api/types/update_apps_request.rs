@@ -11,6 +11,9 @@ pub struct UpdateAppsRequest {
     /// The base production URL where the app is hosted. Set to `null` to take the app proxy offline.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub base_url: Option<String>,
+    /// The App Store category of a business app. Pass an `mcat_` ID from `GET /apps/categories?app_type=b2b_app`, or `null` to clear it. Omit it to keep the current category. Setting a category needs the app to have an App Store product.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub category_id: Option<String>,
     /// The URL path for the account dashboard view.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dashboard_path: Option<String>,
@@ -26,6 +29,9 @@ pub struct UpdateAppsRequest {
     /// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub icon: Option<UpdateAppsRequestIcon>,
+    /// The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL. Set to `null` to clear it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub imported_from_url: Option<String>,
     /// The display name for the app, shown to users on the app store and product pages.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -35,6 +41,9 @@ pub struct UpdateAppsRequest {
     /// The URL path to the app's OpenAPI spec file (requires the ai_chat capability).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub openapi_path: Option<String>,
+    /// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once for every installation, with the installation in `ctx.props.app_installation`. It must fire at least once and no more often than every 15 minutes. Slots are skipped while the app has no production web build with a server entry. Set to `null` or an empty string to stop the per-install schedule.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub per_install_schedule: Option<String>,
     /// The app build (`abld_` tag) to serve as the Android production build, or `null` to unassign it. Same rules as `production_web_build_id`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub production_android_build_id: Option<String>,
@@ -53,6 +62,9 @@ pub struct UpdateAppsRequest {
     /// The subdomain route where the app's hosted web builds are served.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
+    /// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once per slot, such as `* /15 * * * *`. It must fire at least once. Slots are skipped while the app has no production web build with a server entry. Set to `null` or an empty string to stop the global schedule.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub schedule: Option<String>,
     /// Secrets to add or overwrite on the app, as an object of string values. Keys not included are left untouched; pass null or an empty string as the value to delete a secret. Encrypted at rest and injected into the app's hosted server runtime.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secrets: Option<HashMap<String, serde_json::Value>>,
@@ -76,20 +88,24 @@ pub struct UpdateAppsRequestBuilder {
     app_store_description: Option<String>,
     app_type: Option<UpdateAppsRequestAppType>,
     base_url: Option<String>,
+    category_id: Option<String>,
     dashboard_path: Option<String>,
     description: Option<String>,
     discover_path: Option<String>,
     experience_path: Option<String>,
     icon: Option<UpdateAppsRequestIcon>,
+    imported_from_url: Option<String>,
     name: Option<String>,
     oauth_client_type: Option<UpdateAppsRequestOauthClientType>,
     openapi_path: Option<String>,
+    per_install_schedule: Option<String>,
     production_android_build_id: Option<String>,
     production_ios_build_id: Option<String>,
     production_web_build_id: Option<String>,
     redirect_uris: Option<Vec<String>>,
     required_scopes: Option<Vec<String>>,
     route: Option<String>,
+    schedule: Option<String>,
     secrets: Option<HashMap<String, serde_json::Value>>,
     skills_path: Option<String>,
     status: Option<UpdateAppsRequestStatus>,
@@ -108,6 +124,11 @@ impl UpdateAppsRequestBuilder {
 
     pub fn base_url(mut self, value: impl Into<String>) -> Self {
         self.base_url = Some(value.into());
+        self
+    }
+
+    pub fn category_id(mut self, value: impl Into<String>) -> Self {
+        self.category_id = Some(value.into());
         self
     }
 
@@ -136,6 +157,11 @@ impl UpdateAppsRequestBuilder {
         self
     }
 
+    pub fn imported_from_url(mut self, value: impl Into<String>) -> Self {
+        self.imported_from_url = Some(value.into());
+        self
+    }
+
     pub fn name(mut self, value: impl Into<String>) -> Self {
         self.name = Some(value.into());
         self
@@ -148,6 +174,11 @@ impl UpdateAppsRequestBuilder {
 
     pub fn openapi_path(mut self, value: impl Into<String>) -> Self {
         self.openapi_path = Some(value.into());
+        self
+    }
+
+    pub fn per_install_schedule(mut self, value: impl Into<String>) -> Self {
+        self.per_install_schedule = Some(value.into());
         self
     }
 
@@ -181,6 +212,11 @@ impl UpdateAppsRequestBuilder {
         self
     }
 
+    pub fn schedule(mut self, value: impl Into<String>) -> Self {
+        self.schedule = Some(value.into());
+        self
+    }
+
     pub fn secrets(mut self, value: HashMap<String, serde_json::Value>) -> Self {
         self.secrets = Some(value);
         self
@@ -202,20 +238,24 @@ impl UpdateAppsRequestBuilder {
             app_store_description: self.app_store_description,
             app_type: self.app_type,
             base_url: self.base_url,
+            category_id: self.category_id,
             dashboard_path: self.dashboard_path,
             description: self.description,
             discover_path: self.discover_path,
             experience_path: self.experience_path,
             icon: self.icon,
+            imported_from_url: self.imported_from_url,
             name: self.name,
             oauth_client_type: self.oauth_client_type,
             openapi_path: self.openapi_path,
+            per_install_schedule: self.per_install_schedule,
             production_android_build_id: self.production_android_build_id,
             production_ios_build_id: self.production_ios_build_id,
             production_web_build_id: self.production_web_build_id,
             redirect_uris: self.redirect_uris,
             required_scopes: self.required_scopes,
             route: self.route,
+            schedule: self.schedule,
             secrets: self.secrets,
             skills_path: self.skills_path,
             status: self.status,

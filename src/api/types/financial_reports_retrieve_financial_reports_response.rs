@@ -4,7 +4,7 @@ pub use crate::prelude::*;
 pub struct RetrieveFinancialReportsResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub beginning_balance: Option<f64>,
-    /// Every lifetime cashflow currency, ordered by cashflow volume in the requested period.
+    /// Cashflow currencies ordered by volume in the requested period. Includes lifetime currencies unless `period_only_currencies` is true.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currencies: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]

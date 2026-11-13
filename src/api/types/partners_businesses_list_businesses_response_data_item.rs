@@ -8,10 +8,19 @@ pub struct ListBusinessesResponseDataItem {
     /// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub blueprint_partner: Option<ListBusinessesResponseDataItemBlueprintPartner>,
+    /// CPA terms for the referring partner. Read with referring_account_id, the business's owner sees every rep's terms and a manager sees those of the reps below them, read-only. Omitted for other callers. An offer token is only for the referring partner and requires partner:commission_advance:accept permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub commission_advance: Option<PartnerAdvance>,
+    /// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub commission_advance_projections_allowed: Option<bool>,
     /// When the partner business was created.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
     pub created_at: DateTime<FixedOffset>,
+    /// How the partner closed this business, in their own words. Null until the partner saves one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deal_closed_reason: Option<String>,
     #[serde(default)]
     pub earnings_usd: ListBusinessesResponseDataItemEarningsUsd,
     /// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
@@ -26,7 +35,7 @@ pub struct ListBusinessesResponseDataItem {
     /// The owner of the referred business.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub owner: Option<ListBusinessesResponseDataItemOwner>,
-    /// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+    /// The commission rate this referral pays for each income source, as a fraction (0.3 = 30%). A solo partner earns it directly; the team of a referring partner business splits it by their shares.
     #[serde(default)]
     pub payout_percentages: ListBusinessesResponseDataItemPayoutPercentages,
     /// When the referral expires.
@@ -39,6 +48,9 @@ pub struct ListBusinessesResponseDataItem {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub referral_started_at: Option<DateTime<FixedOffset>>,
+    /// The partner business whose team member made this referral, the one its commission is paid to. Null for a solo partner's referral.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referring_business: Option<ListBusinessesResponseDataItemReferringBusiness>,
     /// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub second_tier_partner: Option<ListBusinessesResponseDataItemSecondTierPartner>,
@@ -59,7 +71,10 @@ impl ListBusinessesResponseDataItem {
 pub struct ListBusinessesResponseDataItemBuilder {
     account: Option<ListBusinessesResponseDataItemAccount>,
     blueprint_partner: Option<ListBusinessesResponseDataItemBlueprintPartner>,
+    commission_advance: Option<PartnerAdvance>,
+    commission_advance_projections_allowed: Option<bool>,
     created_at: Option<DateTime<FixedOffset>>,
+    deal_closed_reason: Option<String>,
     earnings_usd: Option<ListBusinessesResponseDataItemEarningsUsd>,
     first_tier_partner: Option<ListBusinessesResponseDataItemFirstTierPartner>,
     id: Option<String>,
@@ -69,6 +84,7 @@ pub struct ListBusinessesResponseDataItemBuilder {
     payout_percentages: Option<ListBusinessesResponseDataItemPayoutPercentages>,
     referral_expires_at: Option<DateTime<FixedOffset>>,
     referral_started_at: Option<DateTime<FixedOffset>>,
+    referring_business: Option<ListBusinessesResponseDataItemReferringBusiness>,
     second_tier_partner: Option<ListBusinessesResponseDataItemSecondTierPartner>,
     status: Option<ListBusinessesResponseDataItemStatus>,
     volume_usd: Option<ListBusinessesResponseDataItemVolumeUsd>,
@@ -88,8 +104,23 @@ impl ListBusinessesResponseDataItemBuilder {
         self
     }
 
+    pub fn commission_advance(mut self, value: PartnerAdvance) -> Self {
+        self.commission_advance = Some(value);
+        self
+    }
+
+    pub fn commission_advance_projections_allowed(mut self, value: bool) -> Self {
+        self.commission_advance_projections_allowed = Some(value);
+        self
+    }
+
     pub fn created_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.created_at = Some(value);
+        self
+    }
+
+    pub fn deal_closed_reason(mut self, value: impl Into<String>) -> Self {
+        self.deal_closed_reason = Some(value.into());
         self
     }
 
@@ -144,6 +175,14 @@ impl ListBusinessesResponseDataItemBuilder {
         self
     }
 
+    pub fn referring_business(
+        mut self,
+        value: ListBusinessesResponseDataItemReferringBusiness,
+    ) -> Self {
+        self.referring_business = Some(value);
+        self
+    }
+
     pub fn second_tier_partner(
         mut self,
         value: ListBusinessesResponseDataItemSecondTierPartner,
@@ -176,9 +215,12 @@ impl ListBusinessesResponseDataItemBuilder {
         Ok(ListBusinessesResponseDataItem {
             account: self.account,
             blueprint_partner: self.blueprint_partner,
+            commission_advance: self.commission_advance,
+            commission_advance_projections_allowed: self.commission_advance_projections_allowed,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
+            deal_closed_reason: self.deal_closed_reason,
             earnings_usd: self
                 .earnings_usd
                 .ok_or_else(|| BuildError::missing_field("earnings_usd"))?,
@@ -196,6 +238,7 @@ impl ListBusinessesResponseDataItemBuilder {
                 .ok_or_else(|| BuildError::missing_field("payout_percentages"))?,
             referral_expires_at: self.referral_expires_at,
             referral_started_at: self.referral_started_at,
+            referring_business: self.referring_business,
             second_tier_partner: self.second_tier_partner,
             status: self
                 .status

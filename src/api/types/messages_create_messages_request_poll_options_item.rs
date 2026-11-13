@@ -1,12 +1,9 @@
 pub use crate::prelude::*;
 
-/// Input type for a single poll option
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateMessagesRequestPollOptionsItem {
-    /// Sequential ID for the poll option (starting from '1')
     #[serde(default)]
     pub id: String,
-    /// The text of the poll option
     #[serde(default)]
     pub text: String,
 }

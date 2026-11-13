@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct AdsClient {
@@ -13,6 +14,136 @@ impl AdsClient {
         })
     }
 
+    /// Reports why one of a runner's ads or ad groups can't deliver yet, and replaces what the runner reported for it before. The account running the campaign sees each issue, with what to change when it can fix it. An empty `issues` list clears the object's issues, and they also clear when the runner stops holding the campaign. Takes the runner's Whop session, a user API key, or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the whole campaign gets a 404.
+    ///
+    /// # Arguments
+    ///
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .ads
+    ///         .report_issues(
+    ///             &ReportIssuesAdsRequest {
+    ///                 issues: vec![ReportIssuesAdsRequestIssuesItem {
+    ///                     policy: None,
+    ///                     reason: ReportIssuesAdsRequestIssuesItemReason::ContentRejected,
+    ///                 }],
+    ///                 ad_group_id: None,
+    ///                 ad_id: None,
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn report_issues(
+        &self,
+        request: &ReportIssuesAdsRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<ReportIssuesAdsResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-11-12".to_string());
+            Some(o)
+        };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
+        self.http_client
+            .execute_request_with_base_url(
+                base_url,
+                Method::POST,
+                "ad_issues",
+                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
+                None,
+                options,
+            )
+            .await
+    }
+
+    /// Records a runner's stats for one of their ads in one hour, and pays them for the spend. Send the ad's totals so far for an hour that has started; they replace what the ad held for that hour, and its ad group's and campaign's hours are rebuilt from their ads. The spend can go up but never down. Hours before the runner's first report on the campaign can be reported too. The spend is recorded and paid exactly as sent, with no markup added, so send it with the runner's markup already applied. Takes the runner's Whop session, a user API key, or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the ad's campaign gets a 404.
+    ///
+    /// # Arguments
+    ///
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .ads
+    ///         .report_stats(
+    ///             &ReportStatsAdsRequest {
+    ///                 ad_id: "ad_xxxxxxxxxxxxxx".to_string(),
+    ///                 hour_started_at: DateTime::parse_from_rfc3339("2026-01-01T12:00:00Z").unwrap(),
+    ///                 spend: ReportStatsAdsRequestSpend::Double(1.1),
+    ///                 impressions: None,
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn report_stats(
+        &self,
+        request: &ReportStatsAdsRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AdStat, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-11-12".to_string());
+            Some(o)
+        };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
+        self.http_client
+            .execute_request_with_base_url(
+                base_url,
+                Method::POST,
+                "ad_stats",
+                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
+                None,
+                options,
+            )
+            .await
+    }
+
     /// Lists the ads for an account, with stats over the requested window.
     ///
     /// # Arguments
@@ -24,7 +155,7 @@ impl AdsClient {
     /// * `ad_group_ids` - Only return ads in these ad groups (max 100). Repeat the parameter for each id (ad_group_ids=a&ad_group_ids=b).
     /// * `status` - Only return ads with this status.
     /// * `query` - Filter ads by a title or ID substring.
-    /// * `order` - The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports.
+    /// * `order` - The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports, and link_clicks by the same Whop pixel page views.
     /// * `direction` - The sort direction. Defaults to desc.
     /// * `created_before` - Only return ads created before this timestamp.
     /// * `created_after` - Only return ads created after this timestamp.
@@ -92,11 +223,16 @@ impl AdsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "ads",
                 None,
@@ -124,6 +260,87 @@ impl AdsClient {
                 options,
             )
             .await
+    }
+
+    pub async fn list_paginated(
+        &self,
+        request: &AdsListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("account_id", request.account_id.clone())
+            .string("ad_campaign_id", request.ad_campaign_id.clone())
+            .string_array("ad_campaign_ids", request.ad_campaign_ids.clone())
+            .string("ad_group_id", request.ad_group_id.clone())
+            .string_array("ad_group_ids", request.ad_group_ids.clone())
+            .serialize("status", request.status.clone())
+            .structured_query("query", request.query.clone())
+            .serialize("order", request.order.clone())
+            .serialize("direction", request.direction.clone())
+            .string("created_before", request.created_before.clone())
+            .string("created_after", request.created_after.clone())
+            .string("stats_from", request.stats_from.clone())
+            .string("stats_to", request.stats_to.clone())
+            .string("time_zone", request.time_zone.clone())
+            .serialize("attribution_model", request.attribution_model.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "ads",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
     }
 
     /// Creates an ad in an ad group. Any campaign status other than `draft` launches the campaign, which requires an ads payment method on the account.
@@ -168,11 +385,16 @@ impl AdsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "ads",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -231,11 +453,16 @@ impl AdsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("ads/{}", id),
                 None,
@@ -285,11 +512,22 @@ impl AdsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(Method::DELETE, &format!("ads/{}", id), None, None, options)
+            .execute_request_with_base_url(
+                base_url,
+                Method::DELETE,
+                &format!("ads/{}", id),
+                None,
+                None,
+                options,
+            )
             .await
     }
 
@@ -338,11 +576,16 @@ impl AdsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 &format!("ads/{}", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -352,7 +595,7 @@ impl AdsClient {
             .await
     }
 
-    /// Copies the ad into its own ad group, or into target_ad_group_id (which must belong to the same account and be compatible with the ad). Copies keep the source ad's active/paused state.
+    /// Copies an ad into its own ad group or into another one. Copies keep the source ad's active or paused state.
     ///
     /// # Arguments
     ///
@@ -397,11 +640,16 @@ impl AdsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("ads/{}/duplicate", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -442,11 +690,16 @@ impl AdsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("ads/{}/pause", id),
                 None,
@@ -487,11 +740,16 @@ impl AdsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("ads/{}/unpause", id),
                 None,

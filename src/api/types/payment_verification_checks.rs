@@ -5,6 +5,12 @@ pub struct PaymentVerificationChecks {
     /// The Address Verification Service (AVS) result for the billing street address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub address_line1: Option<String>,
+    /// The Acquirer Reference Number (ARN) that traces this charge through the card network, or null when the processor did not return one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub arn: Option<String>,
+    /// The card issuer's authorization code for this charge, or null when the processor did not return one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub authorization_code: Option<String>,
     /// Whether the cardholder name matched the issuer's records.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub card_holder_name: Option<String>,
@@ -26,6 +32,8 @@ impl PaymentVerificationChecks {
 #[non_exhaustive]
 pub struct PaymentVerificationChecksBuilder {
     address_line1: Option<String>,
+    arn: Option<String>,
+    authorization_code: Option<String>,
     card_holder_name: Option<String>,
     card_security_code: Option<String>,
     zip_code: Option<String>,
@@ -34,6 +42,16 @@ pub struct PaymentVerificationChecksBuilder {
 impl PaymentVerificationChecksBuilder {
     pub fn address_line1(mut self, value: impl Into<String>) -> Self {
         self.address_line1 = Some(value.into());
+        self
+    }
+
+    pub fn arn(mut self, value: impl Into<String>) -> Self {
+        self.arn = Some(value.into());
+        self
+    }
+
+    pub fn authorization_code(mut self, value: impl Into<String>) -> Self {
+        self.authorization_code = Some(value.into());
         self
     }
 
@@ -56,6 +74,8 @@ impl PaymentVerificationChecksBuilder {
     pub fn build(self) -> Result<PaymentVerificationChecks, BuildError> {
         Ok(PaymentVerificationChecks {
             address_line1: self.address_line1,
+            arn: self.arn,
+            authorization_code: self.authorization_code,
             card_holder_name: self.card_holder_name,
             card_security_code: self.card_security_code,
             zip_code: self.zip_code,

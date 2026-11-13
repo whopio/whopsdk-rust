@@ -13,11 +13,12 @@ impl SwapsClient {
         })
     }
 
-    /// Retrieve the account's completed or pending swaps — currently just the latest one.
+    /// Lists the completed or pending swaps for an account or user — currently only the most recent one.
     ///
     /// # Arguments
     ///
-    /// * `account_id` - Business or user account ID (biz_* / user_*).
+    /// * `account_id` - Business account whose swaps to list, prefixed `biz_`. Provide this or `user_id`.
+    /// * `user_id` - The caller's own user ID, prefixed `user_`, to list swaps in their personal account. Provide this or `account_id`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -40,7 +41,7 @@ impl SwapsClient {
     ///         .swaps
     ///         .list(
     ///             &SwapsListQueryRequest {
-    ///                 account_id: "account_id".to_string(),
+    ///                 ..Default::default()
     ///             },
     ///             None,
     ///         )
@@ -56,23 +57,29 @@ impl SwapsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "swaps",
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .string("user_id", request.user_id.clone())
                     .build(),
                 options,
             )
             .await
     }
 
-    /// Swaps one token for another from the account's wallet, or converts between fiat currencies in the account's ledger at the mid-market rate. Crypto swaps finish in the background — check the swap for its status.
+    /// Swaps one token for another in an account or user's wallet, or converts between their fiat balances. Crypto swaps finish in the background — retrieve the swap to follow its status.
     ///
     /// # Arguments
     ///
@@ -98,14 +105,15 @@ impl SwapsClient {
     ///         .swaps
     ///         .create(
     ///             &CreateSwapsRequest {
-    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///                 from_token: "usd".to_string(),
     ///                 to_token: "cad".to_string(),
+    ///                 account_id: None,
     ///                 amount: None,
     ///                 from_chain: None,
     ///                 slippage_bps: None,
     ///                 to_amount: None,
     ///                 to_chain: None,
+    ///                 user_id: None,
     ///             },
     ///             None,
     ///         )
@@ -121,11 +129,16 @@ impl SwapsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "swaps",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -135,7 +148,7 @@ impl SwapsClient {
             .await
     }
 
-    /// Previews the price of a swap. Fiat pairs quote the in-ledger mid-market conversion — the same rate creating the swap fills at. No funds move and nothing is saved.
+    /// Previews the price of a swap before you create it. A fiat pair quotes the same rate creating the swap fills at; name the account with `account_id` or `user_id` to quote the rate for that account. No funds move, nothing is saved, and no authentication is required unless you name an account.
     ///
     /// # Arguments
     ///
@@ -164,12 +177,14 @@ impl SwapsClient {
     ///                 amount: "100".to_string(),
     ///                 from_token: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx".to_string(),
     ///                 to_token: "0x1b64b9025eebb9a6239575df9ea4b9ac46d4d193".to_string(),
+    ///                 account_id: None,
     ///                 from_address: None,
     ///                 from_chain: None,
     ///                 metadata: None,
     ///                 slippage_bps: None,
     ///                 to_address: None,
     ///                 to_chain: None,
+    ///                 user_id: None,
     ///             },
     ///             None,
     ///         )
@@ -185,11 +200,16 @@ impl SwapsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "swaps/quote",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -199,7 +219,7 @@ impl SwapsClient {
             .await
     }
 
-    /// Retrieves a single swap and its status.
+    /// Retrieves a swap and its status. Poll it after creating a crypto swap, which finishes in the background.
     ///
     /// # Arguments
     ///
@@ -234,11 +254,22 @@ impl SwapsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(Method::GET, &format!("swaps/{}", id), None, None, options)
+            .execute_request_with_base_url(
+                base_url,
+                Method::GET,
+                &format!("swaps/{}", id),
+                None,
+                None,
+                options,
+            )
             .await
     }
 }

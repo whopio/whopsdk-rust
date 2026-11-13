@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct PaymentBankTransfer {
+    /// Whether the buyer can complete this payment with more than one transfer. When false, only one transfer for the full amount completes it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub accepts_split_transfers: Option<bool>,
     /// The account to send to, in the local scheme's format — `account_number_label` says what to call it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_number: Option<String>,
@@ -47,6 +50,9 @@ pub struct PaymentBankTransfer {
     /// The rail's own step-by-step payment text, when it supplies one.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub instructions: Option<String>,
+    /// The SWIFT/BIC of the intermediary bank the buyer's bank should route the transfer through, when the buyer named the bank they are sending from.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub intermediary_bic: Option<String>,
     /// The reference the buyer must attach to the transfer so it can be matched to this payment.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reference: Option<String>,
@@ -70,6 +76,7 @@ impl PaymentBankTransfer {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct PaymentBankTransferBuilder {
+    accepts_split_transfers: Option<bool>,
     account_number: Option<String>,
     account_number_label: Option<String>,
     amount: Option<Money>,
@@ -85,6 +92,7 @@ pub struct PaymentBankTransferBuilder {
     document_url: Option<String>,
     expires_at: Option<String>,
     instructions: Option<String>,
+    intermediary_bic: Option<String>,
     reference: Option<String>,
     routing_number: Option<String>,
     secondary_account_number: Option<String>,
@@ -92,6 +100,11 @@ pub struct PaymentBankTransferBuilder {
 }
 
 impl PaymentBankTransferBuilder {
+    pub fn accepts_split_transfers(mut self, value: bool) -> Self {
+        self.accepts_split_transfers = Some(value);
+        self
+    }
+
     pub fn account_number(mut self, value: impl Into<String>) -> Self {
         self.account_number = Some(value.into());
         self
@@ -167,6 +180,11 @@ impl PaymentBankTransferBuilder {
         self
     }
 
+    pub fn intermediary_bic(mut self, value: impl Into<String>) -> Self {
+        self.intermediary_bic = Some(value.into());
+        self
+    }
+
     pub fn reference(mut self, value: impl Into<String>) -> Self {
         self.reference = Some(value.into());
         self
@@ -190,6 +208,7 @@ impl PaymentBankTransferBuilder {
     /// Consumes the builder and constructs a [`PaymentBankTransfer`].
     pub fn build(self) -> Result<PaymentBankTransfer, BuildError> {
         Ok(PaymentBankTransfer {
+            accepts_split_transfers: self.accepts_split_transfers,
             account_number: self.account_number,
             account_number_label: self.account_number_label,
             amount: self.amount,
@@ -205,6 +224,7 @@ impl PaymentBankTransferBuilder {
             document_url: self.document_url,
             expires_at: self.expires_at,
             instructions: self.instructions,
+            intermediary_bic: self.intermediary_bic,
             reference: self.reference,
             routing_number: self.routing_number,
             secondary_account_number: self.secondary_account_number,

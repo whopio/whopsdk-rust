@@ -3,10 +3,10 @@ pub use crate::prelude::*;
 /// Query parameters for retrieve
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct PayoutsRetrieveQueryRequest {
-    /// Owning account ID, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+    /// Optional owning account ID, prefixed `biz_`. The payout ID identifies its ledger. If supplied, this must match the owner and cannot be combined with `user_id`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// Owning user ID, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+    /// Optional owning user ID, prefixed `user_`. The payout ID identifies its ledger. If supplied, this must match the owner and cannot be combined with `account_id`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
 }

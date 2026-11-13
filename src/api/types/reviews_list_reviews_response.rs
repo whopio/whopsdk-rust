@@ -1,14 +1,11 @@
 pub use crate::prelude::*;
 
-/// The connection type for Review.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ListReviewsResponse {
-    /// A list of nodes.
     #[serde(default)]
     pub data: Vec<ReviewListItem>,
-    /// Information to aid in pagination.
     #[serde(default)]
-    pub page_info: PageInfo,
+    pub page_info: ListReviewsResponsePageInfo,
 }
 
 impl ListReviewsResponse {
@@ -21,7 +18,7 @@ impl ListReviewsResponse {
 #[non_exhaustive]
 pub struct ListReviewsResponseBuilder {
     data: Option<Vec<ReviewListItem>>,
-    page_info: Option<PageInfo>,
+    page_info: Option<ListReviewsResponsePageInfo>,
 }
 
 impl ListReviewsResponseBuilder {
@@ -30,7 +27,7 @@ impl ListReviewsResponseBuilder {
         self
     }
 
-    pub fn page_info(mut self, value: PageInfo) -> Self {
+    pub fn page_info(mut self, value: ListReviewsResponsePageInfo) -> Self {
         self.page_info = Some(value);
         self
     }

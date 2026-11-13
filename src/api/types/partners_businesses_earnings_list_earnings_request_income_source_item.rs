@@ -7,8 +7,12 @@ pub enum ListEarningsRequestIncomeSourceItem {
     AdSpend,
     Transfer,
     CardInterchange,
+    Withdrawal,
+    BusinessReferral,
     OnboardingReward,
     PartnerReward,
+    VerifiedPartnerReferralPayback,
+    CommissionAdvance,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -21,8 +25,14 @@ impl Serialize for ListEarningsRequestIncomeSourceItem {
             Self::AdSpend => serializer.serialize_str("ad_spend"),
             Self::Transfer => serializer.serialize_str("transfer"),
             Self::CardInterchange => serializer.serialize_str("card_interchange"),
+            Self::Withdrawal => serializer.serialize_str("withdrawal"),
+            Self::BusinessReferral => serializer.serialize_str("business_referral"),
             Self::OnboardingReward => serializer.serialize_str("onboarding_reward"),
             Self::PartnerReward => serializer.serialize_str("partner_reward"),
+            Self::VerifiedPartnerReferralPayback => {
+                serializer.serialize_str("verified_partner_referral_payback")
+            }
+            Self::CommissionAdvance => serializer.serialize_str("commission_advance"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -36,8 +46,12 @@ impl<'de> Deserialize<'de> for ListEarningsRequestIncomeSourceItem {
             "ad_spend" => Ok(Self::AdSpend),
             "transfer" => Ok(Self::Transfer),
             "card_interchange" => Ok(Self::CardInterchange),
+            "withdrawal" => Ok(Self::Withdrawal),
+            "business_referral" => Ok(Self::BusinessReferral),
             "onboarding_reward" => Ok(Self::OnboardingReward),
             "partner_reward" => Ok(Self::PartnerReward),
+            "verified_partner_referral_payback" => Ok(Self::VerifiedPartnerReferralPayback),
+            "commission_advance" => Ok(Self::CommissionAdvance),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -50,8 +64,12 @@ impl fmt::Display for ListEarningsRequestIncomeSourceItem {
             Self::AdSpend => write!(f, "ad_spend"),
             Self::Transfer => write!(f, "transfer"),
             Self::CardInterchange => write!(f, "card_interchange"),
+            Self::Withdrawal => write!(f, "withdrawal"),
+            Self::BusinessReferral => write!(f, "business_referral"),
             Self::OnboardingReward => write!(f, "onboarding_reward"),
             Self::PartnerReward => write!(f, "partner_reward"),
+            Self::VerifiedPartnerReferralPayback => write!(f, "verified_partner_referral_payback"),
+            Self::CommissionAdvance => write!(f, "commission_advance"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

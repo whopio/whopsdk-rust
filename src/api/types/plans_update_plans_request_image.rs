@@ -1,6 +1,5 @@
 pub use crate::prelude::*;
 
-/// An image displayed on the product page to represent this plan.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdatePlansRequestImage {
     #[serde(skip_serializing_if = "Option::is_none")]

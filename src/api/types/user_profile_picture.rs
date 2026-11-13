@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UserProfilePicture {
-    /// Avatar image URL. Always present — a generated placeholder when the user set no picture.
+    /// Avatar image URL. Always present. It is a generated placeholder when the user set no picture.
     #[serde(default)]
     pub url: String,
 }

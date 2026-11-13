@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct PartnerReferralRequestsClient {
@@ -13,14 +14,19 @@ impl PartnerReferralRequestsClient {
         })
     }
 
-    /// Lists requests sent by an eligible partner and requests for accounts where the authenticated user currently holds the owner role. Filters narrow that combined view. Use a Whop login session or an account API key with `partner:referral_request:read`. The key must have been created by the account's current owner. Account API keys return their owner's sent requests and incoming requests for the key's account.
+    /// Lists your referral links and attribution requests, including incoming requests for you or businesses you own, with filters for recipient, partner, type, and status.
     ///
     /// # Arguments
     ///
     /// * `account_id` - Only requests for this business ID, prefixed `biz_`.
+    /// * `target_user_id` - Only requests received by this user ID, prefixed `user_`.
     /// * `partner_id` - Only requests sent by this partner's user ID, prefixed `user_`.
+    /// * `referring_account_id` - Only the referral links created for memberships on this business's team, prefixed `biz_`. Needs read access to the business: its owner sees every member's links, a manager the links of the people reporting to them, and other members only their own.
     /// * `status` - Only requests with this approval status.
     /// * `request_type` - Only requests initiated in this way.
+    /// * `authorized_user_id` - Only requests created for this team membership, prefixed `ausr_`.
+    /// * `member_id` - Only requests that credit this member record, prefixed `mber_`. A request created for a team membership also credits its holder's member record.
+    /// * `personal` - When true, only personal requests, created for neither a team membership nor a member record. When false, only requests created for one.
     /// * `order` - Field used to sort requests.
     /// * `direction` - Sort direction.
     /// * `first` - Number of results to return from the start of the range.
@@ -65,19 +71,29 @@ impl PartnerReferralRequestsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "partner_referral_requests",
                 None,
                 QueryBuilder::new()
                     .string("account_id", request.account_id.clone())
+                    .string("target_user_id", request.target_user_id.clone())
                     .string("partner_id", request.partner_id.clone())
+                    .string("referring_account_id", request.referring_account_id.clone())
                     .serialize("status", request.status.clone())
                     .serialize("request_type", request.request_type.clone())
+                    .string("authorized_user_id", request.authorized_user_id.clone())
+                    .string("member_id", request.member_id.clone())
+                    .bool("personal", request.personal.clone())
                     .serialize("order", request.order.clone())
                     .serialize("direction", request.direction.clone())
                     .int("first", request.first.clone())
@@ -90,7 +106,84 @@ impl PartnerReferralRequestsClient {
             .await
     }
 
-    /// Creates a pending manual request for an existing business as the authenticated, enrolled, verified Whop partner. Provide exactly one of account_id or account_url. Whop business and product links resolve to their business. A business owner must accept before attribution changes. An existing pending manual request from the same partner returns 200; a new request returns 201. Use a Whop login session or an account API key with `partner:referral_request:create`. The key must have been created by the account's current owner. Account API keys submit requests as their account owner, who must be enrolled, verified, and not suspended.
+    pub async fn list_paginated(
+        &self,
+        request: &PartnerReferralRequestsListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("account_id", request.account_id.clone())
+            .string("target_user_id", request.target_user_id.clone())
+            .string("partner_id", request.partner_id.clone())
+            .string("referring_account_id", request.referring_account_id.clone())
+            .serialize("status", request.status.clone())
+            .serialize("request_type", request.request_type.clone())
+            .string("authorized_user_id", request.authorized_user_id.clone())
+            .string("member_id", request.member_id.clone())
+            .bool("personal", request.personal.clone())
+            .serialize("order", request.order.clone())
+            .serialize("direction", request.direction.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "partner_referral_requests",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Creates a referral link, or sends an attribution request to an existing business or user for approval. Links require an enrolled partner who is not suspended; attribution requests require an enrolled, verified partner. Recipients do not need to join the partner program.
     ///
     /// # Arguments
     ///
@@ -112,7 +205,7 @@ impl PartnerReferralRequestsClient {
     ///         ..Default::default()
     ///     };
     ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client.partner_referral_requests.create(&CreatePartnerReferralRequestsRequestBody::CreatePartnerReferralRequestsRequestBodyAccountID(CreatePartnerReferralRequestsRequestBodyAccountID {
+    ///     client.partner_referral_requests.create(&CreatePartnerReferralRequestsRequestBody::CreatePartnerReferralRequestsRequestBodyAccountId(CreatePartnerReferralRequestsRequestBodyAccountId {
     ///         account_id: "biz_xxxxxxxxxxxxxx".to_string(),
     ///         ..Default::default()
     ///     }), None).await;
@@ -127,11 +220,16 @@ impl PartnerReferralRequestsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "partner_referral_requests",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -141,7 +239,7 @@ impl PartnerReferralRequestsClient {
             .await
     }
 
-    /// Retrieves a request visible to its eligible sender or a current owner of the receiving account. Use a Whop login session or an account API key with `partner:referral_request:read`. The key must have been created by the account's current owner. Account API keys can retrieve their owner's sent requests and incoming requests for the key's account.
+    /// Retrieves a referral link or attribution request by ID, including its partner, recipient, approval status, and referral code when present.
     ///
     /// # Arguments
     ///
@@ -179,11 +277,16 @@ impl PartnerReferralRequestsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("partner_referral_requests/{}", id),
                 None,
@@ -193,7 +296,7 @@ impl PartnerReferralRequestsClient {
             .await
     }
 
-    /// Accepts a pending manual request as a current business owner and attributes the business to the verified requesting partner. Existing active attribution blocks acceptance. Repeating acceptance returns the accepted request. Use a Whop login session or an account API key with `partner:referral_request:accept`. The key must have been created by the account's current owner. Account API keys can respond only to requests for the key's account.
+    /// Accepts a pending attribution request as the receiving user or business owner, assigning the requesting partner as that user's or business's referrer.
     ///
     /// # Arguments
     ///
@@ -231,11 +334,16 @@ impl PartnerReferralRequestsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("partner_referral_requests/{}/accept", id),
                 None,
@@ -245,7 +353,7 @@ impl PartnerReferralRequestsClient {
             .await
     }
 
-    /// Cancels a pending manual request as its eligible requesting partner. Repeating cancellation returns the cancelled request. Use a Whop login session or an account API key with `partner:referral_request:cancel`. The key must have been created by the account's current owner. Account API keys cancel requests as their account owner.
+    /// Cancels a pending attribution request you sent so the recipient can no longer accept it, and returns the cancelled request.
     ///
     /// # Arguments
     ///
@@ -283,11 +391,16 @@ impl PartnerReferralRequestsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("partner_referral_requests/{}/cancel", id),
                 None,
@@ -297,7 +410,7 @@ impl PartnerReferralRequestsClient {
             .await
     }
 
-    /// Denies a pending manual request as a current business owner. Repeating denial returns the denied request. Use a Whop login session or an account API key with `partner:referral_request:decline`. The key must have been created by the account's current owner. Account API keys can respond only to requests for the key's account.
+    /// Declines a pending attribution request for you or a business you own, marking it as denied without assigning the requesting partner as a referrer.
     ///
     /// # Arguments
     ///
@@ -335,11 +448,16 @@ impl PartnerReferralRequestsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("partner_referral_requests/{}/decline", id),
                 None,

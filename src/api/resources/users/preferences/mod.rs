@@ -17,7 +17,7 @@ impl PreferencesClient2 {
         })
     }
 
-    /// Retrieves the authenticated user's settings document. Addressed only as `me` — the document always belongs to the session user.
+    /// Retrieves the authenticated user's settings document.
     ///
     /// # Arguments
     ///
@@ -50,11 +50,22 @@ impl PreferencesClient2 {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(Method::GET, "users/me/preferences", None, None, options)
+            .execute_request_with_base_url(
+                base_url,
+                Method::GET,
+                "users/me/preferences",
+                None,
+                None,
+                options,
+            )
             .await
     }
 
@@ -84,7 +95,7 @@ impl PreferencesClient2 {
     ///         .users
     ///         .preferences
     ///         .update(
-    ///             &UpdatePreferencesRequest {
+    ///             &UpdatePreferencesRequest2 {
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -101,11 +112,16 @@ impl PreferencesClient2 {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 "users/me/preferences",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),

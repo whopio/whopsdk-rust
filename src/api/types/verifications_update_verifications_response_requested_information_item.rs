@@ -5,6 +5,9 @@ pub struct UpdateVerificationsResponseRequestedInformationItem {
     /// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub action_url: Option<String>,
+    /// A document that answers this item in place of `value`, such as an IRS EIN letter when the EIN could not be matched. Send its pages in `files`, with or without a corrected `value`. Absent when only `value` is accepted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub alternative_document_label: Option<String>,
     /// Follow-up prompt shown with this requirement.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub details_label: Option<String>,
@@ -65,6 +68,7 @@ impl UpdateVerificationsResponseRequestedInformationItem {
 #[non_exhaustive]
 pub struct UpdateVerificationsResponseRequestedInformationItemBuilder {
     action_url: Option<String>,
+    alternative_document_label: Option<String>,
     details_label: Option<String>,
     details_required: Option<bool>,
     details_visible_for: Option<Vec<String>>,
@@ -86,6 +90,11 @@ pub struct UpdateVerificationsResponseRequestedInformationItemBuilder {
 impl UpdateVerificationsResponseRequestedInformationItemBuilder {
     pub fn action_url(mut self, value: impl Into<String>) -> Self {
         self.action_url = Some(value.into());
+        self
+    }
+
+    pub fn alternative_document_label(mut self, value: impl Into<String>) -> Self {
+        self.alternative_document_label = Some(value.into());
         self
     }
 
@@ -187,6 +196,7 @@ impl UpdateVerificationsResponseRequestedInformationItemBuilder {
     pub fn build(self) -> Result<UpdateVerificationsResponseRequestedInformationItem, BuildError> {
         Ok(UpdateVerificationsResponseRequestedInformationItem {
             action_url: self.action_url,
+            alternative_document_label: self.alternative_document_label,
             details_label: self.details_label,
             details_required: self.details_required,
             details_visible_for: self.details_visible_for,

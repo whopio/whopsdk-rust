@@ -5,7 +5,7 @@ pub struct ActivateExperimentsRequest {
     /// Reporting window length in days. Omit to use the default. This does not automatically end the experiment.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration_days: Option<i64>,
-    /// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    /// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
     #[serde(skip)]
     pub account_id: Option<String>,
 }

@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct ExperiencesClient {
@@ -13,7 +14,7 @@ impl ExperiencesClient {
         })
     }
 
-    /// Returns a paginated list of experiences belonging to a company, with optional filtering by product and app.
+    /// Lists the experiences in an account, optionally filtered to those attached to one product or powered by one app.
     ///
     /// # Arguments
     ///
@@ -72,11 +73,16 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "experiences",
                 None,
@@ -96,6 +102,79 @@ impl ExperiencesClient {
             .await
     }
 
+    pub async fn list_paginated(
+        &self,
+        request: &ExperiencesListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("before", request.before.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("product_id", request.product_id.clone())
+            .string("app_id", request.app_id.clone())
+            .datetime("created_before", request.created_before.clone())
+            .datetime("created_after", request.created_after.clone())
+            .string("account_id", request.account_id.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "experiences",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Creates an experience for an account, powered by an app such as courses, forums, or chat. Attach it to a product with `POST /experiences/:id/attach` to give that product's customers access.
+    ///
     /// Required permissions:
     /// - `experience:create`
     ///
@@ -145,11 +224,16 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "experiences",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -197,11 +281,16 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("experiences/{}", id),
                 None,
@@ -211,6 +300,8 @@ impl ExperiencesClient {
             .await
     }
 
+    /// Deletes an experience and detaches it from every product, removing customer access to it. Returns `true` on success.
+    ///
     /// Required permissions:
     /// - `experience:delete`
     ///
@@ -250,11 +341,16 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::DELETE,
                 &format!("experiences/{}", id),
                 None,
@@ -264,6 +360,8 @@ impl ExperiencesClient {
             .await
     }
 
+    /// Updates an experience's name, logo, visibility, or notification setting, or moves it to another section or position.
+    ///
     /// Required permissions:
     /// - `experience:update`
     ///
@@ -310,11 +408,16 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 &format!("experiences/{}", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -324,7 +427,7 @@ impl ExperiencesClient {
             .await
     }
 
-    /// Attach an experience to a product, making it accessible to the product's customers.
+    /// Attaches an experience to a product, giving the product's customers access to it.
     ///
     /// Required permissions:
     /// - `experience:attach`
@@ -372,11 +475,16 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("experiences/{}/attach", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -386,7 +494,7 @@ impl ExperiencesClient {
             .await
     }
 
-    /// Detach an experience from a product, removing customer access to it through that product.
+    /// Detaches an experience from a product, removing customer access to it through that product.
     ///
     /// Required permissions:
     /// - `experience:detach`
@@ -434,11 +542,16 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("experiences/{}/detach", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -448,10 +561,7 @@ impl ExperiencesClient {
             .await
     }
 
-    /// Duplicates an existing experience. The name will be copied, unless provided. The new experience will be attached to the same products as the original experience.
-    /// If duplicating a Forum or Chat experience, the new experience will have the same settings as the original experience, e.g. who can post, who can comment, etc.
-    /// No content, e.g. posts, messages, lessons from within the original experience will be copied.
-    ///
+    /// Duplicates an experience and attaches the copy to the same products as the original. Forum and chat copies keep the original's settings, such as who can post or comment. No content, such as posts, messages, or lessons, is copied.
     ///
     /// Required permissions:
     /// - `experience:create`
@@ -499,11 +609,16 @@ impl ExperiencesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("experiences/{}/duplicate", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),

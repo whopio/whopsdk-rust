@@ -8,11 +8,11 @@ pub struct ListEarningsResponseDataItemResourceSlug {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
     pub created_at: DateTime<FixedOffset>,
-    /// The onboarding reward the referred business qualified for, prefixed `onbr_`.
+    /// The retired onboarding reward ID. Always null; retained for historical earnings compatibility.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
     pub object: ListEarningsResponseDataItemResourceSlugObject,
-    /// The reward link slug.
+    /// The retired reward link slug. Always null; retained for historical earnings compatibility.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub slug: Option<String>,
 }

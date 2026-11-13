@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreateQuoteSwapsRequest {
+    /// Fiat pairs only: business account to quote the swap for, prefixed `biz_`. Requires a credential with `payout:transfer_funds` on that account. Provide this, `user_id`, or neither for a public quote.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
     /// Source token amount.
     #[serde(default)]
     pub amount: String,
@@ -29,6 +32,9 @@ pub struct CreateQuoteSwapsRequest {
     /// Destination token contract address or ticker symbol, such as "XAUT".
     #[serde(default)]
     pub to_token: String,
+    /// Fiat pairs only: the caller's own user ID, prefixed `user_`, to quote the swap for their personal account. Provide this or `account_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
 }
 
 impl CreateQuoteSwapsRequest {
@@ -40,6 +46,7 @@ impl CreateQuoteSwapsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateQuoteSwapsRequestBuilder {
+    account_id: Option<String>,
     amount: Option<String>,
     from_address: Option<String>,
     from_chain: Option<CreateQuoteSwapsRequestFromChain>,
@@ -49,9 +56,15 @@ pub struct CreateQuoteSwapsRequestBuilder {
     to_address: Option<String>,
     to_chain: Option<CreateQuoteSwapsRequestToChain>,
     to_token: Option<String>,
+    user_id: Option<String>,
 }
 
 impl CreateQuoteSwapsRequestBuilder {
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
     pub fn amount(mut self, value: impl Into<String>) -> Self {
         self.amount = Some(value.into());
         self
@@ -97,6 +110,11 @@ impl CreateQuoteSwapsRequestBuilder {
         self
     }
 
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreateQuoteSwapsRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`amount`](CreateQuoteSwapsRequestBuilder::amount)
@@ -104,6 +122,7 @@ impl CreateQuoteSwapsRequestBuilder {
     /// - [`to_token`](CreateQuoteSwapsRequestBuilder::to_token)
     pub fn build(self) -> Result<CreateQuoteSwapsRequest, BuildError> {
         Ok(CreateQuoteSwapsRequest {
+            account_id: self.account_id,
             amount: self
                 .amount
                 .ok_or_else(|| BuildError::missing_field("amount"))?,
@@ -119,6 +138,7 @@ impl CreateQuoteSwapsRequestBuilder {
             to_token: self
                 .to_token
                 .ok_or_else(|| BuildError::missing_field("to_token"))?,
+            user_id: self.user_id,
         })
     }
 }

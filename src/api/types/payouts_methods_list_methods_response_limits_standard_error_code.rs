@@ -6,13 +6,12 @@ pub use crate::prelude::*;
 pub enum ListMethodsResponseLimitsStandardErrorCode {
     AccountSuspended,
     BlockMoveMoneyOutBecauseClawback,
-    SupportabilityCheckPayoutStatusHold,
     CardUsageReviewPayoutStatusHold,
+    UnderReview,
     KycCompleted,
     RmiClear,
     IdentityRfiClear,
     GuardianIdClear,
-    EcommerceFulfillmentConnected,
     BlockMoveMoneyOut,
     BlockMoveMoneyOutSetByParent,
     NoAvailableBalance,
@@ -28,19 +27,14 @@ impl Serialize for ListMethodsResponseLimitsStandardErrorCode {
             Self::BlockMoveMoneyOutBecauseClawback => {
                 serializer.serialize_str("block_move_money_out_because_clawback")
             }
-            Self::SupportabilityCheckPayoutStatusHold => {
-                serializer.serialize_str("supportability_check_payout_status_hold")
-            }
             Self::CardUsageReviewPayoutStatusHold => {
                 serializer.serialize_str("card_usage_review_payout_status_hold")
             }
+            Self::UnderReview => serializer.serialize_str("under_review"),
             Self::KycCompleted => serializer.serialize_str("kyc_completed"),
             Self::RmiClear => serializer.serialize_str("rmi_clear"),
             Self::IdentityRfiClear => serializer.serialize_str("identity_rfi_clear"),
             Self::GuardianIdClear => serializer.serialize_str("guardian_id_clear"),
-            Self::EcommerceFulfillmentConnected => {
-                serializer.serialize_str("ecommerce_fulfillment_connected")
-            }
             Self::BlockMoveMoneyOut => serializer.serialize_str("block_move_money_out"),
             Self::BlockMoveMoneyOutSetByParent => {
                 serializer.serialize_str("block_move_money_out_set_by_parent")
@@ -57,15 +51,12 @@ impl<'de> Deserialize<'de> for ListMethodsResponseLimitsStandardErrorCode {
         match value.as_str() {
             "account_suspended" => Ok(Self::AccountSuspended),
             "block_move_money_out_because_clawback" => Ok(Self::BlockMoveMoneyOutBecauseClawback),
-            "supportability_check_payout_status_hold" => {
-                Ok(Self::SupportabilityCheckPayoutStatusHold)
-            }
             "card_usage_review_payout_status_hold" => Ok(Self::CardUsageReviewPayoutStatusHold),
+            "under_review" => Ok(Self::UnderReview),
             "kyc_completed" => Ok(Self::KycCompleted),
             "rmi_clear" => Ok(Self::RmiClear),
             "identity_rfi_clear" => Ok(Self::IdentityRfiClear),
             "guardian_id_clear" => Ok(Self::GuardianIdClear),
-            "ecommerce_fulfillment_connected" => Ok(Self::EcommerceFulfillmentConnected),
             "block_move_money_out" => Ok(Self::BlockMoveMoneyOut),
             "block_move_money_out_set_by_parent" => Ok(Self::BlockMoveMoneyOutSetByParent),
             "no_available_balance" => Ok(Self::NoAvailableBalance),
@@ -81,17 +72,14 @@ impl fmt::Display for ListMethodsResponseLimitsStandardErrorCode {
             Self::BlockMoveMoneyOutBecauseClawback => {
                 write!(f, "block_move_money_out_because_clawback")
             }
-            Self::SupportabilityCheckPayoutStatusHold => {
-                write!(f, "supportability_check_payout_status_hold")
-            }
             Self::CardUsageReviewPayoutStatusHold => {
                 write!(f, "card_usage_review_payout_status_hold")
             }
+            Self::UnderReview => write!(f, "under_review"),
             Self::KycCompleted => write!(f, "kyc_completed"),
             Self::RmiClear => write!(f, "rmi_clear"),
             Self::IdentityRfiClear => write!(f, "identity_rfi_clear"),
             Self::GuardianIdClear => write!(f, "guardian_id_clear"),
-            Self::EcommerceFulfillmentConnected => write!(f, "ecommerce_fulfillment_connected"),
             Self::BlockMoveMoneyOut => write!(f, "block_move_money_out"),
             Self::BlockMoveMoneyOutSetByParent => write!(f, "block_move_money_out_set_by_parent"),
             Self::NoAvailableBalance => write!(f, "no_available_balance"),

@@ -5,49 +5,25 @@ pub struct UpdateAdsRequest {
     /// The call-to-action button shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub call_to_action: Option<UpdateAdsRequestCallToAction>,
-    /// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Entries with no format replace it with a carousel's ordered cards — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
+    /// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative. Entries with no format replace it with a carousel's ordered cards.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub creatives: Option<Vec<UpdateAdsRequestCreativesItem>>,
-    /// The description variants shown on the ad.
+    /// The description shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub descriptions: Option<Vec<String>>,
-    /// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+    pub descriptions: Option<Vec<UpdateAdsRequestDescriptionsItem>>,
+    /// The headline shown on the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub existing_post_id: Option<String>,
-    /// The headline variants shown on the ad.
+    pub headlines: Option<Vec<UpdateAdsRequestHeadlinesItem>>,
+    /// The primary text shown in the ad body. Several entries make text variations.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub headlines: Option<Vec<String>>,
-    /// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub lead_form: Option<UpdateAdsRequestLeadForm>,
-    /// Use an existing instant form instead of creating one — the form's platform ID, from a form already on the ad's Facebook page. Only allowed when the ad group's conversion_location is an instant-form destination. Mutually exclusive with lead_form. Replaces a stored lead_form.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub lead_form_id: Option<String>,
-    /// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub messaging_config: Option<UpdateAdsRequestMessagingConfig>,
-    /// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub multi_advertiser_ads: Option<bool>,
-    /// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Omitted leaves the ad's music untouched. Null removes it before launch; a submitted carousel takes a replacement track instead. TikTok-only.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub music: Option<UpdateAdsRequestMusic>,
-    /// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_source: Option<UpdateAdsRequestPostSource>,
-    /// The primary text variants shown in the ad body.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub primary_texts: Option<Vec<String>>,
-    /// The social accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub social_accounts: Option<Vec<UpdateAdsRequestSocialAccountsItem>>,
+    pub primary_texts: Option<Vec<UpdateAdsRequestPrimaryTextsItem>>,
     /// The display name of the ad.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
     /// The URL the ad links to. Query parameters are merged into url_parameters, so the stored URL is always bare.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+    /// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url_parameters: Option<HashMap<String, serde_json::Value>>,
 }
@@ -63,17 +39,9 @@ impl UpdateAdsRequest {
 pub struct UpdateAdsRequestBuilder {
     call_to_action: Option<UpdateAdsRequestCallToAction>,
     creatives: Option<Vec<UpdateAdsRequestCreativesItem>>,
-    descriptions: Option<Vec<String>>,
-    existing_post_id: Option<String>,
-    headlines: Option<Vec<String>>,
-    lead_form: Option<UpdateAdsRequestLeadForm>,
-    lead_form_id: Option<String>,
-    messaging_config: Option<UpdateAdsRequestMessagingConfig>,
-    multi_advertiser_ads: Option<bool>,
-    music: Option<UpdateAdsRequestMusic>,
-    post_source: Option<UpdateAdsRequestPostSource>,
-    primary_texts: Option<Vec<String>>,
-    social_accounts: Option<Vec<UpdateAdsRequestSocialAccountsItem>>,
+    descriptions: Option<Vec<UpdateAdsRequestDescriptionsItem>>,
+    headlines: Option<Vec<UpdateAdsRequestHeadlinesItem>>,
+    primary_texts: Option<Vec<UpdateAdsRequestPrimaryTextsItem>>,
     title: Option<String>,
     url: Option<String>,
     url_parameters: Option<HashMap<String, serde_json::Value>>,
@@ -90,58 +58,18 @@ impl UpdateAdsRequestBuilder {
         self
     }
 
-    pub fn descriptions(mut self, value: Vec<String>) -> Self {
+    pub fn descriptions(mut self, value: Vec<UpdateAdsRequestDescriptionsItem>) -> Self {
         self.descriptions = Some(value);
         self
     }
 
-    pub fn existing_post_id(mut self, value: impl Into<String>) -> Self {
-        self.existing_post_id = Some(value.into());
-        self
-    }
-
-    pub fn headlines(mut self, value: Vec<String>) -> Self {
+    pub fn headlines(mut self, value: Vec<UpdateAdsRequestHeadlinesItem>) -> Self {
         self.headlines = Some(value);
         self
     }
 
-    pub fn lead_form(mut self, value: UpdateAdsRequestLeadForm) -> Self {
-        self.lead_form = Some(value);
-        self
-    }
-
-    pub fn lead_form_id(mut self, value: impl Into<String>) -> Self {
-        self.lead_form_id = Some(value.into());
-        self
-    }
-
-    pub fn messaging_config(mut self, value: UpdateAdsRequestMessagingConfig) -> Self {
-        self.messaging_config = Some(value);
-        self
-    }
-
-    pub fn multi_advertiser_ads(mut self, value: bool) -> Self {
-        self.multi_advertiser_ads = Some(value);
-        self
-    }
-
-    pub fn music(mut self, value: UpdateAdsRequestMusic) -> Self {
-        self.music = Some(value);
-        self
-    }
-
-    pub fn post_source(mut self, value: UpdateAdsRequestPostSource) -> Self {
-        self.post_source = Some(value);
-        self
-    }
-
-    pub fn primary_texts(mut self, value: Vec<String>) -> Self {
+    pub fn primary_texts(mut self, value: Vec<UpdateAdsRequestPrimaryTextsItem>) -> Self {
         self.primary_texts = Some(value);
-        self
-    }
-
-    pub fn social_accounts(mut self, value: Vec<UpdateAdsRequestSocialAccountsItem>) -> Self {
-        self.social_accounts = Some(value);
         self
     }
 
@@ -166,16 +94,8 @@ impl UpdateAdsRequestBuilder {
             call_to_action: self.call_to_action,
             creatives: self.creatives,
             descriptions: self.descriptions,
-            existing_post_id: self.existing_post_id,
             headlines: self.headlines,
-            lead_form: self.lead_form,
-            lead_form_id: self.lead_form_id,
-            messaging_config: self.messaging_config,
-            multi_advertiser_ads: self.multi_advertiser_ads,
-            music: self.music,
-            post_source: self.post_source,
             primary_texts: self.primary_texts,
-            social_accounts: self.social_accounts,
             title: self.title,
             url: self.url,
             url_parameters: self.url_parameters,

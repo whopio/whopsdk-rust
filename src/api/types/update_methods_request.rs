@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdateMethodsRequest {
+    /// The payout address to keep on file for this payout method. Only the fields you send are changed; blank fields are ignored.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub address: Option<UpdateMethodsRequestAddress>,
     /// Set to `true` to make this the account's default payout method. `false` is not accepted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_default: Option<bool>,
@@ -19,11 +22,17 @@ impl UpdateMethodsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct UpdateMethodsRequestBuilder {
+    address: Option<UpdateMethodsRequestAddress>,
     is_default: Option<bool>,
     nickname: Option<String>,
 }
 
 impl UpdateMethodsRequestBuilder {
+    pub fn address(mut self, value: UpdateMethodsRequestAddress) -> Self {
+        self.address = Some(value);
+        self
+    }
+
     pub fn is_default(mut self, value: bool) -> Self {
         self.is_default = Some(value);
         self
@@ -37,6 +46,7 @@ impl UpdateMethodsRequestBuilder {
     /// Consumes the builder and constructs a [`UpdateMethodsRequest`].
     pub fn build(self) -> Result<UpdateMethodsRequest, BuildError> {
         Ok(UpdateMethodsRequest {
+            address: self.address,
             is_default: self.is_default,
             nickname: self.nickname,
         })

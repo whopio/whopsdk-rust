@@ -1,9 +1,8 @@
 pub use crate::prelude::*;
 
-/// Input for an attachment
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdateMessagesRequestAttachmentsItem {
-    /// The ID of an existing file object.
+    /// Uploaded file ID.
     #[serde(default)]
     pub id: String,
 }

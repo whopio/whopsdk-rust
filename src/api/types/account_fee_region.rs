@@ -20,6 +20,10 @@ pub enum AccountFeeRegion {
     Uy,
     Br,
     Ph,
+    Ng,
+    My,
+    Do,
+    Sv,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -44,6 +48,10 @@ impl Serialize for AccountFeeRegion {
             Self::Uy => serializer.serialize_str("uy"),
             Self::Br => serializer.serialize_str("br"),
             Self::Ph => serializer.serialize_str("ph"),
+            Self::Ng => serializer.serialize_str("ng"),
+            Self::My => serializer.serialize_str("my"),
+            Self::Do => serializer.serialize_str("do"),
+            Self::Sv => serializer.serialize_str("sv"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -69,6 +77,10 @@ impl<'de> Deserialize<'de> for AccountFeeRegion {
             "uy" => Ok(Self::Uy),
             "br" => Ok(Self::Br),
             "ph" => Ok(Self::Ph),
+            "ng" => Ok(Self::Ng),
+            "my" => Ok(Self::My),
+            "do" => Ok(Self::Do),
+            "sv" => Ok(Self::Sv),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -93,6 +105,10 @@ impl fmt::Display for AccountFeeRegion {
             Self::Uy => write!(f, "uy"),
             Self::Br => write!(f, "br"),
             Self::Ph => write!(f, "ph"),
+            Self::Ng => write!(f, "ng"),
+            Self::My => write!(f, "my"),
+            Self::Do => write!(f, "do"),
+            Self::Sv => write!(f, "sv"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

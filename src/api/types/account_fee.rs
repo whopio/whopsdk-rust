@@ -7,10 +7,10 @@ pub struct AccountFee {
     pub adjustable: bool,
     /// Which group of the fee schedule this fee belongs to, for grouping in a UI.
     pub category: AccountFeeCategory,
-    /// The platform rate before custom or inherited pricing is applied.
+    /// The platform rate before custom or inherited pricing is applied. Its `percentage` and `fixed` are `null` when a subaccount's fees are read without access to its parent account.
     #[serde(default)]
     pub default: AccountFeeRate,
-    /// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies or the rate does not expire.
+    /// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies, the rate does not expire, or a subaccount's fees are read without access to its parent account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ends_at: Option<String>,
     /// The amount charged per event in effect. `null` when the fee has no fixed component.
@@ -33,11 +33,12 @@ pub struct AccountFee {
     /// The rate, source, default, reset rate, and editable limits in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
     #[serde(default)]
     pub regions: HashMap<String, AccountFeeRegionalRate>,
-    /// The rate that takes effect when this account's custom rate is cleared, including inherited pricing.
+    /// The rate that takes effect when this account's custom rate is cleared, including inherited pricing. Its `percentage` and `fixed` are `null` when a subaccount's fees are read without access to its parent account.
     #[serde(default)]
     pub reset: AccountFeeRate,
-    /// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
-    pub source: AccountFeeSource,
+    /// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a subaccount's fees are read without access to its parent account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<AccountFeeSource>,
     /// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unadjustable_reason: Option<AccountFeeUnadjustableReason>,
@@ -140,7 +141,6 @@ impl AccountFeeBuilder {
     /// - [`default`](AccountFeeBuilder::default)
     /// - [`regions`](AccountFeeBuilder::regions)
     /// - [`reset`](AccountFeeBuilder::reset)
-    /// - [`source`](AccountFeeBuilder::source)
     pub fn build(self) -> Result<AccountFee, BuildError> {
         Ok(AccountFee {
             adjustable: self
@@ -164,9 +164,7 @@ impl AccountFeeBuilder {
             reset: self
                 .reset
                 .ok_or_else(|| BuildError::missing_field("reset"))?,
-            source: self
-                .source
-                .ok_or_else(|| BuildError::missing_field("source"))?,
+            source: self.source,
             unadjustable_reason: self.unadjustable_reason,
         })
     }

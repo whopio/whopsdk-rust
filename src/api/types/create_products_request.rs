@@ -17,7 +17,7 @@ pub struct CreateProductsRequest {
     /// Custom bank statement descriptor. Must start with WHOP*.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_statement_descriptor: Option<String>,
-    /// A written description displayed on the product page.
+    /// A written description displayed on the product page. Maximum 1,500 characters.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     /// Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
@@ -29,7 +29,7 @@ pub struct CreateProductsRequest {
     /// The enrollment status in the global affiliate program.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub global_affiliate_status: Option<CreateProductsRequestGlobalAffiliateStatus>,
-    /// A short marketing headline for the product page.
+    /// A short marketing headline for the product page. Maximum 80 characters.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub headline: Option<String>,
     /// Labels used to group products into collections. Stored lowercased and de-duplicated. Maximum 20 labels, 50 characters each.

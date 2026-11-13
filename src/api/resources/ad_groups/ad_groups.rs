@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct AdGroupsClient {
@@ -22,7 +23,7 @@ impl AdGroupsClient {
     /// * `ad_campaign_ids` - Filter to ad groups in these campaigns (max 100). Repeat the parameter for each id (ad_campaign_ids=a&ad_campaign_ids=b).
     /// * `status` - Filter to ad groups with this status.
     /// * `query` - Filter ad groups by a title or ID substring.
-    /// * `order` - The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports.
+    /// * `order` - The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports, and link_clicks by the same Whop pixel page views.
     /// * `direction` - The sort direction. Defaults to desc.
     /// * `created_before` - Only return ad groups created before this timestamp.
     /// * `created_after` - Only return ad groups created after this timestamp.
@@ -88,11 +89,16 @@ impl AdGroupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "ad_groups",
                 None,
@@ -118,6 +124,85 @@ impl AdGroupsClient {
                 options,
             )
             .await
+    }
+
+    pub async fn list_paginated(
+        &self,
+        request: &AdGroupsListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("account_id", request.account_id.clone())
+            .string("ad_campaign_id", request.ad_campaign_id.clone())
+            .string_array("ad_campaign_ids", request.ad_campaign_ids.clone())
+            .serialize("status", request.status.clone())
+            .structured_query("query", request.query.clone())
+            .serialize("order", request.order.clone())
+            .serialize("direction", request.direction.clone())
+            .string("created_before", request.created_before.clone())
+            .string("created_after", request.created_after.clone())
+            .string("stats_from", request.stats_from.clone())
+            .string("stats_to", request.stats_to.clone())
+            .string("time_zone", request.time_zone.clone())
+            .serialize("attribution_model", request.attribution_model.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "ad_groups",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
     }
 
     /// Creates an ad group (ad set) in a campaign.
@@ -150,21 +235,16 @@ impl AdGroupsClient {
     ///                 audiences: None,
     ///                 bid_type: None,
     ///                 budget_amount: None,
+    ///                 budget_amount_local: None,
     ///                 budget_type: None,
     ///                 conversion_event: None,
-    ///                 conversion_location: None,
+    ///                 delivery_schedule: None,
     ///                 demographics: None,
     ///                 desired_cost_per_result: None,
-    ///                 detailed_targeting: None,
     ///                 devices: None,
-    ///                 dynamic_creative: None,
     ///                 ends_at: None,
-    ///                 frequency_cap: None,
+    ///                 keywords: None,
     ///                 languages: None,
-    ///                 message_apps: None,
-    ///                 minimum_daily_spend: None,
-    ///                 optimization_goal: None,
-    ///                 placements: None,
     ///                 regions: None,
     ///                 starts_at: None,
     ///                 status: None,
@@ -184,11 +264,16 @@ impl AdGroupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "ad_groups",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -198,153 +283,7 @@ impl AdGroupsClient {
             .await
     }
 
-    /// Estimates how many people a draft targeting spec can reach, before an ad group is created. The body takes the same targeting fields as creating an ad group — `regions`, `demographics`, `detailed_targeting`, `audiences`, `languages`, and `devices` — and nothing is persisted.
-    ///
-    /// # Arguments
-    ///
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .ad_groups
-    ///         .estimate_reach(
-    ///             &EstimateReachAdGroupsRequest {
-    ///                 platform: EstimateReachAdGroupsRequestPlatform::Meta,
-    ///                 account_id: None,
-    ///                 audiences: None,
-    ///                 demographics: None,
-    ///                 detailed_targeting: None,
-    ///                 devices: None,
-    ///                 languages: None,
-    ///                 regions: None,
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn estimate_reach(
-        &self,
-        request: &EstimateReachAdGroupsRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<ReachEstimate, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::POST,
-                "ad_groups/estimate_reach",
-                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
-                None,
-                options,
-            )
-            .await
-    }
-
-    /// Searches the ad platform's targeting taxonomy for options to target an ad group with. Each result comes back in the exact shape the ad-group body accepts for its `type`, so it can be used in `detailed_targeting`, `regions`, or `languages` as-is. A blank `query` browses the small fixed lists (behaviors, browse demographic categories, languages); interests, work employers, job titles, schools, majors, and locations need a search term.
-    ///
-    /// # Arguments
-    ///
-    /// * `account_id` - Account to search on behalf of. Defaults to the authenticated account.
-    /// * `platform` - The ad network whose targeting taxonomy to search.
-    /// * `query` - The search term. Blank browses the fixed lists; interests, work employers, job titles, schools, majors, and locations return nothing without one.
-    /// * `types` - Kinds of targeting options to search. Defaults to all of them.
-    /// * `location_types` - Narrow location results to these kinds of places. Only applies when `types` includes `locations`.
-    /// * `country` - Narrow location results to one country, as an ISO 3166-1 code such as `US`. Only applies when `types` includes `locations`.
-    /// * `limit` - Maximum number of results per requested type.
-    /// * `special_ad_categories` - The campaign's declared special ad categories. Under `housing`, `employment`, or `financial_products` the ad platform allows interests only, drawn from a short approved list, so results are narrowed to what such a campaign can launch with and other kinds return nothing. Blank `query` browses that approved list instead of the usual fixed lists.
-    /// * `options` - Additional request options such as headers, timeout, etc.
-    ///
-    /// # Returns
-    ///
-    /// JSON response from the API
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// use whop_sdk::prelude::*;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let config = ClientConfig {
-    ///         token: Some("<token>".to_string()),
-    ///         ..Default::default()
-    ///     };
-    ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .ad_groups
-    ///         .search_targeting_options(
-    ///             &SearchTargetingOptionsQueryRequest {
-    ///                 platform: SearchTargetingOptionsAdGroupsRequestPlatform::Meta,
-    ///                 account_id: None,
-    ///                 query: None,
-    ///                 types: vec![],
-    ///                 location_types: vec![],
-    ///                 country: None,
-    ///                 limit: None,
-    ///                 special_ad_categories: vec![],
-    ///             },
-    ///             None,
-    ///         )
-    ///         .await;
-    /// }
-    /// ```
-    pub async fn search_targeting_options(
-        &self,
-        request: &SearchTargetingOptionsQueryRequest,
-        options: Option<RequestOptions>,
-    ) -> Result<SearchTargetingOptionsAdGroupsResponse, ApiError> {
-        let options = {
-            let mut o = options.unwrap_or_default();
-            o.additional_headers
-                .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
-            Some(o)
-        };
-        self.http_client
-            .execute_request(
-                Method::GET,
-                "ad_groups/targeting_options",
-                None,
-                QueryBuilder::new()
-                    .string("account_id", request.account_id.clone())
-                    .serialize("platform", Some(request.platform.clone()))
-                    .structured_query("query", request.query.clone())
-                    .serialize_array("types", request.types.clone())
-                    .serialize_array("location_types", request.location_types.clone())
-                    .string("country", request.country.clone())
-                    .int("limit", request.limit.clone())
-                    .serialize_array(
-                        "special_ad_categories",
-                        request.special_ad_categories.clone(),
-                    )
-                    .build(),
-                options,
-            )
-            .await
-    }
-
-    /// Retrieves a single ad group.
+    /// Retrieves an ad group, with performance stats for the window set by `stats_from` and `stats_to`.
     ///
     /// # Arguments
     ///
@@ -393,11 +332,16 @@ impl AdGroupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("ad_groups/{}", id),
                 None,
@@ -412,7 +356,7 @@ impl AdGroupsClient {
             .await
     }
 
-    /// Deletes an ad group.
+    /// Deletes an ad group and stops its delivery.
     ///
     /// # Arguments
     ///
@@ -447,11 +391,16 @@ impl AdGroupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::DELETE,
                 &format!("ad_groups/{}", id),
                 None,
@@ -506,11 +455,16 @@ impl AdGroupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 &format!("ad_groups/{}", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -520,7 +474,7 @@ impl AdGroupsClient {
             .await
     }
 
-    /// Creates copies of the ad group in `duplicating` status and returns them — into its own campaign, or into target_ad_campaign_id (which must belong to the same account and be compatible with the ad group's targeting and goals); each copy transitions to its final status (matching the source's active/paused state) once duplication completes. Poll each returned ad group until it leaves `duplicating` — a copy that could not be completed is deleted and returns 404.
+    /// Starts copying an ad group and returns the copies in `duplicating` status. Poll each returned ad group until it leaves `duplicating`: it then takes the source's `active` or `paused` status, or, if the copy could not be completed, is deleted and returns 404.
     ///
     /// # Arguments
     ///
@@ -565,11 +519,16 @@ impl AdGroupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("ad_groups/{}/duplicate", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -614,11 +573,16 @@ impl AdGroupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("ad_groups/{}/pause", id),
                 None,
@@ -663,11 +627,16 @@ impl AdGroupsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("ad_groups/{}/unpause", id),
                 None,

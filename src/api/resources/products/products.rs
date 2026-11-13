@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct ProductsClient {
@@ -13,25 +14,26 @@ impl ProductsClient {
         })
     }
 
-    /// Returns a paginated list of products. Omit `account_id` to search the public marketplace.
+    /// Lists an account's products, or searches the public marketplace when you omit `account_id`. Without the `access_pass:basic:read` permission on the account, including when signed out, the list holds only the products its store page lists.
     ///
     /// # Arguments
     ///
-    /// * `account_id` - The unique identifier of the account to list products for. Omit to search the public marketplace.
-    /// * `query` - Ranked search against product title and headline. Omit to browse by recency.
+    /// * `account_id` - Account to list products for, prefixed `biz_`. Without the `access_pass:basic:read` permission on it, only the products its store page lists are returned. Omit to search the public marketplace.
+    /// * `query` - Filters products by text. The public marketplace list searches product title, account name, headline and description, ranking products that match every word first and the closest partial matches after them; an account's own list is a plain substring match over title, headline and description. Omit to browse by recency.
     /// * `marketplace_category_route` - Only return marketplace products assigned to this category route, such as `trading`.
-    /// * `plan_types` - Filter to products with a buyable plan of these billing models, such as `one_time` or `renewal`.
-    /// * `price_minimum` - Only return products whose advertised buyable plan has a displayed price of at least this amount. Recurring plans use renewal price.
-    /// * `price_maximum` - Only return products whose advertised buyable plan has a displayed price of at most this amount. Recurring plans use renewal price.
-    /// * `visibilities` - Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products.
+    /// * `billing_types` - Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`. On an account list, needs the `access_pass:basic:read` permission.
+    /// * `price_minimum` - Only return products whose advertised buyable variant has a displayed price of at least this amount. Recurring variants use renewal price. On an account list, needs the `access_pass:basic:read` permission.
+    /// * `price_maximum` - Only return products whose advertised buyable variant has a displayed price of at most this amount. Recurring variants use renewal price. On an account list, needs the `access_pass:basic:read` permission.
+    /// * `visibilities` - Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products. Without the `access_pass:basic:read` permission on the account, only `visible` matches anything.
     /// * `access_pass_types` - Filter to only products matching these types.
     /// * `labels` - Filter to only products carrying all of these labels. Labels are matched lowercased.
     /// * `direction` - The sort direction for results. Defaults to descending.
-    /// * `order` - The field to sort results by. Account lists default to `created_at`. Marketplace lists default to `discoverable_at` and accept `created_at` or `discoverable_at`. Cannot be combined with `query`.
+    /// * `order` - Field to sort results by. Account lists default to `created_at`, and `position` with `direction` `asc` matches the order the store page shows. Without the `access_pass:basic:read` permission, an account list sorts only by `created_at` or `position`. Marketplace lists default to `discoverable_at`, accept only `created_at` or `discoverable_at`, and can't be combined with `query`.
     /// * `first` - Number of results to return from the start of the range.
     /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `last` - Number of results to return from the end of the range.
     /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    /// * `include_total_count` - Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
     /// * `created_after` - Only return products created after this ISO 8601 timestamp.
     /// * `created_before` - Only return products created before this ISO 8601 timestamp.
     /// * `options` - Additional request options such as headers, timeout, etc.
@@ -61,7 +63,7 @@ impl ProductsClient {
     ///                 account_id: None,
     ///                 query: None,
     ///                 marketplace_category_route: None,
-    ///                 plan_types: vec![],
+    ///                 billing_types: vec![],
     ///                 price_minimum: None,
     ///                 price_maximum: None,
     ///                 labels: vec![],
@@ -71,6 +73,7 @@ impl ProductsClient {
     ///                 after: None,
     ///                 last: None,
     ///                 before: None,
+    ///                 include_total_count: None,
     ///                 created_after: None,
     ///                 created_before: None,
     ///             },
@@ -88,11 +91,16 @@ impl ProductsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "products",
                 None,
@@ -103,24 +111,108 @@ impl ProductsClient {
                         "marketplace_category_route",
                         request.marketplace_category_route.clone(),
                     )
-                    .serialize_array("plan_types", request.plan_types.clone())
+                    .serialize_array("billing_types", request.billing_types.clone())
                     .float("price_minimum", request.price_minimum.clone())
                     .float("price_maximum", request.price_maximum.clone())
                     .string_array("visibilities", request.visibilities.clone())
                     .string_array("access_pass_types", request.access_pass_types.clone())
                     .string_array("labels", request.labels.clone())
                     .serialize("direction", request.direction.clone())
-                    .string("order", request.order.clone())
+                    .serialize("order", request.order.clone())
                     .int("first", request.first.clone())
                     .string("after", request.after.clone())
                     .int("last", request.last.clone())
                     .string("before", request.before.clone())
+                    .bool("include_total_count", request.include_total_count.clone())
                     .string("created_after", request.created_after.clone())
                     .string("created_before", request.created_before.clone())
                     .build(),
                 options,
             )
             .await
+    }
+
+    pub async fn list_paginated(
+        &self,
+        request: &ProductsListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("account_id", request.account_id.clone())
+            .structured_query("query", request.query.clone())
+            .string(
+                "marketplace_category_route",
+                request.marketplace_category_route.clone(),
+            )
+            .serialize_array("billing_types", request.billing_types.clone())
+            .float("price_minimum", request.price_minimum.clone())
+            .float("price_maximum", request.price_maximum.clone())
+            .string_array("visibilities", request.visibilities.clone())
+            .string_array("access_pass_types", request.access_pass_types.clone())
+            .string_array("labels", request.labels.clone())
+            .serialize("direction", request.direction.clone())
+            .serialize("order", request.order.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .bool("include_total_count", request.include_total_count.clone())
+            .string("created_after", request.created_after.clone())
+            .string("created_before", request.created_before.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "products",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
     }
 
     /// Creates a new product for an account.
@@ -184,11 +276,16 @@ impl ProductsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "products",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -198,7 +295,7 @@ impl ProductsClient {
             .await
     }
 
-    /// Retrieves a product. Public — no credentials.
+    /// Retrieves a product. Requires no authentication.
     ///
     /// # Arguments
     ///
@@ -233,11 +330,16 @@ impl ProductsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("products/{}", id),
                 None,
@@ -282,11 +384,16 @@ impl ProductsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::DELETE,
                 &format!("products/{}", id),
                 None,
@@ -341,11 +448,16 @@ impl ProductsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 &format!("products/{}", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -355,7 +467,7 @@ impl ProductsClient {
             .await
     }
 
-    /// Submits a product to the whop.com marketplace for review. The product moves to `pending_review`; a Whop reviewer approves it before it goes live. Requires a logo, a headline, and at least one gallery image or video; the request fails naming whichever is missing.
+    /// Submits an App Store app's product for review. The product moves to `pending_review`; a Whop reviewer approves it before it goes live. Other products can no longer be listed on the whop.com marketplace, so the request fails with `discover_listing_discontinued`.
     ///
     /// # Arguments
     ///
@@ -390,11 +502,16 @@ impl ProductsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("products/{}/publish", id),
                 None,
@@ -439,11 +556,16 @@ impl ProductsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("products/{}/unpublish", id),
                 None,

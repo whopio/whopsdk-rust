@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The goal the campaign optimizes toward.
+/// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AdCampaignObjective {

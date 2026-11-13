@@ -14,7 +14,7 @@ pub struct ListCheckoutConfigurationsResponseDataItem {
     /// Currency used for setup-mode payment method availability; defaults to `usd` when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
-    /// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+    /// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub effective_payment_method_configuration:
         Option<ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfiguration>,
@@ -26,25 +26,25 @@ pub struct ListCheckoutConfigurationsResponseDataItem {
     pub metadata: Option<HashMap<String, serde_json::Value>>,
     /// Controls whether checkout charges the buyer immediately or saves payment details for later.
     pub mode: ListCheckoutConfigurationsResponseDataItemMode,
-    /// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+    /// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_configuration:
         Option<ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration>,
-    /// Plan used for payment checkout. `null` in setup mode.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan: Option<ListCheckoutConfigurationsResponseDataItemPlan>,
     /// Checkout URL you can send to customers.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub purchase_url: Option<String>,
     /// URL customers are sent to after checkout, or `null` when no redirect is configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect_url: Option<String>,
-    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<ListCheckoutConfigurationsResponseDataItemThreeDsLevel>,
     /// When the checkout configuration was last updated, as an ISO 8601 timestamp.
     #[serde(default)]
     pub updated_at: String,
+    /// Variant used for payment checkout. `null` in setup mode.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<ListCheckoutConfigurationsResponseDataItemVariant>,
 }
 
 impl ListCheckoutConfigurationsResponseDataItem {
@@ -67,11 +67,11 @@ pub struct ListCheckoutConfigurationsResponseDataItemBuilder {
     mode: Option<ListCheckoutConfigurationsResponseDataItemMode>,
     payment_method_configuration:
         Option<ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration>,
-    plan: Option<ListCheckoutConfigurationsResponseDataItemPlan>,
     purchase_url: Option<String>,
     redirect_url: Option<String>,
     three_ds_level: Option<ListCheckoutConfigurationsResponseDataItemThreeDsLevel>,
     updated_at: Option<String>,
+    variant: Option<ListCheckoutConfigurationsResponseDataItemVariant>,
 }
 
 impl ListCheckoutConfigurationsResponseDataItemBuilder {
@@ -126,11 +126,6 @@ impl ListCheckoutConfigurationsResponseDataItemBuilder {
         self
     }
 
-    pub fn plan(mut self, value: ListCheckoutConfigurationsResponseDataItemPlan) -> Self {
-        self.plan = Some(value);
-        self
-    }
-
     pub fn purchase_url(mut self, value: impl Into<String>) -> Self {
         self.purchase_url = Some(value.into());
         self
@@ -151,6 +146,11 @@ impl ListCheckoutConfigurationsResponseDataItemBuilder {
 
     pub fn updated_at(mut self, value: impl Into<String>) -> Self {
         self.updated_at = Some(value.into());
+        self
+    }
+
+    pub fn variant(mut self, value: ListCheckoutConfigurationsResponseDataItemVariant) -> Self {
+        self.variant = Some(value);
         self
     }
 
@@ -176,13 +176,13 @@ impl ListCheckoutConfigurationsResponseDataItemBuilder {
             metadata: self.metadata,
             mode: self.mode.ok_or_else(|| BuildError::missing_field("mode"))?,
             payment_method_configuration: self.payment_method_configuration,
-            plan: self.plan,
             purchase_url: self.purchase_url,
             redirect_url: self.redirect_url,
             three_ds_level: self.three_ds_level,
             updated_at: self
                 .updated_at
                 .ok_or_else(|| BuildError::missing_field("updated_at"))?,
+            variant: self.variant,
         })
     }
 }

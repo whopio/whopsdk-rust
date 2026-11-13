@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// What the preference applies to. `null` on a dimension means the preference is not narrowed there.
+/// What the preference applies to. `null` on a dimension means the preference is not narrowed there. A scope read back from either list endpoint can be sent as-is. A scope naming an experience with no topic sets that experience's level; any other scope sets a topic override.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct SetNotificationsRequestPreferencesItemScope {
     /// Account to scope the preference to (member notifications), `biz_` tag.
@@ -15,7 +15,7 @@ pub struct SetNotificationsRequestPreferencesItemScope {
     /// Account whose team notifications the preference is scoped to, `biz_` tag.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub team_account_id: Option<String>,
-    /// Notification topic to scope the preference to, `topic_` tag.
+    /// Notification topic to scope the preference to, `topic_` tag. Topic IDs come from `GET /notifications/topics`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub topic_id: Option<String>,
 }

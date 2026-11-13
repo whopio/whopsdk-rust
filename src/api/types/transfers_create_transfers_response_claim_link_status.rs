@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// A newly funded claim link is always `pending` — it stays claimable until it is fully claimed, canceled, or expires.
+/// The newly funded link is ready to claim.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum CreateTransfersResponseClaimLinkStatus {
     #[serde(rename = "pending")]

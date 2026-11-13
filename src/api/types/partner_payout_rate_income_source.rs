@@ -8,6 +8,7 @@ pub enum PartnerPayoutRateIncomeSource {
     Transfer,
     CardInterchange,
     AdSpend,
+    Withdrawal,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -20,6 +21,7 @@ impl Serialize for PartnerPayoutRateIncomeSource {
             Self::Transfer => serializer.serialize_str("transfer"),
             Self::CardInterchange => serializer.serialize_str("card_interchange"),
             Self::AdSpend => serializer.serialize_str("ad_spend"),
+            Self::Withdrawal => serializer.serialize_str("withdrawal"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -33,6 +35,7 @@ impl<'de> Deserialize<'de> for PartnerPayoutRateIncomeSource {
             "transfer" => Ok(Self::Transfer),
             "card_interchange" => Ok(Self::CardInterchange),
             "ad_spend" => Ok(Self::AdSpend),
+            "withdrawal" => Ok(Self::Withdrawal),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -45,6 +48,7 @@ impl fmt::Display for PartnerPayoutRateIncomeSource {
             Self::Transfer => write!(f, "transfer"),
             Self::CardInterchange => write!(f, "card_interchange"),
             Self::AdSpend => write!(f, "ad_spend"),
+            Self::Withdrawal => write!(f, "withdrawal"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

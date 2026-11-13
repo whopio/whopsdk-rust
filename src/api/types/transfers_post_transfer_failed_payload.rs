@@ -10,7 +10,7 @@ pub struct PostTransferFailedPayload {
     /// The dated API version (Api-Version-Date) the payload is serialized to
     #[serde(skip_serializing_if = "Option::is_none")]
     pub api_version_date: Option<String>,
-    /// A transfer of credit between two ledger accounts.
+    /// A transfer between Whop accounts or users.
     pub data: PostTransferFailedPayloadData,
     /// A unique ID for every single webhook request
     #[serde(default)]

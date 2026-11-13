@@ -13,12 +13,12 @@ impl ConfirmationTokensClient {
         })
     }
 
-    /// Retrieves a token's display-safe preview — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for.
+    /// Retrieves a confirmation token's payment method and billing details, never the underlying payment credential, to display what the buyer chose or check that the token is still usable. Requires no authentication and is rate-limited.
     ///
     /// # Arguments
     ///
     /// * `id` - Confirmation token ID, prefixed `ctok_`.
-    /// * `account_id` - The account (biz_) the token was minted for.
+    /// * `account_id` - The account the token was minted for, prefixed `biz_`. It must match the token's account.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -59,11 +59,16 @@ impl ConfirmationTokensClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("confirmation_tokens/{}", id),
                 None,

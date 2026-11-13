@@ -24,10 +24,6 @@ pub struct ListEventsResponseDataItem {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub questions: Option<Vec<ListEventsResponseDataItemQuestionsItem>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub recommended_action_chain_id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub recommended_action_shown_position: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub referrer_url: Option<String>,
     /// Hydrated details for the records this event references. Only present keys resolved.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -61,8 +57,6 @@ pub struct ListEventsResponseDataItemBuilder {
     path: Option<String>,
     person_id: Option<String>,
     questions: Option<Vec<ListEventsResponseDataItemQuestionsItem>>,
-    recommended_action_chain_id: Option<String>,
-    recommended_action_shown_position: Option<i64>,
     referrer_url: Option<String>,
     related: Option<ListEventsResponseDataItemRelated>,
     total_usd_amount: Option<f64>,
@@ -119,16 +113,6 @@ impl ListEventsResponseDataItemBuilder {
 
     pub fn questions(mut self, value: Vec<ListEventsResponseDataItemQuestionsItem>) -> Self {
         self.questions = Some(value);
-        self
-    }
-
-    pub fn recommended_action_chain_id(mut self, value: impl Into<String>) -> Self {
-        self.recommended_action_chain_id = Some(value.into());
-        self
-    }
-
-    pub fn recommended_action_shown_position(mut self, value: i64) -> Self {
-        self.recommended_action_shown_position = Some(value);
         self
     }
 
@@ -189,8 +173,6 @@ impl ListEventsResponseDataItemBuilder {
                 .person_id
                 .ok_or_else(|| BuildError::missing_field("person_id"))?,
             questions: self.questions,
-            recommended_action_chain_id: self.recommended_action_chain_id,
-            recommended_action_shown_position: self.recommended_action_shown_position,
             referrer_url: self.referrer_url,
             related: self.related,
             total_usd_amount: self.total_usd_amount,

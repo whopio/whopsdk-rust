@@ -1,11 +1,14 @@
 pub use crate::prelude::*;
 
-/// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
+/// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ConnectSocialAccountsRequestPlatform {
-    MetaBusiness,
     Tiktok,
+    Linkedin,
+    Youtube,
+    X,
+    Quickbooks,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -14,8 +17,11 @@ pub enum ConnectSocialAccountsRequestPlatform {
 impl Serialize for ConnectSocialAccountsRequestPlatform {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
-            Self::MetaBusiness => serializer.serialize_str("meta_business"),
             Self::Tiktok => serializer.serialize_str("tiktok"),
+            Self::Linkedin => serializer.serialize_str("linkedin"),
+            Self::Youtube => serializer.serialize_str("youtube"),
+            Self::X => serializer.serialize_str("x"),
+            Self::Quickbooks => serializer.serialize_str("quickbooks"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -25,8 +31,11 @@ impl<'de> Deserialize<'de> for ConnectSocialAccountsRequestPlatform {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
-            "meta_business" => Ok(Self::MetaBusiness),
             "tiktok" => Ok(Self::Tiktok),
+            "linkedin" => Ok(Self::Linkedin),
+            "youtube" => Ok(Self::Youtube),
+            "x" => Ok(Self::X),
+            "quickbooks" => Ok(Self::Quickbooks),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -35,8 +44,11 @@ impl<'de> Deserialize<'de> for ConnectSocialAccountsRequestPlatform {
 impl fmt::Display for ConnectSocialAccountsRequestPlatform {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::MetaBusiness => write!(f, "meta_business"),
             Self::Tiktok => write!(f, "tiktok"),
+            Self::Linkedin => write!(f, "linkedin"),
+            Self::Youtube => write!(f, "youtube"),
+            Self::X => write!(f, "x"),
+            Self::Quickbooks => write!(f, "quickbooks"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

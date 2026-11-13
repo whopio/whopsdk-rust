@@ -2,10 +2,13 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct ListStatsResponseDataItem {
+    /// Supported breakdown_by values when they differ from the filter properties.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub breakdowns: Option<Vec<String>>,
     /// A short description of what the metric measures.
     #[serde(default)]
     pub description: String,
-    /// The metric's key. Pass it to GET /stats/{metric} to query its values.
+    /// The metric's key. Pass it to GET /stats/time_series/{metric} to query its values.
     #[serde(default)]
     pub key: String,
     /// Human-readable display name for the metric.
@@ -30,6 +33,7 @@ impl ListStatsResponseDataItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListStatsResponseDataItemBuilder {
+    breakdowns: Option<Vec<String>>,
     description: Option<String>,
     key: Option<String>,
     name: Option<String>,
@@ -39,6 +43,11 @@ pub struct ListStatsResponseDataItemBuilder {
 }
 
 impl ListStatsResponseDataItemBuilder {
+    pub fn breakdowns(mut self, value: Vec<String>) -> Self {
+        self.breakdowns = Some(value);
+        self
+    }
+
     pub fn description(mut self, value: impl Into<String>) -> Self {
         self.description = Some(value.into());
         self
@@ -78,6 +87,7 @@ impl ListStatsResponseDataItemBuilder {
     /// - [`unit`](ListStatsResponseDataItemBuilder::unit)
     pub fn build(self) -> Result<ListStatsResponseDataItem, BuildError> {
         Ok(ListStatsResponseDataItem {
+            breakdowns: self.breakdowns,
             description: self
                 .description
                 .ok_or_else(|| BuildError::missing_field("description"))?,

@@ -1,11 +1,11 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct AccountFeeMarkup {
     /// Whether the caller may change this markup through `PATCH`. True for the platform's team holding the `company:update_child_fees` scope.
     #[serde(default)]
     pub adjustable: bool,
-    /// What applies if this row is cleared: the platform's default for all its connected accounts, or zero.
+    /// What applies if this row is cleared: the platform's default for all its subaccounts, or zero. Its `percentage` and `fixed` are `null` when a subaccount's fees are read without access to its parent account.
     #[serde(default)]
     pub default: AccountFeeRate,
     /// The amount the platform adds per event. Zero when no markup is set.
@@ -18,8 +18,9 @@ pub struct AccountFeeMarkup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub percentage: f64,
-    /// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero.
-    pub source: AccountFeeMarkupSource,
+    /// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero. `null` when a subaccount's fees are read without access to its parent account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<AccountFeeMarkupSource>,
     /// Why the caller may not change this markup, or `null` when `adjustable`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unadjustable_reason: Option<AccountFeeMarkupUnadjustableReason>,
@@ -86,7 +87,6 @@ impl AccountFeeMarkupBuilder {
     /// - [`fixed`](AccountFeeMarkupBuilder::fixed)
     /// - [`maximum`](AccountFeeMarkupBuilder::maximum)
     /// - [`percentage`](AccountFeeMarkupBuilder::percentage)
-    /// - [`source`](AccountFeeMarkupBuilder::source)
     pub fn build(self) -> Result<AccountFeeMarkup, BuildError> {
         Ok(AccountFeeMarkup {
             adjustable: self
@@ -104,9 +104,7 @@ impl AccountFeeMarkupBuilder {
             percentage: self
                 .percentage
                 .ok_or_else(|| BuildError::missing_field("percentage"))?,
-            source: self
-                .source
-                .ok_or_else(|| BuildError::missing_field("source"))?,
+            source: self.source,
             unadjustable_reason: self.unadjustable_reason,
         })
     }

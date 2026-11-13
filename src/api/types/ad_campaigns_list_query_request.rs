@@ -12,12 +12,15 @@ pub struct AdCampaignsListQueryRequest {
     /// Filter campaigns by a title or ID substring.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
-    /// The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports.
+    /// The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports, and link_clicks by the same Whop pixel page views.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<ListAdCampaignsRequestOrder>,
     /// The sort direction. Defaults to desc.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<ListAdCampaignsRequestDirection>,
+    /// Only return campaigns of this type.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub campaign_type: Option<ListAdCampaignsRequestCampaignType>,
     /// Only return campaigns created before this timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_before: Option<String>,
@@ -64,6 +67,7 @@ pub struct AdCampaignsListQueryRequestBuilder {
     query: Option<String>,
     order: Option<ListAdCampaignsRequestOrder>,
     direction: Option<ListAdCampaignsRequestDirection>,
+    campaign_type: Option<ListAdCampaignsRequestCampaignType>,
     created_before: Option<String>,
     created_after: Option<String>,
     stats_from: Option<String>,
@@ -99,6 +103,11 @@ impl AdCampaignsListQueryRequestBuilder {
 
     pub fn direction(mut self, value: ListAdCampaignsRequestDirection) -> Self {
         self.direction = Some(value);
+        self
+    }
+
+    pub fn campaign_type(mut self, value: ListAdCampaignsRequestCampaignType) -> Self {
+        self.campaign_type = Some(value);
         self
     }
 
@@ -160,6 +169,7 @@ impl AdCampaignsListQueryRequestBuilder {
             query: self.query,
             order: self.order,
             direction: self.direction,
+            campaign_type: self.campaign_type,
             created_before: self.created_before,
             created_after: self.created_after,
             stats_from: self.stats_from,

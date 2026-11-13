@@ -7,6 +7,7 @@ pub struct UpdateExperimentsRequest {
     /// Omit to leave unchanged. Send an empty string to clear it. Not accepted on feature flags. When setting it, structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." same as on create.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hypothesis: Option<String>,
+    /// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub related_resource: Option<ExperimentResourceReference>,
     /// Replace the targeting rules with this set. Omit to leave unchanged.
@@ -15,7 +16,7 @@ pub struct UpdateExperimentsRequest {
     /// Grow treatment allocation. Pass every existing treatment with an equal-or-higher weight; append new names to add arms. Weights never decrease and arms are never removed. Omit to leave unchanged.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub variants: Option<Vec<UpdateExperimentsRequestVariantsItem>>,
-    /// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    /// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
     #[serde(skip)]
     pub account_id: Option<String>,
 }

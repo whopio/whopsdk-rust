@@ -17,9 +17,6 @@ pub struct CreateAudiencesRequest {
     /// Lookalikes only. Number of lookalike audiences to create (1–6).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub count: Option<i64>,
-    /// Rules for membership based on social engagement. Requires a connected social account with advertising access.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub engagement: Option<CreateAudiencesRequestEngagement>,
     /// CSV audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub file_id: Option<String>,
@@ -32,10 +29,10 @@ pub struct CreateAudiencesRequest {
     /// Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`. For example, 3 audiences at 6% creates 0–2%, 2–4%, and 4–6% bands.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub percentage: Option<i64>,
-    /// Lookalikes only. The ready custom audience (`adaud_`) to build from; uploaded and People audiences need at least 100 matched people. Meta validates engagement audience eligibility when creating the lookalike.
+    /// Lookalikes only. The ready custom audience (`adaud_`) to build from; uploaded and People audiences need at least 100 matched people.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_audience_id: Option<String>,
-    /// Custom audience source. Inferred from `engagement`, then `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
+    /// Custom audience source. Inferred from `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_type: Option<CreateAudiencesRequestSourceType>,
 }
@@ -54,7 +51,6 @@ pub struct CreateAudiencesRequestBuilder {
     auto_refresh: Option<bool>,
     column_mapping: Option<CreateAudiencesRequestColumnMapping>,
     count: Option<i64>,
-    engagement: Option<CreateAudiencesRequestEngagement>,
     file_id: Option<String>,
     filters: Option<HashMap<String, serde_json::Value>>,
     name: Option<String>,
@@ -86,11 +82,6 @@ impl CreateAudiencesRequestBuilder {
 
     pub fn count(mut self, value: i64) -> Self {
         self.count = Some(value);
-        self
-    }
-
-    pub fn engagement(mut self, value: CreateAudiencesRequestEngagement) -> Self {
-        self.engagement = Some(value);
         self
     }
 
@@ -136,7 +127,6 @@ impl CreateAudiencesRequestBuilder {
             auto_refresh: self.auto_refresh,
             column_mapping: self.column_mapping,
             count: self.count,
-            engagement: self.engagement,
             file_id: self.file_id,
             filters: self.filters,
             name: self.name,

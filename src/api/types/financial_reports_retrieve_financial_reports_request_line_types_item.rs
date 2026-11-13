@@ -4,6 +4,7 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RetrieveFinancialReportsRequestLineTypesItem {
     AccountSettlement,
+    AdAffiliatePayoutReceived,
     AdBudgetRelease,
     AdCampaignBudget,
     AdPublisherPayout,
@@ -19,9 +20,10 @@ pub enum RetrieveFinancialReportsRequestLineTypesItem {
     ApplicationFeePayout,
     BalanceReservation,
     BalanceReservationReversal,
-    BankTransfer,
     BillingPercentageFee,
     BuyerFee,
+    CapitalWithholding,
+    CapitalWithholdingReversal,
     CardInterchange,
     CardLoadDeposit,
     CardLoadTransfer,
@@ -63,6 +65,7 @@ pub enum RetrieveFinancialReportsRequestLineTypesItem {
     LegacyCryptoPayment,
     LegacyPayment,
     LegacyPaymentRefund,
+    LevelsRebate,
     LicenseSale,
     LicenseSaleCommission,
     LicenseSaleRevenue,
@@ -72,6 +75,10 @@ pub enum RetrieveFinancialReportsRequestLineTypesItem {
     MiscReversal,
     OnboardingReward,
     OnchainDeposit,
+    OnchainInternalTransferIncoming,
+    OnchainInternalTransferOutgoing,
+    OnchainPlatformTransferIncoming,
+    OnchainPlatformTransferOutgoing,
     OnchainSwapSource,
     OnchainSwapTarget,
     OnchainWalletTransferIncoming,
@@ -93,6 +100,7 @@ pub enum RetrieveFinancialReportsRequestLineTypesItem {
     PaymentReferralReversal,
     PaymentRefund,
     PaymentRefundReversal,
+    PaymentReturnFee,
     PaymentRevshare,
     PaymentRevsharePayout,
     PaymentRevshareRefund,
@@ -106,6 +114,9 @@ pub enum RetrieveFinancialReportsRequestLineTypesItem {
     PlatformBalanceTransferIncoming,
     PlatformBalanceTransferOutgoing,
     PlatformCoveredDispute,
+    PlatformCreditsGranted,
+    PlatformCreditsPayment,
+    PlatformCreditsPaymentRefund,
     PlatformEarning,
     PlatformMarkupFee,
     PlatformMarkupFeePayout,
@@ -148,6 +159,9 @@ impl Serialize for RetrieveFinancialReportsRequestLineTypesItem {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::AccountSettlement => serializer.serialize_str("account_settlement"),
+            Self::AdAffiliatePayoutReceived => {
+                serializer.serialize_str("ad_affiliate_payout_received")
+            }
             Self::AdBudgetRelease => serializer.serialize_str("ad_budget_release"),
             Self::AdCampaignBudget => serializer.serialize_str("ad_campaign_budget"),
             Self::AdPublisherPayout => serializer.serialize_str("ad_publisher_payout"),
@@ -167,9 +181,12 @@ impl Serialize for RetrieveFinancialReportsRequestLineTypesItem {
             Self::BalanceReservationReversal => {
                 serializer.serialize_str("balance_reservation_reversal")
             }
-            Self::BankTransfer => serializer.serialize_str("bank_transfer"),
             Self::BillingPercentageFee => serializer.serialize_str("billing_percentage_fee"),
             Self::BuyerFee => serializer.serialize_str("buyer_fee"),
+            Self::CapitalWithholding => serializer.serialize_str("capital_withholding"),
+            Self::CapitalWithholdingReversal => {
+                serializer.serialize_str("capital_withholding_reversal")
+            }
             Self::CardInterchange => serializer.serialize_str("card_interchange"),
             Self::CardLoadDeposit => serializer.serialize_str("card_load_deposit"),
             Self::CardLoadTransfer => serializer.serialize_str("card_load_transfer"),
@@ -245,6 +262,7 @@ impl Serialize for RetrieveFinancialReportsRequestLineTypesItem {
             Self::LegacyCryptoPayment => serializer.serialize_str("legacy_crypto_payment"),
             Self::LegacyPayment => serializer.serialize_str("legacy_payment"),
             Self::LegacyPaymentRefund => serializer.serialize_str("legacy_payment_refund"),
+            Self::LevelsRebate => serializer.serialize_str("levels_rebate"),
             Self::LicenseSale => serializer.serialize_str("license_sale"),
             Self::LicenseSaleCommission => serializer.serialize_str("license_sale_commission"),
             Self::LicenseSaleRevenue => serializer.serialize_str("license_sale_revenue"),
@@ -254,6 +272,18 @@ impl Serialize for RetrieveFinancialReportsRequestLineTypesItem {
             Self::MiscReversal => serializer.serialize_str("misc_reversal"),
             Self::OnboardingReward => serializer.serialize_str("onboarding_reward"),
             Self::OnchainDeposit => serializer.serialize_str("onchain_deposit"),
+            Self::OnchainInternalTransferIncoming => {
+                serializer.serialize_str("onchain_internal_transfer_incoming")
+            }
+            Self::OnchainInternalTransferOutgoing => {
+                serializer.serialize_str("onchain_internal_transfer_outgoing")
+            }
+            Self::OnchainPlatformTransferIncoming => {
+                serializer.serialize_str("onchain_platform_transfer_incoming")
+            }
+            Self::OnchainPlatformTransferOutgoing => {
+                serializer.serialize_str("onchain_platform_transfer_outgoing")
+            }
             Self::OnchainSwapSource => serializer.serialize_str("onchain_swap_source"),
             Self::OnchainSwapTarget => serializer.serialize_str("onchain_swap_target"),
             Self::OnchainWalletTransferIncoming => {
@@ -287,6 +317,7 @@ impl Serialize for RetrieveFinancialReportsRequestLineTypesItem {
             Self::PaymentReferralReversal => serializer.serialize_str("payment_referral_reversal"),
             Self::PaymentRefund => serializer.serialize_str("payment_refund"),
             Self::PaymentRefundReversal => serializer.serialize_str("payment_refund_reversal"),
+            Self::PaymentReturnFee => serializer.serialize_str("payment_return_fee"),
             Self::PaymentRevshare => serializer.serialize_str("payment_revshare"),
             Self::PaymentRevsharePayout => serializer.serialize_str("payment_revshare_payout"),
             Self::PaymentRevshareRefund => serializer.serialize_str("payment_revshare_refund"),
@@ -312,6 +343,11 @@ impl Serialize for RetrieveFinancialReportsRequestLineTypesItem {
                 serializer.serialize_str("platform_balance_transfer_outgoing")
             }
             Self::PlatformCoveredDispute => serializer.serialize_str("platform_covered_dispute"),
+            Self::PlatformCreditsGranted => serializer.serialize_str("platform_credits_granted"),
+            Self::PlatformCreditsPayment => serializer.serialize_str("platform_credits_payment"),
+            Self::PlatformCreditsPaymentRefund => {
+                serializer.serialize_str("platform_credits_payment_refund")
+            }
             Self::PlatformEarning => serializer.serialize_str("platform_earning"),
             Self::PlatformMarkupFee => serializer.serialize_str("platform_markup_fee"),
             Self::PlatformMarkupFeePayout => serializer.serialize_str("platform_markup_fee_payout"),
@@ -375,6 +411,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestLineTypesItem {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
             "account_settlement" => Ok(Self::AccountSettlement),
+            "ad_affiliate_payout_received" => Ok(Self::AdAffiliatePayoutReceived),
             "ad_budget_release" => Ok(Self::AdBudgetRelease),
             "ad_campaign_budget" => Ok(Self::AdCampaignBudget),
             "ad_publisher_payout" => Ok(Self::AdPublisherPayout),
@@ -390,9 +427,10 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestLineTypesItem {
             "application_fee_payout" => Ok(Self::ApplicationFeePayout),
             "balance_reservation" => Ok(Self::BalanceReservation),
             "balance_reservation_reversal" => Ok(Self::BalanceReservationReversal),
-            "bank_transfer" => Ok(Self::BankTransfer),
             "billing_percentage_fee" => Ok(Self::BillingPercentageFee),
             "buyer_fee" => Ok(Self::BuyerFee),
+            "capital_withholding" => Ok(Self::CapitalWithholding),
+            "capital_withholding_reversal" => Ok(Self::CapitalWithholdingReversal),
             "card_interchange" => Ok(Self::CardInterchange),
             "card_load_deposit" => Ok(Self::CardLoadDeposit),
             "card_load_transfer" => Ok(Self::CardLoadTransfer),
@@ -440,6 +478,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestLineTypesItem {
             "legacy_crypto_payment" => Ok(Self::LegacyCryptoPayment),
             "legacy_payment" => Ok(Self::LegacyPayment),
             "legacy_payment_refund" => Ok(Self::LegacyPaymentRefund),
+            "levels_rebate" => Ok(Self::LevelsRebate),
             "license_sale" => Ok(Self::LicenseSale),
             "license_sale_commission" => Ok(Self::LicenseSaleCommission),
             "license_sale_revenue" => Ok(Self::LicenseSaleRevenue),
@@ -449,6 +488,10 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestLineTypesItem {
             "misc_reversal" => Ok(Self::MiscReversal),
             "onboarding_reward" => Ok(Self::OnboardingReward),
             "onchain_deposit" => Ok(Self::OnchainDeposit),
+            "onchain_internal_transfer_incoming" => Ok(Self::OnchainInternalTransferIncoming),
+            "onchain_internal_transfer_outgoing" => Ok(Self::OnchainInternalTransferOutgoing),
+            "onchain_platform_transfer_incoming" => Ok(Self::OnchainPlatformTransferIncoming),
+            "onchain_platform_transfer_outgoing" => Ok(Self::OnchainPlatformTransferOutgoing),
             "onchain_swap_source" => Ok(Self::OnchainSwapSource),
             "onchain_swap_target" => Ok(Self::OnchainSwapTarget),
             "onchain_wallet_transfer_incoming" => Ok(Self::OnchainWalletTransferIncoming),
@@ -470,6 +513,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestLineTypesItem {
             "payment_referral_reversal" => Ok(Self::PaymentReferralReversal),
             "payment_refund" => Ok(Self::PaymentRefund),
             "payment_refund_reversal" => Ok(Self::PaymentRefundReversal),
+            "payment_return_fee" => Ok(Self::PaymentReturnFee),
             "payment_revshare" => Ok(Self::PaymentRevshare),
             "payment_revshare_payout" => Ok(Self::PaymentRevsharePayout),
             "payment_revshare_refund" => Ok(Self::PaymentRevshareRefund),
@@ -483,6 +527,9 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsRequestLineTypesItem {
             "platform_balance_transfer_incoming" => Ok(Self::PlatformBalanceTransferIncoming),
             "platform_balance_transfer_outgoing" => Ok(Self::PlatformBalanceTransferOutgoing),
             "platform_covered_dispute" => Ok(Self::PlatformCoveredDispute),
+            "platform_credits_granted" => Ok(Self::PlatformCreditsGranted),
+            "platform_credits_payment" => Ok(Self::PlatformCreditsPayment),
+            "platform_credits_payment_refund" => Ok(Self::PlatformCreditsPaymentRefund),
             "platform_earning" => Ok(Self::PlatformEarning),
             "platform_markup_fee" => Ok(Self::PlatformMarkupFee),
             "platform_markup_fee_payout" => Ok(Self::PlatformMarkupFeePayout),
@@ -525,6 +572,7 @@ impl fmt::Display for RetrieveFinancialReportsRequestLineTypesItem {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::AccountSettlement => write!(f, "account_settlement"),
+            Self::AdAffiliatePayoutReceived => write!(f, "ad_affiliate_payout_received"),
             Self::AdBudgetRelease => write!(f, "ad_budget_release"),
             Self::AdCampaignBudget => write!(f, "ad_campaign_budget"),
             Self::AdPublisherPayout => write!(f, "ad_publisher_payout"),
@@ -540,9 +588,10 @@ impl fmt::Display for RetrieveFinancialReportsRequestLineTypesItem {
             Self::ApplicationFeePayout => write!(f, "application_fee_payout"),
             Self::BalanceReservation => write!(f, "balance_reservation"),
             Self::BalanceReservationReversal => write!(f, "balance_reservation_reversal"),
-            Self::BankTransfer => write!(f, "bank_transfer"),
             Self::BillingPercentageFee => write!(f, "billing_percentage_fee"),
             Self::BuyerFee => write!(f, "buyer_fee"),
+            Self::CapitalWithholding => write!(f, "capital_withholding"),
+            Self::CapitalWithholdingReversal => write!(f, "capital_withholding_reversal"),
             Self::CardInterchange => write!(f, "card_interchange"),
             Self::CardLoadDeposit => write!(f, "card_load_deposit"),
             Self::CardLoadTransfer => write!(f, "card_load_transfer"),
@@ -600,6 +649,7 @@ impl fmt::Display for RetrieveFinancialReportsRequestLineTypesItem {
             Self::LegacyCryptoPayment => write!(f, "legacy_crypto_payment"),
             Self::LegacyPayment => write!(f, "legacy_payment"),
             Self::LegacyPaymentRefund => write!(f, "legacy_payment_refund"),
+            Self::LevelsRebate => write!(f, "levels_rebate"),
             Self::LicenseSale => write!(f, "license_sale"),
             Self::LicenseSaleCommission => write!(f, "license_sale_commission"),
             Self::LicenseSaleRevenue => write!(f, "license_sale_revenue"),
@@ -609,6 +659,18 @@ impl fmt::Display for RetrieveFinancialReportsRequestLineTypesItem {
             Self::MiscReversal => write!(f, "misc_reversal"),
             Self::OnboardingReward => write!(f, "onboarding_reward"),
             Self::OnchainDeposit => write!(f, "onchain_deposit"),
+            Self::OnchainInternalTransferIncoming => {
+                write!(f, "onchain_internal_transfer_incoming")
+            }
+            Self::OnchainInternalTransferOutgoing => {
+                write!(f, "onchain_internal_transfer_outgoing")
+            }
+            Self::OnchainPlatformTransferIncoming => {
+                write!(f, "onchain_platform_transfer_incoming")
+            }
+            Self::OnchainPlatformTransferOutgoing => {
+                write!(f, "onchain_platform_transfer_outgoing")
+            }
             Self::OnchainSwapSource => write!(f, "onchain_swap_source"),
             Self::OnchainSwapTarget => write!(f, "onchain_swap_target"),
             Self::OnchainWalletTransferIncoming => write!(f, "onchain_wallet_transfer_incoming"),
@@ -630,6 +692,7 @@ impl fmt::Display for RetrieveFinancialReportsRequestLineTypesItem {
             Self::PaymentReferralReversal => write!(f, "payment_referral_reversal"),
             Self::PaymentRefund => write!(f, "payment_refund"),
             Self::PaymentRefundReversal => write!(f, "payment_refund_reversal"),
+            Self::PaymentReturnFee => write!(f, "payment_return_fee"),
             Self::PaymentRevshare => write!(f, "payment_revshare"),
             Self::PaymentRevsharePayout => write!(f, "payment_revshare_payout"),
             Self::PaymentRevshareRefund => write!(f, "payment_revshare_refund"),
@@ -649,6 +712,9 @@ impl fmt::Display for RetrieveFinancialReportsRequestLineTypesItem {
                 write!(f, "platform_balance_transfer_outgoing")
             }
             Self::PlatformCoveredDispute => write!(f, "platform_covered_dispute"),
+            Self::PlatformCreditsGranted => write!(f, "platform_credits_granted"),
+            Self::PlatformCreditsPayment => write!(f, "platform_credits_payment"),
+            Self::PlatformCreditsPaymentRefund => write!(f, "platform_credits_payment_refund"),
             Self::PlatformEarning => write!(f, "platform_earning"),
             Self::PlatformMarkupFee => write!(f, "platform_markup_fee"),
             Self::PlatformMarkupFeePayout => write!(f, "platform_markup_fee_payout"),

@@ -4,7 +4,6 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CreateAdCampaignsRequestObjective {
-    Awareness,
     Traffic,
     Engagement,
     Leads,
@@ -17,7 +16,6 @@ pub enum CreateAdCampaignsRequestObjective {
 impl Serialize for CreateAdCampaignsRequestObjective {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
-            Self::Awareness => serializer.serialize_str("awareness"),
             Self::Traffic => serializer.serialize_str("traffic"),
             Self::Engagement => serializer.serialize_str("engagement"),
             Self::Leads => serializer.serialize_str("leads"),
@@ -31,7 +29,6 @@ impl<'de> Deserialize<'de> for CreateAdCampaignsRequestObjective {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
-            "awareness" => Ok(Self::Awareness),
             "traffic" => Ok(Self::Traffic),
             "engagement" => Ok(Self::Engagement),
             "leads" => Ok(Self::Leads),
@@ -44,7 +41,6 @@ impl<'de> Deserialize<'de> for CreateAdCampaignsRequestObjective {
 impl fmt::Display for CreateAdCampaignsRequestObjective {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Awareness => write!(f, "awareness"),
             Self::Traffic => write!(f, "traffic"),
             Self::Engagement => write!(f, "engagement"),
             Self::Leads => write!(f, "leads"),

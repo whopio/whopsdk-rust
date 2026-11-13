@@ -14,9 +14,12 @@ pub struct SocialAccount {
     /// The display name of the social account on the platform.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    /// The social account this one belongs to on the platform, such as the Facebook page that owns an Instagram account. Null when the social account stands on its own.
+    /// The social account this one belongs to on the platform, such as the Facebook page that owns an Instagram account. Null when the social account stands on its own, or when it is a partner.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent_social_account: Option<SocialAccountParent>,
+    /// Always `null`. Partnership ads are no longer available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub partnership_status: Option<String>,
     /// The platform the social account exists on.
     pub platform: SocialAccountPlatform,
     /// The URL where the profile picture of the social account can be accessed.
@@ -27,7 +30,7 @@ pub struct SocialAccount {
     /// The URL where the social account can be accessed on the platform. Null while a Whop-owned account is still being provisioned.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// The username of the social account on the platform. Null while a Whop-owned account is still being provisioned.
+    /// The username of the social account on the platform. Null while a Whop-owned account is still being provisioned, and on platforms without usernames, such as Klaviyo.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub username: Option<String>,
     /// Whether the social account is verified on the platform.
@@ -49,6 +52,7 @@ pub struct SocialAccountBuilder {
     id: Option<String>,
     name: Option<String>,
     parent_social_account: Option<SocialAccountParent>,
+    partnership_status: Option<String>,
     platform: Option<SocialAccountPlatform>,
     profile_picture_url: Option<String>,
     scopes: Option<Vec<String>>,
@@ -80,6 +84,11 @@ impl SocialAccountBuilder {
 
     pub fn parent_social_account(mut self, value: SocialAccountParent) -> Self {
         self.parent_social_account = Some(value);
+        self
+    }
+
+    pub fn partnership_status(mut self, value: impl Into<String>) -> Self {
+        self.partnership_status = Some(value.into());
         self
     }
 
@@ -126,6 +135,7 @@ impl SocialAccountBuilder {
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             name: self.name,
             parent_social_account: self.parent_social_account,
+            partnership_status: self.partnership_status,
             platform: self
                 .platform
                 .ok_or_else(|| BuildError::missing_field("platform"))?,

@@ -11,6 +11,10 @@ pub enum ListMembershipsRequestStatus {
     Expired,
     Canceling,
     Paused,
+    Expiring,
+    OneTime,
+    Unclaimed,
+    Banned,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -27,6 +31,10 @@ impl Serialize for ListMembershipsRequestStatus {
             Self::Expired => serializer.serialize_str("expired"),
             Self::Canceling => serializer.serialize_str("canceling"),
             Self::Paused => serializer.serialize_str("paused"),
+            Self::Expiring => serializer.serialize_str("expiring"),
+            Self::OneTime => serializer.serialize_str("one_time"),
+            Self::Unclaimed => serializer.serialize_str("unclaimed"),
+            Self::Banned => serializer.serialize_str("banned"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -44,6 +52,10 @@ impl<'de> Deserialize<'de> for ListMembershipsRequestStatus {
             "expired" => Ok(Self::Expired),
             "canceling" => Ok(Self::Canceling),
             "paused" => Ok(Self::Paused),
+            "expiring" => Ok(Self::Expiring),
+            "one_time" => Ok(Self::OneTime),
+            "unclaimed" => Ok(Self::Unclaimed),
+            "banned" => Ok(Self::Banned),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -60,6 +72,10 @@ impl fmt::Display for ListMembershipsRequestStatus {
             Self::Expired => write!(f, "expired"),
             Self::Canceling => write!(f, "canceling"),
             Self::Paused => write!(f, "paused"),
+            Self::Expiring => write!(f, "expiring"),
+            Self::OneTime => write!(f, "one_time"),
+            Self::Unclaimed => write!(f, "unclaimed"),
+            Self::Banned => write!(f, "banned"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

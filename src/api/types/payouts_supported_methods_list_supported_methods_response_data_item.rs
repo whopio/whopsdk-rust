@@ -4,6 +4,9 @@ pub use crate::prelude::*;
 pub struct ListSupportedMethodsResponseDataItem {
     /// How funds are delivered, for example `bank_deposit`.
     pub delivery_type: ListSupportedMethodsResponseDataItemDeliveryType,
+    /// Fee terms for payouts to this method: a percentage of the payout amount plus a fixed fee. The quotes carry the exact fee for a specific amount.
+    #[serde(default)]
+    pub fee_structure: ListSupportedMethodsResponseDataItemFeeStructure,
     /// Supported payout method icon URL.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub icon_url: Option<String>,
@@ -14,6 +17,9 @@ pub struct ListSupportedMethodsResponseDataItem {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     pub object: ListSupportedMethodsResponseDataItemObject,
+    /// The ID of the supported payout method that lists this one, such as the bank deposit method that lists a named bank. Show this method as a choice inside that method, not as a separate method. Null for every other method.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_id: Option<String>,
     /// Fee and delivery estimates for the requested amount, one per destination currency. Null unless an amount was provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quotes: Option<Vec<ListSupportedMethodsResponseDataItemQuotesItem>>,
@@ -22,6 +28,9 @@ pub struct ListSupportedMethodsResponseDataItem {
     pub required_fields: Option<Vec<ListSupportedMethodsResponseDataItemRequiredFieldsItem>>,
     #[serde(default)]
     pub supports_instant_delivery: bool,
+    /// Whether the payer can add this method by logging in to PayPal through `POST /payouts/paypal_link_sessions`, which confirms the PayPal account is verified and owned by the payee. True only for the PayPal method, and only once PayPal login is enabled for the account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub supports_paypal_login: Option<bool>,
     #[serde(default)]
     pub supports_standard_delivery: bool,
 }
@@ -36,13 +45,16 @@ impl ListSupportedMethodsResponseDataItem {
 #[non_exhaustive]
 pub struct ListSupportedMethodsResponseDataItemBuilder {
     delivery_type: Option<ListSupportedMethodsResponseDataItemDeliveryType>,
+    fee_structure: Option<ListSupportedMethodsResponseDataItemFeeStructure>,
     icon_url: Option<String>,
     id: Option<String>,
     name: Option<String>,
     object: Option<ListSupportedMethodsResponseDataItemObject>,
+    parent_id: Option<String>,
     quotes: Option<Vec<ListSupportedMethodsResponseDataItemQuotesItem>>,
     required_fields: Option<Vec<ListSupportedMethodsResponseDataItemRequiredFieldsItem>>,
     supports_instant_delivery: Option<bool>,
+    supports_paypal_login: Option<bool>,
     supports_standard_delivery: Option<bool>,
 }
 
@@ -52,6 +64,14 @@ impl ListSupportedMethodsResponseDataItemBuilder {
         value: ListSupportedMethodsResponseDataItemDeliveryType,
     ) -> Self {
         self.delivery_type = Some(value);
+        self
+    }
+
+    pub fn fee_structure(
+        mut self,
+        value: ListSupportedMethodsResponseDataItemFeeStructure,
+    ) -> Self {
+        self.fee_structure = Some(value);
         self
     }
 
@@ -75,6 +95,11 @@ impl ListSupportedMethodsResponseDataItemBuilder {
         self
     }
 
+    pub fn parent_id(mut self, value: impl Into<String>) -> Self {
+        self.parent_id = Some(value.into());
+        self
+    }
+
     pub fn quotes(mut self, value: Vec<ListSupportedMethodsResponseDataItemQuotesItem>) -> Self {
         self.quotes = Some(value);
         self
@@ -93,6 +118,11 @@ impl ListSupportedMethodsResponseDataItemBuilder {
         self
     }
 
+    pub fn supports_paypal_login(mut self, value: bool) -> Self {
+        self.supports_paypal_login = Some(value);
+        self
+    }
+
     pub fn supports_standard_delivery(mut self, value: bool) -> Self {
         self.supports_standard_delivery = Some(value);
         self
@@ -101,6 +131,7 @@ impl ListSupportedMethodsResponseDataItemBuilder {
     /// Consumes the builder and constructs a [`ListSupportedMethodsResponseDataItem`].
     /// This method will fail if any of the following fields are not set:
     /// - [`delivery_type`](ListSupportedMethodsResponseDataItemBuilder::delivery_type)
+    /// - [`fee_structure`](ListSupportedMethodsResponseDataItemBuilder::fee_structure)
     /// - [`id`](ListSupportedMethodsResponseDataItemBuilder::id)
     /// - [`object`](ListSupportedMethodsResponseDataItemBuilder::object)
     /// - [`supports_instant_delivery`](ListSupportedMethodsResponseDataItemBuilder::supports_instant_delivery)
@@ -110,17 +141,22 @@ impl ListSupportedMethodsResponseDataItemBuilder {
             delivery_type: self
                 .delivery_type
                 .ok_or_else(|| BuildError::missing_field("delivery_type"))?,
+            fee_structure: self
+                .fee_structure
+                .ok_or_else(|| BuildError::missing_field("fee_structure"))?,
             icon_url: self.icon_url,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             name: self.name,
             object: self
                 .object
                 .ok_or_else(|| BuildError::missing_field("object"))?,
+            parent_id: self.parent_id,
             quotes: self.quotes,
             required_fields: self.required_fields,
             supports_instant_delivery: self
                 .supports_instant_delivery
                 .ok_or_else(|| BuildError::missing_field("supports_instant_delivery"))?,
+            supports_paypal_login: self.supports_paypal_login,
             supports_standard_delivery: self
                 .supports_standard_delivery
                 .ok_or_else(|| BuildError::missing_field("supports_standard_delivery"))?,

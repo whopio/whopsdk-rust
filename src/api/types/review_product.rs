@@ -1,6 +1,5 @@
 pub use crate::prelude::*;
 
-/// The product that this review was written for.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ReviewProduct {
     /// The unique identifier for the product.

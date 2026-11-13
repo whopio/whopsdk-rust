@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// How `code_challenge` was derived. Only `S256` is accepted.
+/// How `code_challenge` was derived. Only `S256` is accepted. Required with `code_challenge`.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum CreateOauthGrantsRequestCodeChallengeMethod {
     S256,

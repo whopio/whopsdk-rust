@@ -21,6 +21,12 @@ pub struct DisputesSummaryQueryRequest {
     /// Only disputes opened after this ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_after: Option<String>,
+    /// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub query: Option<String>,
+    /// Also cover the account's subaccounts. Requires `account_id`, and is a 400 without it. Without `query`, covers the disputes of the account and every subaccount, in any order. The listing is cut off after 10 seconds; add a `query` to narrow it. With `query`, matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Subaccounts' disputes are returned only for subaccounts you can read disputes on.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_subaccounts: Option<bool>,
 }
 
 impl DisputesSummaryQueryRequest {
@@ -38,6 +44,8 @@ pub struct DisputesSummaryQueryRequestBuilder {
     currency: Option<String>,
     created_before: Option<String>,
     created_after: Option<String>,
+    query: Option<String>,
+    include_subaccounts: Option<bool>,
 }
 
 impl DisputesSummaryQueryRequestBuilder {
@@ -71,6 +79,16 @@ impl DisputesSummaryQueryRequestBuilder {
         self
     }
 
+    pub fn query(mut self, value: impl Into<String>) -> Self {
+        self.query = Some(value.into());
+        self
+    }
+
+    pub fn include_subaccounts(mut self, value: bool) -> Self {
+        self.include_subaccounts = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`DisputesSummaryQueryRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`groups`](DisputesSummaryQueryRequestBuilder::groups)
@@ -87,6 +105,8 @@ impl DisputesSummaryQueryRequestBuilder {
             currency: self.currency,
             created_before: self.created_before,
             created_after: self.created_after,
+            query: self.query,
+            include_subaccounts: self.include_subaccounts,
         })
     }
 }

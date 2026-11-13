@@ -18,16 +18,28 @@ pub struct SupportChannel {
     /// The unique identifier for the entity
     #[serde(default)]
     pub id: String,
+    /// The most recent message in this channel. Null if no messages have been sent, or when listing support channels without `include_last_message`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_message: Option<SupportChannelLastMessage>,
     /// The timestamp when the most recent message was sent in this channel. Null if no messages have been sent.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub last_message_at: Option<DateTime<FixedOffset>>,
+    /// Whether the customer sent the latest message and the linked support ticket is unresolved. Null if not a support chat.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub needs_reply: Option<bool>,
+    /// Whether the authenticated user has joined this channel as a participant. Null when the caller is not a user, or when listing support channels without `include_participated`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub participated: Option<bool>,
     /// The timestamp when the linked support ticket was marked as resolved. Null if unresolved or not a support chat.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub resolved_at: Option<DateTime<FixedOffset>>,
+    /// Whether this channel has a message from someone else that the authenticated user has not viewed yet. Null when the caller is not a user, or when listing support channels without `include_last_message`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unread: Option<bool>,
 }
 
 impl SupportChannel {
@@ -44,8 +56,12 @@ pub struct SupportChannelBuilder {
     custom_name: Option<String>,
     customer_user: Option<SupportChannelCustomerUser>,
     id: Option<String>,
+    last_message: Option<SupportChannelLastMessage>,
     last_message_at: Option<DateTime<FixedOffset>>,
+    needs_reply: Option<bool>,
+    participated: Option<bool>,
     resolved_at: Option<DateTime<FixedOffset>>,
+    unread: Option<bool>,
 }
 
 impl SupportChannelBuilder {
@@ -74,13 +90,33 @@ impl SupportChannelBuilder {
         self
     }
 
+    pub fn last_message(mut self, value: SupportChannelLastMessage) -> Self {
+        self.last_message = Some(value);
+        self
+    }
+
     pub fn last_message_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.last_message_at = Some(value);
         self
     }
 
+    pub fn needs_reply(mut self, value: bool) -> Self {
+        self.needs_reply = Some(value);
+        self
+    }
+
+    pub fn participated(mut self, value: bool) -> Self {
+        self.participated = Some(value);
+        self
+    }
+
     pub fn resolved_at(mut self, value: DateTime<FixedOffset>) -> Self {
         self.resolved_at = Some(value);
+        self
+    }
+
+    pub fn unread(mut self, value: bool) -> Self {
+        self.unread = Some(value);
         self
     }
 
@@ -94,8 +130,12 @@ impl SupportChannelBuilder {
             custom_name: self.custom_name,
             customer_user: self.customer_user,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            last_message: self.last_message,
             last_message_at: self.last_message_at,
+            needs_reply: self.needs_reply,
+            participated: self.participated,
             resolved_at: self.resolved_at,
+            unread: self.unread,
         })
     }
 }

@@ -1,15 +1,19 @@
 pub use crate::prelude::*;
 
-/// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+/// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AdCampaignDeliveryStatus {
     PaymentFailed,
+    WaitingForEin,
+    InAppeal,
     AllAdsRejected,
     Draft,
     NoAdGroups,
     NoAds,
     Paused,
+    InReview,
+    Learning,
     Processing,
     Issues,
     Scheduled,
@@ -25,11 +29,15 @@ impl Serialize for AdCampaignDeliveryStatus {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::PaymentFailed => serializer.serialize_str("payment_failed"),
+            Self::WaitingForEin => serializer.serialize_str("waiting_for_ein"),
+            Self::InAppeal => serializer.serialize_str("in_appeal"),
             Self::AllAdsRejected => serializer.serialize_str("all_ads_rejected"),
             Self::Draft => serializer.serialize_str("draft"),
             Self::NoAdGroups => serializer.serialize_str("no_ad_groups"),
             Self::NoAds => serializer.serialize_str("no_ads"),
             Self::Paused => serializer.serialize_str("paused"),
+            Self::InReview => serializer.serialize_str("in_review"),
+            Self::Learning => serializer.serialize_str("learning"),
             Self::Processing => serializer.serialize_str("processing"),
             Self::Issues => serializer.serialize_str("issues"),
             Self::Scheduled => serializer.serialize_str("scheduled"),
@@ -46,11 +54,15 @@ impl<'de> Deserialize<'de> for AdCampaignDeliveryStatus {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
             "payment_failed" => Ok(Self::PaymentFailed),
+            "waiting_for_ein" => Ok(Self::WaitingForEin),
+            "in_appeal" => Ok(Self::InAppeal),
             "all_ads_rejected" => Ok(Self::AllAdsRejected),
             "draft" => Ok(Self::Draft),
             "no_ad_groups" => Ok(Self::NoAdGroups),
             "no_ads" => Ok(Self::NoAds),
             "paused" => Ok(Self::Paused),
+            "in_review" => Ok(Self::InReview),
+            "learning" => Ok(Self::Learning),
             "processing" => Ok(Self::Processing),
             "issues" => Ok(Self::Issues),
             "scheduled" => Ok(Self::Scheduled),
@@ -66,11 +78,15 @@ impl fmt::Display for AdCampaignDeliveryStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::PaymentFailed => write!(f, "payment_failed"),
+            Self::WaitingForEin => write!(f, "waiting_for_ein"),
+            Self::InAppeal => write!(f, "in_appeal"),
             Self::AllAdsRejected => write!(f, "all_ads_rejected"),
             Self::Draft => write!(f, "draft"),
             Self::NoAdGroups => write!(f, "no_ad_groups"),
             Self::NoAds => write!(f, "no_ads"),
             Self::Paused => write!(f, "paused"),
+            Self::InReview => write!(f, "in_review"),
+            Self::Learning => write!(f, "learning"),
             Self::Processing => write!(f, "processing"),
             Self::Issues => write!(f, "issues"),
             Self::Scheduled => write!(f, "scheduled"),

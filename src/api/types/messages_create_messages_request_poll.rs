@@ -1,9 +1,7 @@
 pub use crate::prelude::*;
 
-/// A poll to attach to this message, allowing recipients to vote on options.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateMessagesRequestPoll {
-    /// The options for the poll. Must have sequential IDs starting from 1
     #[serde(default)]
     pub options: Vec<CreateMessagesRequestPollOptionsItem>,
 }

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Sales method for this plan.
+/// Sales method for this variant.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PlanReleaseMethod {

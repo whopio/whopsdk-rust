@@ -2,10 +2,8 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CalculateTaxPlansRequestTaxIdsItem {
-    /// Tax ID type, such as `eu_vat` for an EU VAT number.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub r#type: Option<CalculateTaxPlansRequestTaxIdsItemType>,
-    /// Tax ID value, for example `DE123456789`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
 }

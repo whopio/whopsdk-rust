@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+/// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateCheckoutConfigurationsResponsePaymentMethodConfiguration {
     /// Payment methods explicitly disabled for checkout.

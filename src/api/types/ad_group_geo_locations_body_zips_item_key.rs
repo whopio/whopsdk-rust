@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 #[serde(transparent)]
 pub struct AdGroupGeoLocationsBodyZipsItemKey {
-    /// The ad platform's key for the ZIP or postal code.
+    /// The ZIP or postal code's key, as `COUNTRY:CODE`.
     pub key: String,
 }
 

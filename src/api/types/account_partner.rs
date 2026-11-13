@@ -11,12 +11,18 @@ pub struct AccountPartner {
     /// Display name.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    /// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+    /// Avatar wrapper. Its `url` is always present, and is a generated placeholder when the user set no picture.
     #[serde(default)]
     pub profile_picture: UserProfilePicture,
+    /// Business the partner referred this account on behalf of, when the referral belongs to their team. `null` for a personal referral.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referring_account: Option<AccountSummary>,
     /// Public username.
     #[serde(default)]
     pub username: String,
+    /// When the user became a verified Whop Partner, as an ISO 8601 timestamp. Null if not verified.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub whop_partner_verified_at: Option<String>,
 }
 
 impl AccountPartner {
@@ -32,7 +38,9 @@ pub struct AccountPartnerBuilder {
     id: Option<String>,
     name: Option<String>,
     profile_picture: Option<UserProfilePicture>,
+    referring_account: Option<AccountSummary>,
     username: Option<String>,
+    whop_partner_verified_at: Option<String>,
 }
 
 impl AccountPartnerBuilder {
@@ -56,8 +64,18 @@ impl AccountPartnerBuilder {
         self
     }
 
+    pub fn referring_account(mut self, value: AccountSummary) -> Self {
+        self.referring_account = Some(value);
+        self
+    }
+
     pub fn username(mut self, value: impl Into<String>) -> Self {
         self.username = Some(value.into());
+        self
+    }
+
+    pub fn whop_partner_verified_at(mut self, value: impl Into<String>) -> Self {
+        self.whop_partner_verified_at = Some(value.into());
         self
     }
 
@@ -74,9 +92,11 @@ impl AccountPartnerBuilder {
             profile_picture: self
                 .profile_picture
                 .ok_or_else(|| BuildError::missing_field("profile_picture"))?,
+            referring_account: self.referring_account,
             username: self
                 .username
                 .ok_or_else(|| BuildError::missing_field("username"))?,
+            whop_partner_verified_at: self.whop_partner_verified_at,
         })
     }
 }

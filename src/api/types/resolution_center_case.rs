@@ -37,9 +37,6 @@ pub struct ResolutionCenterCase {
     /// The payment the case was opened against.
     #[serde(default)]
     pub payment: ResolutionPayment,
-    /// The plan the payment was made on, prefixed `plan_`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan_id: Option<String>,
     /// The product the payment was for, prefixed `prod_`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
@@ -56,6 +53,9 @@ pub struct ResolutionCenterCase {
     /// When the case was last changed, as an ISO 8601 timestamp.
     #[serde(default)]
     pub updated_at: String,
+    /// The variant the payment was made on, prefixed `plan_`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant_id: Option<String>,
 }
 
 impl ResolutionCenterCase {
@@ -79,13 +79,13 @@ pub struct ResolutionCenterCaseBuilder {
     line_items: Option<Vec<ReceiptLineItem>>,
     outcome: Option<ResolutionCenterCaseOutcome>,
     payment: Option<ResolutionPayment>,
-    plan_id: Option<String>,
     product_id: Option<String>,
     reason: Option<ResolutionCenterCaseReason>,
     refund: Option<ResolutionCenterCaseRefund>,
     response_due_at: Option<String>,
     status: Option<ResolutionCenterCaseStatus>,
     updated_at: Option<String>,
+    variant_id: Option<String>,
 }
 
 impl ResolutionCenterCaseBuilder {
@@ -152,11 +152,6 @@ impl ResolutionCenterCaseBuilder {
         self
     }
 
-    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
-        self.plan_id = Some(value.into());
-        self
-    }
-
     pub fn product_id(mut self, value: impl Into<String>) -> Self {
         self.product_id = Some(value.into());
         self
@@ -184,6 +179,11 @@ impl ResolutionCenterCaseBuilder {
 
     pub fn updated_at(mut self, value: impl Into<String>) -> Self {
         self.updated_at = Some(value.into());
+        self
+    }
+
+    pub fn variant_id(mut self, value: impl Into<String>) -> Self {
+        self.variant_id = Some(value.into());
         self
     }
 
@@ -231,7 +231,6 @@ impl ResolutionCenterCaseBuilder {
             payment: self
                 .payment
                 .ok_or_else(|| BuildError::missing_field("payment"))?,
-            plan_id: self.plan_id,
             product_id: self.product_id,
             reason: self
                 .reason
@@ -244,6 +243,7 @@ impl ResolutionCenterCaseBuilder {
             updated_at: self
                 .updated_at
                 .ok_or_else(|| BuildError::missing_field("updated_at"))?,
+            variant_id: self.variant_id,
         })
     }
 }

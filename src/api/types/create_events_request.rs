@@ -31,15 +31,12 @@ pub struct CreateEventsRequest {
     pub event_id: Option<String>,
     /// The type of event.
     ///
-    /// Use a standard event (lead, submit_application, contact, complete_registration, schedule, view_content, add_to_cart) or pass your own name directly for a custom event.
+    /// Use a standard event (lead, submit_application, contact, complete_registration, schedule, view_content, add_to_cart, initiate_checkout) or pass your own name directly for a custom event.
     #[serde(default)]
     pub event_name: String,
     /// When the event occurred. Defaults to now.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub event_time: Option<DateTime<FixedOffset>>,
-    /// The plan associated with the event.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan_id: Option<String>,
     /// The product associated with the event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
@@ -64,6 +61,9 @@ pub struct CreateEventsRequest {
     /// Monetary value associated with the event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<f64>,
+    /// The variant associated with the event.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant_id: Option<String>,
 }
 
 impl CreateEventsRequest {
@@ -86,7 +86,6 @@ pub struct CreateEventsRequestBuilder {
     event_id: Option<String>,
     event_name: Option<String>,
     event_time: Option<DateTime<FixedOffset>>,
-    plan_id: Option<String>,
     product_id: Option<String>,
     referrer_url: Option<String>,
     resumed: Option<bool>,
@@ -95,6 +94,7 @@ pub struct CreateEventsRequestBuilder {
     url: Option<String>,
     user: Option<CreateEventsRequestUser>,
     value: Option<f64>,
+    variant_id: Option<String>,
 }
 
 impl CreateEventsRequestBuilder {
@@ -153,11 +153,6 @@ impl CreateEventsRequestBuilder {
         self
     }
 
-    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
-        self.plan_id = Some(value.into());
-        self
-    }
-
     pub fn product_id(mut self, value: impl Into<String>) -> Self {
         self.product_id = Some(value.into());
         self
@@ -198,6 +193,11 @@ impl CreateEventsRequestBuilder {
         self
     }
 
+    pub fn variant_id(mut self, value: impl Into<String>) -> Self {
+        self.variant_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreateEventsRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](CreateEventsRequestBuilder::account_id)
@@ -219,7 +219,6 @@ impl CreateEventsRequestBuilder {
                 .event_name
                 .ok_or_else(|| BuildError::missing_field("event_name"))?,
             event_time: self.event_time,
-            plan_id: self.plan_id,
             product_id: self.product_id,
             referrer_url: self.referrer_url,
             resumed: self.resumed,
@@ -228,6 +227,7 @@ impl CreateEventsRequestBuilder {
             url: self.url,
             user: self.user,
             value: self.value,
+            variant_id: self.variant_id,
         })
     }
 }

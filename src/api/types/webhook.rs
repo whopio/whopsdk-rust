@@ -7,7 +7,7 @@ pub struct Webhook {
     /// The dated API version (Api-Version-Date) that v1 payloads for this endpoint are pinned to: events serialize exactly like a REST read at this version (the native serializer where the resource has one). Null when unpinned — legacy (v2/v5) webhooks, and v1 webhooks on the legacy payload shape.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub api_version_date: Option<String>,
-    /// Whether events are sent for child resources. For example, if the webhook is on an account, enabling this sends events only from its connected accounts.
+    /// Whether events are sent for child resources. For example, if the webhook is on an account, enabling this sends events only from its subaccounts.
     #[serde(default)]
     pub child_resource_events: bool,
     /// Number of consecutive deliveries whose first attempt to this endpoint failed since it last accepted one. Later retries of the same delivery do not increment it. Resets to `0` when a delivery succeeds or the webhook is re-enabled.
@@ -41,10 +41,13 @@ pub struct Webhook {
     pub resource_id: String,
     #[serde(default)]
     pub testable_events: Vec<WebhookTestableEventsItem>,
+    /// A label for this webhook endpoint, such as `Production`, shown in the dashboard. `null` if no title was set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
     /// Destination URL where webhook payloads are delivered via HTTP POST.
     #[serde(default)]
     pub url: String,
-    /// Secret key used to sign webhook payloads for verification. Include this in your HMAC validation logic. Returned on the create response and to interactive dashboard sessions; `null` for API-key and OAuth callers on later reads.
+    /// Secret key used to sign webhook payloads. Use it to verify the HMAC signature of each delivery. Returned in the create response. `null` on later reads by API keys and OAuth apps.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub webhook_secret: Option<String>,
 }
@@ -72,6 +75,7 @@ pub struct WebhookBuilder {
     last_failure_at: Option<String>,
     resource_id: Option<String>,
     testable_events: Option<Vec<WebhookTestableEventsItem>>,
+    title: Option<String>,
     url: Option<String>,
     webhook_secret: Option<String>,
 }
@@ -147,6 +151,11 @@ impl WebhookBuilder {
         self
     }
 
+    pub fn title(mut self, value: impl Into<String>) -> Self {
+        self.title = Some(value.into());
+        self
+    }
+
     pub fn url(mut self, value: impl Into<String>) -> Self {
         self.url = Some(value.into());
         self
@@ -201,6 +210,7 @@ impl WebhookBuilder {
             testable_events: self
                 .testable_events
                 .ok_or_else(|| BuildError::missing_field("testable_events"))?,
+            title: self.title,
             url: self.url.ok_or_else(|| BuildError::missing_field("url"))?,
             webhook_secret: self.webhook_secret,
         })

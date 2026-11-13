@@ -6,6 +6,7 @@ pub enum UpdateWebhooksRequestEventsItem {
     AccountUpdated,
     AccountFinancingApproved,
     AccountFinancingDenied,
+    AccountFinancingDisabled,
     InvoiceCreated,
     InvoiceMarkedUncollectible,
     InvoicePaid,
@@ -14,6 +15,7 @@ pub enum UpdateWebhooksRequestEventsItem {
     MembershipActivated,
     MembershipDeactivated,
     MembershipTrialEndingSoon,
+    MembershipUpdated,
     EntryCreated,
     EntryApproved,
     EntryDenied,
@@ -47,6 +49,9 @@ pub enum UpdateWebhooksRequestEventsItem {
     CardApplicationApproved,
     CardApplicationDenied,
     CourseLessonInteractionCompleted,
+    DomainCreated,
+    DomainUpdated,
+    DomainDeleted,
     PayoutMethodCreated,
     VerificationSucceeded,
     IdentityProfileApproved,
@@ -71,9 +76,20 @@ pub enum UpdateWebhooksRequestEventsItem {
     ShipmentUpdated,
     MemberCreated,
     MemberUpdated,
+    AdCampaignCreated,
     AdCampaignPaymentFailed,
     AdCampaignUpdated,
+    AdCampaignEvents,
+    AdCampaignDeleted,
+    AdGroupCreated,
+    AdGroupUpdated,
+    AdGroupDeleted,
+    AdCreated,
     AdUpdated,
+    AdDeleted,
+    AppInstallationCreated,
+    AppInstallationDeleted,
+    EventsCreated,
     ChatMessageCreated,
     ChatReactionCreated,
     PaymentCreated,
@@ -87,49 +103,7 @@ pub enum UpdateWebhooksRequestEventsItem {
     RefundUpdated,
     DisputeAlertCreated,
     MembershipCancelAtPeriodEndChanged,
-    MembershipWentValidUnderscore,
-    MembershipWentInvalidUnderscore,
-    MembershipMetadataUpdatedUnderscore,
-    ResolutionCreatedUnderscore,
-    ResolutionUpdatedUnderscore,
-    ResolutionDecidedUnderscore,
-    PaymentAffiliateRewardCreatedUnderscore,
-    MembershipExperienceClaimedUnderscore,
-    AppMembershipWentValidUnderscore,
-    AppMembershipWentInvalidUnderscore,
-    AppPaymentCreatedUnderscore,
-    AppPaymentSucceededUnderscore,
-    AppPaymentFailedUnderscore,
-    AppPaymentPendingUnderscore,
-    AppPaymentRequiresActionUnderscore,
-    AppMembershipCancelAtPeriodEndChangedUnderscore,
-    PaymentCreatedUnderscore,
-    PaymentSucceededUnderscore,
-    PaymentFailedUnderscore,
-    PaymentPendingUnderscore,
-    PaymentRequiresActionUnderscore,
-    DisputeCreatedUnderscore,
-    DisputeUpdatedUnderscore,
-    RefundCreatedUnderscore,
-    RefundUpdatedUnderscore,
-    DisputeAlertCreatedUnderscore,
-    MembershipCancelAtPeriodEndChangedUnderscore,
-    MembershipWentValid,
-    MembershipWentInvalid,
-    MembershipMetadataUpdated,
-    ResolutionCreated,
-    ResolutionUpdated,
-    ResolutionDecided,
-    PaymentAffiliateRewardCreated,
-    MembershipExperienceClaimed,
-    AppMembershipWentValid,
-    AppMembershipWentInvalid,
-    AppPaymentCreated,
-    AppPaymentSucceeded,
-    AppPaymentFailed,
-    AppPaymentPending,
-    AppPaymentRequiresAction,
-    AppMembershipCancelAtPeriodEndChanged,
+    ShippingAddressChanged,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -143,6 +117,9 @@ impl Serialize for UpdateWebhooksRequestEventsItem {
                 serializer.serialize_str("account.financing_approved")
             }
             Self::AccountFinancingDenied => serializer.serialize_str("account.financing_denied"),
+            Self::AccountFinancingDisabled => {
+                serializer.serialize_str("account.financing_disabled")
+            }
             Self::InvoiceCreated => serializer.serialize_str("invoice.created"),
             Self::InvoiceMarkedUncollectible => {
                 serializer.serialize_str("invoice.marked_uncollectible")
@@ -155,6 +132,7 @@ impl Serialize for UpdateWebhooksRequestEventsItem {
             Self::MembershipTrialEndingSoon => {
                 serializer.serialize_str("membership.trial_ending_soon")
             }
+            Self::MembershipUpdated => serializer.serialize_str("membership.updated"),
             Self::EntryCreated => serializer.serialize_str("entry.created"),
             Self::EntryApproved => serializer.serialize_str("entry.approved"),
             Self::EntryDenied => serializer.serialize_str("entry.denied"),
@@ -198,6 +176,9 @@ impl Serialize for UpdateWebhooksRequestEventsItem {
             Self::CourseLessonInteractionCompleted => {
                 serializer.serialize_str("course_lesson_interaction.completed")
             }
+            Self::DomainCreated => serializer.serialize_str("domain.created"),
+            Self::DomainUpdated => serializer.serialize_str("domain.updated"),
+            Self::DomainDeleted => serializer.serialize_str("domain.deleted"),
             Self::PayoutMethodCreated => serializer.serialize_str("payout_method.created"),
             Self::VerificationSucceeded => serializer.serialize_str("verification.succeeded"),
             Self::IdentityProfileApproved => serializer.serialize_str("identity_profile.approved"),
@@ -232,9 +213,20 @@ impl Serialize for UpdateWebhooksRequestEventsItem {
             Self::ShipmentUpdated => serializer.serialize_str("shipment.updated"),
             Self::MemberCreated => serializer.serialize_str("member.created"),
             Self::MemberUpdated => serializer.serialize_str("member.updated"),
+            Self::AdCampaignCreated => serializer.serialize_str("ad_campaign.created"),
             Self::AdCampaignPaymentFailed => serializer.serialize_str("ad_campaign.payment_failed"),
             Self::AdCampaignUpdated => serializer.serialize_str("ad_campaign.updated"),
+            Self::AdCampaignEvents => serializer.serialize_str("ad_campaign.events"),
+            Self::AdCampaignDeleted => serializer.serialize_str("ad_campaign.deleted"),
+            Self::AdGroupCreated => serializer.serialize_str("ad_group.created"),
+            Self::AdGroupUpdated => serializer.serialize_str("ad_group.updated"),
+            Self::AdGroupDeleted => serializer.serialize_str("ad_group.deleted"),
+            Self::AdCreated => serializer.serialize_str("ad.created"),
             Self::AdUpdated => serializer.serialize_str("ad.updated"),
+            Self::AdDeleted => serializer.serialize_str("ad.deleted"),
+            Self::AppInstallationCreated => serializer.serialize_str("app_installation.created"),
+            Self::AppInstallationDeleted => serializer.serialize_str("app_installation.deleted"),
+            Self::EventsCreated => serializer.serialize_str("events.created"),
             Self::ChatMessageCreated => serializer.serialize_str("chat.message.created"),
             Self::ChatReactionCreated => serializer.serialize_str("chat.reaction.created"),
             Self::PaymentCreated => serializer.serialize_str("payment.created"),
@@ -250,87 +242,7 @@ impl Serialize for UpdateWebhooksRequestEventsItem {
             Self::MembershipCancelAtPeriodEndChanged => {
                 serializer.serialize_str("membership.cancel_at_period_end_changed")
             }
-            Self::MembershipWentValidUnderscore => {
-                serializer.serialize_str("membership_went_valid")
-            }
-            Self::MembershipWentInvalidUnderscore => {
-                serializer.serialize_str("membership_went_invalid")
-            }
-            Self::MembershipMetadataUpdatedUnderscore => {
-                serializer.serialize_str("membership_metadata_updated")
-            }
-            Self::ResolutionCreatedUnderscore => serializer.serialize_str("resolution_created"),
-            Self::ResolutionUpdatedUnderscore => serializer.serialize_str("resolution_updated"),
-            Self::ResolutionDecidedUnderscore => serializer.serialize_str("resolution_decided"),
-            Self::PaymentAffiliateRewardCreatedUnderscore => {
-                serializer.serialize_str("payment_affiliate_reward_created")
-            }
-            Self::MembershipExperienceClaimedUnderscore => {
-                serializer.serialize_str("membership_experience_claimed")
-            }
-            Self::AppMembershipWentValidUnderscore => {
-                serializer.serialize_str("app_membership_went_valid")
-            }
-            Self::AppMembershipWentInvalidUnderscore => {
-                serializer.serialize_str("app_membership_went_invalid")
-            }
-            Self::AppPaymentCreatedUnderscore => serializer.serialize_str("app_payment_created"),
-            Self::AppPaymentSucceededUnderscore => {
-                serializer.serialize_str("app_payment_succeeded")
-            }
-            Self::AppPaymentFailedUnderscore => serializer.serialize_str("app_payment_failed"),
-            Self::AppPaymentPendingUnderscore => serializer.serialize_str("app_payment_pending"),
-            Self::AppPaymentRequiresActionUnderscore => {
-                serializer.serialize_str("app_payment_requires_action")
-            }
-            Self::AppMembershipCancelAtPeriodEndChangedUnderscore => {
-                serializer.serialize_str("app_membership_cancel_at_period_end_changed")
-            }
-            Self::PaymentCreatedUnderscore => serializer.serialize_str("payment_created"),
-            Self::PaymentSucceededUnderscore => serializer.serialize_str("payment_succeeded"),
-            Self::PaymentFailedUnderscore => serializer.serialize_str("payment_failed"),
-            Self::PaymentPendingUnderscore => serializer.serialize_str("payment_pending"),
-            Self::PaymentRequiresActionUnderscore => {
-                serializer.serialize_str("payment_requires_action")
-            }
-            Self::DisputeCreatedUnderscore => serializer.serialize_str("dispute_created"),
-            Self::DisputeUpdatedUnderscore => serializer.serialize_str("dispute_updated"),
-            Self::RefundCreatedUnderscore => serializer.serialize_str("refund_created"),
-            Self::RefundUpdatedUnderscore => serializer.serialize_str("refund_updated"),
-            Self::DisputeAlertCreatedUnderscore => {
-                serializer.serialize_str("dispute_alert_created")
-            }
-            Self::MembershipCancelAtPeriodEndChangedUnderscore => {
-                serializer.serialize_str("membership_cancel_at_period_end_changed")
-            }
-            Self::MembershipWentValid => serializer.serialize_str("membership.went_valid"),
-            Self::MembershipWentInvalid => serializer.serialize_str("membership.went_invalid"),
-            Self::MembershipMetadataUpdated => {
-                serializer.serialize_str("membership.metadata_updated")
-            }
-            Self::ResolutionCreated => serializer.serialize_str("resolution.created"),
-            Self::ResolutionUpdated => serializer.serialize_str("resolution.updated"),
-            Self::ResolutionDecided => serializer.serialize_str("resolution.decided"),
-            Self::PaymentAffiliateRewardCreated => {
-                serializer.serialize_str("payment.affiliate_reward_created")
-            }
-            Self::MembershipExperienceClaimed => {
-                serializer.serialize_str("membership.experience_claimed")
-            }
-            Self::AppMembershipWentValid => serializer.serialize_str("app_membership.went_valid"),
-            Self::AppMembershipWentInvalid => {
-                serializer.serialize_str("app_membership.went_invalid")
-            }
-            Self::AppPaymentCreated => serializer.serialize_str("app_payment.created"),
-            Self::AppPaymentSucceeded => serializer.serialize_str("app_payment.succeeded"),
-            Self::AppPaymentFailed => serializer.serialize_str("app_payment.failed"),
-            Self::AppPaymentPending => serializer.serialize_str("app_payment.pending"),
-            Self::AppPaymentRequiresAction => {
-                serializer.serialize_str("app_payment.requires_action")
-            }
-            Self::AppMembershipCancelAtPeriodEndChanged => {
-                serializer.serialize_str("app_membership.cancel_at_period_end_changed")
-            }
+            Self::ShippingAddressChanged => serializer.serialize_str("shipping_address.changed"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -343,6 +255,7 @@ impl<'de> Deserialize<'de> for UpdateWebhooksRequestEventsItem {
             "account.updated" => Ok(Self::AccountUpdated),
             "account.financing_approved" => Ok(Self::AccountFinancingApproved),
             "account.financing_denied" => Ok(Self::AccountFinancingDenied),
+            "account.financing_disabled" => Ok(Self::AccountFinancingDisabled),
             "invoice.created" => Ok(Self::InvoiceCreated),
             "invoice.marked_uncollectible" => Ok(Self::InvoiceMarkedUncollectible),
             "invoice.paid" => Ok(Self::InvoicePaid),
@@ -351,6 +264,7 @@ impl<'de> Deserialize<'de> for UpdateWebhooksRequestEventsItem {
             "membership.activated" => Ok(Self::MembershipActivated),
             "membership.deactivated" => Ok(Self::MembershipDeactivated),
             "membership.trial_ending_soon" => Ok(Self::MembershipTrialEndingSoon),
+            "membership.updated" => Ok(Self::MembershipUpdated),
             "entry.created" => Ok(Self::EntryCreated),
             "entry.approved" => Ok(Self::EntryApproved),
             "entry.denied" => Ok(Self::EntryDenied),
@@ -384,6 +298,9 @@ impl<'de> Deserialize<'de> for UpdateWebhooksRequestEventsItem {
             "card_application.approved" => Ok(Self::CardApplicationApproved),
             "card_application.denied" => Ok(Self::CardApplicationDenied),
             "course_lesson_interaction.completed" => Ok(Self::CourseLessonInteractionCompleted),
+            "domain.created" => Ok(Self::DomainCreated),
+            "domain.updated" => Ok(Self::DomainUpdated),
+            "domain.deleted" => Ok(Self::DomainDeleted),
             "payout_method.created" => Ok(Self::PayoutMethodCreated),
             "verification.succeeded" => Ok(Self::VerificationSucceeded),
             "identity_profile.approved" => Ok(Self::IdentityProfileApproved),
@@ -408,9 +325,20 @@ impl<'de> Deserialize<'de> for UpdateWebhooksRequestEventsItem {
             "shipment.updated" => Ok(Self::ShipmentUpdated),
             "member.created" => Ok(Self::MemberCreated),
             "member.updated" => Ok(Self::MemberUpdated),
+            "ad_campaign.created" => Ok(Self::AdCampaignCreated),
             "ad_campaign.payment_failed" => Ok(Self::AdCampaignPaymentFailed),
             "ad_campaign.updated" => Ok(Self::AdCampaignUpdated),
+            "ad_campaign.events" => Ok(Self::AdCampaignEvents),
+            "ad_campaign.deleted" => Ok(Self::AdCampaignDeleted),
+            "ad_group.created" => Ok(Self::AdGroupCreated),
+            "ad_group.updated" => Ok(Self::AdGroupUpdated),
+            "ad_group.deleted" => Ok(Self::AdGroupDeleted),
+            "ad.created" => Ok(Self::AdCreated),
             "ad.updated" => Ok(Self::AdUpdated),
+            "ad.deleted" => Ok(Self::AdDeleted),
+            "app_installation.created" => Ok(Self::AppInstallationCreated),
+            "app_installation.deleted" => Ok(Self::AppInstallationDeleted),
+            "events.created" => Ok(Self::EventsCreated),
             "chat.message.created" => Ok(Self::ChatMessageCreated),
             "chat.reaction.created" => Ok(Self::ChatReactionCreated),
             "payment.created" => Ok(Self::PaymentCreated),
@@ -426,55 +354,7 @@ impl<'de> Deserialize<'de> for UpdateWebhooksRequestEventsItem {
             "membership.cancel_at_period_end_changed" => {
                 Ok(Self::MembershipCancelAtPeriodEndChanged)
             }
-            "membership_went_valid" => Ok(Self::MembershipWentValidUnderscore),
-            "membership_went_invalid" => Ok(Self::MembershipWentInvalidUnderscore),
-            "membership_metadata_updated" => Ok(Self::MembershipMetadataUpdatedUnderscore),
-            "resolution_created" => Ok(Self::ResolutionCreatedUnderscore),
-            "resolution_updated" => Ok(Self::ResolutionUpdatedUnderscore),
-            "resolution_decided" => Ok(Self::ResolutionDecidedUnderscore),
-            "payment_affiliate_reward_created" => Ok(Self::PaymentAffiliateRewardCreatedUnderscore),
-            "membership_experience_claimed" => Ok(Self::MembershipExperienceClaimedUnderscore),
-            "app_membership_went_valid" => Ok(Self::AppMembershipWentValidUnderscore),
-            "app_membership_went_invalid" => Ok(Self::AppMembershipWentInvalidUnderscore),
-            "app_payment_created" => Ok(Self::AppPaymentCreatedUnderscore),
-            "app_payment_succeeded" => Ok(Self::AppPaymentSucceededUnderscore),
-            "app_payment_failed" => Ok(Self::AppPaymentFailedUnderscore),
-            "app_payment_pending" => Ok(Self::AppPaymentPendingUnderscore),
-            "app_payment_requires_action" => Ok(Self::AppPaymentRequiresActionUnderscore),
-            "app_membership_cancel_at_period_end_changed" => {
-                Ok(Self::AppMembershipCancelAtPeriodEndChangedUnderscore)
-            }
-            "payment_created" => Ok(Self::PaymentCreatedUnderscore),
-            "payment_succeeded" => Ok(Self::PaymentSucceededUnderscore),
-            "payment_failed" => Ok(Self::PaymentFailedUnderscore),
-            "payment_pending" => Ok(Self::PaymentPendingUnderscore),
-            "payment_requires_action" => Ok(Self::PaymentRequiresActionUnderscore),
-            "dispute_created" => Ok(Self::DisputeCreatedUnderscore),
-            "dispute_updated" => Ok(Self::DisputeUpdatedUnderscore),
-            "refund_created" => Ok(Self::RefundCreatedUnderscore),
-            "refund_updated" => Ok(Self::RefundUpdatedUnderscore),
-            "dispute_alert_created" => Ok(Self::DisputeAlertCreatedUnderscore),
-            "membership_cancel_at_period_end_changed" => {
-                Ok(Self::MembershipCancelAtPeriodEndChangedUnderscore)
-            }
-            "membership.went_valid" => Ok(Self::MembershipWentValid),
-            "membership.went_invalid" => Ok(Self::MembershipWentInvalid),
-            "membership.metadata_updated" => Ok(Self::MembershipMetadataUpdated),
-            "resolution.created" => Ok(Self::ResolutionCreated),
-            "resolution.updated" => Ok(Self::ResolutionUpdated),
-            "resolution.decided" => Ok(Self::ResolutionDecided),
-            "payment.affiliate_reward_created" => Ok(Self::PaymentAffiliateRewardCreated),
-            "membership.experience_claimed" => Ok(Self::MembershipExperienceClaimed),
-            "app_membership.went_valid" => Ok(Self::AppMembershipWentValid),
-            "app_membership.went_invalid" => Ok(Self::AppMembershipWentInvalid),
-            "app_payment.created" => Ok(Self::AppPaymentCreated),
-            "app_payment.succeeded" => Ok(Self::AppPaymentSucceeded),
-            "app_payment.failed" => Ok(Self::AppPaymentFailed),
-            "app_payment.pending" => Ok(Self::AppPaymentPending),
-            "app_payment.requires_action" => Ok(Self::AppPaymentRequiresAction),
-            "app_membership.cancel_at_period_end_changed" => {
-                Ok(Self::AppMembershipCancelAtPeriodEndChanged)
-            }
+            "shipping_address.changed" => Ok(Self::ShippingAddressChanged),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -486,6 +366,7 @@ impl fmt::Display for UpdateWebhooksRequestEventsItem {
             Self::AccountUpdated => write!(f, "account.updated"),
             Self::AccountFinancingApproved => write!(f, "account.financing_approved"),
             Self::AccountFinancingDenied => write!(f, "account.financing_denied"),
+            Self::AccountFinancingDisabled => write!(f, "account.financing_disabled"),
             Self::InvoiceCreated => write!(f, "invoice.created"),
             Self::InvoiceMarkedUncollectible => write!(f, "invoice.marked_uncollectible"),
             Self::InvoicePaid => write!(f, "invoice.paid"),
@@ -494,6 +375,7 @@ impl fmt::Display for UpdateWebhooksRequestEventsItem {
             Self::MembershipActivated => write!(f, "membership.activated"),
             Self::MembershipDeactivated => write!(f, "membership.deactivated"),
             Self::MembershipTrialEndingSoon => write!(f, "membership.trial_ending_soon"),
+            Self::MembershipUpdated => write!(f, "membership.updated"),
             Self::EntryCreated => write!(f, "entry.created"),
             Self::EntryApproved => write!(f, "entry.approved"),
             Self::EntryDenied => write!(f, "entry.denied"),
@@ -531,6 +413,9 @@ impl fmt::Display for UpdateWebhooksRequestEventsItem {
             Self::CourseLessonInteractionCompleted => {
                 write!(f, "course_lesson_interaction.completed")
             }
+            Self::DomainCreated => write!(f, "domain.created"),
+            Self::DomainUpdated => write!(f, "domain.updated"),
+            Self::DomainDeleted => write!(f, "domain.deleted"),
             Self::PayoutMethodCreated => write!(f, "payout_method.created"),
             Self::VerificationSucceeded => write!(f, "verification.succeeded"),
             Self::IdentityProfileApproved => write!(f, "identity_profile.approved"),
@@ -555,9 +440,20 @@ impl fmt::Display for UpdateWebhooksRequestEventsItem {
             Self::ShipmentUpdated => write!(f, "shipment.updated"),
             Self::MemberCreated => write!(f, "member.created"),
             Self::MemberUpdated => write!(f, "member.updated"),
+            Self::AdCampaignCreated => write!(f, "ad_campaign.created"),
             Self::AdCampaignPaymentFailed => write!(f, "ad_campaign.payment_failed"),
             Self::AdCampaignUpdated => write!(f, "ad_campaign.updated"),
+            Self::AdCampaignEvents => write!(f, "ad_campaign.events"),
+            Self::AdCampaignDeleted => write!(f, "ad_campaign.deleted"),
+            Self::AdGroupCreated => write!(f, "ad_group.created"),
+            Self::AdGroupUpdated => write!(f, "ad_group.updated"),
+            Self::AdGroupDeleted => write!(f, "ad_group.deleted"),
+            Self::AdCreated => write!(f, "ad.created"),
             Self::AdUpdated => write!(f, "ad.updated"),
+            Self::AdDeleted => write!(f, "ad.deleted"),
+            Self::AppInstallationCreated => write!(f, "app_installation.created"),
+            Self::AppInstallationDeleted => write!(f, "app_installation.deleted"),
+            Self::EventsCreated => write!(f, "events.created"),
             Self::ChatMessageCreated => write!(f, "chat.message.created"),
             Self::ChatReactionCreated => write!(f, "chat.reaction.created"),
             Self::PaymentCreated => write!(f, "payment.created"),
@@ -573,59 +469,7 @@ impl fmt::Display for UpdateWebhooksRequestEventsItem {
             Self::MembershipCancelAtPeriodEndChanged => {
                 write!(f, "membership.cancel_at_period_end_changed")
             }
-            Self::MembershipWentValidUnderscore => write!(f, "membership_went_valid"),
-            Self::MembershipWentInvalidUnderscore => write!(f, "membership_went_invalid"),
-            Self::MembershipMetadataUpdatedUnderscore => write!(f, "membership_metadata_updated"),
-            Self::ResolutionCreatedUnderscore => write!(f, "resolution_created"),
-            Self::ResolutionUpdatedUnderscore => write!(f, "resolution_updated"),
-            Self::ResolutionDecidedUnderscore => write!(f, "resolution_decided"),
-            Self::PaymentAffiliateRewardCreatedUnderscore => {
-                write!(f, "payment_affiliate_reward_created")
-            }
-            Self::MembershipExperienceClaimedUnderscore => {
-                write!(f, "membership_experience_claimed")
-            }
-            Self::AppMembershipWentValidUnderscore => write!(f, "app_membership_went_valid"),
-            Self::AppMembershipWentInvalidUnderscore => write!(f, "app_membership_went_invalid"),
-            Self::AppPaymentCreatedUnderscore => write!(f, "app_payment_created"),
-            Self::AppPaymentSucceededUnderscore => write!(f, "app_payment_succeeded"),
-            Self::AppPaymentFailedUnderscore => write!(f, "app_payment_failed"),
-            Self::AppPaymentPendingUnderscore => write!(f, "app_payment_pending"),
-            Self::AppPaymentRequiresActionUnderscore => write!(f, "app_payment_requires_action"),
-            Self::AppMembershipCancelAtPeriodEndChangedUnderscore => {
-                write!(f, "app_membership_cancel_at_period_end_changed")
-            }
-            Self::PaymentCreatedUnderscore => write!(f, "payment_created"),
-            Self::PaymentSucceededUnderscore => write!(f, "payment_succeeded"),
-            Self::PaymentFailedUnderscore => write!(f, "payment_failed"),
-            Self::PaymentPendingUnderscore => write!(f, "payment_pending"),
-            Self::PaymentRequiresActionUnderscore => write!(f, "payment_requires_action"),
-            Self::DisputeCreatedUnderscore => write!(f, "dispute_created"),
-            Self::DisputeUpdatedUnderscore => write!(f, "dispute_updated"),
-            Self::RefundCreatedUnderscore => write!(f, "refund_created"),
-            Self::RefundUpdatedUnderscore => write!(f, "refund_updated"),
-            Self::DisputeAlertCreatedUnderscore => write!(f, "dispute_alert_created"),
-            Self::MembershipCancelAtPeriodEndChangedUnderscore => {
-                write!(f, "membership_cancel_at_period_end_changed")
-            }
-            Self::MembershipWentValid => write!(f, "membership.went_valid"),
-            Self::MembershipWentInvalid => write!(f, "membership.went_invalid"),
-            Self::MembershipMetadataUpdated => write!(f, "membership.metadata_updated"),
-            Self::ResolutionCreated => write!(f, "resolution.created"),
-            Self::ResolutionUpdated => write!(f, "resolution.updated"),
-            Self::ResolutionDecided => write!(f, "resolution.decided"),
-            Self::PaymentAffiliateRewardCreated => write!(f, "payment.affiliate_reward_created"),
-            Self::MembershipExperienceClaimed => write!(f, "membership.experience_claimed"),
-            Self::AppMembershipWentValid => write!(f, "app_membership.went_valid"),
-            Self::AppMembershipWentInvalid => write!(f, "app_membership.went_invalid"),
-            Self::AppPaymentCreated => write!(f, "app_payment.created"),
-            Self::AppPaymentSucceeded => write!(f, "app_payment.succeeded"),
-            Self::AppPaymentFailed => write!(f, "app_payment.failed"),
-            Self::AppPaymentPending => write!(f, "app_payment.pending"),
-            Self::AppPaymentRequiresAction => write!(f, "app_payment.requires_action"),
-            Self::AppMembershipCancelAtPeriodEndChanged => {
-                write!(f, "app_membership.cancel_at_period_end_changed")
-            }
+            Self::ShippingAddressChanged => write!(f, "shipping_address.changed"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

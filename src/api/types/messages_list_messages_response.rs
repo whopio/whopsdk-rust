@@ -1,14 +1,11 @@
 pub use crate::prelude::*;
 
-/// The connection type for DmsPost.
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListMessagesResponse {
-    /// A list of nodes.
     #[serde(default)]
-    pub data: Vec<MessageListItem>,
-    /// Information to aid in pagination.
+    pub data: Vec<ChatMessage>,
     #[serde(default)]
-    pub page_info: PageInfo,
+    pub page_info: ListMessagesResponsePageInfo,
 }
 
 impl ListMessagesResponse {
@@ -20,17 +17,17 @@ impl ListMessagesResponse {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListMessagesResponseBuilder {
-    data: Option<Vec<MessageListItem>>,
-    page_info: Option<PageInfo>,
+    data: Option<Vec<ChatMessage>>,
+    page_info: Option<ListMessagesResponsePageInfo>,
 }
 
 impl ListMessagesResponseBuilder {
-    pub fn data(mut self, value: Vec<MessageListItem>) -> Self {
+    pub fn data(mut self, value: Vec<ChatMessage>) -> Self {
         self.data = Some(value);
         self
     }
 
-    pub fn page_info(mut self, value: PageInfo) -> Self {
+    pub fn page_info(mut self, value: ListMessagesResponsePageInfo) -> Self {
         self.page_info = Some(value);
         self
     }

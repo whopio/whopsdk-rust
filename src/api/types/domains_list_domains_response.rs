@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListDomainsResponse {
     #[serde(default)]
-    pub data: Vec<Domain>,
+    pub data: Vec<DomainListItem>,
     #[serde(default)]
     pub page_info: ListDomainsResponsePageInfo,
 }
@@ -17,12 +17,12 @@ impl ListDomainsResponse {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListDomainsResponseBuilder {
-    data: Option<Vec<Domain>>,
+    data: Option<Vec<DomainListItem>>,
     page_info: Option<ListDomainsResponsePageInfo>,
 }
 
 impl ListDomainsResponseBuilder {
-    pub fn data(mut self, value: Vec<Domain>) -> Self {
+    pub fn data(mut self, value: Vec<DomainListItem>) -> Self {
         self.data = Some(value);
         self
     }

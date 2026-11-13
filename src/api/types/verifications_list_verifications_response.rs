@@ -2,8 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListVerificationsResponse {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<Vec<ListVerificationsResponseDataItem>>,
+    #[serde(default)]
+    pub data: Vec<ListVerificationsResponseDataItem>,
+    #[serde(default)]
+    pub page_info: ListVerificationsResponsePageInfo,
 }
 
 impl ListVerificationsResponse {
@@ -16,6 +18,7 @@ impl ListVerificationsResponse {
 #[non_exhaustive]
 pub struct ListVerificationsResponseBuilder {
     data: Option<Vec<ListVerificationsResponseDataItem>>,
+    page_info: Option<ListVerificationsResponsePageInfo>,
 }
 
 impl ListVerificationsResponseBuilder {
@@ -24,8 +27,21 @@ impl ListVerificationsResponseBuilder {
         self
     }
 
+    pub fn page_info(mut self, value: ListVerificationsResponsePageInfo) -> Self {
+        self.page_info = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`ListVerificationsResponse`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`data`](ListVerificationsResponseBuilder::data)
+    /// - [`page_info`](ListVerificationsResponseBuilder::page_info)
     pub fn build(self) -> Result<ListVerificationsResponse, BuildError> {
-        Ok(ListVerificationsResponse { data: self.data })
+        Ok(ListVerificationsResponse {
+            data: self.data.ok_or_else(|| BuildError::missing_field("data"))?,
+            page_info: self
+                .page_info
+                .ok_or_else(|| BuildError::missing_field("page_info"))?,
+        })
     }
 }

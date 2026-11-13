@@ -8,7 +8,7 @@ pub struct EndExperimentsRequest {
     /// The treatment that won. Setting it rolls that arm out: every later evaluation returns it to every caller, ignoring targeting and allocation, and exposures stop being recorded. Omit it when control won — an ended experiment with no winning arm evaluates to `control` for everyone, so ending again without one also reverts a rollout recorded by mistake. Not accepted on feature flags, which evaluate to disabled once ended.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub winning_arm: Option<String>,
-    /// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    /// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
     #[serde(skip)]
     pub account_id: Option<String>,
 }

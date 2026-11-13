@@ -16,6 +16,9 @@ pub struct RefundLegacy {
     /// The unique identifier for the refund.
     #[serde(default)]
     pub id: String,
+    /// The custom metadata attached when this refund was requested.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<HashMap<String, serde_json::Value>>,
     /// The original payment that this refund was issued against. Null if the payment is no longer available.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment: Option<RefundLegacyPayment>,
@@ -52,6 +55,7 @@ pub struct RefundLegacyBuilder {
     created_at: Option<DateTime<FixedOffset>>,
     currency: Option<Currencies>,
     id: Option<String>,
+    metadata: Option<HashMap<String, serde_json::Value>>,
     payment: Option<RefundLegacyPayment>,
     provider: Option<PaymentProviders>,
     provider_created_at: Option<DateTime<FixedOffset>>,
@@ -79,6 +83,11 @@ impl RefundLegacyBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn metadata(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.metadata = Some(value);
         self
     }
 
@@ -137,6 +146,7 @@ impl RefundLegacyBuilder {
                 .currency
                 .ok_or_else(|| BuildError::missing_field("currency"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            metadata: self.metadata,
             payment: self.payment,
             provider: self
                 .provider

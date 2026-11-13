@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The refund policy document.
+/// The refund policy document. Defaults to the account's return policy when not set.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdateDisputesRequestEvidenceRefundPolicyAttachment {
     /// The ID returned by a direct upload.

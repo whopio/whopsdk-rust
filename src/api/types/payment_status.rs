@@ -17,7 +17,7 @@ pub struct PaymentStatus {
     /// Details of the most recent failed attempt, or `null` when the payment has not failed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last_payment_error: Option<PaymentLastPaymentError>,
-    /// What the buyer must do next while `status` is `requires_action`, otherwise `null`. `type` picks the shape and each variant carries only its own `data`, so switching on `type` gives you exactly that step's payload.
+    /// What the buyer must do next while `status` is `requires_action`, otherwise `null`. `type` picks the shape and each variant carries only its own `data`, so switching on `type` gives you exactly that step's payload. The `collect_card_present` step is served only to a credential holding `payment:charge` on the account; any other reader sees `null` while the tap is outstanding.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub next_action: Option<PaymentNextAction>,
     /// Always `payment_status`.

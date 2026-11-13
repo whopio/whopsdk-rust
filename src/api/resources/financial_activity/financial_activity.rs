@@ -24,13 +24,16 @@ impl FinancialActivityClient {
     /// * `line_types` - Optional ledger line categories to include. Some categories (for example `onchain_deposit`, which covers inbound crypto deposits such as MoonPay onramps) are only returned when explicitly requested here.
     /// * `direction` - Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
     /// * `resource_id` - Optional prefixed resource ID. Returns activity associated with that resource.
+    /// * `payment_id` - Filter activity by payment ID (pay_), including related refunds, disputes, and fees. Combines with resource_id and other filters within the selected accounts. Unknown payments return an empty list.
     /// * `activity_id` - Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
     /// * `exclude_internal_movements` - Whether to exclude balance reservations and balanced movements between the account's own balances.
+    /// * `balance_type` - Which balance the activity changes. `total` includes available, pending, and reserved funds. `available` includes only movements into or out of available funds, including reservations, releases, and fees. Movements within the selected balance are omitted. Omit to preserve the existing activity feed. Requires account_id or user_id; cannot be combined with available_after or available_before.
+    /// * `withdrawal_id` - Withdrawal ID (wdrl_). With balance_type=available, selects the same period as its statement, after the previous withdrawal and through this withdrawal, excluding this withdrawal and its fee. Requires a single account. Overrides currency and posted-date filters.
     /// * `currency` - Optional currency code filter, for example `usd`.
     /// * `posted_after` - Only include rows posted after this ISO 8601 timestamp.
     /// * `posted_before` - Only include rows posted before this ISO 8601 timestamp.
-    /// * `available_after` - Only include rows whose funds became withdrawable on or after this `YYYY-MM-DD` settlement date (UTC), distinct from posted_at. Requires currency.
-    /// * `available_before` - Only include rows whose funds became withdrawable on or before this `YYYY-MM-DD` settlement date (UTC). Set equal to available_after for a single day. Requires currency.
+    /// * `available_after` - Only include balance credits and debits available on or after this `YYYY-MM-DD` date (UTC), distinct from posted_at. Requires currency.
+    /// * `available_before` - Only include balance credits and debits available on or before this `YYYY-MM-DD` date (UTC). Set equal to available_after for a single day. Requires currency.
     /// * `limit` - Maximum number of rows to return.
     /// * `cursor` - Cursor returned by the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
@@ -62,8 +65,11 @@ impl FinancialActivityClient {
     ///                 line_types: vec![],
     ///                 direction: None,
     ///                 resource_id: None,
+    ///                 payment_id: None,
     ///                 activity_id: None,
     ///                 exclude_internal_movements: None,
+    ///                 balance_type: None,
+    ///                 withdrawal_id: None,
     ///                 currency: None,
     ///                 posted_after: None,
     ///                 posted_before: None,
@@ -86,11 +92,16 @@ impl FinancialActivityClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "financial_activity",
                 None,
@@ -105,11 +116,14 @@ impl FinancialActivityClient {
                     .serialize_array("line_types", request.line_types.clone())
                     .serialize("direction", request.direction.clone())
                     .string("resource_id", request.resource_id.clone())
+                    .string("payment_id", request.payment_id.clone())
                     .string("activity_id", request.activity_id.clone())
                     .bool(
                         "exclude_internal_movements",
                         request.exclude_internal_movements.clone(),
                     )
+                    .serialize("balance_type", request.balance_type.clone())
+                    .string("withdrawal_id", request.withdrawal_id.clone())
                     .string("currency", request.currency.clone())
                     .datetime("posted_after", request.posted_after.clone())
                     .datetime("posted_before", request.posted_before.clone())

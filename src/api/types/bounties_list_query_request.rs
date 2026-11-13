@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct BountiesListQueryRequest {
-    /// Scope the list to this account (`biz_` tag). Requires read access to the account; account API keys may pass their own account or a connected account.
+    /// Scope the list to this account (`biz_` tag). Requires read access to the account; account API keys may pass their own account or a subaccount.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
     /// List the bounties this user participated in (`user_` tag). Must be the authenticated user.

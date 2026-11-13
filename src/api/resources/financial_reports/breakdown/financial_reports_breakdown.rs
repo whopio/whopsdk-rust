@@ -13,7 +13,7 @@ impl BreakdownClient {
         })
     }
 
-    /// Returns the top entities behind one high-level financial report bucket and an aggregate remainder.
+    /// Breaks one bucket of a financial report, such as payments received or card spend, into the customers, accounts, merchants, or campaigns that contributed most, with the rest summed as a remainder. Use it to explain a total from `GET /financial_reports`.
     ///
     /// # Arguments
     ///
@@ -71,11 +71,16 @@ impl BreakdownClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "financial_reports/breakdown",
                 None,

@@ -1,6 +1,5 @@
 pub use crate::prelude::*;
 
-/// Whether tax is added on top of the plan price or already included in it for this buyer's location.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CalculateTaxPlansResponseTaxBehavior {

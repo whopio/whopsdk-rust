@@ -3,6 +3,12 @@ pub use crate::prelude::*;
 /// A discussion forum where members can create posts, comment, and react, belonging to an experience.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Forum {
+    /// A list of words that are automatically filtered from posts in this forum.
+    #[serde(default)]
+    pub banned_words: Vec<String>,
+    /// The banner image displayed at the top of the forum page. Null if no banner has been uploaded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_image: Option<ForumBannerImage>,
     /// The email notification setting that controls which posts trigger email alerts. One of: all_admin_posts, only_weekly_summary, none.
     pub email_notification_preference: ForumEmailNotificationPreferences,
     /// The parent experience that this forum belongs to.
@@ -26,6 +32,8 @@ impl Forum {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ForumBuilder {
+    banned_words: Option<Vec<String>>,
+    banner_image: Option<ForumBannerImage>,
     email_notification_preference: Option<ForumEmailNotificationPreferences>,
     experience: Option<ForumExperience>,
     id: Option<String>,
@@ -34,6 +42,16 @@ pub struct ForumBuilder {
 }
 
 impl ForumBuilder {
+    pub fn banned_words(mut self, value: Vec<String>) -> Self {
+        self.banned_words = Some(value);
+        self
+    }
+
+    pub fn banner_image(mut self, value: ForumBannerImage) -> Self {
+        self.banner_image = Some(value);
+        self
+    }
+
     pub fn email_notification_preference(
         mut self,
         value: ForumEmailNotificationPreferences,
@@ -64,6 +82,7 @@ impl ForumBuilder {
 
     /// Consumes the builder and constructs a [`Forum`].
     /// This method will fail if any of the following fields are not set:
+    /// - [`banned_words`](ForumBuilder::banned_words)
     /// - [`email_notification_preference`](ForumBuilder::email_notification_preference)
     /// - [`experience`](ForumBuilder::experience)
     /// - [`id`](ForumBuilder::id)
@@ -71,6 +90,10 @@ impl ForumBuilder {
     /// - [`who_can_post`](ForumBuilder::who_can_post)
     pub fn build(self) -> Result<Forum, BuildError> {
         Ok(Forum {
+            banned_words: self
+                .banned_words
+                .ok_or_else(|| BuildError::missing_field("banned_words"))?,
+            banner_image: self.banner_image,
             email_notification_preference: self
                 .email_notification_preference
                 .ok_or_else(|| BuildError::missing_field("email_notification_preference"))?,

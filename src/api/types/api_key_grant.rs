@@ -7,7 +7,7 @@ pub struct ApiKeyGrant {
     /// ID of the resource the actions apply to.
     #[serde(default)]
     pub resource_id: String,
-    /// The type of resource the actions apply to, such as `account`, `product`, or `app`.
+    /// The type of resource the actions apply to, such as `account`, `product`, `app`, or `user`.
     #[serde(default)]
     pub resource_type: String,
 }

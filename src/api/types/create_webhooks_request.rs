@@ -5,7 +5,7 @@ pub struct CreateWebhooksRequest {
     /// The dated API version (Api-Version-Date) to pin this webhook's payloads to. Omit to leave the webhook unpinned, tracking the current payload shape.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub api_version_date: Option<String>,
-    /// Whether to send events for child resources. For example, if the webhook is created for an account, enabling this sends events only from its connected accounts.
+    /// Whether to send events for child resources. For example, if the webhook is created for an account, enabling this sends events only from its subaccounts.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub child_resource_events: Option<bool>,
     /// Whether or not the webhook is enabled. Defaults to `true`.
@@ -17,6 +17,9 @@ pub struct CreateWebhooksRequest {
     /// The account or app to create the webhook for. Defaults to the current account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resource_id: Option<String>,
+    /// A label for the webhook, shown in the dashboard. Up to 255 characters.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
     /// The URL to send the webhook to.
     #[serde(default)]
     pub url: String,
@@ -36,6 +39,7 @@ pub struct CreateWebhooksRequestBuilder {
     enabled: Option<bool>,
     events: Option<Vec<CreateWebhooksRequestEventsItem>>,
     resource_id: Option<String>,
+    title: Option<String>,
     url: Option<String>,
 }
 
@@ -65,6 +69,11 @@ impl CreateWebhooksRequestBuilder {
         self
     }
 
+    pub fn title(mut self, value: impl Into<String>) -> Self {
+        self.title = Some(value.into());
+        self
+    }
+
     pub fn url(mut self, value: impl Into<String>) -> Self {
         self.url = Some(value.into());
         self
@@ -80,6 +89,7 @@ impl CreateWebhooksRequestBuilder {
             enabled: self.enabled,
             events: self.events,
             resource_id: self.resource_id,
+            title: self.title,
             url: self.url.ok_or_else(|| BuildError::missing_field("url"))?,
         })
     }

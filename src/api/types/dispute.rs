@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Dispute {
+    /// Whether the dispute can be conceded to the customer with `POST /disputes/{id}/accept`. True only for a chargeback still awaiting a response, before `evidence_due_at`, whose payment processor supports accepting disputes. Inquiries are never acceptable.
+    #[serde(default)]
+    pub acceptable: bool,
     /// The account the dispute was filed against, prefixed `biz_`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
@@ -10,8 +13,8 @@ pub struct Dispute {
     #[serde(with = "crate::core::number_serializers")]
     pub amount: f64,
     /// The customer who filed the dispute.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub buyer: Option<DisputeBuyer>,
+    #[serde(default)]
+    pub buyer: DisputeBuyer,
     /// When the dispute was opened, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
@@ -21,7 +24,7 @@ pub struct Dispute {
     /// The evidence packet sent to the processor to contest the dispute.
     #[serde(default)]
     pub evidence: DisputeEvidence,
-    /// The deadline to submit evidence, as an ISO 8601 timestamp. Whop reserves the last 24 hours before the processor's own cutoff to forward the submission.
+    /// The deadline to submit evidence, as an ISO 8601 timestamp. `null` when the network already auto-resolved the dispute (Visa RDR) with no evidence round, or when the processor hasn't reported a deadline for this dispute.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub evidence_due_at: Option<String>,
     /// Whether `evidence` can still be changed and submitted.
@@ -33,9 +36,12 @@ pub struct Dispute {
     /// When the evidence was submitted to the processor, as an ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub evidence_submitted_at: Option<String>,
-    /// The AI-generated representment document filed with the processor on the seller's behalf, once ready. Null until generation completes, and for disputes not using Whop Dispute Fighter.
+    /// The dispute fee charged to the account, in the currency it was collected in. `null` when `fee_charged` is false.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generated_response_attachment: Option<DisputeAttachment>,
+    pub fee: Option<Money>,
+    /// Whether Whop charged the account a dispute fee for this one. `false` when the payment was fully refunded before the dispute was opened, for a Visa RDR resolution, and for an inquiry.
+    #[serde(default)]
+    pub fee_charged: bool,
     /// Dispute ID, prefixed `dspt_`.
     #[serde(default)]
     pub id: String,
@@ -47,27 +53,27 @@ pub struct Dispute {
     #[serde(default)]
     pub line_items: Vec<ReceiptLineItem>,
     /// The payment being disputed.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment: Option<DisputePayment>,
-    /// The plan the disputed payment was made on, prefixed `plan_`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan_id: Option<String>,
+    #[serde(default)]
+    pub payment: DisputePayment,
     /// The product the disputed payment was for, prefixed `prod_`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
-    /// Whether Visa Rapid Dispute Resolution settled this automatically. These refund the customer without an evidence round.
-    #[serde(default)]
-    pub rapid_dispute_resolution: bool,
     /// Why the customer says they are disputing, normalized across processors and card networks. `other` covers a processor reason Whop has not categorized yet.
     pub reason: DisputeReason,
     /// The raw card-network or processor reason code, such as `10.4`. Informational only — `reason` is not derived from it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reason_code: Option<String>,
-    /// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+    /// `needs_response` awaits evidence (after a processor refused a filing, `submission_failure_reason` says why); `generating_response` has evidence with the processor, not yet accepted; `under_review` is with the processor; `won`/`lost` are the rulings; `prevented` settles like `lost`. `warning_` statuses are the inquiry tiers. Past `evidence_due_at` an open one reports `under_review`.
     pub status: DisputeStatus,
+    /// Why the payment processor refused the last filing, in plain English, while the dispute is back in `needs_response`. Fix what it names and submit again. Only on retrieve: `dispute.updated` reports the move back to `needs_response`, then read this here.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub submission_failure_reason: Option<String>,
     /// When the dispute was last changed, as an ISO 8601 timestamp.
     #[serde(default)]
     pub updated_at: String,
+    /// The variant the disputed payment was made on, prefixed `plan_`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant_id: Option<String>,
 }
 
 impl Dispute {
@@ -79,6 +85,7 @@ impl Dispute {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct DisputeBuilder {
+    acceptable: Option<bool>,
     account_id: Option<String>,
     amount: Option<f64>,
     buyer: Option<DisputeBuyer>,
@@ -89,22 +96,28 @@ pub struct DisputeBuilder {
     evidence_editable: Option<bool>,
     evidence_locked_reason: Option<DisputeEvidenceLockedReason>,
     evidence_submitted_at: Option<String>,
-    generated_response_attachment: Option<DisputeAttachment>,
+    fee: Option<Money>,
+    fee_charged: Option<bool>,
     id: Option<String>,
     inquiry: Option<bool>,
     issuer_comments: Option<Vec<DisputeIssuerComment>>,
     line_items: Option<Vec<ReceiptLineItem>>,
     payment: Option<DisputePayment>,
-    plan_id: Option<String>,
     product_id: Option<String>,
-    rapid_dispute_resolution: Option<bool>,
     reason: Option<DisputeReason>,
     reason_code: Option<String>,
     status: Option<DisputeStatus>,
+    submission_failure_reason: Option<String>,
     updated_at: Option<String>,
+    variant_id: Option<String>,
 }
 
 impl DisputeBuilder {
+    pub fn acceptable(mut self, value: bool) -> Self {
+        self.acceptable = Some(value);
+        self
+    }
+
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
         self
@@ -155,8 +168,13 @@ impl DisputeBuilder {
         self
     }
 
-    pub fn generated_response_attachment(mut self, value: DisputeAttachment) -> Self {
-        self.generated_response_attachment = Some(value);
+    pub fn fee(mut self, value: Money) -> Self {
+        self.fee = Some(value);
+        self
+    }
+
+    pub fn fee_charged(mut self, value: bool) -> Self {
+        self.fee_charged = Some(value);
         self
     }
 
@@ -185,18 +203,8 @@ impl DisputeBuilder {
         self
     }
 
-    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
-        self.plan_id = Some(value.into());
-        self
-    }
-
     pub fn product_id(mut self, value: impl Into<String>) -> Self {
         self.product_id = Some(value.into());
-        self
-    }
-
-    pub fn rapid_dispute_resolution(mut self, value: bool) -> Self {
-        self.rapid_dispute_resolution = Some(value);
         self
     }
 
@@ -215,33 +223,51 @@ impl DisputeBuilder {
         self
     }
 
+    pub fn submission_failure_reason(mut self, value: impl Into<String>) -> Self {
+        self.submission_failure_reason = Some(value.into());
+        self
+    }
+
     pub fn updated_at(mut self, value: impl Into<String>) -> Self {
         self.updated_at = Some(value.into());
         self
     }
 
+    pub fn variant_id(mut self, value: impl Into<String>) -> Self {
+        self.variant_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`Dispute`].
     /// This method will fail if any of the following fields are not set:
+    /// - [`acceptable`](DisputeBuilder::acceptable)
     /// - [`amount`](DisputeBuilder::amount)
+    /// - [`buyer`](DisputeBuilder::buyer)
     /// - [`created_at`](DisputeBuilder::created_at)
     /// - [`currency`](DisputeBuilder::currency)
     /// - [`evidence`](DisputeBuilder::evidence)
     /// - [`evidence_editable`](DisputeBuilder::evidence_editable)
+    /// - [`fee_charged`](DisputeBuilder::fee_charged)
     /// - [`id`](DisputeBuilder::id)
     /// - [`inquiry`](DisputeBuilder::inquiry)
     /// - [`issuer_comments`](DisputeBuilder::issuer_comments)
     /// - [`line_items`](DisputeBuilder::line_items)
-    /// - [`rapid_dispute_resolution`](DisputeBuilder::rapid_dispute_resolution)
+    /// - [`payment`](DisputeBuilder::payment)
     /// - [`reason`](DisputeBuilder::reason)
     /// - [`status`](DisputeBuilder::status)
     /// - [`updated_at`](DisputeBuilder::updated_at)
     pub fn build(self) -> Result<Dispute, BuildError> {
         Ok(Dispute {
+            acceptable: self
+                .acceptable
+                .ok_or_else(|| BuildError::missing_field("acceptable"))?,
             account_id: self.account_id,
             amount: self
                 .amount
                 .ok_or_else(|| BuildError::missing_field("amount"))?,
-            buyer: self.buyer,
+            buyer: self
+                .buyer
+                .ok_or_else(|| BuildError::missing_field("buyer"))?,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
@@ -257,7 +283,10 @@ impl DisputeBuilder {
                 .ok_or_else(|| BuildError::missing_field("evidence_editable"))?,
             evidence_locked_reason: self.evidence_locked_reason,
             evidence_submitted_at: self.evidence_submitted_at,
-            generated_response_attachment: self.generated_response_attachment,
+            fee: self.fee,
+            fee_charged: self
+                .fee_charged
+                .ok_or_else(|| BuildError::missing_field("fee_charged"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             inquiry: self
                 .inquiry
@@ -268,12 +297,10 @@ impl DisputeBuilder {
             line_items: self
                 .line_items
                 .ok_or_else(|| BuildError::missing_field("line_items"))?,
-            payment: self.payment,
-            plan_id: self.plan_id,
+            payment: self
+                .payment
+                .ok_or_else(|| BuildError::missing_field("payment"))?,
             product_id: self.product_id,
-            rapid_dispute_resolution: self
-                .rapid_dispute_resolution
-                .ok_or_else(|| BuildError::missing_field("rapid_dispute_resolution"))?,
             reason: self
                 .reason
                 .ok_or_else(|| BuildError::missing_field("reason"))?,
@@ -281,9 +308,11 @@ impl DisputeBuilder {
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
+            submission_failure_reason: self.submission_failure_reason,
             updated_at: self
                 .updated_at
                 .ok_or_else(|| BuildError::missing_field("updated_at"))?,
+            variant_id: self.variant_id,
         })
     }
 }

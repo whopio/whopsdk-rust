@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct ApiKeysListQueryRequest {
-    /// The account (`biz_`) or app (`app_`) tag to list API keys for.
+    /// The account (`biz_`), app (`app_`), or your own user (`user_`) tag to list API keys for.
     #[serde(default)]
     pub resource_id: String,
     /// The type of resource that owns the API keys.

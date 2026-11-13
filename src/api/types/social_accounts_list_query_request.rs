@@ -3,19 +3,22 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct SocialAccountsListQueryRequest {
-    /// The Account that the social accounts are connected to. Provide either this or user_id.
+    /// The Account that the external accounts are connected to. Provide either this or user_id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// The User that the social accounts are connected to. Provide either this or account_id.
+    /// The User that the external accounts are connected to. Provide either this or account_id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
-    /// Only return social accounts for the platform that is specified.
+    /// Only return external accounts for the platform that is specified. An `aimerce` account is returned only with this filter, which requires the `company:manage_checkout` scope instead of `social_account:read`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub platform: Option<ListSocialAccountsRequestPlatform>,
-    /// Only return social accounts that are verified on the platform.
+    /// Only return external accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trust_level: Option<ListSocialAccountsRequestTrustLevel>,
+    /// Only return external accounts that are verified on the platform.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verified: Option<bool>,
-    /// Only return social accounts that have these scopes.
+    /// Only return external accounts that have these scopes.
     #[serde(default)]
     pub scopes: Vec<Option<ListSocialAccountsRequestScopesItem>>,
     /// Number of results to return from the start of the range.
@@ -30,7 +33,7 @@ pub struct SocialAccountsListQueryRequest {
     /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
-    /// The field to sort social accounts by.
+    /// The field to sort external accounts by.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<ListSocialAccountsRequestOrder>,
     /// Sort direction.
@@ -50,6 +53,7 @@ pub struct SocialAccountsListQueryRequestBuilder {
     account_id: Option<String>,
     user_id: Option<String>,
     platform: Option<ListSocialAccountsRequestPlatform>,
+    trust_level: Option<ListSocialAccountsRequestTrustLevel>,
     verified: Option<bool>,
     scopes: Option<Vec<Option<ListSocialAccountsRequestScopesItem>>>,
     first: Option<i64>,
@@ -73,6 +77,11 @@ impl SocialAccountsListQueryRequestBuilder {
 
     pub fn platform(mut self, value: ListSocialAccountsRequestPlatform) -> Self {
         self.platform = Some(value);
+        self
+    }
+
+    pub fn trust_level(mut self, value: ListSocialAccountsRequestTrustLevel) -> Self {
+        self.trust_level = Some(value);
         self
     }
 
@@ -124,6 +133,7 @@ impl SocialAccountsListQueryRequestBuilder {
             account_id: self.account_id,
             user_id: self.user_id,
             platform: self.platform,
+            trust_level: self.trust_level,
             verified: self.verified,
             scopes: self
                 .scopes

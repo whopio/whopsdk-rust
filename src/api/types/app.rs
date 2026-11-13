@@ -13,6 +13,10 @@ pub struct App {
     pub app_store_description: Option<String>,
     /// The type of end-user the app is built for.
     pub app_type: AppAppType,
+    /// Average star rating across published reviews for this app, from `1.0` to `5.0`. Returns `0.0` when no published-review rating is available.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub average_review_rating: f64,
     /// Banner image from the app's product listing, or `null` when none is uploaded.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub banner_image: Option<AppBannerImage>,
@@ -24,6 +28,12 @@ pub struct App {
     pub businesses_created_count: i64,
     #[serde(default)]
     pub businesses_created_logo_urls: Vec<String>,
+    /// Website businesses created from this app as a template that processed a payment in the last 24 hours. Recounted hourly, so it can be up to an hour behind.
+    #[serde(default)]
+    pub businesses_with_recent_sales_count: i64,
+    /// The app's App Store category, or `null` when none has been set. An app can show a category that `GET /apps/categories` does not list, if it was categorized before the current store categories.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub category: Option<AppCategory>,
     /// The user who owns the publishing account.
     #[serde(default)]
     pub creator: AppCreator,
@@ -45,14 +55,15 @@ pub struct App {
     /// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
     #[serde(default)]
     pub domain_id: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub domains: Option<Vec<AppDomain>>,
+    #[serde(default)]
+    pub domains: Vec<AppDomain>,
     #[serde(default)]
     pub elements_used: Vec<AppElementsUsedItem>,
     /// URL path for the member-facing hub view, or `null` when not configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub experience_path: Option<String>,
     /// Full URL where the app's hosted web build is served, or `null` if no route is claimed.
+    /// DEPRECATED: Read `domains` instead.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hosted_url: Option<String>,
     /// The app's icon. Falls back to the default app icon when none is uploaded.
@@ -61,6 +72,15 @@ pub struct App {
     /// App ID, prefixed `app_`.
     #[serde(default)]
     pub id: String,
+    /// The address of the existing website this app was imported from, such as `https://shop.example.com`. `null` if the app was not imported from another site, or if the caller lacks the `developer:basic:read` permission on the app's account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub imported_from_url: Option<String>,
+    /// Whether the app is published, approved, and visible in the public app store.
+    #[serde(default)]
+    pub is_app_store_listed: bool,
+    /// Whether Whop publishes this app.
+    #[serde(default)]
+    pub is_whop_app: bool,
     /// Approval status of the app's product listing on the Whop app store, or `null` when the app has no associated product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub marketplace_status: Option<AppMarketplaceStatus>,
@@ -75,11 +95,15 @@ pub struct App {
     /// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub origin: Option<String>,
+    /// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once for every installation, with the installation in `ctx.props.app_installation`, no more often than every 15 minutes. Slots are skipped while the app has no production web build with a server entry. `null` when the app has no per-install schedule, or if the caller lacks the `developer:basic:read` permission on the app's account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub per_install_schedule: Option<String>,
     /// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub preview_token: Option<String>,
-    #[serde(default)]
-    pub previous_hosted_urls: Vec<String>,
+    /// Product category a business built from this app as a template sells, such as `pressure_washing`, or `null` when none has been set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_category: Option<String>,
     /// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
@@ -92,6 +116,9 @@ pub struct App {
     /// The approved build currently served on web, or `null` when none is deployed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub production_web_build: Option<AppProductionBuild>,
+    /// Published customer reviews for this app.
+    #[serde(default)]
+    pub published_reviews_count: i64,
     #[serde(default)]
     pub redirect_uris: Vec<String>,
     #[serde(default)]
@@ -99,8 +126,12 @@ pub struct App {
     #[serde(default)]
     pub required_scopes: Vec<AppRequiredScopesItem>,
     /// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
+    /// DEPRECATED: Read `domains` instead.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
+    /// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once per slot. Slots are skipped while the app has no production web build with a server entry. `null` when the app has no global schedule, or if the caller lacks the `developer:basic:read` permission on the app's account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub schedule: Option<String>,
     /// The app's production secrets as an object of string values, injected into the hosted server runtime. `null` when the caller lacks the `developer:update_app` permission.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secrets: Option<HashMap<String, serde_json::Value>>,
@@ -127,10 +158,13 @@ pub struct AppBuilder {
     api_key: Option<AppApiKey>,
     app_store_description: Option<String>,
     app_type: Option<AppAppType>,
+    average_review_rating: Option<f64>,
     banner_image: Option<AppBannerImage>,
     base_url: Option<String>,
     businesses_created_count: Option<i64>,
     businesses_created_logo_urls: Option<Vec<String>>,
+    businesses_with_recent_sales_count: Option<i64>,
+    category: Option<AppCategory>,
     creator: Option<AppCreator>,
     dashboard_path: Option<String>,
     default_api_key: Option<AppDefaultApiKey>,
@@ -144,21 +178,27 @@ pub struct AppBuilder {
     hosted_url: Option<String>,
     icon: Option<AppIcon>,
     id: Option<String>,
+    imported_from_url: Option<String>,
+    is_app_store_listed: Option<bool>,
+    is_whop_app: Option<bool>,
     marketplace_status: Option<AppMarketplaceStatus>,
     name: Option<String>,
     oauth_client_type: Option<AppOauthClientType>,
     openapi_path: Option<String>,
     origin: Option<String>,
+    per_install_schedule: Option<String>,
     preview_token: Option<String>,
-    previous_hosted_urls: Option<Vec<String>>,
+    product_category: Option<String>,
     product_id: Option<String>,
     production_android_build: Option<AppProductionBuild>,
     production_ios_build: Option<AppProductionBuild>,
     production_web_build: Option<AppProductionBuild>,
+    published_reviews_count: Option<i64>,
     redirect_uris: Option<Vec<String>>,
     requested_permissions: Option<Vec<AppRequestedPermission>>,
     required_scopes: Option<Vec<AppRequiredScopesItem>>,
     route: Option<String>,
+    schedule: Option<String>,
     secrets: Option<HashMap<String, serde_json::Value>>,
     skills_path: Option<String>,
     status: Option<AppStatus>,
@@ -186,6 +226,11 @@ impl AppBuilder {
         self
     }
 
+    pub fn average_review_rating(mut self, value: f64) -> Self {
+        self.average_review_rating = Some(value);
+        self
+    }
+
     pub fn banner_image(mut self, value: AppBannerImage) -> Self {
         self.banner_image = Some(value);
         self
@@ -203,6 +248,16 @@ impl AppBuilder {
 
     pub fn businesses_created_logo_urls(mut self, value: Vec<String>) -> Self {
         self.businesses_created_logo_urls = Some(value);
+        self
+    }
+
+    pub fn businesses_with_recent_sales_count(mut self, value: i64) -> Self {
+        self.businesses_with_recent_sales_count = Some(value);
+        self
+    }
+
+    pub fn category(mut self, value: AppCategory) -> Self {
+        self.category = Some(value);
         self
     }
 
@@ -271,6 +326,21 @@ impl AppBuilder {
         self
     }
 
+    pub fn imported_from_url(mut self, value: impl Into<String>) -> Self {
+        self.imported_from_url = Some(value.into());
+        self
+    }
+
+    pub fn is_app_store_listed(mut self, value: bool) -> Self {
+        self.is_app_store_listed = Some(value);
+        self
+    }
+
+    pub fn is_whop_app(mut self, value: bool) -> Self {
+        self.is_whop_app = Some(value);
+        self
+    }
+
     pub fn marketplace_status(mut self, value: AppMarketplaceStatus) -> Self {
         self.marketplace_status = Some(value);
         self
@@ -296,13 +366,18 @@ impl AppBuilder {
         self
     }
 
+    pub fn per_install_schedule(mut self, value: impl Into<String>) -> Self {
+        self.per_install_schedule = Some(value.into());
+        self
+    }
+
     pub fn preview_token(mut self, value: impl Into<String>) -> Self {
         self.preview_token = Some(value.into());
         self
     }
 
-    pub fn previous_hosted_urls(mut self, value: Vec<String>) -> Self {
-        self.previous_hosted_urls = Some(value);
+    pub fn product_category(mut self, value: impl Into<String>) -> Self {
+        self.product_category = Some(value.into());
         self
     }
 
@@ -326,6 +401,11 @@ impl AppBuilder {
         self
     }
 
+    pub fn published_reviews_count(mut self, value: i64) -> Self {
+        self.published_reviews_count = Some(value);
+        self
+    }
+
     pub fn redirect_uris(mut self, value: Vec<String>) -> Self {
         self.redirect_uris = Some(value);
         self
@@ -343,6 +423,11 @@ impl AppBuilder {
 
     pub fn route(mut self, value: impl Into<String>) -> Self {
         self.route = Some(value.into());
+        self
+    }
+
+    pub fn schedule(mut self, value: impl Into<String>) -> Self {
+        self.schedule = Some(value.into());
         self
     }
 
@@ -370,16 +455,21 @@ impl AppBuilder {
     /// This method will fail if any of the following fields are not set:
     /// - [`account`](AppBuilder::account)
     /// - [`app_type`](AppBuilder::app_type)
+    /// - [`average_review_rating`](AppBuilder::average_review_rating)
     /// - [`businesses_created_count`](AppBuilder::businesses_created_count)
     /// - [`businesses_created_logo_urls`](AppBuilder::businesses_created_logo_urls)
+    /// - [`businesses_with_recent_sales_count`](AppBuilder::businesses_with_recent_sales_count)
     /// - [`creator`](AppBuilder::creator)
     /// - [`domain_id`](AppBuilder::domain_id)
+    /// - [`domains`](AppBuilder::domains)
     /// - [`elements_used`](AppBuilder::elements_used)
     /// - [`icon`](AppBuilder::icon)
     /// - [`id`](AppBuilder::id)
+    /// - [`is_app_store_listed`](AppBuilder::is_app_store_listed)
+    /// - [`is_whop_app`](AppBuilder::is_whop_app)
     /// - [`name`](AppBuilder::name)
     /// - [`oauth_client_type`](AppBuilder::oauth_client_type)
-    /// - [`previous_hosted_urls`](AppBuilder::previous_hosted_urls)
+    /// - [`published_reviews_count`](AppBuilder::published_reviews_count)
     /// - [`redirect_uris`](AppBuilder::redirect_uris)
     /// - [`requested_permissions`](AppBuilder::requested_permissions)
     /// - [`required_scopes`](AppBuilder::required_scopes)
@@ -395,6 +485,9 @@ impl AppBuilder {
             app_type: self
                 .app_type
                 .ok_or_else(|| BuildError::missing_field("app_type"))?,
+            average_review_rating: self
+                .average_review_rating
+                .ok_or_else(|| BuildError::missing_field("average_review_rating"))?,
             banner_image: self.banner_image,
             base_url: self.base_url,
             businesses_created_count: self
@@ -403,6 +496,10 @@ impl AppBuilder {
             businesses_created_logo_urls: self
                 .businesses_created_logo_urls
                 .ok_or_else(|| BuildError::missing_field("businesses_created_logo_urls"))?,
+            businesses_with_recent_sales_count: self
+                .businesses_with_recent_sales_count
+                .ok_or_else(|| BuildError::missing_field("businesses_with_recent_sales_count"))?,
+            category: self.category,
             creator: self
                 .creator
                 .ok_or_else(|| BuildError::missing_field("creator"))?,
@@ -414,7 +511,9 @@ impl AppBuilder {
             domain_id: self
                 .domain_id
                 .ok_or_else(|| BuildError::missing_field("domain_id"))?,
-            domains: self.domains,
+            domains: self
+                .domains
+                .ok_or_else(|| BuildError::missing_field("domains"))?,
             elements_used: self
                 .elements_used
                 .ok_or_else(|| BuildError::missing_field("elements_used"))?,
@@ -422,6 +521,13 @@ impl AppBuilder {
             hosted_url: self.hosted_url,
             icon: self.icon.ok_or_else(|| BuildError::missing_field("icon"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            imported_from_url: self.imported_from_url,
+            is_app_store_listed: self
+                .is_app_store_listed
+                .ok_or_else(|| BuildError::missing_field("is_app_store_listed"))?,
+            is_whop_app: self
+                .is_whop_app
+                .ok_or_else(|| BuildError::missing_field("is_whop_app"))?,
             marketplace_status: self.marketplace_status,
             name: self.name.ok_or_else(|| BuildError::missing_field("name"))?,
             oauth_client_type: self
@@ -429,14 +535,16 @@ impl AppBuilder {
                 .ok_or_else(|| BuildError::missing_field("oauth_client_type"))?,
             openapi_path: self.openapi_path,
             origin: self.origin,
+            per_install_schedule: self.per_install_schedule,
             preview_token: self.preview_token,
-            previous_hosted_urls: self
-                .previous_hosted_urls
-                .ok_or_else(|| BuildError::missing_field("previous_hosted_urls"))?,
+            product_category: self.product_category,
             product_id: self.product_id,
             production_android_build: self.production_android_build,
             production_ios_build: self.production_ios_build,
             production_web_build: self.production_web_build,
+            published_reviews_count: self
+                .published_reviews_count
+                .ok_or_else(|| BuildError::missing_field("published_reviews_count"))?,
             redirect_uris: self
                 .redirect_uris
                 .ok_or_else(|| BuildError::missing_field("redirect_uris"))?,
@@ -447,6 +555,7 @@ impl AppBuilder {
                 .required_scopes
                 .ok_or_else(|| BuildError::missing_field("required_scopes"))?,
             route: self.route,
+            schedule: self.schedule,
             secrets: self.secrets,
             skills_path: self.skills_path,
             status: self

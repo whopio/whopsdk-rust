@@ -3,10 +3,10 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct TransfersListQueryRequest {
-    /// Filter to transfers sent from this account. Provide this or destination_id.
+    /// Filter to transfers sent from this account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub origin_id: Option<String>,
-    /// Filter to transfers received by this account. Provide this or origin_id.
+    /// Filter to transfers received by this account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_id: Option<String>,
     /// Sort column. Defaults to created_at.

@@ -17,22 +17,22 @@ pub struct CreateCheckoutConfigurationsRequest {
     /// Controls whether checkout charges the buyer immediately or saves payment details for later. Defaults to `payment`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mode: Option<CreateCheckoutConfigurationsRequestMode>,
-    /// Payment method overrides for this checkout. `null` uses the plan or platform defaults.
+    /// Payment method overrides for this checkout. `null` uses the variant or platform defaults.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_configuration:
         Option<CreateCheckoutConfigurationsRequestPaymentMethodConfiguration>,
-    /// Plan attributes used to create or find a plan for this checkout configuration. Mutually exclusive with `plan_id`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan: Option<CreateCheckoutConfigurationsRequestPlan>,
-    /// Existing plan ID, prefixed `plan_`. Mutually exclusive with `plan`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan_id: Option<String>,
     /// URL customers are sent to after checkout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect_url: Option<String>,
-    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<CreateCheckoutConfigurationsRequestThreeDsLevel>,
+    /// Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `variant_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<CreateCheckoutConfigurationsRequestVariant>,
+    /// Existing variant ID, prefixed `plan_`. Mutually exclusive with `variant`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant_id: Option<String>,
 }
 
 impl CreateCheckoutConfigurationsRequest {
@@ -51,10 +51,10 @@ pub struct CreateCheckoutConfigurationsRequestBuilder {
     mode: Option<CreateCheckoutConfigurationsRequestMode>,
     payment_method_configuration:
         Option<CreateCheckoutConfigurationsRequestPaymentMethodConfiguration>,
-    plan: Option<CreateCheckoutConfigurationsRequestPlan>,
-    plan_id: Option<String>,
     redirect_url: Option<String>,
     three_ds_level: Option<CreateCheckoutConfigurationsRequestThreeDsLevel>,
+    variant: Option<CreateCheckoutConfigurationsRequestVariant>,
+    variant_id: Option<String>,
 }
 
 impl CreateCheckoutConfigurationsRequestBuilder {
@@ -91,16 +91,6 @@ impl CreateCheckoutConfigurationsRequestBuilder {
         self
     }
 
-    pub fn plan(mut self, value: CreateCheckoutConfigurationsRequestPlan) -> Self {
-        self.plan = Some(value);
-        self
-    }
-
-    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
-        self.plan_id = Some(value.into());
-        self
-    }
-
     pub fn redirect_url(mut self, value: impl Into<String>) -> Self {
         self.redirect_url = Some(value.into());
         self
@@ -114,6 +104,16 @@ impl CreateCheckoutConfigurationsRequestBuilder {
         self
     }
 
+    pub fn variant(mut self, value: CreateCheckoutConfigurationsRequestVariant) -> Self {
+        self.variant = Some(value);
+        self
+    }
+
+    pub fn variant_id(mut self, value: impl Into<String>) -> Self {
+        self.variant_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreateCheckoutConfigurationsRequest`].
     pub fn build(self) -> Result<CreateCheckoutConfigurationsRequest, BuildError> {
         Ok(CreateCheckoutConfigurationsRequest {
@@ -123,10 +123,10 @@ impl CreateCheckoutConfigurationsRequestBuilder {
             metadata: self.metadata,
             mode: self.mode,
             payment_method_configuration: self.payment_method_configuration,
-            plan: self.plan,
-            plan_id: self.plan_id,
             redirect_url: self.redirect_url,
             three_ds_level: self.three_ds_level,
+            variant: self.variant,
+            variant_id: self.variant_id,
         })
     }
 }

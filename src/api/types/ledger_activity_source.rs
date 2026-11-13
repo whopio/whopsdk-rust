@@ -18,12 +18,21 @@ pub struct LedgerActivitySource {
     /// Payout creation time as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_at: Option<DateTime<FixedOffset>>,
+    /// User who requested the withdrawal. Null for system-generated withdrawals or without payout:withdrawal:read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created_by_user: Option<UserSummary>,
     /// Estimated arrival as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub estimated_arrival: Option<DateTime<FixedOffset>>,
+    /// Total withdrawal fees, including markup fees. Requires payout:withdrawal:read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fee_amount: Option<Money>,
     /// Action that generated a platform markup fee: deposit, swap, transfer, card_spend, or payout. Present for platform_markup_fee and platform_markup_fee_payout, including when include_resource is false. Null when the originating action is unavailable; omitted on other source types.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fee_kind: Option<LedgerActivitySourceFeeKind>,
+    /// Whether withdrawal fees are inclusive or exclusive. Requires payout:withdrawal:read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fee_type: Option<LedgerActivitySourceFeeType>,
     /// Amount converted out of from_currency as a decimal string (swap sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub from_amount: Option<String>,
@@ -32,23 +41,26 @@ pub struct LedgerActivitySource {
     pub from_currency: Option<String>,
     #[serde(default)]
     pub id: String,
-    /// Memo attached to the transfer or payout source, or null when none was provided (on payout sources requires payout:withdrawal:read).
+    /// Memo attached to the transfer, payout, or bank_deposit source, or null when none was provided (on payout sources requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
     #[serde(default)]
     pub object: String,
-    /// Name of the entity processing the payout (payout sources only; requires payout:withdrawal:read).
+    /// On payout sources, the name of the entity processing the payout (requires payout:withdrawal:read). On bank_deposit sources, the name of the account that sent the deposit.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payer_name: Option<String>,
     /// Total charged by the payment source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_amount: Option<Money>,
-    /// Payment method used by the payment source.
+    /// Payment method used by the payment source. On bank_deposit sources, the transfer rail: `wire`, `ach`, or `rtp`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_type: Option<String>,
     /// Processor used by the payment source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_processor: Option<String>,
+    /// Withdrawal principal sent to the destination, excluding fees, in the withdrawal currency. Requires payout:withdrawal:read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payout_amount: Option<Money>,
     /// Payout destination display info (payout sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_destination: Option<LedgerActivitySourcePayoutDestination>,
@@ -61,10 +73,10 @@ pub struct LedgerActivitySource {
     /// Whether this payout is currently held for manual risk review (payout sources only; requires payout:withdrawal:read).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub risk_review_hold: Option<bool>,
-    /// Sender wallet address or onramp provider identifier (onchain_transaction sources only).
+    /// On onchain_transaction sources, the sender wallet address or onramp provider identifier. On bank_deposit sources, the last four digits of the sending bank account, such as `••••1547`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sender_address: Option<String>,
-    /// Lifecycle status. On payout sources this is the payout status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated).
+    /// Lifecycle status. On payout sources this is the payout status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated); on bank_deposit sources it is succeeded, reversal_in_progress or reversed (ungated).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
     /// Amount received in to_currency as a decimal string (swap sources only).
@@ -73,6 +85,9 @@ pub struct LedgerActivitySource {
     /// Lowercase currency code converted to (swap sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub to_currency: Option<String>,
+    /// Bank trace reference for the withdrawal. Requires payout:withdrawal:read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trace_code: Option<String>,
     /// On-chain transaction hash (onchain_transaction and swap sources only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
@@ -95,8 +110,11 @@ pub struct LedgerActivitySourceBuilder {
     chain: Option<String>,
     claim_url: Option<String>,
     created_at: Option<DateTime<FixedOffset>>,
+    created_by_user: Option<UserSummary>,
     estimated_arrival: Option<DateTime<FixedOffset>>,
+    fee_amount: Option<Money>,
     fee_kind: Option<LedgerActivitySourceFeeKind>,
+    fee_type: Option<LedgerActivitySourceFeeType>,
     from_amount: Option<String>,
     from_currency: Option<String>,
     id: Option<String>,
@@ -106,6 +124,7 @@ pub struct LedgerActivitySourceBuilder {
     payment_amount: Option<Money>,
     payment_method_type: Option<String>,
     payment_processor: Option<String>,
+    payout_amount: Option<Money>,
     payout_destination: Option<LedgerActivitySourcePayoutDestination>,
     payout_token_nickname: Option<String>,
     reason: Option<String>,
@@ -114,6 +133,7 @@ pub struct LedgerActivitySourceBuilder {
     status: Option<String>,
     to_amount: Option<String>,
     to_currency: Option<String>,
+    trace_code: Option<String>,
     tx_hash: Option<String>,
 }
 
@@ -143,13 +163,28 @@ impl LedgerActivitySourceBuilder {
         self
     }
 
+    pub fn created_by_user(mut self, value: UserSummary) -> Self {
+        self.created_by_user = Some(value);
+        self
+    }
+
     pub fn estimated_arrival(mut self, value: DateTime<FixedOffset>) -> Self {
         self.estimated_arrival = Some(value);
         self
     }
 
+    pub fn fee_amount(mut self, value: Money) -> Self {
+        self.fee_amount = Some(value);
+        self
+    }
+
     pub fn fee_kind(mut self, value: LedgerActivitySourceFeeKind) -> Self {
         self.fee_kind = Some(value);
+        self
+    }
+
+    pub fn fee_type(mut self, value: LedgerActivitySourceFeeType) -> Self {
+        self.fee_type = Some(value);
         self
     }
 
@@ -198,6 +233,11 @@ impl LedgerActivitySourceBuilder {
         self
     }
 
+    pub fn payout_amount(mut self, value: Money) -> Self {
+        self.payout_amount = Some(value);
+        self
+    }
+
     pub fn payout_destination(mut self, value: LedgerActivitySourcePayoutDestination) -> Self {
         self.payout_destination = Some(value);
         self
@@ -238,6 +278,11 @@ impl LedgerActivitySourceBuilder {
         self
     }
 
+    pub fn trace_code(mut self, value: impl Into<String>) -> Self {
+        self.trace_code = Some(value.into());
+        self
+    }
+
     pub fn tx_hash(mut self, value: impl Into<String>) -> Self {
         self.tx_hash = Some(value.into());
         self
@@ -254,8 +299,11 @@ impl LedgerActivitySourceBuilder {
             chain: self.chain,
             claim_url: self.claim_url,
             created_at: self.created_at,
+            created_by_user: self.created_by_user,
             estimated_arrival: self.estimated_arrival,
+            fee_amount: self.fee_amount,
             fee_kind: self.fee_kind,
+            fee_type: self.fee_type,
             from_amount: self.from_amount,
             from_currency: self.from_currency,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
@@ -267,6 +315,7 @@ impl LedgerActivitySourceBuilder {
             payment_amount: self.payment_amount,
             payment_method_type: self.payment_method_type,
             payment_processor: self.payment_processor,
+            payout_amount: self.payout_amount,
             payout_destination: self.payout_destination,
             payout_token_nickname: self.payout_token_nickname,
             reason: self.reason,
@@ -275,6 +324,7 @@ impl LedgerActivitySourceBuilder {
             status: self.status,
             to_amount: self.to_amount,
             to_currency: self.to_currency,
+            trace_code: self.trace_code,
             tx_hash: self.tx_hash,
             extra: Default::default(),
         })

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero.
+/// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero. `null` when a subaccount's fees are read without access to its parent account.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AccountFeeMarkupSource {

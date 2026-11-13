@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Age, gender, and automatic-audience targeting.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct AdGroupDemographicsBody {
-    /// Turn on automatic audience targeting (Advantage+ on Meta): the platform can deliver beyond the ages, genders, and detailed targeting you set, treating them as suggestions.
+    /// Turn on automatic audience targeting: delivery can reach beyond the ages and genders you set, treating them as suggestions.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub automatic: Option<bool>,
     /// Gender to target.

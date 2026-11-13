@@ -12,12 +12,14 @@ pub struct ProductListItem {
     /// When the product was created, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
-    /// Buyable plan to show and check out with. The configured default when that plan is buyable, otherwise the first buyable plan in product-page order. `null` when none is buyable.
+    /// Buyable variant to show and check out with. The configured default when that variant is buyable, otherwise the first buyable variant in product-page order. `null` when none is buyable.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub default_plan: Option<ProductPublicPlan>,
+    pub default_variant: Option<ProductPublicVariant>,
     /// Written description displayed on the product page. `null` if none is set.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(default)]
+    pub experiences: Vec<ProductExperience>,
     /// External identifier stored on the product for your own reference.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub external_identifier: Option<String>,
@@ -31,6 +33,9 @@ pub struct ProductListItem {
     pub id: String,
     #[serde(default)]
     pub labels: Vec<String>,
+    /// Logo image URL shown on product pages and in search results. `null` when the product has no logo.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub logo_url: Option<String>,
     /// Active memberships for this product; 0 if public member counts are disabled.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -51,6 +56,9 @@ pub struct ProductListItem {
     /// When the product was last updated, as an ISO 8601 timestamp.
     #[serde(default)]
     pub updated_at: String,
+    /// The option set the product's variants span, as a map of attribute name to the values in use, e.g. `{"color": ["Blue", "Red"], "size": ["S", "M", "L"]}`. Derived from the visible, non-invoice variants that carry `attributes`: keys alphabetical, values in the order the variants were created. Read-only. `null` when the product has no variants.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant_attributes: Option<HashMap<String, serde_json::Value>>,
     /// Whether the product has been verified by Whop.
     #[serde(default)]
     pub verified: bool,
@@ -71,19 +79,22 @@ pub struct ProductListItemBuilder {
     account: Option<HashMap<String, serde_json::Value>>,
     average_review_rating: Option<f64>,
     created_at: Option<String>,
-    default_plan: Option<ProductPublicPlan>,
+    default_variant: Option<ProductPublicVariant>,
     description: Option<String>,
+    experiences: Option<Vec<ProductExperience>>,
     external_identifier: Option<String>,
     gallery_images: Option<Vec<ProductGalleryImage>>,
     headline: Option<String>,
     id: Option<String>,
     labels: Option<Vec<String>>,
+    logo_url: Option<String>,
     member_count: Option<f64>,
     metadata: Option<HashMap<String, serde_json::Value>>,
     published_reviews_count: Option<f64>,
     route: Option<String>,
     title: Option<String>,
     updated_at: Option<String>,
+    variant_attributes: Option<HashMap<String, serde_json::Value>>,
     verified: Option<bool>,
     visibility: Option<String>,
 }
@@ -104,13 +115,18 @@ impl ProductListItemBuilder {
         self
     }
 
-    pub fn default_plan(mut self, value: ProductPublicPlan) -> Self {
-        self.default_plan = Some(value);
+    pub fn default_variant(mut self, value: ProductPublicVariant) -> Self {
+        self.default_variant = Some(value);
         self
     }
 
     pub fn description(mut self, value: impl Into<String>) -> Self {
         self.description = Some(value.into());
+        self
+    }
+
+    pub fn experiences(mut self, value: Vec<ProductExperience>) -> Self {
+        self.experiences = Some(value);
         self
     }
 
@@ -136,6 +152,11 @@ impl ProductListItemBuilder {
 
     pub fn labels(mut self, value: Vec<String>) -> Self {
         self.labels = Some(value);
+        self
+    }
+
+    pub fn logo_url(mut self, value: impl Into<String>) -> Self {
+        self.logo_url = Some(value.into());
         self
     }
 
@@ -169,6 +190,11 @@ impl ProductListItemBuilder {
         self
     }
 
+    pub fn variant_attributes(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.variant_attributes = Some(value);
+        self
+    }
+
     pub fn verified(mut self, value: bool) -> Self {
         self.verified = Some(value);
         self
@@ -183,6 +209,7 @@ impl ProductListItemBuilder {
     /// This method will fail if any of the following fields are not set:
     /// - [`average_review_rating`](ProductListItemBuilder::average_review_rating)
     /// - [`created_at`](ProductListItemBuilder::created_at)
+    /// - [`experiences`](ProductListItemBuilder::experiences)
     /// - [`gallery_images`](ProductListItemBuilder::gallery_images)
     /// - [`id`](ProductListItemBuilder::id)
     /// - [`labels`](ProductListItemBuilder::labels)
@@ -201,8 +228,11 @@ impl ProductListItemBuilder {
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
-            default_plan: self.default_plan,
+            default_variant: self.default_variant,
             description: self.description,
+            experiences: self
+                .experiences
+                .ok_or_else(|| BuildError::missing_field("experiences"))?,
             external_identifier: self.external_identifier,
             gallery_images: self
                 .gallery_images
@@ -212,6 +242,7 @@ impl ProductListItemBuilder {
             labels: self
                 .labels
                 .ok_or_else(|| BuildError::missing_field("labels"))?,
+            logo_url: self.logo_url,
             member_count: self
                 .member_count
                 .ok_or_else(|| BuildError::missing_field("member_count"))?,
@@ -228,6 +259,7 @@ impl ProductListItemBuilder {
             updated_at: self
                 .updated_at
                 .ok_or_else(|| BuildError::missing_field("updated_at"))?,
+            variant_attributes: self.variant_attributes,
             verified: self
                 .verified
                 .ok_or_else(|| BuildError::missing_field("verified"))?,

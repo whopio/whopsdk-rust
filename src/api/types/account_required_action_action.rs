@@ -9,16 +9,18 @@ pub enum AccountRequiredActionAction {
     SubmitInformationRequest,
     UpdateAutomaticWithdrawalMethod,
     ReauthorizePayoutMethods,
+    UpdatePayoutMethod,
     UpdatePayoutProfile,
     CardUsageReview,
     VerifyIdentity,
     ScaleAccountSetup,
     SignFormationDocuments,
-    ConnectFulfillmentTracker,
-    SetupApplePayDomains,
     ConfigureTaxRemitter,
     AddVatRegistration,
+    ConfirmTaxDetails,
+    AcceptPayoutTerms,
     EnableTwoFactorAuthentication,
+    RespondToAbuseReport,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -38,20 +40,20 @@ impl Serialize for AccountRequiredActionAction {
             Self::ReauthorizePayoutMethods => {
                 serializer.serialize_str("reauthorize_payout_methods")
             }
+            Self::UpdatePayoutMethod => serializer.serialize_str("update_payout_method"),
             Self::UpdatePayoutProfile => serializer.serialize_str("update_payout_profile"),
             Self::CardUsageReview => serializer.serialize_str("card_usage_review"),
             Self::VerifyIdentity => serializer.serialize_str("verify_identity"),
             Self::ScaleAccountSetup => serializer.serialize_str("scale_account_setup"),
             Self::SignFormationDocuments => serializer.serialize_str("sign_formation_documents"),
-            Self::ConnectFulfillmentTracker => {
-                serializer.serialize_str("connect_fulfillment_tracker")
-            }
-            Self::SetupApplePayDomains => serializer.serialize_str("setup_apple_pay_domains"),
             Self::ConfigureTaxRemitter => serializer.serialize_str("configure_tax_remitter"),
             Self::AddVatRegistration => serializer.serialize_str("add_vat_registration"),
+            Self::ConfirmTaxDetails => serializer.serialize_str("confirm_tax_details"),
+            Self::AcceptPayoutTerms => serializer.serialize_str("accept_payout_terms"),
             Self::EnableTwoFactorAuthentication => {
                 serializer.serialize_str("enable_two_factor_authentication")
             }
+            Self::RespondToAbuseReport => serializer.serialize_str("respond_to_abuse_report"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -66,16 +68,18 @@ impl<'de> Deserialize<'de> for AccountRequiredActionAction {
             "submit_information_request" => Ok(Self::SubmitInformationRequest),
             "update_automatic_withdrawal_method" => Ok(Self::UpdateAutomaticWithdrawalMethod),
             "reauthorize_payout_methods" => Ok(Self::ReauthorizePayoutMethods),
+            "update_payout_method" => Ok(Self::UpdatePayoutMethod),
             "update_payout_profile" => Ok(Self::UpdatePayoutProfile),
             "card_usage_review" => Ok(Self::CardUsageReview),
             "verify_identity" => Ok(Self::VerifyIdentity),
             "scale_account_setup" => Ok(Self::ScaleAccountSetup),
             "sign_formation_documents" => Ok(Self::SignFormationDocuments),
-            "connect_fulfillment_tracker" => Ok(Self::ConnectFulfillmentTracker),
-            "setup_apple_pay_domains" => Ok(Self::SetupApplePayDomains),
             "configure_tax_remitter" => Ok(Self::ConfigureTaxRemitter),
             "add_vat_registration" => Ok(Self::AddVatRegistration),
+            "confirm_tax_details" => Ok(Self::ConfirmTaxDetails),
+            "accept_payout_terms" => Ok(Self::AcceptPayoutTerms),
             "enable_two_factor_authentication" => Ok(Self::EnableTwoFactorAuthentication),
+            "respond_to_abuse_report" => Ok(Self::RespondToAbuseReport),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -91,16 +95,18 @@ impl fmt::Display for AccountRequiredActionAction {
                 write!(f, "update_automatic_withdrawal_method")
             }
             Self::ReauthorizePayoutMethods => write!(f, "reauthorize_payout_methods"),
+            Self::UpdatePayoutMethod => write!(f, "update_payout_method"),
             Self::UpdatePayoutProfile => write!(f, "update_payout_profile"),
             Self::CardUsageReview => write!(f, "card_usage_review"),
             Self::VerifyIdentity => write!(f, "verify_identity"),
             Self::ScaleAccountSetup => write!(f, "scale_account_setup"),
             Self::SignFormationDocuments => write!(f, "sign_formation_documents"),
-            Self::ConnectFulfillmentTracker => write!(f, "connect_fulfillment_tracker"),
-            Self::SetupApplePayDomains => write!(f, "setup_apple_pay_domains"),
             Self::ConfigureTaxRemitter => write!(f, "configure_tax_remitter"),
             Self::AddVatRegistration => write!(f, "add_vat_registration"),
+            Self::ConfirmTaxDetails => write!(f, "confirm_tax_details"),
+            Self::AcceptPayoutTerms => write!(f, "accept_payout_terms"),
             Self::EnableTwoFactorAuthentication => write!(f, "enable_two_factor_authentication"),
+            Self::RespondToAbuseReport => write!(f, "respond_to_abuse_report"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

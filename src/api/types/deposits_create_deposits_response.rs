@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CreateDepositsResponse {
     /// Account ID of the destination owner.
     #[serde(skip_serializing_if = "Option::is_none")]

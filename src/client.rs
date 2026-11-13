@@ -16,15 +16,23 @@ impl Default for ApiClientBuilder {
 }
 impl ApiClientBuilder {
     /// Create a new builder with the specified base URL
+    ///
+    /// This disables environment-based URL resolution. Use `environment()` instead
+    /// to configure per-service URL resolution for multi-URL environments.
     pub fn new(base_url: impl Into<String>) -> Self {
         let mut config = ClientConfig::default();
         config.base_url = base_url.into();
+        config.environment = None;
         Self { config }
     }
 
     /// Set the environment, updating the base URL
+    ///
+    /// In multi-URL environments, this enables per-service URL resolution.
+    /// Each service will use its designated URL from the environment.
     pub fn environment(mut self, environment: Environment) -> Self {
         self.config.base_url = environment.url().to_string();
+        self.config.environment = Some(environment);
         self
     }
 

@@ -2,17 +2,14 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct ConnectSocialAccountsRequest {
-    /// The Account (biz_ identifier) to connect the social account for. An account-scoped API key may omit this to default to its own account.
+    /// The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
+    /// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
     pub platform: ConnectSocialAccountsRequestPlatform,
-    /// Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. If the connection fails, the user is redirected with a `social_account_error` query param.
+    /// Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
     #[serde(default)]
     pub redirect_url: String,
-    /// Capabilities to grant for the connected social account. `advertise` is required for both `meta_business` and `tiktok` connections — it is not conditional on whether you intend to run ads, and omitting it fails the request.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub scopes: Option<Vec<ConnectSocialAccountsRequestScopesItem>>,
 }
 
 impl ConnectSocialAccountsRequest {
@@ -27,7 +24,6 @@ pub struct ConnectSocialAccountsRequestBuilder {
     account_id: Option<String>,
     platform: Option<ConnectSocialAccountsRequestPlatform>,
     redirect_url: Option<String>,
-    scopes: Option<Vec<ConnectSocialAccountsRequestScopesItem>>,
 }
 
 impl ConnectSocialAccountsRequestBuilder {
@@ -46,11 +42,6 @@ impl ConnectSocialAccountsRequestBuilder {
         self
     }
 
-    pub fn scopes(mut self, value: Vec<ConnectSocialAccountsRequestScopesItem>) -> Self {
-        self.scopes = Some(value);
-        self
-    }
-
     /// Consumes the builder and constructs a [`ConnectSocialAccountsRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`platform`](ConnectSocialAccountsRequestBuilder::platform)
@@ -64,7 +55,6 @@ impl ConnectSocialAccountsRequestBuilder {
             redirect_url: self
                 .redirect_url
                 .ok_or_else(|| BuildError::missing_field("redirect_url"))?,
-            scopes: self.scopes,
         })
     }
 }

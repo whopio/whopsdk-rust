@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for exposures
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ExposuresQueryRequest {
-    /// Bucketing subject. Ownership is the top-level account_id. Account experiments accept caller-supplied subject IDs; internal experiments derive the user from the session.
+    /// Bucketing subject: the user, account, or anonymous ID the experiment's `bucket_by` assigns on. Only the identity matching `bucket_by` is used; when it is missing, evaluating a single flag fails and a batch omits that experiment. Subjects outside every treatment range receive `control`. `subject[account_id]` also enables account-level targeting rules. Experiment ownership comes from the top-level `account_id`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub subject: Option<ExposuresExperimentsRequestSubject>,
     /// Restricts batch evaluation to this related resource; omitted batches contain only unbound experiments.
@@ -12,13 +12,13 @@ pub struct ExposuresQueryRequest {
     /// Flag or experiment to evaluate — the flag_key handle or the `expt_` id. Omit to return all flags the caller qualifies for.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub flag_key: Option<String>,
-    /// Owning account ID or internal. Required when evaluating by flag_key or in a batch; optional for an expt_ ID.
+    /// Owning account ID. Required when evaluating by flag_key or in a batch; optional for an expt_ ID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[plan]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
+    /// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[variant]=pro remain accepted for existing callers.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub properties: Option<String>,
-    /// Set false to evaluate without recording an exposure. Omitted records it.
+    /// Set `false` to read an assignment without recording an exposure, such as when a client caches assignments up front and records the exposure when the arm is rendered. Omitted records the exposure.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub log_exposure: Option<bool>,
 }

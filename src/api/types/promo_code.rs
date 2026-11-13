@@ -5,6 +5,9 @@ pub struct PromoCode {
     /// Account that owns the promo code.
     #[serde(default)]
     pub account: AccountSummary,
+    /// Affiliate credited with referrals that use the promo code, or `null` when no affiliate is attached.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub affiliate: Option<PromoCodeAffiliate>,
     /// Discount amount. Percentage discounts are represented as a decimal fraction.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -74,6 +77,7 @@ impl PromoCode {
 #[non_exhaustive]
 pub struct PromoCodeBuilder {
     account: Option<AccountSummary>,
+    affiliate: Option<PromoCodeAffiliate>,
     amount_off: Option<f64>,
     churned_users_only: Option<bool>,
     code: Option<String>,
@@ -99,6 +103,11 @@ pub struct PromoCodeBuilder {
 impl PromoCodeBuilder {
     pub fn account(mut self, value: AccountSummary) -> Self {
         self.account = Some(value);
+        self
+    }
+
+    pub fn affiliate(mut self, value: PromoCodeAffiliate) -> Self {
+        self.affiliate = Some(value);
         self
     }
 
@@ -226,6 +235,7 @@ impl PromoCodeBuilder {
             account: self
                 .account
                 .ok_or_else(|| BuildError::missing_field("account"))?,
+            affiliate: self.affiliate,
             amount_off: self
                 .amount_off
                 .ok_or_else(|| BuildError::missing_field("amount_off"))?,

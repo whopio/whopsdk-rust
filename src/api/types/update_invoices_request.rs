@@ -2,48 +2,41 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct UpdateInvoicesRequest {
-    /// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub automatically_finalizes_at: Option<DateTime<FixedOffset>>,
-    /// Inline billing address to create or update a mailing address for this invoice.
+    /// Create a billing address linked to this member.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub billing_address: Option<UpdateInvoicesRequestBillingAddress>,
-    /// Whether to charge the customer a buyer fee on this invoice.
+    /// The buyer's adjustable fee in percentage points, with at most two decimal places: `0` for none, or between 5 and 100. The account keeps it, and Whop waives its take rate on the invoice.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub charge_buyer_fee: Option<bool>,
-    /// How the invoice should be collected.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub buyer_fee_percentage: Option<f64>,
+    /// When payment is due, as an ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub collection_method: Option<InvoiceCollectionMethods>,
-    /// The name of the customer.
+    pub due_at: Option<DateTime<FixedOffset>>,
+    /// The variants being invoiced, all in the same currency. Each variant may appear once. Use quantity for multiple units. A recurring variant must belong to a product. Its first invoice charges `initial_price` plus `renewal_price`. Later invoices charge only `renewal_price`. Paying the first invoice starts a paid billing period immediately, without the variant's trial. The subscription uses the `collection_method` the invoice was sent or issued with. A finite payment count includes the first paid invoice. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer_name: Option<String>,
-    /// The date by which the invoice must be paid.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub due_date: Option<DateTime<FixedOffset>>,
-    /// The email address of the customer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub email_address: Option<String>,
-    /// Line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge. Pass an empty list to remove the breakdown.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub line_items: Option<Vec<UpdateInvoicesRequestLineItemsItem>>,
-    /// The unique identifier of an existing mailing address to attach.
+    pub items: Option<Vec<UpdateInvoicesRequestItemsItem>>,
+    /// An address associated with the member. Mutually exclusive with billing_address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mailing_address_id: Option<String>,
-    /// The unique identifier of a member to assign as the customer.
+    /// The billed customer, a member of the account, prefixed `mber_`. The customer is set when the draft is created and can't change, so pass the draft's current customer or omit this field. A draft saved without a customer can take one here. Changing email recipients does not change this buyer.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_id: Option<String>,
-    /// The unique identifier of the payment method to charge.
+    /// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. Trimmed; `null` or blank clears it. Can be updated on draft, open, or uncollectible invoices.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub memo: Option<String>,
+    /// Up to 50 caller-owned string key/value pairs. The `invoice_memo` key is reserved and ignored; set `memo` instead.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<HashMap<String, String>>,
+    /// The payment methods the customer can choose from when paying through the invoice's checkout link, in the shape a variant or checkout configuration takes. It takes precedence over the invoice's variants and the account, and changes neither. Send both lists. `null` uses its variants' payment methods. Can be updated on drafts.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_method_configuration: Option<UpdateInvoicesRequestPaymentMethodConfiguration>,
+    /// A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not. Setting it needs `payment:charge`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_method_id: Option<String>,
-    /// Updated plan attributes.
+    /// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan: Option<UpdateInvoicesRequestPlan>,
-    /// The unique identifier of an existing product to attach to this invoice. Only allowed while the invoice is still a draft.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub product_id: Option<String>,
-    /// The date that defines when the subscription billing cycle should start.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub subscription_billing_anchor_at: Option<DateTime<FixedOffset>>,
+    pub recipient_emails: Option<Vec<String>>,
 }
 
 impl UpdateInvoicesRequest {
@@ -55,60 +48,37 @@ impl UpdateInvoicesRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct UpdateInvoicesRequestBuilder {
-    automatically_finalizes_at: Option<DateTime<FixedOffset>>,
     billing_address: Option<UpdateInvoicesRequestBillingAddress>,
-    charge_buyer_fee: Option<bool>,
-    collection_method: Option<InvoiceCollectionMethods>,
-    customer_name: Option<String>,
-    due_date: Option<DateTime<FixedOffset>>,
-    email_address: Option<String>,
-    line_items: Option<Vec<UpdateInvoicesRequestLineItemsItem>>,
+    buyer_fee_percentage: Option<f64>,
+    due_at: Option<DateTime<FixedOffset>>,
+    items: Option<Vec<UpdateInvoicesRequestItemsItem>>,
     mailing_address_id: Option<String>,
     member_id: Option<String>,
+    memo: Option<String>,
+    metadata: Option<HashMap<String, String>>,
+    payment_method_configuration: Option<UpdateInvoicesRequestPaymentMethodConfiguration>,
     payment_method_id: Option<String>,
-    plan: Option<UpdateInvoicesRequestPlan>,
-    product_id: Option<String>,
-    subscription_billing_anchor_at: Option<DateTime<FixedOffset>>,
+    recipient_emails: Option<Vec<String>>,
 }
 
 impl UpdateInvoicesRequestBuilder {
-    pub fn automatically_finalizes_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.automatically_finalizes_at = Some(value);
-        self
-    }
-
     pub fn billing_address(mut self, value: UpdateInvoicesRequestBillingAddress) -> Self {
         self.billing_address = Some(value);
         self
     }
 
-    pub fn charge_buyer_fee(mut self, value: bool) -> Self {
-        self.charge_buyer_fee = Some(value);
+    pub fn buyer_fee_percentage(mut self, value: f64) -> Self {
+        self.buyer_fee_percentage = Some(value);
         self
     }
 
-    pub fn collection_method(mut self, value: InvoiceCollectionMethods) -> Self {
-        self.collection_method = Some(value);
+    pub fn due_at(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.due_at = Some(value);
         self
     }
 
-    pub fn customer_name(mut self, value: impl Into<String>) -> Self {
-        self.customer_name = Some(value.into());
-        self
-    }
-
-    pub fn due_date(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.due_date = Some(value);
-        self
-    }
-
-    pub fn email_address(mut self, value: impl Into<String>) -> Self {
-        self.email_address = Some(value.into());
-        self
-    }
-
-    pub fn line_items(mut self, value: Vec<UpdateInvoicesRequestLineItemsItem>) -> Self {
-        self.line_items = Some(value);
+    pub fn items(mut self, value: Vec<UpdateInvoicesRequestItemsItem>) -> Self {
+        self.items = Some(value);
         self
     }
 
@@ -122,43 +92,48 @@ impl UpdateInvoicesRequestBuilder {
         self
     }
 
+    pub fn memo(mut self, value: impl Into<String>) -> Self {
+        self.memo = Some(value.into());
+        self
+    }
+
+    pub fn metadata(mut self, value: HashMap<String, String>) -> Self {
+        self.metadata = Some(value);
+        self
+    }
+
+    pub fn payment_method_configuration(
+        mut self,
+        value: UpdateInvoicesRequestPaymentMethodConfiguration,
+    ) -> Self {
+        self.payment_method_configuration = Some(value);
+        self
+    }
+
     pub fn payment_method_id(mut self, value: impl Into<String>) -> Self {
         self.payment_method_id = Some(value.into());
         self
     }
 
-    pub fn plan(mut self, value: UpdateInvoicesRequestPlan) -> Self {
-        self.plan = Some(value);
-        self
-    }
-
-    pub fn product_id(mut self, value: impl Into<String>) -> Self {
-        self.product_id = Some(value.into());
-        self
-    }
-
-    pub fn subscription_billing_anchor_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.subscription_billing_anchor_at = Some(value);
+    pub fn recipient_emails(mut self, value: Vec<String>) -> Self {
+        self.recipient_emails = Some(value);
         self
     }
 
     /// Consumes the builder and constructs a [`UpdateInvoicesRequest`].
     pub fn build(self) -> Result<UpdateInvoicesRequest, BuildError> {
         Ok(UpdateInvoicesRequest {
-            automatically_finalizes_at: self.automatically_finalizes_at,
             billing_address: self.billing_address,
-            charge_buyer_fee: self.charge_buyer_fee,
-            collection_method: self.collection_method,
-            customer_name: self.customer_name,
-            due_date: self.due_date,
-            email_address: self.email_address,
-            line_items: self.line_items,
+            buyer_fee_percentage: self.buyer_fee_percentage,
+            due_at: self.due_at,
+            items: self.items,
             mailing_address_id: self.mailing_address_id,
             member_id: self.member_id,
+            memo: self.memo,
+            metadata: self.metadata,
+            payment_method_configuration: self.payment_method_configuration,
             payment_method_id: self.payment_method_id,
-            plan: self.plan,
-            product_id: self.product_id,
-            subscription_billing_anchor_at: self.subscription_billing_anchor_at,
+            recipient_emails: self.recipient_emails,
         })
     }
 }

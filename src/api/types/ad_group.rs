@@ -19,11 +19,19 @@ pub struct AdGroup {
     /// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bid_type: Option<AdGroupBidType>,
-    /// This ad group's budget, in the ad account's currency. `null` when the budget is set on the campaign instead.
+    /// This ad group's budget in USD, which is what it is stored and billed in. `null` when the budget is set on the campaign instead.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub budget_amount: Option<f64>,
+    /// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub budget_amount_local: Option<f64>,
+    /// The ISO 4217 code `budget_amount_local` is in: the account's `ads_reporting_currency` preference. `usd` unless the account changed it.
+    #[serde(default)]
+    pub budget_currency: String,
     /// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub budget_type: Option<AdGroupBudgetType>,
@@ -53,9 +61,6 @@ pub struct AdGroup {
     pub contacts: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub conversion_event: Option<ConversionEvent>,
-    /// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub conversion_location: Option<AdGroupConversionLocation>,
     /// Spend divided by attributed add-to-cart events; null when they are not the goal and none are attributed.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -127,6 +132,9 @@ pub struct AdGroup {
     /// Conversion value attributed to each custom event, keyed by event name like custom_event_counts. Sums the value passed to whop.track, normalized to USD; events fired without a value contribute 0.
     #[serde(default)]
     pub custom_event_values: HashMap<String, serde_json::Value>,
+    /// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub delivery_schedule: Option<AdGroupDeliverySchedule>,
     /// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
     pub delivery_status: AdGroupDeliveryStatus,
     /// Age, gender, and automatic-audience targeting.
@@ -136,26 +144,17 @@ pub struct AdGroup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub desired_cost_per_result: Option<f64>,
-    /// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting. Special ad category campaigns are limited to approved interests.
-    #[serde(default)]
-    pub detailed_targeting: AdGroupDetailedTargeting,
     /// Device platforms and operating systems targeted.
     #[serde(default)]
     pub devices: AdGroupDevices,
-    /// Whether the ad platform automatically mixes and matches this ad group's creatives and copy to find the best-performing combinations.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub dynamic_creative: Option<bool>,
     /// When the ad group stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ends_at: Option<String>,
-    /// Platform-reported impressions divided by reach.
+    /// Impressions divided by reach.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub frequency: Option<f64>,
-    /// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective; `null` when uncapped.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub frequency_cap: Option<AdGroupFrequencyCap>,
     /// Unique identifier for the ad group, prefixed `adgrp_`.
     #[serde(default)]
     pub id: String,
@@ -165,6 +164,8 @@ pub struct AdGroup {
     pub impressions: f64,
     #[serde(default)]
     pub issues: Vec<AdPlatformIssue>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub keywords: Option<Vec<AdGroupKeyword>>,
     #[serde(default)]
     pub languages: Vec<String>,
     /// USD value attributed to lead events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
@@ -175,22 +176,13 @@ pub struct AdGroup {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub leads: f64,
-    /// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+    /// Progress toward the conversions this ad group's learning phase needs. Null unless it is learning or learning limited and valid counts are available. Reaching the threshold does not determine delivery status.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub learning_progress: Option<AdGroupLearningProgress>,
+    /// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub link_clicks: f64,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub message_apps: Option<Vec<AdGroupMessageAppsItem>>,
-    /// Minimum the ad group tries to spend each day. `null` when no floor is set.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub minimum_daily_spend: Option<f64>,
-    /// The result the ad group's delivery is optimized to get the most of.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub optimization_goal: Option<AdGroupOptimizationGoal>,
-    #[serde(default)]
-    pub placements: Vec<AdGroupPlacement>,
-    /// The ad platform this ad group runs on.
-    pub platform: AdGroupPlatform,
     /// USD value of pixel-attributed purchases.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -289,6 +281,8 @@ pub struct AdGroupBuilder {
     audiences: Option<AdGroupAudiences>,
     bid_type: Option<AdGroupBidType>,
     budget_amount: Option<f64>,
+    budget_amount_local: Option<f64>,
+    budget_currency: Option<String>,
     budget_type: Option<AdGroupBudgetType>,
     click_through_rate: Option<f64>,
     clicks: Option<f64>,
@@ -297,7 +291,6 @@ pub struct AdGroupBuilder {
     contact_value: Option<f64>,
     contacts: Option<f64>,
     conversion_event: Option<ConversionEvent>,
-    conversion_location: Option<AdGroupConversionLocation>,
     cost_per_added_to_cart: Option<f64>,
     cost_per_click: Option<f64>,
     cost_per_completed_registration: Option<f64>,
@@ -314,27 +307,22 @@ pub struct AdGroupBuilder {
     custom_conversions: Option<f64>,
     custom_event_counts: Option<HashMap<String, serde_json::Value>>,
     custom_event_values: Option<HashMap<String, serde_json::Value>>,
+    delivery_schedule: Option<AdGroupDeliverySchedule>,
     delivery_status: Option<AdGroupDeliveryStatus>,
     demographics: Option<AdGroupDemographics>,
     desired_cost_per_result: Option<f64>,
-    detailed_targeting: Option<AdGroupDetailedTargeting>,
     devices: Option<AdGroupDevices>,
-    dynamic_creative: Option<bool>,
     ends_at: Option<String>,
     frequency: Option<f64>,
-    frequency_cap: Option<AdGroupFrequencyCap>,
     id: Option<String>,
     impressions: Option<f64>,
     issues: Option<Vec<AdPlatformIssue>>,
+    keywords: Option<Vec<AdGroupKeyword>>,
     languages: Option<Vec<String>>,
     lead_value: Option<f64>,
     leads: Option<f64>,
+    learning_progress: Option<AdGroupLearningProgress>,
     link_clicks: Option<f64>,
-    message_apps: Option<Vec<AdGroupMessageAppsItem>>,
-    minimum_daily_spend: Option<f64>,
-    optimization_goal: Option<AdGroupOptimizationGoal>,
-    placements: Option<Vec<AdGroupPlacement>>,
-    platform: Option<AdGroupPlatform>,
     purchase_value: Option<f64>,
     purchases: Option<f64>,
     reach: Option<f64>,
@@ -390,6 +378,16 @@ impl AdGroupBuilder {
         self
     }
 
+    pub fn budget_amount_local(mut self, value: f64) -> Self {
+        self.budget_amount_local = Some(value);
+        self
+    }
+
+    pub fn budget_currency(mut self, value: impl Into<String>) -> Self {
+        self.budget_currency = Some(value.into());
+        self
+    }
+
     pub fn budget_type(mut self, value: AdGroupBudgetType) -> Self {
         self.budget_type = Some(value);
         self
@@ -427,11 +425,6 @@ impl AdGroupBuilder {
 
     pub fn conversion_event(mut self, value: ConversionEvent) -> Self {
         self.conversion_event = Some(value);
-        self
-    }
-
-    pub fn conversion_location(mut self, value: AdGroupConversionLocation) -> Self {
-        self.conversion_location = Some(value);
         self
     }
 
@@ -515,6 +508,11 @@ impl AdGroupBuilder {
         self
     }
 
+    pub fn delivery_schedule(mut self, value: AdGroupDeliverySchedule) -> Self {
+        self.delivery_schedule = Some(value);
+        self
+    }
+
     pub fn delivery_status(mut self, value: AdGroupDeliveryStatus) -> Self {
         self.delivery_status = Some(value);
         self
@@ -530,18 +528,8 @@ impl AdGroupBuilder {
         self
     }
 
-    pub fn detailed_targeting(mut self, value: AdGroupDetailedTargeting) -> Self {
-        self.detailed_targeting = Some(value);
-        self
-    }
-
     pub fn devices(mut self, value: AdGroupDevices) -> Self {
         self.devices = Some(value);
-        self
-    }
-
-    pub fn dynamic_creative(mut self, value: bool) -> Self {
-        self.dynamic_creative = Some(value);
         self
     }
 
@@ -552,11 +540,6 @@ impl AdGroupBuilder {
 
     pub fn frequency(mut self, value: f64) -> Self {
         self.frequency = Some(value);
-        self
-    }
-
-    pub fn frequency_cap(mut self, value: AdGroupFrequencyCap) -> Self {
-        self.frequency_cap = Some(value);
         self
     }
 
@@ -575,6 +558,11 @@ impl AdGroupBuilder {
         self
     }
 
+    pub fn keywords(mut self, value: Vec<AdGroupKeyword>) -> Self {
+        self.keywords = Some(value);
+        self
+    }
+
     pub fn languages(mut self, value: Vec<String>) -> Self {
         self.languages = Some(value);
         self
@@ -590,33 +578,13 @@ impl AdGroupBuilder {
         self
     }
 
+    pub fn learning_progress(mut self, value: AdGroupLearningProgress) -> Self {
+        self.learning_progress = Some(value);
+        self
+    }
+
     pub fn link_clicks(mut self, value: f64) -> Self {
         self.link_clicks = Some(value);
-        self
-    }
-
-    pub fn message_apps(mut self, value: Vec<AdGroupMessageAppsItem>) -> Self {
-        self.message_apps = Some(value);
-        self
-    }
-
-    pub fn minimum_daily_spend(mut self, value: f64) -> Self {
-        self.minimum_daily_spend = Some(value);
-        self
-    }
-
-    pub fn optimization_goal(mut self, value: AdGroupOptimizationGoal) -> Self {
-        self.optimization_goal = Some(value);
-        self
-    }
-
-    pub fn placements(mut self, value: Vec<AdGroupPlacement>) -> Self {
-        self.placements = Some(value);
-        self
-    }
-
-    pub fn platform(mut self, value: AdGroupPlatform) -> Self {
-        self.platform = Some(value);
         self
     }
 
@@ -736,6 +704,7 @@ impl AdGroupBuilder {
     /// - [`added_to_cart_value`](AdGroupBuilder::added_to_cart_value)
     /// - [`added_to_carts`](AdGroupBuilder::added_to_carts)
     /// - [`audiences`](AdGroupBuilder::audiences)
+    /// - [`budget_currency`](AdGroupBuilder::budget_currency)
     /// - [`click_through_rate`](AdGroupBuilder::click_through_rate)
     /// - [`clicks`](AdGroupBuilder::clicks)
     /// - [`completed_registration_value`](AdGroupBuilder::completed_registration_value)
@@ -750,7 +719,6 @@ impl AdGroupBuilder {
     /// - [`custom_event_values`](AdGroupBuilder::custom_event_values)
     /// - [`delivery_status`](AdGroupBuilder::delivery_status)
     /// - [`demographics`](AdGroupBuilder::demographics)
-    /// - [`detailed_targeting`](AdGroupBuilder::detailed_targeting)
     /// - [`devices`](AdGroupBuilder::devices)
     /// - [`id`](AdGroupBuilder::id)
     /// - [`impressions`](AdGroupBuilder::impressions)
@@ -759,8 +727,6 @@ impl AdGroupBuilder {
     /// - [`lead_value`](AdGroupBuilder::lead_value)
     /// - [`leads`](AdGroupBuilder::leads)
     /// - [`link_clicks`](AdGroupBuilder::link_clicks)
-    /// - [`placements`](AdGroupBuilder::placements)
-    /// - [`platform`](AdGroupBuilder::platform)
     /// - [`purchase_value`](AdGroupBuilder::purchase_value)
     /// - [`purchases`](AdGroupBuilder::purchases)
     /// - [`reach`](AdGroupBuilder::reach)
@@ -792,6 +758,10 @@ impl AdGroupBuilder {
                 .ok_or_else(|| BuildError::missing_field("audiences"))?,
             bid_type: self.bid_type,
             budget_amount: self.budget_amount,
+            budget_amount_local: self.budget_amount_local,
+            budget_currency: self
+                .budget_currency
+                .ok_or_else(|| BuildError::missing_field("budget_currency"))?,
             budget_type: self.budget_type,
             click_through_rate: self
                 .click_through_rate
@@ -812,7 +782,6 @@ impl AdGroupBuilder {
                 .contacts
                 .ok_or_else(|| BuildError::missing_field("contacts"))?,
             conversion_event: self.conversion_event,
-            conversion_location: self.conversion_location,
             cost_per_added_to_cart: self.cost_per_added_to_cart,
             cost_per_click: self
                 .cost_per_click
@@ -841,6 +810,7 @@ impl AdGroupBuilder {
             custom_event_values: self
                 .custom_event_values
                 .ok_or_else(|| BuildError::missing_field("custom_event_values"))?,
+            delivery_schedule: self.delivery_schedule,
             delivery_status: self
                 .delivery_status
                 .ok_or_else(|| BuildError::missing_field("delivery_status"))?,
@@ -848,16 +818,11 @@ impl AdGroupBuilder {
                 .demographics
                 .ok_or_else(|| BuildError::missing_field("demographics"))?,
             desired_cost_per_result: self.desired_cost_per_result,
-            detailed_targeting: self
-                .detailed_targeting
-                .ok_or_else(|| BuildError::missing_field("detailed_targeting"))?,
             devices: self
                 .devices
                 .ok_or_else(|| BuildError::missing_field("devices"))?,
-            dynamic_creative: self.dynamic_creative,
             ends_at: self.ends_at,
             frequency: self.frequency,
-            frequency_cap: self.frequency_cap,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             impressions: self
                 .impressions
@@ -865,6 +830,7 @@ impl AdGroupBuilder {
             issues: self
                 .issues
                 .ok_or_else(|| BuildError::missing_field("issues"))?,
+            keywords: self.keywords,
             languages: self
                 .languages
                 .ok_or_else(|| BuildError::missing_field("languages"))?,
@@ -874,18 +840,10 @@ impl AdGroupBuilder {
             leads: self
                 .leads
                 .ok_or_else(|| BuildError::missing_field("leads"))?,
+            learning_progress: self.learning_progress,
             link_clicks: self
                 .link_clicks
                 .ok_or_else(|| BuildError::missing_field("link_clicks"))?,
-            message_apps: self.message_apps,
-            minimum_daily_spend: self.minimum_daily_spend,
-            optimization_goal: self.optimization_goal,
-            placements: self
-                .placements
-                .ok_or_else(|| BuildError::missing_field("placements"))?,
-            platform: self
-                .platform
-                .ok_or_else(|| BuildError::missing_field("platform"))?,
             purchase_value: self
                 .purchase_value
                 .ok_or_else(|| BuildError::missing_field("purchase_value"))?,

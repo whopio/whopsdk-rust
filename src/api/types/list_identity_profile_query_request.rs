@@ -19,7 +19,7 @@ pub struct ListIdentityProfileQueryRequest {
     pub profile_type: Option<IdentityProfileKinds>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<IdentityProfileStatuses>,
-    /// The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
+    /// Account to list identity profiles for, prefixed `biz_`. Omit to list profiles across every account you can read, including child accounts under a parent and, with a user credential, your own user.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
 }

@@ -16,6 +16,7 @@ pub enum PaymentTransactionTypes {
     FraudScreening,
     Authorization,
     Installment,
+    Deposit,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -36,6 +37,7 @@ impl Serialize for PaymentTransactionTypes {
             Self::FraudScreening => serializer.serialize_str("fraud_screening"),
             Self::Authorization => serializer.serialize_str("authorization"),
             Self::Installment => serializer.serialize_str("installment"),
+            Self::Deposit => serializer.serialize_str("deposit"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -57,6 +59,7 @@ impl<'de> Deserialize<'de> for PaymentTransactionTypes {
             "fraud_screening" => Ok(Self::FraudScreening),
             "authorization" => Ok(Self::Authorization),
             "installment" => Ok(Self::Installment),
+            "deposit" => Ok(Self::Deposit),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -77,6 +80,7 @@ impl fmt::Display for PaymentTransactionTypes {
             Self::FraudScreening => write!(f, "fraud_screening"),
             Self::Authorization => write!(f, "authorization"),
             Self::Installment => write!(f, "installment"),
+            Self::Deposit => write!(f, "deposit"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

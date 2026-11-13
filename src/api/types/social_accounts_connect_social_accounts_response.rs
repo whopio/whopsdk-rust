@@ -2,7 +2,6 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ConnectSocialAccountsResponse {
-    /// The OAuth authorization URL to redirect the user to.
     #[serde(default)]
     pub authorize_url: String,
 }

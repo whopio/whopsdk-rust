@@ -7,6 +7,7 @@ pub enum WebhookEvent {
     AccountUpdated,
     AccountFinancingApproved,
     AccountFinancingDenied,
+    AccountFinancingDisabled,
     InvoiceCreated,
     InvoiceMarkedUncollectible,
     InvoicePaid,
@@ -15,6 +16,7 @@ pub enum WebhookEvent {
     MembershipActivated,
     MembershipDeactivated,
     MembershipTrialEndingSoon,
+    MembershipUpdated,
     EntryCreated,
     EntryApproved,
     EntryDenied,
@@ -51,6 +53,9 @@ pub enum WebhookEvent {
     CardApplicationApproved,
     CardApplicationDenied,
     CourseLessonInteractionCompleted,
+    DomainCreated,
+    DomainUpdated,
+    DomainDeleted,
     PayoutMethodCreated,
     VerificationSucceeded,
     IdentityProfileApproved,
@@ -75,9 +80,20 @@ pub enum WebhookEvent {
     ShipmentUpdated,
     MemberCreated,
     MemberUpdated,
+    AdCampaignCreated,
     AdCampaignPaymentFailed,
     AdCampaignUpdated,
+    AdCampaignEvents,
+    AdCampaignDeleted,
+    AdGroupCreated,
+    AdGroupUpdated,
+    AdGroupDeleted,
+    AdCreated,
     AdUpdated,
+    AdDeleted,
+    AppInstallationCreated,
+    AppInstallationDeleted,
+    EventsCreated,
     ChatMessageCreated,
     ChatReactionCreated,
     PaymentCreated,
@@ -91,6 +107,7 @@ pub enum WebhookEvent {
     RefundUpdated,
     DisputeAlertCreated,
     MembershipCancelAtPeriodEndChanged,
+    ShippingAddressChanged,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -104,6 +121,9 @@ impl Serialize for WebhookEvent {
                 serializer.serialize_str("account.financing_approved")
             }
             Self::AccountFinancingDenied => serializer.serialize_str("account.financing_denied"),
+            Self::AccountFinancingDisabled => {
+                serializer.serialize_str("account.financing_disabled")
+            }
             Self::InvoiceCreated => serializer.serialize_str("invoice.created"),
             Self::InvoiceMarkedUncollectible => {
                 serializer.serialize_str("invoice.marked_uncollectible")
@@ -116,6 +136,7 @@ impl Serialize for WebhookEvent {
             Self::MembershipTrialEndingSoon => {
                 serializer.serialize_str("membership.trial_ending_soon")
             }
+            Self::MembershipUpdated => serializer.serialize_str("membership.updated"),
             Self::EntryCreated => serializer.serialize_str("entry.created"),
             Self::EntryApproved => serializer.serialize_str("entry.approved"),
             Self::EntryDenied => serializer.serialize_str("entry.denied"),
@@ -162,6 +183,9 @@ impl Serialize for WebhookEvent {
             Self::CourseLessonInteractionCompleted => {
                 serializer.serialize_str("course_lesson_interaction.completed")
             }
+            Self::DomainCreated => serializer.serialize_str("domain.created"),
+            Self::DomainUpdated => serializer.serialize_str("domain.updated"),
+            Self::DomainDeleted => serializer.serialize_str("domain.deleted"),
             Self::PayoutMethodCreated => serializer.serialize_str("payout_method.created"),
             Self::VerificationSucceeded => serializer.serialize_str("verification.succeeded"),
             Self::IdentityProfileApproved => serializer.serialize_str("identity_profile.approved"),
@@ -196,9 +220,20 @@ impl Serialize for WebhookEvent {
             Self::ShipmentUpdated => serializer.serialize_str("shipment.updated"),
             Self::MemberCreated => serializer.serialize_str("member.created"),
             Self::MemberUpdated => serializer.serialize_str("member.updated"),
+            Self::AdCampaignCreated => serializer.serialize_str("ad_campaign.created"),
             Self::AdCampaignPaymentFailed => serializer.serialize_str("ad_campaign.payment_failed"),
             Self::AdCampaignUpdated => serializer.serialize_str("ad_campaign.updated"),
+            Self::AdCampaignEvents => serializer.serialize_str("ad_campaign.events"),
+            Self::AdCampaignDeleted => serializer.serialize_str("ad_campaign.deleted"),
+            Self::AdGroupCreated => serializer.serialize_str("ad_group.created"),
+            Self::AdGroupUpdated => serializer.serialize_str("ad_group.updated"),
+            Self::AdGroupDeleted => serializer.serialize_str("ad_group.deleted"),
+            Self::AdCreated => serializer.serialize_str("ad.created"),
             Self::AdUpdated => serializer.serialize_str("ad.updated"),
+            Self::AdDeleted => serializer.serialize_str("ad.deleted"),
+            Self::AppInstallationCreated => serializer.serialize_str("app_installation.created"),
+            Self::AppInstallationDeleted => serializer.serialize_str("app_installation.deleted"),
+            Self::EventsCreated => serializer.serialize_str("events.created"),
             Self::ChatMessageCreated => serializer.serialize_str("chat.message.created"),
             Self::ChatReactionCreated => serializer.serialize_str("chat.reaction.created"),
             Self::PaymentCreated => serializer.serialize_str("payment.created"),
@@ -214,6 +249,7 @@ impl Serialize for WebhookEvent {
             Self::MembershipCancelAtPeriodEndChanged => {
                 serializer.serialize_str("membership.cancel_at_period_end_changed")
             }
+            Self::ShippingAddressChanged => serializer.serialize_str("shipping_address.changed"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -226,6 +262,7 @@ impl<'de> Deserialize<'de> for WebhookEvent {
             "account.updated" => Ok(Self::AccountUpdated),
             "account.financing_approved" => Ok(Self::AccountFinancingApproved),
             "account.financing_denied" => Ok(Self::AccountFinancingDenied),
+            "account.financing_disabled" => Ok(Self::AccountFinancingDisabled),
             "invoice.created" => Ok(Self::InvoiceCreated),
             "invoice.marked_uncollectible" => Ok(Self::InvoiceMarkedUncollectible),
             "invoice.paid" => Ok(Self::InvoicePaid),
@@ -234,6 +271,7 @@ impl<'de> Deserialize<'de> for WebhookEvent {
             "membership.activated" => Ok(Self::MembershipActivated),
             "membership.deactivated" => Ok(Self::MembershipDeactivated),
             "membership.trial_ending_soon" => Ok(Self::MembershipTrialEndingSoon),
+            "membership.updated" => Ok(Self::MembershipUpdated),
             "entry.created" => Ok(Self::EntryCreated),
             "entry.approved" => Ok(Self::EntryApproved),
             "entry.denied" => Ok(Self::EntryDenied),
@@ -270,6 +308,9 @@ impl<'de> Deserialize<'de> for WebhookEvent {
             "card_application.approved" => Ok(Self::CardApplicationApproved),
             "card_application.denied" => Ok(Self::CardApplicationDenied),
             "course_lesson_interaction.completed" => Ok(Self::CourseLessonInteractionCompleted),
+            "domain.created" => Ok(Self::DomainCreated),
+            "domain.updated" => Ok(Self::DomainUpdated),
+            "domain.deleted" => Ok(Self::DomainDeleted),
             "payout_method.created" => Ok(Self::PayoutMethodCreated),
             "verification.succeeded" => Ok(Self::VerificationSucceeded),
             "identity_profile.approved" => Ok(Self::IdentityProfileApproved),
@@ -294,9 +335,20 @@ impl<'de> Deserialize<'de> for WebhookEvent {
             "shipment.updated" => Ok(Self::ShipmentUpdated),
             "member.created" => Ok(Self::MemberCreated),
             "member.updated" => Ok(Self::MemberUpdated),
+            "ad_campaign.created" => Ok(Self::AdCampaignCreated),
             "ad_campaign.payment_failed" => Ok(Self::AdCampaignPaymentFailed),
             "ad_campaign.updated" => Ok(Self::AdCampaignUpdated),
+            "ad_campaign.events" => Ok(Self::AdCampaignEvents),
+            "ad_campaign.deleted" => Ok(Self::AdCampaignDeleted),
+            "ad_group.created" => Ok(Self::AdGroupCreated),
+            "ad_group.updated" => Ok(Self::AdGroupUpdated),
+            "ad_group.deleted" => Ok(Self::AdGroupDeleted),
+            "ad.created" => Ok(Self::AdCreated),
             "ad.updated" => Ok(Self::AdUpdated),
+            "ad.deleted" => Ok(Self::AdDeleted),
+            "app_installation.created" => Ok(Self::AppInstallationCreated),
+            "app_installation.deleted" => Ok(Self::AppInstallationDeleted),
+            "events.created" => Ok(Self::EventsCreated),
             "chat.message.created" => Ok(Self::ChatMessageCreated),
             "chat.reaction.created" => Ok(Self::ChatReactionCreated),
             "payment.created" => Ok(Self::PaymentCreated),
@@ -312,6 +364,7 @@ impl<'de> Deserialize<'de> for WebhookEvent {
             "membership.cancel_at_period_end_changed" => {
                 Ok(Self::MembershipCancelAtPeriodEndChanged)
             }
+            "shipping_address.changed" => Ok(Self::ShippingAddressChanged),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -323,6 +376,7 @@ impl fmt::Display for WebhookEvent {
             Self::AccountUpdated => write!(f, "account.updated"),
             Self::AccountFinancingApproved => write!(f, "account.financing_approved"),
             Self::AccountFinancingDenied => write!(f, "account.financing_denied"),
+            Self::AccountFinancingDisabled => write!(f, "account.financing_disabled"),
             Self::InvoiceCreated => write!(f, "invoice.created"),
             Self::InvoiceMarkedUncollectible => write!(f, "invoice.marked_uncollectible"),
             Self::InvoicePaid => write!(f, "invoice.paid"),
@@ -331,6 +385,7 @@ impl fmt::Display for WebhookEvent {
             Self::MembershipActivated => write!(f, "membership.activated"),
             Self::MembershipDeactivated => write!(f, "membership.deactivated"),
             Self::MembershipTrialEndingSoon => write!(f, "membership.trial_ending_soon"),
+            Self::MembershipUpdated => write!(f, "membership.updated"),
             Self::EntryCreated => write!(f, "entry.created"),
             Self::EntryApproved => write!(f, "entry.approved"),
             Self::EntryDenied => write!(f, "entry.denied"),
@@ -371,6 +426,9 @@ impl fmt::Display for WebhookEvent {
             Self::CourseLessonInteractionCompleted => {
                 write!(f, "course_lesson_interaction.completed")
             }
+            Self::DomainCreated => write!(f, "domain.created"),
+            Self::DomainUpdated => write!(f, "domain.updated"),
+            Self::DomainDeleted => write!(f, "domain.deleted"),
             Self::PayoutMethodCreated => write!(f, "payout_method.created"),
             Self::VerificationSucceeded => write!(f, "verification.succeeded"),
             Self::IdentityProfileApproved => write!(f, "identity_profile.approved"),
@@ -395,9 +453,20 @@ impl fmt::Display for WebhookEvent {
             Self::ShipmentUpdated => write!(f, "shipment.updated"),
             Self::MemberCreated => write!(f, "member.created"),
             Self::MemberUpdated => write!(f, "member.updated"),
+            Self::AdCampaignCreated => write!(f, "ad_campaign.created"),
             Self::AdCampaignPaymentFailed => write!(f, "ad_campaign.payment_failed"),
             Self::AdCampaignUpdated => write!(f, "ad_campaign.updated"),
+            Self::AdCampaignEvents => write!(f, "ad_campaign.events"),
+            Self::AdCampaignDeleted => write!(f, "ad_campaign.deleted"),
+            Self::AdGroupCreated => write!(f, "ad_group.created"),
+            Self::AdGroupUpdated => write!(f, "ad_group.updated"),
+            Self::AdGroupDeleted => write!(f, "ad_group.deleted"),
+            Self::AdCreated => write!(f, "ad.created"),
             Self::AdUpdated => write!(f, "ad.updated"),
+            Self::AdDeleted => write!(f, "ad.deleted"),
+            Self::AppInstallationCreated => write!(f, "app_installation.created"),
+            Self::AppInstallationDeleted => write!(f, "app_installation.deleted"),
+            Self::EventsCreated => write!(f, "events.created"),
             Self::ChatMessageCreated => write!(f, "chat.message.created"),
             Self::ChatReactionCreated => write!(f, "chat.reaction.created"),
             Self::PaymentCreated => write!(f, "payment.created"),
@@ -413,6 +482,7 @@ impl fmt::Display for WebhookEvent {
             Self::MembershipCancelAtPeriodEndChanged => {
                 write!(f, "membership.cancel_at_period_end_changed")
             }
+            Self::ShippingAddressChanged => write!(f, "shipping_address.changed"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

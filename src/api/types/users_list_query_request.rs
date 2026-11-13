@@ -3,6 +3,9 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UsersListQueryRequest {
+    /// Prioritize people relevant to this channel for mentions. Results remain global; channel access is required.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub context_channel_id: Option<String>,
     /// A search term to filter users by name or username.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
@@ -29,6 +32,7 @@ impl UsersListQueryRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct UsersListQueryRequestBuilder {
+    context_channel_id: Option<String>,
     query: Option<String>,
     first: Option<i64>,
     after: Option<String>,
@@ -37,6 +41,11 @@ pub struct UsersListQueryRequestBuilder {
 }
 
 impl UsersListQueryRequestBuilder {
+    pub fn context_channel_id(mut self, value: impl Into<String>) -> Self {
+        self.context_channel_id = Some(value.into());
+        self
+    }
+
     pub fn query(mut self, value: impl Into<String>) -> Self {
         self.query = Some(value.into());
         self
@@ -65,6 +74,7 @@ impl UsersListQueryRequestBuilder {
     /// Consumes the builder and constructs a [`UsersListQueryRequest`].
     pub fn build(self) -> Result<UsersListQueryRequest, BuildError> {
         Ok(UsersListQueryRequest {
+            context_channel_id: self.context_channel_id,
             query: self.query,
             first: self.first,
             after: self.after,

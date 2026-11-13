@@ -2,9 +2,12 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct ListSwapsResponseDataItem {
-    /// Account ID that owns the wallet used for the swap.
+    /// Account that owns the swap: a business ID prefixed `biz_`, or the user ID for a personal account.
     #[serde(default)]
     pub account_id: String,
+    /// The from_token amount the swap was created to spend, as a decimal string. A swap created with `all` reports the wallet balance it read. Null for a fiat pair.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<String>,
     /// Latest error returned for a failed swap.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
@@ -17,6 +20,9 @@ pub struct ListSwapsResponseDataItem {
     /// On-chain transaction hashes produced by the swap.
     #[serde(default)]
     pub tx_hashes: Vec<String>,
+    /// User whose personal account owns the swap, prefixed `user_`. Null for a business account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
 }
 
 impl ListSwapsResponseDataItem {
@@ -29,16 +35,23 @@ impl ListSwapsResponseDataItem {
 #[non_exhaustive]
 pub struct ListSwapsResponseDataItemBuilder {
     account_id: Option<String>,
+    amount: Option<String>,
     error: Option<String>,
     id: Option<String>,
     object: Option<ListSwapsResponseDataItemObject>,
     status: Option<ListSwapsResponseDataItemStatus>,
     tx_hashes: Option<Vec<String>>,
+    user_id: Option<String>,
 }
 
 impl ListSwapsResponseDataItemBuilder {
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
+        self
+    }
+
+    pub fn amount(mut self, value: impl Into<String>) -> Self {
+        self.amount = Some(value.into());
         self
     }
 
@@ -67,6 +80,11 @@ impl ListSwapsResponseDataItemBuilder {
         self
     }
 
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`ListSwapsResponseDataItem`].
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](ListSwapsResponseDataItemBuilder::account_id)
@@ -79,6 +97,7 @@ impl ListSwapsResponseDataItemBuilder {
             account_id: self
                 .account_id
                 .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            amount: self.amount,
             error: self.error,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             object: self
@@ -90,6 +109,7 @@ impl ListSwapsResponseDataItemBuilder {
             tx_hashes: self
                 .tx_hashes
                 .ok_or_else(|| BuildError::missing_field("tx_hashes"))?,
+            user_id: self.user_id,
         })
     }
 }

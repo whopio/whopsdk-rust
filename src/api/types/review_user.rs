@@ -1,6 +1,5 @@
 pub use crate::prelude::*;
 
-/// The user account of the person who wrote this review.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ReviewUser {
     /// The unique identifier for the user.

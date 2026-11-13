@@ -142,7 +142,7 @@ pub struct PaymentLegacy {
     /// The resolution center cases opened by the customer on this payment. Null if the actor in context does not have the payment:resolution_center_case:read permission.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resolutions: Option<Vec<PaymentLegacyResolutionsItem>>,
-    /// True when the payment status is `open` and its membership is in one of the retry-eligible states (`active`, `trialing`, `completed`, or `past_due`), or when it is a failed initial billing-engine payment on a `drafted` membership with an unlimited-stock plan; otherwise false. Used to decide if Whop can attempt the charge again.
+    /// True when the payment is `open`, its processor can be charged again, its membership is `active`, `trialing`, or `past_due` (or it is a failed initial payment on a `drafted` membership), it is not paid through an invoice link, and its one manual retry is not used up. Used to decide if the payment can be retried by hand. A retry can still be refused when the company cannot accept payments.
     #[serde(default)]
     pub retryable: bool,
     /// Whop's in-house fraud risk score for this payment, from 0 (lowest risk) to 100 (highest risk). Null when the payment has not been scored or scoring has not yet completed.
@@ -173,6 +173,9 @@ pub struct PaymentLegacy {
     /// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shipping_address: Option<PaymentLegacyShippingAddress>,
+    /// The stock keeping unit of the variant this payment charged for (the first item, on a cart), as set by the seller. Accounts with billing-reason SKU suffixes enabled receive it stamped with why the charge happened: `-S` for a first subscription charge, `-R` for a renewal, `-C` for a one-time purchase, `-U` when the payment's own metadata carries `upsell: true`, `-F` when nothing was charged. Other billing reasons carry the bare SKU. Null when the variant has no SKU.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sku: Option<String>,
     /// The current lifecycle state of this payment (e.g., 'draft', 'open', 'paid', 'void').
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<ReceiptStatus>,
@@ -219,7 +222,7 @@ pub struct PaymentLegacy {
     /// The issuer's address and card security code check results for this payment. Null when the processor returned none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verification_checks: Option<PaymentLegacyVerificationChecks>,
-    /// True when the payment is tied to a membership in `past_due`, the payment status is `open`, and the processor allows voiding payments; otherwise false.
+    /// True when the payment can be voided or canceled. The request is rejected if the payment is no longer eligible.
     #[serde(default)]
     pub voidable: bool,
 }
@@ -284,6 +287,7 @@ pub struct PaymentLegacyBuilder {
     settlement_time_at: Option<DateTime<FixedOffset>>,
     shipment: Option<PaymentLegacyShipment>,
     shipping_address: Option<PaymentLegacyShippingAddress>,
+    sku: Option<String>,
     status: Option<ReceiptStatus>,
     substatus: Option<FriendlyReceiptStatus>,
     subtotal: Option<f64>,
@@ -558,6 +562,11 @@ impl PaymentLegacyBuilder {
         self
     }
 
+    pub fn sku(mut self, value: impl Into<String>) -> Self {
+        self.sku = Some(value.into());
+        self
+    }
+
     pub fn status(mut self, value: ReceiptStatus) -> Self {
         self.status = Some(value);
         self
@@ -714,6 +723,7 @@ impl PaymentLegacyBuilder {
             settlement_time_at: self.settlement_time_at,
             shipment: self.shipment,
             shipping_address: self.shipping_address,
+            sku: self.sku,
             status: self.status,
             substatus: self
                 .substatus

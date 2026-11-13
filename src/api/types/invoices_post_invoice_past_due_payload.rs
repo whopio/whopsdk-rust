@@ -10,7 +10,7 @@ pub struct PostInvoicePastDuePayload {
     /// The dated API version (Api-Version-Date) the payload is serialized to
     #[serde(skip_serializing_if = "Option::is_none")]
     pub api_version_date: Option<String>,
-    pub data: Invoice,
+    pub data: InvoiceLegacy,
     /// A unique ID for every single webhook request
     #[serde(default)]
     pub id: String,
@@ -37,7 +37,7 @@ pub struct PostInvoicePastDuePayloadBuilder {
     account_id: Option<String>,
     api_version: Option<PostInvoicePastDuePayloadApiVersion>,
     api_version_date: Option<String>,
-    data: Option<Invoice>,
+    data: Option<InvoiceLegacy>,
     id: Option<String>,
     previous_attributes: Option<HashMap<String, serde_json::Value>>,
     timestamp: Option<DateTime<FixedOffset>>,
@@ -60,7 +60,7 @@ impl PostInvoicePastDuePayloadBuilder {
         self
     }
 
-    pub fn data(mut self, value: Invoice) -> Self {
+    pub fn data(mut self, value: InvoiceLegacy) -> Self {
         self.data = Some(value);
         self
     }

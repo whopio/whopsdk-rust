@@ -101,12 +101,25 @@ impl Stream for ByteStream {
     }
 }
 
+/// Merges `RequestOptions::additional_body_params` (if any) into a serialized request body.
+fn merge_additional_body_params(
+    body: Option<serde_json::Value>,
+    options: &Option<RequestOptions>,
+) -> Option<serde_json::Value> {
+    match options {
+        Some(opts) => opts.merge_additional_body_params(body),
+        None => body,
+    }
+}
+
 /// Trait for executing HTTP requests, enabling injection of custom
 /// transport implementations (e.g., for CLI execution-sharing).
 ///
 /// When an external executor is provided, the SDK delegates raw HTTP
 /// execution to it, allowing the caller's transport stack to handle
-/// auth, retries, and TLS configuration.
+/// auth, retries, and TLS configuration. Custom headers configured on
+/// the client or on the request options are still applied by the SDK
+/// before the request reaches the executor.
 #[doc(hidden)]
 pub trait RequestExecutor: Send + Sync {
     fn execute(
@@ -234,10 +247,12 @@ impl HttpClient {
     /// Creates an HttpClient with an injected request executor.
     ///
     /// When using an injected executor, the client delegates HTTP execution
-    /// entirely to the executor. Auth headers, custom headers, and retry
-    /// logic are NOT applied by this client — the executor's transport
-    /// stack is expected to handle them. This prevents double-retry and
-    /// double-auth when the SDK is embedded inside a CLI.
+    /// entirely to the executor. Auth headers and retry logic are NOT applied
+    /// by this client — the executor's transport stack is expected to handle
+    /// them. This prevents double-retry and double-auth when the SDK is
+    /// embedded inside a CLI. Custom headers (from `ClientConfig` and from
+    /// `RequestOptions`) are still applied, since the executor has no way to
+    /// know about them.
     #[doc(hidden)]
     pub fn with_executor(executor: Arc<dyn RequestExecutor>, config: ClientConfig) -> Self {
         let client = Client::new();
@@ -288,7 +303,7 @@ impl HttpClient {
             }
         }
 
-        if let Some(body) = body {
+        if let Some(body) = merge_additional_body_params(body, &options) {
             request = request.json(&body);
         }
 
@@ -323,7 +338,7 @@ impl HttpClient {
             }
         }
 
-        if let Some(body) = body {
+        if let Some(body) = merge_additional_body_params(body, &options) {
             request = request.json(&body);
         }
 
@@ -362,7 +377,7 @@ impl HttpClient {
             }
         }
 
-        if let Some(body) = body {
+        if let Some(body) = merge_additional_body_params(body, &options) {
             request = request.json(&body);
         }
 
@@ -373,14 +388,16 @@ impl HttpClient {
     }
 
     /// Applies auth/headers and executes the request, choosing between
-    /// the injected executor path (no SDK-level auth/headers/retries)
-    /// and the default path (full SDK behavior).
+    /// the injected executor path (custom headers only, no SDK-level
+    /// auth/retries) and the default path (full SDK behavior).
     async fn send_request(
         &self,
         req: Request,
         options: &Option<RequestOptions>,
     ) -> Result<Response, ApiError> {
         if let Some(executor) = &self.executor {
+            let mut req = req;
+            self.apply_custom_headers(&mut req, options)?;
             executor.execute(req).await.map_err(ApiError::Executor)
         } else {
             let mut req = req;
@@ -778,7 +795,7 @@ impl HttpClient {
         }
 
         // Apply body if provided
-        if let Some(body) = body {
+        if let Some(body) = merge_additional_body_params(body, &options) {
             request = request.json(&body);
         }
 
@@ -814,7 +831,7 @@ impl HttpClient {
             }
         }
 
-        if let Some(body) = body {
+        if let Some(body) = merge_additional_body_params(body, &options) {
             request = request.json(&body);
         }
 
@@ -1093,6 +1110,141 @@ mod tests {
         assert!(
             !raw_request.contains("content-type: application/json"),
             "token request should not send a JSON content type when form-encoded: {raw_request}"
+        );
+    }
+
+    /// Captures the request it is handed and refuses to send it, so the
+    /// headers the SDK applied before delegating are observable.
+    struct RecordingExecutor {
+        seen: std::sync::Mutex<Option<HeaderMap>>,
+    }
+
+    impl RequestExecutor for RecordingExecutor {
+        fn execute(
+            &self,
+            request: Request,
+        ) -> BoxFuture<'_, Result<Response, Box<dyn std::error::Error + Send + Sync>>> {
+            *self.seen.lock().expect("lock") = Some(request.headers().clone());
+            Box::pin(async { Err("not sent".into()) })
+        }
+    }
+
+    /// Captures the request body it is handed and refuses to send it.
+    struct BodyRecordingExecutor {
+        seen: std::sync::Mutex<Option<Vec<u8>>>,
+    }
+
+    impl RequestExecutor for BodyRecordingExecutor {
+        fn execute(
+            &self,
+            request: Request,
+        ) -> BoxFuture<'_, Result<Response, Box<dyn std::error::Error + Send + Sync>>> {
+            *self.seen.lock().expect("lock") = request
+                .body()
+                .and_then(|body| body.as_bytes())
+                .map(|bytes| bytes.to_vec());
+            Box::pin(async { Err("not sent".into()) })
+        }
+    }
+
+    async fn sent_body(
+        body: Option<serde_json::Value>,
+        options: Option<RequestOptions>,
+    ) -> Option<serde_json::Value> {
+        let executor = Arc::new(BodyRecordingExecutor {
+            seen: std::sync::Mutex::new(None),
+        });
+        let config = ClientConfig {
+            base_url: "http://127.0.0.1:1".to_string(),
+            ..Default::default()
+        };
+        let client = HttpClient::with_executor(executor.clone(), config);
+        let _: Result<serde_json::Value, ApiError> = client
+            .execute_request(Method::POST, "/items", body, None, options)
+            .await;
+        let seen = executor.seen.lock().expect("lock").clone();
+        seen.map(|bytes| serde_json::from_slice(&bytes).expect("JSON body"))
+    }
+
+    #[tokio::test]
+    async fn test_execute_request_merges_additional_body_params() {
+        let options = RequestOptions::new()
+            .additional_body_param("name", "override")
+            .additional_body_param("beta", serde_json::json!({"enabled": true}));
+        let body = sent_body(
+            Some(serde_json::json!({"name": "fern", "count": 1})),
+            Some(options),
+        )
+        .await;
+        assert_eq!(
+            body,
+            Some(serde_json::json!({
+                "name": "override",
+                "count": 1,
+                "beta": {"enabled": true}
+            }))
+        );
+    }
+
+    #[tokio::test]
+    async fn test_execute_request_creates_body_from_additional_body_params() {
+        let options = RequestOptions::new().additional_body_param("beta", true);
+        let body = sent_body(None, Some(options)).await;
+        assert_eq!(body, Some(serde_json::json!({"beta": true})));
+    }
+
+    #[tokio::test]
+    async fn test_execute_request_without_body_or_additional_body_params_sends_no_body() {
+        assert_eq!(sent_body(None, None).await, None);
+        assert_eq!(sent_body(None, Some(RequestOptions::new())).await, None);
+    }
+
+    #[tokio::test]
+    async fn test_executor_path_applies_custom_headers() {
+        // Regression: the executor branch delegated the request untouched, so
+        // headers only the SDK knows about — `ClientConfig::custom_headers`
+        // (e.g. an `X-Source` override, plus the X-Fern-* platform headers)
+        // and `RequestOptions::additional_headers` — never reached the wire.
+        // An injected executor (the generated CLI's custom-command path)
+        // cannot recover them on its own.
+        let executor = Arc::new(RecordingExecutor {
+            seen: std::sync::Mutex::new(None),
+        });
+        let mut config = ClientConfig::default();
+        config
+            .custom_headers
+            .insert("X-Source".to_string(), "custom-command".to_string());
+        let client = HttpClient::with_executor(executor.clone(), config);
+
+        let request = Client::new()
+            .get("http://127.0.0.1:1/ping")
+            .build()
+            .expect("build request");
+        let options = RequestOptions::new().additional_header("X-Request-Level", "sunflower");
+        let _: Result<Response, ApiError> = client.send_request(request, &Some(options)).await;
+
+        let seen = executor
+            .seen
+            .lock()
+            .expect("lock")
+            .clone()
+            .expect("executor received the request");
+        assert_eq!(
+            seen.get("x-source").map(|v| v.to_str().expect("utf-8")),
+            Some("custom-command"),
+            "client-level custom headers must survive the executor path: {seen:?}"
+        );
+        assert_eq!(
+            seen.get("x-request-level")
+                .map(|v| v.to_str().expect("utf-8")),
+            Some("sunflower"),
+            "request-level headers must survive the executor path: {seen:?}"
+        );
+        assert_eq!(
+            seen.get("x-fern-language")
+                .map(|v| v.to_str().expect("utf-8")),
+            Some("Rust"),
+            "SDK platform headers must survive the executor path: {seen:?}"
         );
     }
 }

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Three-letter ISO currency code for this plan's prices.
+/// Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PlanCurrency {

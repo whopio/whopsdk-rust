@@ -1,6 +1,5 @@
 pub use crate::prelude::*;
 
-/// The type of the custom field.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum UpdatePlansRequestCustomFieldsItemFieldType {
     #[serde(rename = "text")]

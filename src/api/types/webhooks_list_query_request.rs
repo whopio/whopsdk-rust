@@ -4,8 +4,8 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct WebhooksListQueryRequest {
     /// The unique identifier of the account to list webhooks for.
-    #[serde(default)]
-    pub account_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
     /// Only return webhooks attached to this app. Omit to list the account's own webhooks.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub app_id: Option<String>,
@@ -90,13 +90,9 @@ impl WebhooksListQueryRequestBuilder {
     }
 
     /// Consumes the builder and constructs a [`WebhooksListQueryRequest`].
-    /// This method will fail if any of the following fields are not set:
-    /// - [`account_id`](WebhooksListQueryRequestBuilder::account_id)
     pub fn build(self) -> Result<WebhooksListQueryRequest, BuildError> {
         Ok(WebhooksListQueryRequest {
-            account_id: self
-                .account_id
-                .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            account_id: self.account_id,
             app_id: self.app_id,
             include_app_webhooks: self.include_app_webhooks,
             has_failures: self.has_failures,

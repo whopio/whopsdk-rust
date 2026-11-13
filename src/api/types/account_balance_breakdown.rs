@@ -5,7 +5,10 @@ pub struct AccountBalanceBreakdown {
     /// Amount you can spend, send, or withdraw now, in native units, as a decimal string.
     #[serde(default)]
     pub available: String,
-    /// Amount moving between the account's own destinations, such as a treasury sweep to its crypto wallet or a card top-up. In native units, as a decimal string.
+    /// The part of `pending` that has already settled and is waiting to move into the account's crypto wallet or Whop Card, where it becomes `available`. The move usually starts within the hour; while it runs, the amount is reported in `in_transit` instead. Money moved only to top up the account's retained minimum balance is not included. In native units, as a decimal string.
+    #[serde(default)]
+    pub finishing_settlement: String,
+    /// Amount moving between the account's own destinations, such as a card top-up. In native units, as a decimal string.
     #[serde(default)]
     pub in_transit: String,
     /// Amount from recent payments still settling, in native units, as a decimal string.
@@ -28,6 +31,7 @@ impl AccountBalanceBreakdown {
 #[non_exhaustive]
 pub struct AccountBalanceBreakdownBuilder {
     available: Option<String>,
+    finishing_settlement: Option<String>,
     in_transit: Option<String>,
     pending: Option<String>,
     pending_settlements: Option<Vec<AccountBalanceSettlement>>,
@@ -37,6 +41,11 @@ pub struct AccountBalanceBreakdownBuilder {
 impl AccountBalanceBreakdownBuilder {
     pub fn available(mut self, value: impl Into<String>) -> Self {
         self.available = Some(value.into());
+        self
+    }
+
+    pub fn finishing_settlement(mut self, value: impl Into<String>) -> Self {
+        self.finishing_settlement = Some(value.into());
         self
     }
 
@@ -63,6 +72,7 @@ impl AccountBalanceBreakdownBuilder {
     /// Consumes the builder and constructs a [`AccountBalanceBreakdown`].
     /// This method will fail if any of the following fields are not set:
     /// - [`available`](AccountBalanceBreakdownBuilder::available)
+    /// - [`finishing_settlement`](AccountBalanceBreakdownBuilder::finishing_settlement)
     /// - [`in_transit`](AccountBalanceBreakdownBuilder::in_transit)
     /// - [`pending`](AccountBalanceBreakdownBuilder::pending)
     /// - [`pending_settlements`](AccountBalanceBreakdownBuilder::pending_settlements)
@@ -72,6 +82,9 @@ impl AccountBalanceBreakdownBuilder {
             available: self
                 .available
                 .ok_or_else(|| BuildError::missing_field("available"))?,
+            finishing_settlement: self
+                .finishing_settlement
+                .ok_or_else(|| BuildError::missing_field("finishing_settlement"))?,
             in_transit: self
                 .in_transit
                 .ok_or_else(|| BuildError::missing_field("in_transit"))?,

@@ -17,7 +17,7 @@ pub struct CreateApiKeysRequest {
     /// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
     #[serde(default)]
     pub permissions: CreateApiKeysRequestPermissions,
-    /// The account (`biz_`) or app (`app_`) tag to create the API key for.
+    /// The account (`biz_`), app (`app_`), or your own user (`user_`) tag to create the API key for.
     #[serde(default)]
     pub resource_id: String,
     /// The type of resource that will own this API key.

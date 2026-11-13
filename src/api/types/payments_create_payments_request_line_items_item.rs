@@ -1,13 +1,16 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreatePaymentsRequestLineItemsItem {
-    /// An existing plan to charge for, prefixed `plan_`. Each plan may appear once — use `quantity` for multiple units.
-    #[serde(default)]
-    pub plan_id: String,
-    /// How many units of the plan to purchase. Defaults to 1; more than 1 requires the plan to allow multiple quantities.
+    /// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quantity: Option<i64>,
+    /// Find or create the variant for this entry by its attributes. Unknown properties return an error. Creating a variant requires `plan:create`, and creating or updating a product requires the matching product permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<CreatePaymentsRequestLineItemsItemVariant>,
+    /// An existing variant to charge for, prefixed `plan_`. Mutually exclusive with `variant`. Each variant may appear once — use `quantity` for multiple units.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant_id: Option<String>,
 }
 
 impl CreatePaymentsRequestLineItemsItem {
@@ -19,30 +22,33 @@ impl CreatePaymentsRequestLineItemsItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreatePaymentsRequestLineItemsItemBuilder {
-    plan_id: Option<String>,
     quantity: Option<i64>,
+    variant: Option<CreatePaymentsRequestLineItemsItemVariant>,
+    variant_id: Option<String>,
 }
 
 impl CreatePaymentsRequestLineItemsItemBuilder {
-    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
-        self.plan_id = Some(value.into());
-        self
-    }
-
     pub fn quantity(mut self, value: i64) -> Self {
         self.quantity = Some(value);
         self
     }
 
+    pub fn variant(mut self, value: CreatePaymentsRequestLineItemsItemVariant) -> Self {
+        self.variant = Some(value);
+        self
+    }
+
+    pub fn variant_id(mut self, value: impl Into<String>) -> Self {
+        self.variant_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreatePaymentsRequestLineItemsItem`].
-    /// This method will fail if any of the following fields are not set:
-    /// - [`plan_id`](CreatePaymentsRequestLineItemsItemBuilder::plan_id)
     pub fn build(self) -> Result<CreatePaymentsRequestLineItemsItem, BuildError> {
         Ok(CreatePaymentsRequestLineItemsItem {
-            plan_id: self
-                .plan_id
-                .ok_or_else(|| BuildError::missing_field("plan_id"))?,
             quantity: self.quantity,
+            variant: self.variant,
+            variant_id: self.variant_id,
         })
     }
 }

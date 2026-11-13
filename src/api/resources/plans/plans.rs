@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct PlansClient {
@@ -13,19 +14,10 @@ impl PlansClient {
         })
     }
 
-    /// Returns a paginated list of plans. Omit `account_id` and pass `product_ids` to list a product's public buyable plans.
+    /// Deprecated compatibility endpoint. List variants with `GET /variants` instead.
     ///
     /// # Arguments
     ///
-    /// * `account_id` - The unique identifier of the account to list plans for. Required unless `product_ids` is provided for a public product-plan read.
-    /// * `direction` - The sort direction for results. Defaults to descending.
-    /// * `order` - The field to sort results by. Defaults to created_at.
-    /// * `release_methods` - Filter to only plans matching these release methods.
-    /// * `visibilities` - Filter to only plans matching these visibility states.
-    /// * `plan_types` - Filter to only plans matching these billing types.
-    /// * `product_ids` - Filter to only plans belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice plans are returned.
-    /// * `created_before` - Only return plans created before this timestamp.
-    /// * `created_after` - Only return plans created after this timestamp.
     /// * `first` - Number of results to return from the start of the range.
     /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `last` - Number of results to return from the end of the range.
@@ -52,13 +44,13 @@ impl PlansClient {
     ///         .plans
     ///         .list(
     ///             &PlansListQueryRequest {
-    ///                 release_methods: vec![Some("buy_now".to_string())],
-    ///                 visibilities: vec![Some("visible".to_string())],
-    ///                 plan_types: vec![Some("renewal".to_string())],
-    ///                 product_ids: vec![Some("prod_xxxxxxxxxxxxxx".to_string())],
     ///                 account_id: None,
     ///                 direction: None,
     ///                 order: None,
+    ///                 release_methods: vec![],
+    ///                 visibilities: vec![],
+    ///                 billing_types: vec![],
+    ///                 product_ids: vec![],
     ///                 created_before: None,
     ///                 created_after: None,
     ///                 first: None,
@@ -80,11 +72,16 @@ impl PlansClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "plans",
                 None,
@@ -94,7 +91,7 @@ impl PlansClient {
                     .serialize("order", request.order.clone())
                     .string_array("release_methods", request.release_methods.clone())
                     .string_array("visibilities", request.visibilities.clone())
-                    .string_array("plan_types", request.plan_types.clone())
+                    .string_array("billing_types", request.billing_types.clone())
                     .string_array("product_ids", request.product_ids.clone())
                     .string("created_before", request.created_before.clone())
                     .string("created_after", request.created_after.clone())
@@ -108,7 +105,82 @@ impl PlansClient {
             .await
     }
 
-    /// Create a new pricing plan for a product. The plan defines the billing interval, price, and availability for customers.
+    pub async fn list_paginated(
+        &self,
+        request: &PlansListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("account_id", request.account_id.clone())
+            .serialize("direction", request.direction.clone())
+            .serialize("order", request.order.clone())
+            .string_array("release_methods", request.release_methods.clone())
+            .string_array("visibilities", request.visibilities.clone())
+            .string_array("billing_types", request.billing_types.clone())
+            .string_array("product_ids", request.product_ids.clone())
+            .string("created_before", request.created_before.clone())
+            .string("created_after", request.created_after.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "plans",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Deprecated compatibility endpoint. Create variants with `POST /variants` instead.
     ///
     /// # Arguments
     ///
@@ -150,11 +222,16 @@ impl PlansClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "plans",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -164,11 +241,11 @@ impl PlansClient {
             .await
     }
 
-    /// Retrieves the details of an existing plan.
+    /// Deprecated compatibility endpoint. Retrieve variants with `GET /variants/{id}` instead.
     ///
     /// # Arguments
     ///
-    /// * `id` - Plan ID, prefixed `plan_`.
+    /// * `id` - Variant ID, prefixed `plan_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -199,19 +276,30 @@ impl PlansClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(Method::GET, &format!("plans/{}", id), None, None, options)
+            .execute_request_with_base_url(
+                base_url,
+                Method::GET,
+                &format!("plans/{}", id),
+                None,
+                None,
+                options,
+            )
             .await
     }
 
-    /// Delete a plan from a product. It stops selling immediately; existing memberships on this plan will not be affected.
+    /// Deprecated compatibility endpoint. Delete variants with `DELETE /variants/{id}` instead.
     ///
     /// # Arguments
     ///
-    /// * `id` - Plan ID, prefixed `plan_`.
+    /// * `id` - Variant ID, prefixed `plan_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -242,11 +330,16 @@ impl PlansClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::DELETE,
                 &format!("plans/{}", id),
                 None,
@@ -256,11 +349,11 @@ impl PlansClient {
             .await
     }
 
-    /// Update a plan's pricing, billing interval, visibility, stock, and other settings.
+    /// Deprecated compatibility endpoint. Update variants with `PATCH /variants/{id}` instead.
     ///
     /// # Arguments
     ///
-    /// * `id` - Plan ID, prefixed `plan_`.
+    /// * `id` - Variant ID, prefixed `plan_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -301,11 +394,16 @@ impl PlansClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 &format!("plans/{}", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -315,11 +413,11 @@ impl PlansClient {
             .await
     }
 
-    /// Previews tax for a plan before checkout, based on the buyer's location.
+    /// Deprecated compatibility endpoint. Quote tax with `POST /payment_quotes` instead.
     ///
     /// # Arguments
     ///
-    /// * `id` - Plan ID, prefixed `plan_`.
+    /// * `id` - Variant ID, prefixed `plan_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -343,11 +441,6 @@ impl PlansClient {
     ///         .calculate_tax(
     ///             &"id".to_string(),
     ///             &CalculateTaxPlansRequest {
-    ///                 address: Some(CalculateTaxPlansRequestAddress {
-    ///                     country: "DE".to_string(),
-    ///                     postal_code: Some("10115".to_string()),
-    ///                     ..Default::default()
-    ///                 }),
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -365,11 +458,16 @@ impl PlansClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("plans/{}/calculate_tax", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),

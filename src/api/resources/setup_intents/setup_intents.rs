@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct SetupIntentsClient {
@@ -13,22 +14,20 @@ impl SetupIntentsClient {
         })
     }
 
-    /// Returns a paginated list of setup intents for a company, with optional filtering by creation date. A setup intent securely collects and stores a member's payment method for future use without charging them immediately.
-    ///
-    /// Required permissions:
-    /// - `payment:setup_intent:read`
-    /// - `member:basic:read`
-    /// - `member:email:read`
+    /// Lists setup intents newest first. An account API key lists its own account; a user token lists every account it can read, or one account with `account_id`.
     ///
     /// # Arguments
     ///
-    /// * `after` - Returns the elements in the list that come after the specified cursor.
-    /// * `before` - Returns the elements in the list that come before the specified cursor.
-    /// * `first` - Returns the first _n_ elements from the list.
-    /// * `last` - Returns the last _n_ elements from the list.
-    /// * `created_before` - Only return setup intents created before this timestamp.
-    /// * `created_after` - Only return setup intents created after this timestamp.
-    /// * `account_id` - The unique identifier of the company to list setup intents for.
+    /// * `account_id` - Only setup intents for this account, prefixed `biz_`.
+    /// * `status` - Only setup intents in this state.
+    /// * `created_before` - Only setup intents created before this ISO 8601 timestamp.
+    /// * `created_after` - Only setup intents created after this ISO 8601 timestamp.
+    /// * `order` - The field to sort by.
+    /// * `direction` - The sort direction.
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -51,14 +50,7 @@ impl SetupIntentsClient {
     ///         .setup_intents
     ///         .list(
     ///             &SetupIntentsListQueryRequest {
-    ///                 first: Some(42),
-    ///                 last: Some(42),
-    ///                 created_before: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 created_after: Some(DateTime::parse_from_rfc3339("2023-12-01T05:00:00Z").unwrap()),
-    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
-    ///                 after: None,
-    ///                 before: None,
-    ///                 direction: None,
+    ///                 ..Default::default()
     ///             },
     ///             None,
     ///         )
@@ -74,39 +66,112 @@ impl SetupIntentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "setup_intents",
                 None,
                 QueryBuilder::new()
-                    .string("after", request.after.clone())
-                    .string("before", request.before.clone())
-                    .int("first", request.first.clone())
-                    .int("last", request.last.clone())
-                    .serialize("direction", request.direction.clone())
+                    .string("account_id", request.account_id.clone())
+                    .serialize("status", request.status.clone())
                     .datetime("created_before", request.created_before.clone())
                     .datetime("created_after", request.created_after.clone())
-                    .string("account_id", request.account_id.clone())
+                    .serialize("order", request.order.clone())
+                    .serialize("direction", request.direction.clone())
+                    .int("first", request.first.clone())
+                    .string("after", request.after.clone())
+                    .int("last", request.last.clone())
+                    .string("before", request.before.clone())
                     .build(),
                 options,
             )
             .await
     }
 
-    /// Save a buyer's payment method for later without charging it. Provide a confirmation token for a method the buyer just supplied, or an existing payment method to re-verify. The buyer may still have a step to complete — 3D Secure, a hosted enrollment, linking a bank account — so poll the setup intent's status endpoint for what to do next.
-    ///
-    /// Required permissions:
-    /// - `payment:charge`
-    /// - `member:basic:read`
-    /// - `member:email:read`
+    pub async fn list_paginated(
+        &self,
+        request: &SetupIntentsListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("account_id", request.account_id.clone())
+            .serialize("status", request.status.clone())
+            .datetime("created_before", request.created_before.clone())
+            .datetime("created_after", request.created_after.clone())
+            .serialize("order", request.order.clone())
+            .serialize("direction", request.direction.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "setup_intents",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Saves a buyer's payment method for later without charging it — one the buyer just supplied through the payment elements in setup mode, or one already on file to re-verify. The setup completes in the background, so the response is the setup intent as created, not its outcome: hand `client_secret` to the elements' `handleNextAction`, or poll Retrieve setup status. A buyer's own token holding `member:payment_methods:use` may create a setup intent for itself from a confirmation token.
     ///
     /// # Arguments
     ///
-    /// * `request` - Parameters for CreateSetupIntent
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -128,13 +193,18 @@ impl SetupIntentsClient {
     ///     client
     ///         .setup_intents
     ///         .create(
-    ///             &CreateSetupIntentsRequestBody::CreateSetupIntentsRequestBodyConfirmationToken(
-    ///                 CreateSetupIntentsRequestBodyConfirmationToken {
-    ///                     account_id: "biz_xxxxxxxxxxxxxx".to_string(),
-    ///                     confirmation_token: "ctok_xxxxxxxxxxxxxx".to_string(),
-    ///                     ..Default::default()
-    ///                 },
-    ///             ),
+    ///             &CreateSetupIntentsRequest {
+    ///                 account_id: "biz_xxxxxxxxxxxxxx".to_string(),
+    ///                 confirmation_token: None,
+    ///                 currency: None,
+    ///                 email: None,
+    ///                 metadata: None,
+    ///                 owner_id: None,
+    ///                 payment_method_id: None,
+    ///                 purpose: None,
+    ///                 return_url: None,
+    ///                 three_ds_level: None,
+    ///             },
     ///             None,
     ///         )
     ///         .await;
@@ -142,18 +212,23 @@ impl SetupIntentsClient {
     /// ```
     pub async fn create(
         &self,
-        request: &CreateSetupIntentsRequestBody,
+        request: &CreateSetupIntentsRequest,
         options: Option<RequestOptions>,
-    ) -> Result<CreateSetupIntentsResponse, ApiError> {
+    ) -> Result<SetupIntent, ApiError> {
         let options = {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "setup_intents",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -163,16 +238,11 @@ impl SetupIntentsClient {
             .await
     }
 
-    /// Retrieves the details of an existing setup intent.
-    ///
-    /// Required permissions:
-    /// - `payment:setup_intent:read`
-    /// - `member:basic:read`
-    /// - `member:email:read`
+    /// Retrieves a setup intent. Once its `status` is `succeeded`, charge the saved method by its `payment_method_id`. The buyer's own token may retrieve a setup intent that belongs to it.
     ///
     /// # Arguments
     ///
-    /// * `id` - The unique identifier of the setup intent.
+    /// * `id` - The setup intent to retrieve, prefixed `sint_`.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -191,10 +261,7 @@ impl SetupIntentsClient {
     ///         ..Default::default()
     ///     };
     ///     let client = Whop::new(config).expect("Failed to build client");
-    ///     client
-    ///         .setup_intents
-    ///         .retrieve(&"sint_xxxxxxxxxxxxx".to_string(), None)
-    ///         .await;
+    ///     client.setup_intents.retrieve(&"id".to_string(), None).await;
     /// }
     /// ```
     pub async fn retrieve(
@@ -206,11 +273,16 @@ impl SetupIntentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("setup_intents/{}", id),
                 None,
@@ -220,7 +292,7 @@ impl SetupIntentsClient {
             .await
     }
 
-    /// Changes where the buyer lands after completing an off-site step, up until they return. Accepts either a secret key or the setup's own `client_secret`, so the surface that knows the final destination can set it.
+    /// Changes where the buyer lands after completing an off-site step, up until they return. Accepts either a secret key or the setup's own `client_secret` in the body, so the surface that knows the final destination can set it.
     ///
     /// # Arguments
     ///
@@ -247,8 +319,9 @@ impl SetupIntentsClient {
     ///         .setup_intents
     ///         .update_return_url(
     ///             &"setup_intent_id".to_string(),
-    ///             &UpdateReturnURLSetupIntentsRequest {
+    ///             &UpdateReturnUrlSetupIntentsRequest {
     ///                 return_url: "https://shinetime.example/checkout/thanks".to_string(),
+    ///                 client_secret: None,
     ///             },
     ///             None,
     ///         )
@@ -265,11 +338,16 @@ impl SetupIntentsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 &format!("setup_intents/{}/return_url", setup_intent_id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -279,11 +357,12 @@ impl SetupIntentsClient {
             .await
     }
 
-    /// Retrieves how far a setup has got and what the buyer must do next, if anything. Collection runs in the background, so poll this rather than reading the create response. Accepts either a secret key or the setup's own `client_secret`, so the surface collecting the payment method can poll it directly.
+    /// Retrieves how far a setup has got and what the buyer must do next, if anything. Collection runs in the background, so poll this rather than reading the create response. Accepts either a secret key or the setup's own `client_secret` as a query parameter, so the surface collecting the payment method can poll it directly.
     ///
     /// # Arguments
     ///
     /// * `setup_intent_id` - The unique identifier of the setup intent.
+    /// * `client_secret` - The setup's own `client_secret`, for a caller without a secret key.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -304,28 +383,42 @@ impl SetupIntentsClient {
     ///     let client = Whop::new(config).expect("Failed to build client");
     ///     client
     ///         .setup_intents
-    ///         .retrieve_status(&"setup_intent_id".to_string(), None)
+    ///         .retrieve_status(
+    ///             &"setup_intent_id".to_string(),
+    ///             &SetupIntentsRetrieveStatusQueryRequest {
+    ///                 ..Default::default()
+    ///             },
+    ///             None,
+    ///         )
     ///         .await;
     /// }
     /// ```
     pub async fn retrieve_status(
         &self,
         setup_intent_id: &str,
+        request: &SetupIntentsRetrieveStatusQueryRequest,
         options: Option<RequestOptions>,
     ) -> Result<SetupStatus, ApiError> {
         let options = {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("setup_intents/{}/status", setup_intent_id),
                 None,
-                None,
+                QueryBuilder::new()
+                    .string("client_secret", request.client_secret.clone())
+                    .build(),
                 options,
             )
             .await

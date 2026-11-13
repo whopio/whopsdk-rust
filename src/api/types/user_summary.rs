@@ -8,7 +8,7 @@ pub struct UserSummary {
     /// Display name.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    /// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+    /// Avatar wrapper. Its `url` is always present, and is a generated placeholder when the user set no picture.
     #[serde(default)]
     pub profile_picture: UserProfilePicture,
     /// Public username.

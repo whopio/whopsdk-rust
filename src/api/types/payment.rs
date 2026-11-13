@@ -8,6 +8,9 @@ pub struct Payment {
     /// What the account keeps: the total less Whop's fees.
     #[serde(default)]
     pub amount_after_fees: Money,
+    /// When Whop will capture this authorized card payment automatically unless it is voided first, as an ISO 8601 timestamp. Null when no automatic capture was requested.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub auto_capture_at: Option<String>,
     /// True when Whop refunded the payment automatically, for example on a dispute alert.
     #[serde(default)]
     pub auto_refunded: bool,
@@ -17,10 +20,19 @@ pub struct Payment {
     /// Why the charge was created: a first purchase, a renewal, a one-time payment, or a manual charge.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub billing_reason: Option<BillingReasons>,
+    /// When the hold on this authorized card payment expires if it is not captured first, as an ISO 8601 timestamp. Null when the payment was not created for later capture.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub capture_expires_at: Option<String>,
     /// The checkout configuration the buyer paid through, prefixed `ch_`, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub checkout_configuration_id: Option<String>,
-    /// The credential a buyer's surface presents to poll this payment and set its return URL. Only on payments created from a confirmation token, and always null in list responses — retrieve the payment for it.
+    /// The scheme and host of the website where the buyer opened the checkout, such as `https://store.example.com`. Use it to tell apart payments from different websites on one account. Null when the website was not recorded, including for payments made without the buyer present.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checkout_origin: Option<String>,
+    /// The checkout experience that produced this payment, such as `embedded_checkout` for a checkout on the account's own website or `off_session` for a subscription renewal. Null when the checkout was not recorded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checkout_surface: Option<PaymentCheckoutSurface>,
+    /// The credential a buyer's surface presents to poll this payment, set its return URL and resume it when the bank asked the customer to authenticate. Only on payments created from a confirmation token or waiting on that authentication, and always null in list responses — retrieve the payment for it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub client_secret: Option<String>,
     /// When the payment was created, as an ISO 8601 timestamp.
@@ -40,6 +52,9 @@ pub struct Payment {
     /// When an issuer warned that this payment will be disputed, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dispute_alerted_at: Option<String>,
+    /// When the most recent dispute on this payment was opened, as an ISO 8601 timestamp. Null when the payment was never disputed, or without the payment:dispute:read permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dispute_created_at: Option<String>,
     /// Why the most recent attempt failed, in plain words, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub failure_message: Option<String>,
@@ -48,9 +63,14 @@ pub struct Payment {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub financing_installments_count: Option<f64>,
+    #[serde(default)]
+    pub holds: Vec<PaymentHold>,
     /// Payment ID, prefixed `pay_`.
     #[serde(default)]
     pub id: String,
+    /// The buyer's IP address at checkout: the one Whop's fraud screening identified, otherwise the one Whop captured from the buyer's browser at checkout. Null when the buyer was not present at checkout, such as a subscription renewal or a charge made without the buyer present.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ip_address: Option<String>,
     /// When the most recent charge attempt ran, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last_payment_attempt_at: Option<String>,
@@ -65,6 +85,9 @@ pub struct Payment {
     /// Your own key-value data attached when the payment was created.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<HashMap<String, serde_json::Value>>,
+    /// True for a paid payment with a shipping address, no shipment, and no full refund. Null without the shipment:basic:read permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub missing_tracking: Option<bool>,
     /// True when funds are held until the order ships and no tracking number has been added yet. Null without the shipment:basic:read permission.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub needs_tracking: Option<bool>,
@@ -74,7 +97,7 @@ pub struct Payment {
     /// When the money was collected, or null while it has not been.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub paid_at: Option<String>,
-    /// The instrument shaped for display: a buyer-facing name, the standard icon set, and the card's brand, last four and issuer identification number when it was a card.
+    /// The instrument shaped for display: a buyer-facing name, the standard icon set, and when it was a card, the card's brand, last four, issuer identification number, and the network transaction id the account uses for the card.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_instrument: Option<PaymentInstrument>,
     /// The stored payment method that was charged, prefixed `payt_`. Null when the method was not saved.
@@ -89,18 +112,24 @@ pub struct Payment {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub payments_failed: f64,
-    /// The plan that was charged, prefixed `plan_`.
+    /// How much has been refunded so far, in the currency presented to the buyer. Zero when nothing has been refunded.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan_id: Option<String>,
+    pub presentment_refunded_amount: Option<Money>,
+    /// The sales tax or VAT collected, in the currency presented to the buyer. Null when no tax applied.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub presentment_tax_amount: Option<Money>,
     /// The account-facing total in the currency presented to the buyer, before conversion into the settlement currency. Excludes buyer fees.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub presentment_total: Option<Money>,
-    /// The product the plan belongs to, prefixed `prod_`. Null for a plan with no product.
+    /// The product the variant belongs to, prefixed `prod_`. Null for a variant with no product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
     /// The promo code applied at checkout, prefixed `promo_`, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub promo_code_id: Option<String>,
+    /// The payment quote this payment charged, prefixed `pq_`: its purchase, promo code and `tax_amount` are the quote's. Null when the payment named no quote and tax was calculated at charge time.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quote_id: Option<String>,
     /// Whop-hosted URL where the buyer can sign in and complete 3D Secure for an off-session charge the bank challenged — a subscription renewal or a saved-card payment. Null when recovery is unavailable, you lack `member:basic:read`, or in list responses. Retrieve the payment for it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recovery_url: Option<String>,
@@ -113,7 +142,10 @@ pub struct Payment {
     /// When the payment was refunded, or null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub refunded_at: Option<String>,
-    /// True when the payment is `open` and Whop can attempt the charge again — see `POST /payments/{id}/retry`.
+    /// When the earliest response is due on a dispute or Resolution Center case awaiting the account's response, as an ISO 8601 timestamp. Null when nothing awaits a response, or without the permission to read that dispute or case.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub response_due_at: Option<String>,
+    /// True when the payment is `open` and can be retried by hand with `POST /payments/{id}/retry`: its membership is `active`, `trialing`, or `past_due` (or it is a failed first payment on a `drafted` membership), it is not paid through an invoice payment link, and its one manual retry is not used up. A retry can still be refused when the company cannot currently accept payments.
     #[serde(default)]
     pub retryable: bool,
     /// Whop's published risk index from 0 (lowest) to 100 (highest), including enforced decision floors. This is not a fraud probability. Null when no score is available.
@@ -125,7 +157,7 @@ pub struct Payment {
     /// DEPRECATED: Risk score explanations are no longer provided. Always null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub risk_signals: Option<HashMap<String, serde_json::Value>>,
-    /// When the funds post to the account's available balance, at midnight UTC. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts. Null until the payment is paid, and always null in list responses — retrieve the payment for it.
+    /// When the portion not listed in `holds` posts to the account's available balance, at midnight UTC. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts. Null until the payment is paid, and always null in list responses — retrieve the payment for it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub settlement_time_at: Option<String>,
     /// The shipment fulfilling this payment, prefixed `ship_`. Null when nothing ships or without the shipment:basic:read permission.
@@ -165,12 +197,21 @@ pub struct Payment {
     /// The buyer. Null when the payment belongs to a company buyer rather than a user.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user: Option<UserSummary>,
+    /// The buyer's browser user agent at checkout. Null when the buyer was not present at checkout, such as a subscription renewal, or without the member:basic:read permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_agent: Option<String>,
+    /// The variant that was charged, prefixed `plan_`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant_id: Option<String>,
     /// The Address Verification Service (AVS), cardholder name, and Card Verification Value (CVV/CVC) results, or null when the processor returned none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verification_checks: Option<PaymentVerificationChecks>,
-    /// True when the payment is `open` on a past-due membership and its processor supports voiding — see `POST /payments/{id}/void`.
+    /// True when the payment can be voided or canceled. The request is rejected if the payment is no longer eligible — see `POST /payments/{id}/void`.
     #[serde(default)]
     pub voidable: bool,
+    /// The Whop pixel's visitor ID for the buyer's browser at checkout, prefixed `wuid_`. Null when the checkout page had no Whop pixel, when the buyer was not present at checkout, or without the member:basic:read permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wuid: Option<String>,
 }
 
 impl Payment {
@@ -184,10 +225,14 @@ impl Payment {
 pub struct PaymentBuilder {
     account_id: Option<String>,
     amount_after_fees: Option<Money>,
+    auto_capture_at: Option<String>,
     auto_refunded: Option<bool>,
     billing_address: Option<PaymentAddress>,
     billing_reason: Option<BillingReasons>,
+    capture_expires_at: Option<String>,
     checkout_configuration_id: Option<String>,
+    checkout_origin: Option<String>,
+    checkout_surface: Option<PaymentCheckoutSurface>,
     client_secret: Option<String>,
     created_at: Option<String>,
     currency: Option<Currencies>,
@@ -195,14 +240,18 @@ pub struct PaymentBuilder {
     customer_phone: Option<String>,
     decline_code: Option<PaymentDeclineCodes>,
     dispute_alerted_at: Option<String>,
+    dispute_created_at: Option<String>,
     failure_message: Option<String>,
     financing_installments_count: Option<f64>,
+    holds: Option<Vec<PaymentHold>>,
     id: Option<String>,
+    ip_address: Option<String>,
     last_payment_attempt_at: Option<String>,
     line_items: Option<Vec<ReceiptLineItem>>,
     member_id: Option<String>,
     membership_id: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
+    missing_tracking: Option<bool>,
     needs_tracking: Option<bool>,
     next_payment_attempt_at: Option<String>,
     paid_at: Option<String>,
@@ -211,14 +260,17 @@ pub struct PaymentBuilder {
     payment_method_type: Option<PaymentMethodTypes>,
     payment_rule_matches: Option<Vec<PaymentRuleMatch>>,
     payments_failed: Option<f64>,
-    plan_id: Option<String>,
+    presentment_refunded_amount: Option<Money>,
+    presentment_tax_amount: Option<Money>,
     presentment_total: Option<Money>,
     product_id: Option<String>,
     promo_code_id: Option<String>,
+    quote_id: Option<String>,
     recovery_url: Option<String>,
     refundable: Option<bool>,
     refunded_amount: Option<Money>,
     refunded_at: Option<String>,
+    response_due_at: Option<String>,
     retryable: Option<bool>,
     risk_score: Option<f64>,
     risk_signals: Option<HashMap<String, serde_json::Value>>,
@@ -236,8 +288,11 @@ pub struct PaymentBuilder {
     updated_at: Option<String>,
     usd_total: Option<Money>,
     user: Option<UserSummary>,
+    user_agent: Option<String>,
+    variant_id: Option<String>,
     verification_checks: Option<PaymentVerificationChecks>,
     voidable: Option<bool>,
+    wuid: Option<String>,
 }
 
 impl PaymentBuilder {
@@ -248,6 +303,11 @@ impl PaymentBuilder {
 
     pub fn amount_after_fees(mut self, value: Money) -> Self {
         self.amount_after_fees = Some(value);
+        self
+    }
+
+    pub fn auto_capture_at(mut self, value: impl Into<String>) -> Self {
+        self.auto_capture_at = Some(value.into());
         self
     }
 
@@ -266,8 +326,23 @@ impl PaymentBuilder {
         self
     }
 
+    pub fn capture_expires_at(mut self, value: impl Into<String>) -> Self {
+        self.capture_expires_at = Some(value.into());
+        self
+    }
+
     pub fn checkout_configuration_id(mut self, value: impl Into<String>) -> Self {
         self.checkout_configuration_id = Some(value.into());
+        self
+    }
+
+    pub fn checkout_origin(mut self, value: impl Into<String>) -> Self {
+        self.checkout_origin = Some(value.into());
+        self
+    }
+
+    pub fn checkout_surface(mut self, value: PaymentCheckoutSurface) -> Self {
+        self.checkout_surface = Some(value);
         self
     }
 
@@ -306,6 +381,11 @@ impl PaymentBuilder {
         self
     }
 
+    pub fn dispute_created_at(mut self, value: impl Into<String>) -> Self {
+        self.dispute_created_at = Some(value.into());
+        self
+    }
+
     pub fn failure_message(mut self, value: impl Into<String>) -> Self {
         self.failure_message = Some(value.into());
         self
@@ -316,8 +396,18 @@ impl PaymentBuilder {
         self
     }
 
+    pub fn holds(mut self, value: Vec<PaymentHold>) -> Self {
+        self.holds = Some(value);
+        self
+    }
+
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn ip_address(mut self, value: impl Into<String>) -> Self {
+        self.ip_address = Some(value.into());
         self
     }
 
@@ -343,6 +433,11 @@ impl PaymentBuilder {
 
     pub fn metadata(mut self, value: HashMap<String, serde_json::Value>) -> Self {
         self.metadata = Some(value);
+        self
+    }
+
+    pub fn missing_tracking(mut self, value: bool) -> Self {
+        self.missing_tracking = Some(value);
         self
     }
 
@@ -386,8 +481,13 @@ impl PaymentBuilder {
         self
     }
 
-    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
-        self.plan_id = Some(value.into());
+    pub fn presentment_refunded_amount(mut self, value: Money) -> Self {
+        self.presentment_refunded_amount = Some(value);
+        self
+    }
+
+    pub fn presentment_tax_amount(mut self, value: Money) -> Self {
+        self.presentment_tax_amount = Some(value);
         self
     }
 
@@ -403,6 +503,11 @@ impl PaymentBuilder {
 
     pub fn promo_code_id(mut self, value: impl Into<String>) -> Self {
         self.promo_code_id = Some(value.into());
+        self
+    }
+
+    pub fn quote_id(mut self, value: impl Into<String>) -> Self {
+        self.quote_id = Some(value.into());
         self
     }
 
@@ -423,6 +528,11 @@ impl PaymentBuilder {
 
     pub fn refunded_at(mut self, value: impl Into<String>) -> Self {
         self.refunded_at = Some(value.into());
+        self
+    }
+
+    pub fn response_due_at(mut self, value: impl Into<String>) -> Self {
+        self.response_due_at = Some(value.into());
         self
     }
 
@@ -511,6 +621,16 @@ impl PaymentBuilder {
         self
     }
 
+    pub fn user_agent(mut self, value: impl Into<String>) -> Self {
+        self.user_agent = Some(value.into());
+        self
+    }
+
+    pub fn variant_id(mut self, value: impl Into<String>) -> Self {
+        self.variant_id = Some(value.into());
+        self
+    }
+
     pub fn verification_checks(mut self, value: PaymentVerificationChecks) -> Self {
         self.verification_checks = Some(value);
         self
@@ -521,12 +641,18 @@ impl PaymentBuilder {
         self
     }
 
+    pub fn wuid(mut self, value: impl Into<String>) -> Self {
+        self.wuid = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`Payment`].
     /// This method will fail if any of the following fields are not set:
     /// - [`amount_after_fees`](PaymentBuilder::amount_after_fees)
     /// - [`auto_refunded`](PaymentBuilder::auto_refunded)
     /// - [`created_at`](PaymentBuilder::created_at)
     /// - [`currency`](PaymentBuilder::currency)
+    /// - [`holds`](PaymentBuilder::holds)
     /// - [`id`](PaymentBuilder::id)
     /// - [`line_items`](PaymentBuilder::line_items)
     /// - [`payment_rule_matches`](PaymentBuilder::payment_rule_matches)
@@ -545,12 +671,16 @@ impl PaymentBuilder {
             amount_after_fees: self
                 .amount_after_fees
                 .ok_or_else(|| BuildError::missing_field("amount_after_fees"))?,
+            auto_capture_at: self.auto_capture_at,
             auto_refunded: self
                 .auto_refunded
                 .ok_or_else(|| BuildError::missing_field("auto_refunded"))?,
             billing_address: self.billing_address,
             billing_reason: self.billing_reason,
+            capture_expires_at: self.capture_expires_at,
             checkout_configuration_id: self.checkout_configuration_id,
+            checkout_origin: self.checkout_origin,
+            checkout_surface: self.checkout_surface,
             client_secret: self.client_secret,
             created_at: self
                 .created_at
@@ -562,9 +692,14 @@ impl PaymentBuilder {
             customer_phone: self.customer_phone,
             decline_code: self.decline_code,
             dispute_alerted_at: self.dispute_alerted_at,
+            dispute_created_at: self.dispute_created_at,
             failure_message: self.failure_message,
             financing_installments_count: self.financing_installments_count,
+            holds: self
+                .holds
+                .ok_or_else(|| BuildError::missing_field("holds"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            ip_address: self.ip_address,
             last_payment_attempt_at: self.last_payment_attempt_at,
             line_items: self
                 .line_items
@@ -572,6 +707,7 @@ impl PaymentBuilder {
             member_id: self.member_id,
             membership_id: self.membership_id,
             metadata: self.metadata,
+            missing_tracking: self.missing_tracking,
             needs_tracking: self.needs_tracking,
             next_payment_attempt_at: self.next_payment_attempt_at,
             paid_at: self.paid_at,
@@ -584,16 +720,19 @@ impl PaymentBuilder {
             payments_failed: self
                 .payments_failed
                 .ok_or_else(|| BuildError::missing_field("payments_failed"))?,
-            plan_id: self.plan_id,
+            presentment_refunded_amount: self.presentment_refunded_amount,
+            presentment_tax_amount: self.presentment_tax_amount,
             presentment_total: self.presentment_total,
             product_id: self.product_id,
             promo_code_id: self.promo_code_id,
+            quote_id: self.quote_id,
             recovery_url: self.recovery_url,
             refundable: self
                 .refundable
                 .ok_or_else(|| BuildError::missing_field("refundable"))?,
             refunded_amount: self.refunded_amount,
             refunded_at: self.refunded_at,
+            response_due_at: self.response_due_at,
             retryable: self
                 .retryable
                 .ok_or_else(|| BuildError::missing_field("retryable"))?,
@@ -623,10 +762,13 @@ impl PaymentBuilder {
                 .ok_or_else(|| BuildError::missing_field("updated_at"))?,
             usd_total: self.usd_total,
             user: self.user,
+            user_agent: self.user_agent,
+            variant_id: self.variant_id,
             verification_checks: self.verification_checks,
             voidable: self
                 .voidable
                 .ok_or_else(|| BuildError::missing_field("voidable"))?,
+            wuid: self.wuid,
         })
     }
 }

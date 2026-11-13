@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct AccountReserve {
-    /// Total held in this currency, in native units, as a decimal string. `usd` and `usdt` are reported as one `usd` entry, matching how the balance row groups them.
+    /// Total held in this currency, in native units, as a decimal string. All dollar holdings are reported as one `usd` entry, matching how the balance row groups them.
     #[serde(default)]
     pub amount: String,
     #[serde(default)]

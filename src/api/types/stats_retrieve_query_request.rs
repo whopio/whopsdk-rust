@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for retrieve
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct StatsRetrieveQueryRequest {
-    /// The account this query concerns, for example biz_AbC123.
+    /// Account this query concerns, prefixed `biz_`, or `platform` for all of Whop.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
     /// The user this query concerns, for example user_AbC123. Available on metrics that support user subjects, such as account_balance.
@@ -12,13 +12,13 @@ pub struct StatsRetrieveQueryRequest {
     /// Start of the range — a date (YYYY-MM-DD), expanded to the start of that day, or an ISO 8601 timestamp (for example 2026-07-16T16:37:00Z), used exactly.
     #[serde(default)]
     pub from: String,
-    /// End of the range — a date (YYYY-MM-DD), expanded to the end of that day, or an ISO 8601 timestamp (for example 2026-07-17T16:37:00Z), used exactly.
+    /// End of the range — a date (YYYY-MM-DD), expanded to the end of that day, or an ISO 8601 timestamp (for example 2026-07-17T16:37:00Z), used exactly. Funnel entry ranges cannot exceed 90 days.
     #[serde(default)]
     pub to: String,
-    /// How wide each point is. Defaults to day. Snapshot metrics are day-only.
+    /// How wide each point is. Defaults to day. Snapshot metrics are day-only. Funnels support at most 2,000 first-entry cohort buckets.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub interval: Option<RetrieveStatsRequestInterval>,
-    /// Split the metric out by one of its properties — each point gets a breakdown array. For example breakdown_by=currency returns an entry for usd, an entry for eur, and so on.
+    /// Split the metric out by one of its properties — each point gets a breakdown array. For example breakdown_by=currency returns an entry for usd, an entry for eur, and so on. Funnels use a property of the first matched event, with at most 300 groups. experiment_id and variant require an exposure as step 1. For funnel source breakdowns, steps[1][source]=whop:* groups by campaign, whop:<campaign>:* by ad group, and whop:<campaign>:<group>:* by ad. See the metric catalog for supported breakdowns.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub breakdown_by: Option<String>,
     /// Display currency for money metrics — every amount is converted into this ISO currency using the exchange rate on each period's date. Defaults to usd. For the ads metrics (ad_spend, ad_delivery), pass the account's ads reporting currency to match the ad entity endpoints. On transaction metrics, it is ignored when you filter or break down by currency (those report the original transaction currency, unconverted).
@@ -42,7 +42,7 @@ pub struct StatsRetrieveQueryRequest {
     /// Filter to a single GMV source, for example payments — or, on the traffic metrics, a visit source (whop_ads, direct, or a utm_source value). Pair with breakdown_by=source to split by source. Available on metrics that list source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<String>,
-    /// Filter traffic metrics to one website hostname, for example shop.example.com. Pair with breakdown_by=hostname to split by website.
+    /// Filter traffic metrics to one website hostname, for example shop.example.com. On the events and people metrics, comma-separated hostnames match any listed hostname. Pair with breakdown_by=hostname to split by website.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hostname: Option<String>,
     /// Filter traffic metrics to one page — a hostname plus normalized path, for example shop.example.com/pricing. Pair with breakdown_by=page to split by page.
@@ -99,12 +99,47 @@ pub struct StatsRetrieveQueryRequest {
     /// Ad ids (ad_...) to scope the report to; stats are summed across them. Available on metrics that list ad_ids.
     #[serde(default)]
     pub ad_ids: Vec<Option<String>>,
-    /// Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
+    /// Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Card network program metrics accept 7d, 14d, 28d, or 56d. Each metric lists its accepted values in the catalog.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub snapshot_window: Option<RetrieveStatsRequestSnapshotWindow>,
     /// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub event: Option<String>,
+    /// Filter to one business type, for example `education`. Pair with `breakdown_by=business_type` to split by business type. Available on metrics that list `business_type`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub business_type: Option<String>,
+    /// Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub industry_type: Option<String>,
+    /// Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_category: Option<String>,
+    /// Filter to accounts located in one country, as an ISO 3166-1 alpha-2 code such as `US`. Pair with `breakdown_by=account_country` to split by account country. Available on metrics that list `account_country`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_country: Option<String>,
+    /// Filter to one card-issuing bank, named as the processor reports it, for example JPMORGAN CHASE BANK N A, or unknown for payments with no reported bank. Available on metrics that list issuer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub issuer: Option<String>,
+    /// The webhook to count deliveries for, for example hook_AbC123. Required by webhook_deliveries, and must belong to account_id or one of its apps.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub webhook_id: Option<String>,
+    /// Funnel only. Time allowed from the first event to the final event: integer minutes, hours, or days, up to 30d.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conversion_window: Option<String>,
+    /// Funnel only. Include only entrants whose full conversion window has elapsed. Required for confidence intervals and comparisons.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mature_only: Option<bool>,
+    /// Funnel only. Required when metric=funnel. 2 to 10 ordered events per person, as consecutive one-based bracket parameters such as `steps[1][event]=pixel.page&steps[1][page]=/pricing*&steps[2][event]=payment.completed`. Values are scalar strings, never JSON. A person's first step 1 match inside `from`/`to` anchors their cohort, breakdown, and conversion window; later matches do not restart it. Other events may occur between steps, and conversions may land after `to`. For an experiment funnel, make `experiment.exposure` step 1 and pass `breakdown_by=variant`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub steps: Option<RetrieveStatsRequestSteps>,
+    /// Funnel only. The breakdown value to use as baseline for whole-window final conversion. Requires breakdown_by and mature_only=true; defaults confidence_level to 0.95.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub compare_to: Option<String>,
+    /// Funnel only. Confidence level for whole-window final conversion intervals, for example 0.95. Requires mature_only=true. Exposure steps must each filter one user- or visitor-randomized experiment.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub confidence_level: Option<f64>,
     /// People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contactable: Option<bool>,
@@ -226,6 +261,18 @@ pub struct StatsRetrieveQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub event_count_lte: Option<f64>,
+    /// Read a referral metric for a business instead of the caller: the referrals its team members made, past members included, for example biz_AbC123. Requires company:basic:read on that business and cannot be combined with user_id. Available on metrics that list referring_account_id.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referring_account_id: Option<String>,
+    /// Read a partner metric for one team lead and everyone under them in today's org chart, for example user_AbC123. Needs referring_account_id or a global query. As breakdown_by=team_lead_id, figures sit under the highest lead above the partner who earned them, so each group matches that lead's team_lead_id filter and the groups add up to the total. With team_lead_id set, or for a caller who reads only their own team, the groups are the leads under that person, who keeps the rest. Anyone with no lead is in a null group. Available on metrics that list team_lead_id.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub team_lead_id: Option<String>,
+    /// On partner_reps, all counts the period's roster, earning counts those who earned in the period, and not_earning counts the roster minus them. On the other partner metrics, earning keeps the figures of the people partner_reps counts as earning over the whole range and not_earning keeps the figures of everyone else; those need referring_account_id or a global query. Defaults to all. Available on metrics that list activity.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub activity: Option<RetrieveStatsRequestActivity>,
+    /// With a single breakdown_by, keep the groups with the highest whole-range values, up to this many, and fold every other group into one entry named other. A rate or an average ranks its groups by the deals it divides by. The other entry is measured from the underlying rows, so a distinct count or a rate stays exact rather than being added up from groups. Available on partner metrics only.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub breakdown_limit: Option<i64>,
 }
 
 impl StatsRetrieveQueryRequest {
@@ -271,6 +318,17 @@ pub struct StatsRetrieveQueryRequestBuilder {
     ad_ids: Option<Vec<Option<String>>>,
     snapshot_window: Option<RetrieveStatsRequestSnapshotWindow>,
     event: Option<String>,
+    business_type: Option<String>,
+    industry_type: Option<String>,
+    product_category: Option<String>,
+    account_country: Option<String>,
+    issuer: Option<String>,
+    webhook_id: Option<String>,
+    conversion_window: Option<String>,
+    mature_only: Option<bool>,
+    steps: Option<RetrieveStatsRequestSteps>,
+    compare_to: Option<String>,
+    confidence_level: Option<f64>,
     contactable: Option<bool>,
     has_purchased: Option<bool>,
     first_seen_after: Option<DateTime<FixedOffset>>,
@@ -298,6 +356,10 @@ pub struct StatsRetrieveQueryRequestBuilder {
     event_count_gte: Option<f64>,
     event_count_lt: Option<f64>,
     event_count_lte: Option<f64>,
+    referring_account_id: Option<String>,
+    team_lead_id: Option<String>,
+    activity: Option<RetrieveStatsRequestActivity>,
+    breakdown_limit: Option<i64>,
 }
 
 impl StatsRetrieveQueryRequestBuilder {
@@ -471,6 +533,61 @@ impl StatsRetrieveQueryRequestBuilder {
         self
     }
 
+    pub fn business_type(mut self, value: impl Into<String>) -> Self {
+        self.business_type = Some(value.into());
+        self
+    }
+
+    pub fn industry_type(mut self, value: impl Into<String>) -> Self {
+        self.industry_type = Some(value.into());
+        self
+    }
+
+    pub fn product_category(mut self, value: impl Into<String>) -> Self {
+        self.product_category = Some(value.into());
+        self
+    }
+
+    pub fn account_country(mut self, value: impl Into<String>) -> Self {
+        self.account_country = Some(value.into());
+        self
+    }
+
+    pub fn issuer(mut self, value: impl Into<String>) -> Self {
+        self.issuer = Some(value.into());
+        self
+    }
+
+    pub fn webhook_id(mut self, value: impl Into<String>) -> Self {
+        self.webhook_id = Some(value.into());
+        self
+    }
+
+    pub fn conversion_window(mut self, value: impl Into<String>) -> Self {
+        self.conversion_window = Some(value.into());
+        self
+    }
+
+    pub fn mature_only(mut self, value: bool) -> Self {
+        self.mature_only = Some(value);
+        self
+    }
+
+    pub fn steps(mut self, value: RetrieveStatsRequestSteps) -> Self {
+        self.steps = Some(value);
+        self
+    }
+
+    pub fn compare_to(mut self, value: impl Into<String>) -> Self {
+        self.compare_to = Some(value.into());
+        self
+    }
+
+    pub fn confidence_level(mut self, value: f64) -> Self {
+        self.confidence_level = Some(value);
+        self
+    }
+
     pub fn contactable(mut self, value: bool) -> Self {
         self.contactable = Some(value);
         self
@@ -606,6 +723,26 @@ impl StatsRetrieveQueryRequestBuilder {
         self
     }
 
+    pub fn referring_account_id(mut self, value: impl Into<String>) -> Self {
+        self.referring_account_id = Some(value.into());
+        self
+    }
+
+    pub fn team_lead_id(mut self, value: impl Into<String>) -> Self {
+        self.team_lead_id = Some(value.into());
+        self
+    }
+
+    pub fn activity(mut self, value: RetrieveStatsRequestActivity) -> Self {
+        self.activity = Some(value);
+        self
+    }
+
+    pub fn breakdown_limit(mut self, value: i64) -> Self {
+        self.breakdown_limit = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`StatsRetrieveQueryRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`from`](StatsRetrieveQueryRequestBuilder::from)
@@ -655,6 +792,17 @@ impl StatsRetrieveQueryRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("ad_ids"))?,
             snapshot_window: self.snapshot_window,
             event: self.event,
+            business_type: self.business_type,
+            industry_type: self.industry_type,
+            product_category: self.product_category,
+            account_country: self.account_country,
+            issuer: self.issuer,
+            webhook_id: self.webhook_id,
+            conversion_window: self.conversion_window,
+            mature_only: self.mature_only,
+            steps: self.steps,
+            compare_to: self.compare_to,
+            confidence_level: self.confidence_level,
             contactable: self.contactable,
             has_purchased: self.has_purchased,
             first_seen_after: self.first_seen_after,
@@ -682,6 +830,10 @@ impl StatsRetrieveQueryRequestBuilder {
             event_count_gte: self.event_count_gte,
             event_count_lt: self.event_count_lt,
             event_count_lte: self.event_count_lte,
+            referring_account_id: self.referring_account_id,
+            team_lead_id: self.team_lead_id,
+            activity: self.activity,
+            breakdown_limit: self.breakdown_limit,
         })
     }
 }

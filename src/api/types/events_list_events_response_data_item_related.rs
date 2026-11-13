@@ -22,11 +22,11 @@ pub struct ListEventsResponseDataItemRelated {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payment: Option<ListEventsResponseDataItemRelatedPayment>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan: Option<ListEventsResponseDataItemRelatedPlan>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub product: Option<ListEventsResponseDataItemRelatedProduct>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user: Option<ListEventsResponseDataItemRelatedUser>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant: Option<ListEventsResponseDataItemRelatedVariant>,
 }
 
 impl ListEventsResponseDataItemRelated {
@@ -45,9 +45,9 @@ pub struct ListEventsResponseDataItemRelatedBuilder {
     app: Option<ListEventsResponseDataItemRelatedApp>,
     audience: Option<ListEventsResponseDataItemRelatedAudience>,
     payment: Option<ListEventsResponseDataItemRelatedPayment>,
-    plan: Option<ListEventsResponseDataItemRelatedPlan>,
     product: Option<ListEventsResponseDataItemRelatedProduct>,
     user: Option<ListEventsResponseDataItemRelatedUser>,
+    variant: Option<ListEventsResponseDataItemRelatedVariant>,
 }
 
 impl ListEventsResponseDataItemRelatedBuilder {
@@ -86,11 +86,6 @@ impl ListEventsResponseDataItemRelatedBuilder {
         self
     }
 
-    pub fn plan(mut self, value: ListEventsResponseDataItemRelatedPlan) -> Self {
-        self.plan = Some(value);
-        self
-    }
-
     pub fn product(mut self, value: ListEventsResponseDataItemRelatedProduct) -> Self {
         self.product = Some(value);
         self
@@ -98,6 +93,11 @@ impl ListEventsResponseDataItemRelatedBuilder {
 
     pub fn user(mut self, value: ListEventsResponseDataItemRelatedUser) -> Self {
         self.user = Some(value);
+        self
+    }
+
+    pub fn variant(mut self, value: ListEventsResponseDataItemRelatedVariant) -> Self {
+        self.variant = Some(value);
         self
     }
 
@@ -111,9 +111,9 @@ impl ListEventsResponseDataItemRelatedBuilder {
             app: self.app,
             audience: self.audience,
             payment: self.payment,
-            plan: self.plan,
             product: self.product,
             user: self.user,
+            variant: self.variant,
         })
     }
 }

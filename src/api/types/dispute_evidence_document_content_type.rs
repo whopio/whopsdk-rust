@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts.
+/// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts, and rejected without one — never null.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum DisputeEvidenceDocumentContentType {

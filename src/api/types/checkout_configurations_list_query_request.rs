@@ -6,9 +6,9 @@ pub struct CheckoutConfigurationsListQueryRequest {
     /// Account ID, prefixed `biz_`.
     #[serde(default)]
     pub account_id: String,
-    /// Only return checkout configurations for this plan ID, prefixed `plan_`.
+    /// Only return checkout configurations for this variant ID, prefixed `plan_`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan_id: Option<String>,
+    pub variant_id: Option<String>,
     /// Only return checkout configurations created before this ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_before: Option<String>,
@@ -39,7 +39,7 @@ impl CheckoutConfigurationsListQueryRequest {
 #[non_exhaustive]
 pub struct CheckoutConfigurationsListQueryRequestBuilder {
     account_id: Option<String>,
-    plan_id: Option<String>,
+    variant_id: Option<String>,
     created_before: Option<String>,
     created_after: Option<String>,
     order: Option<ListCheckoutConfigurationsRequestOrder>,
@@ -54,8 +54,8 @@ impl CheckoutConfigurationsListQueryRequestBuilder {
         self
     }
 
-    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
-        self.plan_id = Some(value.into());
+    pub fn variant_id(mut self, value: impl Into<String>) -> Self {
+        self.variant_id = Some(value.into());
         self
     }
 
@@ -97,7 +97,7 @@ impl CheckoutConfigurationsListQueryRequestBuilder {
             account_id: self
                 .account_id
                 .ok_or_else(|| BuildError::missing_field("account_id"))?,
-            plan_id: self.plan_id,
+            variant_id: self.variant_id,
             created_before: self.created_before,
             created_after: self.created_after,
             order: self.order,

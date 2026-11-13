@@ -11,6 +11,9 @@ pub struct AdCreative {
     /// The creative attachment's file id.
     #[serde(default)]
     pub id: String,
+    /// Always `null`. Translations are no longer available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
     /// The kind of asset, image or video.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub media_type: Option<String>,
@@ -31,6 +34,7 @@ pub struct AdCreativeBuilder {
     crop: Option<AdCreativeCrop>,
     format: Option<AdCreativeFormat>,
     id: Option<String>,
+    language: Option<String>,
     media_type: Option<String>,
     url: Option<String>,
 }
@@ -48,6 +52,11 @@ impl AdCreativeBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn language(mut self, value: impl Into<String>) -> Self {
+        self.language = Some(value.into());
         self
     }
 
@@ -69,6 +78,7 @@ impl AdCreativeBuilder {
             crop: self.crop,
             format: self.format,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            language: self.language,
             media_type: self.media_type,
             url: self.url,
         })

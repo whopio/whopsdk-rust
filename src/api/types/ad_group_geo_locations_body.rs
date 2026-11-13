@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct AdGroupGeoLocationsBody {
-    /// Cities, keyed by the ad platform's location taxonomy.
+    /// Cities, keyed by the location taxonomy.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cities: Option<Vec<AdGroupGeoLocationsBodyCitiesItem>>,
     /// Countries, as ISO 3166-1 alpha-2 codes such as `US`.
@@ -17,7 +17,7 @@ pub struct AdGroupGeoLocationsBody {
     /// US states and DC, as ISO 3166-2 codes such as `US-CA`. US territories (`PR`, `GU`, `VI`, `AS`, `MP`) and everywhere outside the US are targeted through `countries`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub regions: Option<Vec<String>>,
-    /// ZIP and postal codes, keyed by the ad platform's location taxonomy. Meta keys these `COUNTRY:CODE`, as `US:78756` — a bare code is ambiguous, because the same one exists in several countries. TikTok takes the bare code.
+    /// ZIP and postal codes, keyed as `COUNTRY:CODE`, such as `US:78756`. Include the country: a bare code is ambiguous, because the same one exists in several countries.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub zips: Option<Vec<AdGroupGeoLocationsBodyZipsItem>>,
 }

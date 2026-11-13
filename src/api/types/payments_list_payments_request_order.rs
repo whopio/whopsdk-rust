@@ -5,6 +5,7 @@ pub use crate::prelude::*;
 pub enum ListPaymentsRequestOrder {
     CreatedAt,
     PaidAt,
+    Amount,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -15,6 +16,7 @@ impl Serialize for ListPaymentsRequestOrder {
         match self {
             Self::CreatedAt => serializer.serialize_str("created_at"),
             Self::PaidAt => serializer.serialize_str("paid_at"),
+            Self::Amount => serializer.serialize_str("amount"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -26,6 +28,7 @@ impl<'de> Deserialize<'de> for ListPaymentsRequestOrder {
         match value.as_str() {
             "created_at" => Ok(Self::CreatedAt),
             "paid_at" => Ok(Self::PaidAt),
+            "amount" => Ok(Self::Amount),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -36,6 +39,7 @@ impl fmt::Display for ListPaymentsRequestOrder {
         match self {
             Self::CreatedAt => write!(f, "created_at"),
             Self::PaidAt => write!(f, "paid_at"),
+            Self::Amount => write!(f, "amount"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

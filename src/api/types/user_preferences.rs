@@ -5,9 +5,9 @@ pub struct UserPreferences {
     /// Whether the user has dismissed the first-time bounty worker onboarding. Set to `false` to show it again.
     #[serde(default)]
     pub bounty_worker_onboarding_dismissed: bool,
-    /// Whether investigation mode is enabled for the user. Only meaningful for staff users with investigation access.
+    /// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. `false` when the user has no cards balance.
     #[serde(default)]
-    pub investigation_enabled: bool,
+    pub cards_auto_top_up: bool,
     /// Whether the user has accepted Whop's terms and policies. `false` until recorded via `PATCH` with `terms_accepted: true`.
     #[serde(default)]
     pub terms_accepted: bool,
@@ -26,7 +26,7 @@ impl UserPreferences {
 #[non_exhaustive]
 pub struct UserPreferencesBuilder {
     bounty_worker_onboarding_dismissed: Option<bool>,
-    investigation_enabled: Option<bool>,
+    cards_auto_top_up: Option<bool>,
     terms_accepted: Option<bool>,
     terms_accepted_at: Option<String>,
 }
@@ -37,8 +37,8 @@ impl UserPreferencesBuilder {
         self
     }
 
-    pub fn investigation_enabled(mut self, value: bool) -> Self {
-        self.investigation_enabled = Some(value);
+    pub fn cards_auto_top_up(mut self, value: bool) -> Self {
+        self.cards_auto_top_up = Some(value);
         self
     }
 
@@ -55,16 +55,16 @@ impl UserPreferencesBuilder {
     /// Consumes the builder and constructs a [`UserPreferences`].
     /// This method will fail if any of the following fields are not set:
     /// - [`bounty_worker_onboarding_dismissed`](UserPreferencesBuilder::bounty_worker_onboarding_dismissed)
-    /// - [`investigation_enabled`](UserPreferencesBuilder::investigation_enabled)
+    /// - [`cards_auto_top_up`](UserPreferencesBuilder::cards_auto_top_up)
     /// - [`terms_accepted`](UserPreferencesBuilder::terms_accepted)
     pub fn build(self) -> Result<UserPreferences, BuildError> {
         Ok(UserPreferences {
             bounty_worker_onboarding_dismissed: self
                 .bounty_worker_onboarding_dismissed
                 .ok_or_else(|| BuildError::missing_field("bounty_worker_onboarding_dismissed"))?,
-            investigation_enabled: self
-                .investigation_enabled
-                .ok_or_else(|| BuildError::missing_field("investigation_enabled"))?,
+            cards_auto_top_up: self
+                .cards_auto_top_up
+                .ok_or_else(|| BuildError::missing_field("cards_auto_top_up"))?,
             terms_accepted: self
                 .terms_accepted
                 .ok_or_else(|| BuildError::missing_field("terms_accepted"))?,

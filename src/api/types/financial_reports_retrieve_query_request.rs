@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for retrieve
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct FinancialReportsRetrieveQueryRequest {
-    /// The owning account ID (a biz_ identifier), or `global` for a platform-wide report across all ledger accounts (requires internal admin access).
+    /// The account that owns the report, prefixed `biz_`.
     #[serde(default)]
     pub account_id: String,
     /// The type of financial report to generate.
@@ -14,12 +14,12 @@ pub struct FinancialReportsRetrieveQueryRequest {
     /// Aggregate all activity into this display currency via FX conversion.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub in_currency: Option<String>,
-    /// Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+    /// Start of the report window as an ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub from: Option<DateTime<FixedOffset>>,
-    /// Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+    /// Exclusive end of the report window as an ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
@@ -36,15 +36,12 @@ pub struct FinancialReportsRetrieveQueryRequest {
     /// Account-level balance activity only: include money moving in or money moving out.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<RetrieveFinancialReportsRequestDirection>,
-    /// Platform-wide (global) reports only: when true, return cumulative balances as of to (all history, no lower bound) instead of activity within the period.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub cumulative: Option<bool>,
-    /// Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub scope_account_id: Option<String>,
     /// Balance activity only: include payment costs grouped by payment method and provider.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub include_payment_fee_breakdown: Option<bool>,
+    /// Account-level balance activity only: return only currencies with cashflow in the exact requested window. Requires `from` and `to`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub period_only_currencies: Option<bool>,
 }
 
 impl FinancialReportsRetrieveQueryRequest {
@@ -66,9 +63,8 @@ pub struct FinancialReportsRetrieveQueryRequestBuilder {
     timezone: Option<String>,
     line_types: Option<Vec<Option<RetrieveFinancialReportsRequestLineTypesItem>>>,
     direction: Option<RetrieveFinancialReportsRequestDirection>,
-    cumulative: Option<bool>,
-    scope_account_id: Option<String>,
     include_payment_fee_breakdown: Option<bool>,
+    period_only_currencies: Option<bool>,
 }
 
 impl FinancialReportsRetrieveQueryRequestBuilder {
@@ -125,18 +121,13 @@ impl FinancialReportsRetrieveQueryRequestBuilder {
         self
     }
 
-    pub fn cumulative(mut self, value: bool) -> Self {
-        self.cumulative = Some(value);
-        self
-    }
-
-    pub fn scope_account_id(mut self, value: impl Into<String>) -> Self {
-        self.scope_account_id = Some(value.into());
-        self
-    }
-
     pub fn include_payment_fee_breakdown(mut self, value: bool) -> Self {
         self.include_payment_fee_breakdown = Some(value);
+        self
+    }
+
+    pub fn period_only_currencies(mut self, value: bool) -> Self {
+        self.period_only_currencies = Some(value);
         self
     }
 
@@ -163,9 +154,8 @@ impl FinancialReportsRetrieveQueryRequestBuilder {
                 .line_types
                 .ok_or_else(|| BuildError::missing_field("line_types"))?,
             direction: self.direction,
-            cumulative: self.cumulative,
-            scope_account_id: self.scope_account_id,
             include_payment_fee_breakdown: self.include_payment_fee_breakdown,
+            period_only_currencies: self.period_only_currencies,
         })
     }
 }
