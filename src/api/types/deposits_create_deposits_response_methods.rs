@@ -1,11 +1,14 @@
 pub use crate::prelude::*;
 
 /// Available deposit methods for destination.
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreateDepositsResponseMethods {
     /// Bank deposit details. Only present when bank deposits are active for the destination account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bank: Option<CreateDepositsResponseMethodsBank>,
+    /// The charge to a saved payment method. Null unless `payment_method_id` was passed.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub card: Option<CreateDepositsResponseMethodsCard>,
     /// Crypto networks available for this deposit, each with its on-chain deposit address and the tokens accepted on that network. Crypto deposits require a $10 minimum.
     #[serde(default)]
     pub crypto: Vec<CreateDepositsResponseMethodsCryptoItem>,
@@ -21,12 +24,18 @@ impl CreateDepositsResponseMethods {
 #[non_exhaustive]
 pub struct CreateDepositsResponseMethodsBuilder {
     bank: Option<CreateDepositsResponseMethodsBank>,
+    card: Option<CreateDepositsResponseMethodsCard>,
     crypto: Option<Vec<CreateDepositsResponseMethodsCryptoItem>>,
 }
 
 impl CreateDepositsResponseMethodsBuilder {
     pub fn bank(mut self, value: CreateDepositsResponseMethodsBank) -> Self {
         self.bank = Some(value);
+        self
+    }
+
+    pub fn card(mut self, value: CreateDepositsResponseMethodsCard) -> Self {
+        self.card = Some(value);
         self
     }
 
@@ -41,6 +50,7 @@ impl CreateDepositsResponseMethodsBuilder {
     pub fn build(self) -> Result<CreateDepositsResponseMethods, BuildError> {
         Ok(CreateDepositsResponseMethods {
             bank: self.bank,
+            card: self.card,
             crypto: self
                 .crypto
                 .ok_or_else(|| BuildError::missing_field("crypto"))?,

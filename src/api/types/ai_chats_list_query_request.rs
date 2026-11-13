@@ -17,6 +17,9 @@ pub struct AiChatsListQueryRequest {
     pub last: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub agent_identifier: Option<AiChatAgentIdentifiers>,
+    /// Only return chats associated with this business account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
     /// When true, returns only chats with an active cron schedule
     #[serde(skip_serializing_if = "Option::is_none")]
     pub only_active_crons: Option<bool>,
@@ -36,6 +39,7 @@ pub struct AiChatsListQueryRequestBuilder {
     first: Option<i64>,
     last: Option<i64>,
     agent_identifier: Option<AiChatAgentIdentifiers>,
+    account_id: Option<String>,
     only_active_crons: Option<bool>,
 }
 
@@ -65,6 +69,11 @@ impl AiChatsListQueryRequestBuilder {
         self
     }
 
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
+        self
+    }
+
     pub fn only_active_crons(mut self, value: bool) -> Self {
         self.only_active_crons = Some(value);
         self
@@ -78,6 +87,7 @@ impl AiChatsListQueryRequestBuilder {
             first: self.first,
             last: self.last,
             agent_identifier: self.agent_identifier,
+            account_id: self.account_id,
             only_active_crons: self.only_active_crons,
         })
     }

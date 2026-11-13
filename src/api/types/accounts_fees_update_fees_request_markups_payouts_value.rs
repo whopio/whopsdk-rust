@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+/// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct UpdateFeesRequestMarkupsPayoutsValue {
     /// The amount the platform adds per event, in US dollars.

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct WebhookDelivery {
     /// The event type this delivery carried, for example `payment.succeeded`.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -27,6 +27,8 @@ pub struct WebhookDelivery {
     /// When the webhook was sent, as an ISO 8601 timestamp.
     #[serde(default)]
     pub sent_at: String,
+    /// Outcome of this delivery attempt: `success` when the endpoint returned a 2xx response, `error` otherwise.
+    pub status: WebhookDeliveryStatus,
     /// Whether the endpoint acknowledged this attempt with a 2xx response.
     #[serde(default)]
     pub success: bool,
@@ -53,6 +55,7 @@ pub struct WebhookDeliveryBuilder {
     response_body: Option<HashMap<String, serde_json::Value>>,
     response_code: Option<f64>,
     sent_at: Option<String>,
+    status: Option<WebhookDeliveryStatus>,
     success: Option<bool>,
     total_time: Option<f64>,
 }
@@ -98,6 +101,11 @@ impl WebhookDeliveryBuilder {
         self
     }
 
+    pub fn status(mut self, value: WebhookDeliveryStatus) -> Self {
+        self.status = Some(value);
+        self
+    }
+
     pub fn success(mut self, value: bool) -> Self {
         self.success = Some(value);
         self
@@ -115,6 +123,7 @@ impl WebhookDeliveryBuilder {
     /// - [`resource_id`](WebhookDeliveryBuilder::resource_id)
     /// - [`response_code`](WebhookDeliveryBuilder::response_code)
     /// - [`sent_at`](WebhookDeliveryBuilder::sent_at)
+    /// - [`status`](WebhookDeliveryBuilder::status)
     /// - [`success`](WebhookDeliveryBuilder::success)
     /// - [`total_time`](WebhookDeliveryBuilder::total_time)
     pub fn build(self) -> Result<WebhookDelivery, BuildError> {
@@ -135,6 +144,9 @@ impl WebhookDeliveryBuilder {
             sent_at: self
                 .sent_at
                 .ok_or_else(|| BuildError::missing_field("sent_at"))?,
+            status: self
+                .status
+                .ok_or_else(|| BuildError::missing_field("status"))?,
             success: self
                 .success
                 .ok_or_else(|| BuildError::missing_field("success"))?,

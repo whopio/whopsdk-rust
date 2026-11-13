@@ -26,6 +26,12 @@ pub struct PayoutsSupportedMethodsListQueryRequest {
     /// Currency the supported payout method would deliver payouts in. Only meaningful with supported_payout_method_id; required fields vary by destination currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_currency: Option<String>,
+    /// Who will own the payout method. `first_party` is the account itself. `third_party` is a recipient the account pays, saved with `recipient` on `POST /payouts/methods`, which needs no identity fields. Only meaningful with supported_payout_method_id.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub party_type: Option<ListSupportedMethodsRequestPartyType>,
+    /// Whether to list each bank as its own payout method in countries where people choose a bank by name. Each bank has `parent_id` set to the bank deposit method that lists it. When `false`, these countries list one bank deposit method instead.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_individual_banks: Option<bool>,
     /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
@@ -56,6 +62,8 @@ pub struct PayoutsSupportedMethodsListQueryRequestBuilder {
     currency: Option<String>,
     supported_payout_method_id: Option<String>,
     destination_currency: Option<String>,
+    party_type: Option<ListSupportedMethodsRequestPartyType>,
+    include_individual_banks: Option<bool>,
     first: Option<i64>,
     after: Option<String>,
     last: Option<i64>,
@@ -98,6 +106,16 @@ impl PayoutsSupportedMethodsListQueryRequestBuilder {
         self
     }
 
+    pub fn party_type(mut self, value: ListSupportedMethodsRequestPartyType) -> Self {
+        self.party_type = Some(value);
+        self
+    }
+
+    pub fn include_individual_banks(mut self, value: bool) -> Self {
+        self.include_individual_banks = Some(value);
+        self
+    }
+
     pub fn first(mut self, value: i64) -> Self {
         self.first = Some(value);
         self
@@ -128,6 +146,8 @@ impl PayoutsSupportedMethodsListQueryRequestBuilder {
             currency: self.currency,
             supported_payout_method_id: self.supported_payout_method_id,
             destination_currency: self.destination_currency,
+            party_type: self.party_type,
+            include_individual_banks: self.include_individual_banks,
             first: self.first,
             after: self.after,
             last: self.last,

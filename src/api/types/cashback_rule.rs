@@ -20,16 +20,16 @@ pub struct CashbackRule {
     /// Cashback rule ID, prefixed `cicbr_`.
     #[serde(default)]
     pub id: String,
-    /// Four-digit merchant category code. Both merchant filters must match.
-    #[serde(default)]
-    pub merchant_category_code: String,
-    /// Raw merchant name reported by the card provider. Matched together with the merchant category code; not a substring or enriched display-name match.
-    #[serde(default)]
-    pub merchant_name: String,
+    /// Four-digit merchant category code. Null matches any MCC. When both merchant filters are null, scoped_account_id is required.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub merchant_category_code: Option<String>,
+    /// Raw merchant name reported by the card provider. Null matches any merchant name. When set, matches together with any MCC filter; not a substring or enriched display-name match.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub merchant_name: Option<String>,
     /// Cashback rate in basis points. 100 means 1%, and 10000 means 100%.
     #[serde(default)]
     pub rate_bps: i64,
-    /// Connected account ID, prefixed `biz_`. Null designates all direct connected accounts of the funding platform.
+    /// Subaccount ID, prefixed `biz_`. Null designates all direct subaccounts of the funding platform.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scoped_account_id: Option<String>,
     /// Inclusive start of the rule's eligibility window, as an ISO 8601 timestamp.
@@ -129,8 +129,6 @@ impl CashbackRuleBuilder {
     /// - [`created_at`](CashbackRuleBuilder::created_at)
     /// - [`funding_account_id`](CashbackRuleBuilder::funding_account_id)
     /// - [`id`](CashbackRuleBuilder::id)
-    /// - [`merchant_category_code`](CashbackRuleBuilder::merchant_category_code)
-    /// - [`merchant_name`](CashbackRuleBuilder::merchant_name)
     /// - [`rate_bps`](CashbackRuleBuilder::rate_bps)
     /// - [`starts_at`](CashbackRuleBuilder::starts_at)
     /// - [`updated_at`](CashbackRuleBuilder::updated_at)
@@ -146,12 +144,8 @@ impl CashbackRuleBuilder {
                 .funding_account_id
                 .ok_or_else(|| BuildError::missing_field("funding_account_id"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
-            merchant_category_code: self
-                .merchant_category_code
-                .ok_or_else(|| BuildError::missing_field("merchant_category_code"))?,
-            merchant_name: self
-                .merchant_name
-                .ok_or_else(|| BuildError::missing_field("merchant_name"))?,
+            merchant_category_code: self.merchant_category_code,
+            merchant_name: self.merchant_name,
             rate_bps: self
                 .rate_bps
                 .ok_or_else(|| BuildError::missing_field("rate_bps"))?,

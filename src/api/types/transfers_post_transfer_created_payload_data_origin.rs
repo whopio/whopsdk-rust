@@ -1,86 +1,69 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(tag = "typename")]
-#[non_exhaustive]
-pub enum PostTransferCreatedPayloadDataOrigin {
-    #[non_exhaustive]
-    Company {
-        #[serde(default)]
-        id: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        route: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        title: Option<String>,
-    },
-
-    #[non_exhaustive]
-    User {
-        #[serde(default)]
-        id: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        name: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        username: Option<String>,
-    },
-
-    /// Catch-all variant for unrecognized discriminant values.
-    /// If the server sends a discriminant not recognized by the current SDK
-    /// version, the raw payload is captured here so callers can still inspect it.
-    #[serde(untagged)]
-    __Unknown(serde_json::Value),
+/// Business account or user sending the transfer.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+pub struct PostTransferCreatedPayloadDataOrigin {
+    /// Account or user ID.
+    #[serde(default)]
+    pub id: String,
+    /// Business logo or user avatar URL. Null when no image is available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub logo_url: Option<String>,
+    /// Business or user display name.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    /// Whether the profile is a business account or a user.
+    pub object: PostTransferCreatedPayloadDataOriginObject,
 }
 
 impl PostTransferCreatedPayloadDataOrigin {
-    pub fn company(id: String) -> Self {
-        Self::Company {
-            id,
-            route: None,
-            title: None,
-        }
+    pub fn builder() -> PostTransferCreatedPayloadDataOriginBuilder {
+        <PostTransferCreatedPayloadDataOriginBuilder as Default>::default()
+    }
+}
+
+#[derive(Clone, PartialEq, Default, Debug)]
+#[non_exhaustive]
+pub struct PostTransferCreatedPayloadDataOriginBuilder {
+    id: Option<String>,
+    logo_url: Option<String>,
+    name: Option<String>,
+    object: Option<PostTransferCreatedPayloadDataOriginObject>,
+}
+
+impl PostTransferCreatedPayloadDataOriginBuilder {
+    pub fn id(mut self, value: impl Into<String>) -> Self {
+        self.id = Some(value.into());
+        self
     }
 
-    pub fn user(id: String) -> Self {
-        Self::User {
-            id,
-            name: None,
-            username: None,
-        }
+    pub fn logo_url(mut self, value: impl Into<String>) -> Self {
+        self.logo_url = Some(value.into());
+        self
     }
 
-    pub fn company_with_route(id: String, route: String, title: Option<String>) -> Self {
-        Self::Company {
-            id,
-            route: Some(route),
-            title,
-        }
+    pub fn name(mut self, value: impl Into<String>) -> Self {
+        self.name = Some(value.into());
+        self
     }
 
-    pub fn company_with_title(id: String, route: Option<String>, title: String) -> Self {
-        Self::Company {
-            id,
-            route,
-            title: Some(title),
-        }
+    pub fn object(mut self, value: PostTransferCreatedPayloadDataOriginObject) -> Self {
+        self.object = Some(value);
+        self
     }
 
-    pub fn user_with_name(id: String, name: String, username: Option<String>) -> Self {
-        Self::User {
-            id,
-            name: Some(name),
-            username,
-        }
-    }
-
-    pub fn user_with_username(id: String, name: Option<String>, username: String) -> Self {
-        Self::User {
-            id,
-            name,
-            username: Some(username),
-        }
-    }
-
-    pub fn unknown(value: serde_json::Value) -> Self {
-        Self::__Unknown(value)
+    /// Consumes the builder and constructs a [`PostTransferCreatedPayloadDataOrigin`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`id`](PostTransferCreatedPayloadDataOriginBuilder::id)
+    /// - [`object`](PostTransferCreatedPayloadDataOriginBuilder::object)
+    pub fn build(self) -> Result<PostTransferCreatedPayloadDataOrigin, BuildError> {
+        Ok(PostTransferCreatedPayloadDataOrigin {
+            id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            logo_url: self.logo_url,
+            name: self.name,
+            object: self
+                .object
+                .ok_or_else(|| BuildError::missing_field("object"))?,
+        })
     }
 }

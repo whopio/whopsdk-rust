@@ -20,6 +20,21 @@ pub struct SupportChannelsListQueryRequest {
     /// Whether to filter by open or resolved support channels. Set to true to only return channels awaiting a response, or false for resolved channels.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub open: Option<bool>,
+    /// Only return support channels opened by this customer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_user_id: Option<String>,
+    /// Only return support channels opened by any of these customers. Maximum 100 IDs per request.
+    #[serde(default)]
+    pub customer_user_ids: Vec<Option<String>>,
+    /// Set to true to only return channels the authenticated user has joined as a participant. Requires a user.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub participated: Option<bool>,
+    /// Set to true to return `last_message` and `unread` on each channel. Both are `null` otherwise, which keeps large lists fast.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_last_message: Option<bool>,
+    /// Set to true to return `participated` on each channel. It is `null` otherwise, which keeps large lists fast.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_participated: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<Direction>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -44,6 +59,11 @@ pub struct SupportChannelsListQueryRequestBuilder {
     last: Option<i64>,
     view: Option<SupportChannelView>,
     open: Option<bool>,
+    customer_user_id: Option<String>,
+    customer_user_ids: Option<Vec<Option<String>>>,
+    participated: Option<bool>,
+    include_last_message: Option<bool>,
+    include_participated: Option<bool>,
     direction: Option<Direction>,
     order: Option<MessageChannelOrder>,
     account_id: Option<String>,
@@ -80,6 +100,31 @@ impl SupportChannelsListQueryRequestBuilder {
         self
     }
 
+    pub fn customer_user_id(mut self, value: impl Into<String>) -> Self {
+        self.customer_user_id = Some(value.into());
+        self
+    }
+
+    pub fn customer_user_ids(mut self, value: Vec<Option<String>>) -> Self {
+        self.customer_user_ids = Some(value);
+        self
+    }
+
+    pub fn participated(mut self, value: bool) -> Self {
+        self.participated = Some(value);
+        self
+    }
+
+    pub fn include_last_message(mut self, value: bool) -> Self {
+        self.include_last_message = Some(value);
+        self
+    }
+
+    pub fn include_participated(mut self, value: bool) -> Self {
+        self.include_participated = Some(value);
+        self
+    }
+
     pub fn direction(mut self, value: Direction) -> Self {
         self.direction = Some(value);
         self
@@ -96,6 +141,8 @@ impl SupportChannelsListQueryRequestBuilder {
     }
 
     /// Consumes the builder and constructs a [`SupportChannelsListQueryRequest`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`customer_user_ids`](SupportChannelsListQueryRequestBuilder::customer_user_ids)
     pub fn build(self) -> Result<SupportChannelsListQueryRequest, BuildError> {
         Ok(SupportChannelsListQueryRequest {
             after: self.after,
@@ -104,6 +151,13 @@ impl SupportChannelsListQueryRequestBuilder {
             last: self.last,
             view: self.view,
             open: self.open,
+            customer_user_id: self.customer_user_id,
+            customer_user_ids: self
+                .customer_user_ids
+                .ok_or_else(|| BuildError::missing_field("customer_user_ids"))?,
+            participated: self.participated,
+            include_last_message: self.include_last_message,
+            include_participated: self.include_participated,
             direction: self.direction,
             order: self.order,
             account_id: self.account_id,

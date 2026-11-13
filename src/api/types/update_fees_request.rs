@@ -4,6 +4,12 @@ pub use crate::prelude::*;
 pub struct UpdateFeesRequest {
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub ach_dispute: Option<UpdateFeesRequestAchDispute>,
+    /// The fields of a fee the caller may change. Only the keys sent are replaced.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ach_return: Option<UpdateFeesRequestAchReturn>,
+    /// The fields of a fee the caller may change. Only the keys sent are replaced.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bank_deposit: Option<UpdateFeesRequestBankDeposit>,
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -14,9 +20,12 @@ pub struct UpdateFeesRequest {
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub card_processing: Option<UpdateFeesRequestCardProcessing>,
-    /// This platform's default markups for every account connected to it.
+    /// Default markups for subaccounts. Available on accounts without a parent, even before any accounts connect.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub child_markups: Option<UpdateFeesRequestChildMarkups>,
+    /// Changes to the payout fees this account covers for subaccounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub covered_payout_fees: Option<UpdateFeesRequestCoveredPayoutFees>,
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cross_border: Option<UpdateFeesRequestCrossBorder>,
@@ -50,7 +59,7 @@ pub struct UpdateFeesRequest {
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub marketplace: Option<UpdateFeesRequestMarketplace>,
-    /// Markups on this connected account, set by the platform it is connected to.
+    /// Markups on this subaccount, set by the platform it is connected to.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub markups: Option<UpdateFeesRequestMarkups>,
     /// Why the fees are changing, recorded with the change. Required when a Whop Verified Partner edits the fee schedule; ignored for markups.
@@ -79,6 +88,12 @@ pub struct UpdateFeesRequest {
     pub revshare: Option<UpdateFeesRequestRevshare>,
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub sepa_dispute: Option<UpdateFeesRequestSepaDispute>,
+    /// The fields of a fee the caller may change. Only the keys sent are replaced.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sepa_return: Option<UpdateFeesRequestSepaReturn>,
+    /// The fields of a fee the caller may change. Only the keys sent are replaced.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_calculation: Option<UpdateFeesRequestTaxCalculation>,
     /// The fields of a fee the caller may change. Only the keys sent are replaced.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -100,11 +115,14 @@ impl UpdateFeesRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct UpdateFeesRequestBuilder {
+    ach_dispute: Option<UpdateFeesRequestAchDispute>,
+    ach_return: Option<UpdateFeesRequestAchReturn>,
     bank_deposit: Option<UpdateFeesRequestBankDeposit>,
     billing: Option<UpdateFeesRequestBilling>,
     buyer: Option<UpdateFeesRequestBuyer>,
     card_processing: Option<UpdateFeesRequestCardProcessing>,
     child_markups: Option<UpdateFeesRequestChildMarkups>,
+    covered_payout_fees: Option<UpdateFeesRequestCoveredPayoutFees>,
     cross_border: Option<UpdateFeesRequestCrossBorder>,
     dispute: Option<UpdateFeesRequestDispute>,
     dispute_alert: Option<UpdateFeesRequestDisputeAlert>,
@@ -125,6 +143,8 @@ pub struct UpdateFeesRequestBuilder {
     platform_processing: Option<UpdateFeesRequestPlatformProcessing>,
     pool_payout: Option<UpdateFeesRequestPoolPayout>,
     revshare: Option<UpdateFeesRequestRevshare>,
+    sepa_dispute: Option<UpdateFeesRequestSepaDispute>,
+    sepa_return: Option<UpdateFeesRequestSepaReturn>,
     tax_calculation: Option<UpdateFeesRequestTaxCalculation>,
     tax_service: Option<UpdateFeesRequestTaxService>,
     three_ds: Option<UpdateFeesRequestThreeDs>,
@@ -132,6 +152,16 @@ pub struct UpdateFeesRequestBuilder {
 }
 
 impl UpdateFeesRequestBuilder {
+    pub fn ach_dispute(mut self, value: UpdateFeesRequestAchDispute) -> Self {
+        self.ach_dispute = Some(value);
+        self
+    }
+
+    pub fn ach_return(mut self, value: UpdateFeesRequestAchReturn) -> Self {
+        self.ach_return = Some(value);
+        self
+    }
+
     pub fn bank_deposit(mut self, value: UpdateFeesRequestBankDeposit) -> Self {
         self.bank_deposit = Some(value);
         self
@@ -154,6 +184,11 @@ impl UpdateFeesRequestBuilder {
 
     pub fn child_markups(mut self, value: UpdateFeesRequestChildMarkups) -> Self {
         self.child_markups = Some(value);
+        self
+    }
+
+    pub fn covered_payout_fees(mut self, value: UpdateFeesRequestCoveredPayoutFees) -> Self {
+        self.covered_payout_fees = Some(value);
         self
     }
 
@@ -260,6 +295,16 @@ impl UpdateFeesRequestBuilder {
         self
     }
 
+    pub fn sepa_dispute(mut self, value: UpdateFeesRequestSepaDispute) -> Self {
+        self.sepa_dispute = Some(value);
+        self
+    }
+
+    pub fn sepa_return(mut self, value: UpdateFeesRequestSepaReturn) -> Self {
+        self.sepa_return = Some(value);
+        self
+    }
+
     pub fn tax_calculation(mut self, value: UpdateFeesRequestTaxCalculation) -> Self {
         self.tax_calculation = Some(value);
         self
@@ -283,11 +328,14 @@ impl UpdateFeesRequestBuilder {
     /// Consumes the builder and constructs a [`UpdateFeesRequest`].
     pub fn build(self) -> Result<UpdateFeesRequest, BuildError> {
         Ok(UpdateFeesRequest {
+            ach_dispute: self.ach_dispute,
+            ach_return: self.ach_return,
             bank_deposit: self.bank_deposit,
             billing: self.billing,
             buyer: self.buyer,
             card_processing: self.card_processing,
             child_markups: self.child_markups,
+            covered_payout_fees: self.covered_payout_fees,
             cross_border: self.cross_border,
             dispute: self.dispute,
             dispute_alert: self.dispute_alert,
@@ -308,6 +356,8 @@ impl UpdateFeesRequestBuilder {
             platform_processing: self.platform_processing,
             pool_payout: self.pool_payout,
             revshare: self.revshare,
+            sepa_dispute: self.sepa_dispute,
+            sepa_return: self.sepa_return,
             tax_calculation: self.tax_calculation,
             tax_service: self.tax_service,
             three_ds: self.three_ds,

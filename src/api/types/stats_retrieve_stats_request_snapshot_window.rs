@@ -4,8 +4,10 @@ pub use crate::prelude::*;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RetrieveStatsRequestSnapshotWindow {
     SevenD,
+    FourteenD,
     TwentyEightD,
     ThirtyD,
+    FiftySixD,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -15,8 +17,10 @@ impl Serialize for RetrieveStatsRequestSnapshotWindow {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::SevenD => serializer.serialize_str("7d"),
+            Self::FourteenD => serializer.serialize_str("14d"),
             Self::TwentyEightD => serializer.serialize_str("28d"),
             Self::ThirtyD => serializer.serialize_str("30d"),
+            Self::FiftySixD => serializer.serialize_str("56d"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -27,8 +31,10 @@ impl<'de> Deserialize<'de> for RetrieveStatsRequestSnapshotWindow {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
             "7d" => Ok(Self::SevenD),
+            "14d" => Ok(Self::FourteenD),
             "28d" => Ok(Self::TwentyEightD),
             "30d" => Ok(Self::ThirtyD),
+            "56d" => Ok(Self::FiftySixD),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -38,8 +44,10 @@ impl fmt::Display for RetrieveStatsRequestSnapshotWindow {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::SevenD => write!(f, "7d"),
+            Self::FourteenD => write!(f, "14d"),
             Self::TwentyEightD => write!(f, "28d"),
             Self::ThirtyD => write!(f, "30d"),
+            Self::FiftySixD => write!(f, "56d"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

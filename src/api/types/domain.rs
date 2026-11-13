@@ -1,51 +1,69 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct Domain {
-    /// ID of the account claiming or owning this domain, prefixed `biz_`.
-    #[serde(default)]
-    pub account_id: String,
-    /// ID of the app assigned to this domain, prefixed `app_`.
-    #[serde(default)]
-    pub app_id: String,
-    /// Cloudflare's latest certificate issuance status.
+    /// ID of the account the domain belongs to, prefixed `biz_`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub certificate_status: Option<String>,
-    /// When the domain claim was created, as an ISO 8601 timestamp.
-    #[serde(default)]
-    pub created_at: String,
-    #[serde(default)]
-    pub dns_records: Vec<DomainDnsRecord>,
-    /// Result of the most recent DNS routing check. Ownership is verified separately.
-    pub dns_status: DomainDnsStatus,
+    pub account_id: Option<String>,
+    /// Offering Apple Pay at checkouts served from the domain. `null` when not enrolled or not visible to you.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub apple_pay: Option<DomainApplePay>,
+    /// Whether you can register the hostname and what it costs. Set only when no domain on Whop has it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub availability: Option<DomainAvailability>,
+    /// When the domain was created, as an ISO 8601 timestamp.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created_at: Option<String>,
     /// Normalized hostname, such as checkout.example.com.
     #[serde(default)]
     pub domain: String,
-    /// Cloudflare's latest hostname activation status.
+    /// Sending and receiving email on the domain through Whop. `null` when not wanted, or when the domain belongs to an account you can't read.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hostname_status: Option<String>,
-    /// Domain ID, prefixed `dom_`.
-    #[serde(default)]
-    pub id: String,
+    pub email: Option<DomainEmail>,
+    /// Domain ID, prefixed `dom_`. `null` when no domain on Whop has this hostname.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
     #[serde(default)]
     pub issues: Vec<DomainIssue>,
-    /// When DNS and provider state were last checked, as an ISO 8601 timestamp.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub last_checked_at: Option<String>,
-    /// Custom string keys and values attached to this domain.
+    /// Custom string keys and values attached to this domain. Empty when the domain isn't yours.
     #[serde(default)]
     pub metadata: HashMap<String, String>,
-    /// Domain lifecycle. Only active domains resolve to their app.
-    pub status: DomainStatus,
+    /// The account that has proven it owns this hostname on Whop, which can be your own. `null` when no account has.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub owned_by: Option<DomainOwner>,
+    /// Tracking page views on the domain with the Whop pixel. `null` when not tracked or not visible to you.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pixel: Option<DomainPixel>,
+    /// An address on a zone Whop runs, such as example.whop.site, that follows its app's route. `null` for other domains or when not visible to you.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub platform: Option<DomainPlatform>,
+    /// The domain's public registration record (RDAP), read when you retrieve it by hostname. `null` for domains on Whop, available domains, or a record that couldn't be read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub public_record: Option<DomainPublicRecord>,
+    /// Buying the domain through Whop, renewing it, and running its DNS. `null` when not wanted or not visible to you.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub registration: Option<DomainRegistration>,
+    /// Traffic on the domain. `null` when the domain isn't on Whop or isn't visible to you.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stats: Option<DomainStats>,
+    /// The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<DomainStatus>,
+    /// A subdomain of a domain this account bought through Whop, whose DNS Whop runs. Whop removes it when the account no longer holds the root domain. `null` for other domains or when not visible to you.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subdomain: Option<DomainSubdomain>,
+    /// Moving the domain to another Whop account. `null` when not turned on or not visible to you.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transfer: Option<DomainTransfer>,
     /// When the domain was last updated, as an ISO 8601 timestamp.
-    #[serde(default)]
-    pub updated_at: String,
-    /// When an unverified claim is automatically deleted, 48 hours after creation, as an ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub verification_expires_at: Option<String>,
-    /// When Whop verified the ownership TXT record, as an ISO 8601 timestamp.
+    pub updated_at: Option<String>,
+    /// Proving you control the domain's DNS with a TXT record. `null` when not wanted or not visible to you.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub verified_at: Option<String>,
+    pub verification: Option<DomainVerification>,
+    /// Serving a Whop website on the domain. `null` when not wanted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub website: Option<DomainWebsite>,
 }
 
 impl Domain {
@@ -58,21 +76,26 @@ impl Domain {
 #[non_exhaustive]
 pub struct DomainBuilder {
     account_id: Option<String>,
-    app_id: Option<String>,
-    certificate_status: Option<String>,
+    apple_pay: Option<DomainApplePay>,
+    availability: Option<DomainAvailability>,
     created_at: Option<String>,
-    dns_records: Option<Vec<DomainDnsRecord>>,
-    dns_status: Option<DomainDnsStatus>,
     domain: Option<String>,
-    hostname_status: Option<String>,
+    email: Option<DomainEmail>,
     id: Option<String>,
     issues: Option<Vec<DomainIssue>>,
-    last_checked_at: Option<String>,
     metadata: Option<HashMap<String, String>>,
+    owned_by: Option<DomainOwner>,
+    pixel: Option<DomainPixel>,
+    platform: Option<DomainPlatform>,
+    public_record: Option<DomainPublicRecord>,
+    registration: Option<DomainRegistration>,
+    stats: Option<DomainStats>,
     status: Option<DomainStatus>,
+    subdomain: Option<DomainSubdomain>,
+    transfer: Option<DomainTransfer>,
     updated_at: Option<String>,
-    verification_expires_at: Option<String>,
-    verified_at: Option<String>,
+    verification: Option<DomainVerification>,
+    website: Option<DomainWebsite>,
 }
 
 impl DomainBuilder {
@@ -81,13 +104,13 @@ impl DomainBuilder {
         self
     }
 
-    pub fn app_id(mut self, value: impl Into<String>) -> Self {
-        self.app_id = Some(value.into());
+    pub fn apple_pay(mut self, value: DomainApplePay) -> Self {
+        self.apple_pay = Some(value);
         self
     }
 
-    pub fn certificate_status(mut self, value: impl Into<String>) -> Self {
-        self.certificate_status = Some(value.into());
+    pub fn availability(mut self, value: DomainAvailability) -> Self {
+        self.availability = Some(value);
         self
     }
 
@@ -96,23 +119,13 @@ impl DomainBuilder {
         self
     }
 
-    pub fn dns_records(mut self, value: Vec<DomainDnsRecord>) -> Self {
-        self.dns_records = Some(value);
-        self
-    }
-
-    pub fn dns_status(mut self, value: DomainDnsStatus) -> Self {
-        self.dns_status = Some(value);
-        self
-    }
-
     pub fn domain(mut self, value: impl Into<String>) -> Self {
         self.domain = Some(value.into());
         self
     }
 
-    pub fn hostname_status(mut self, value: impl Into<String>) -> Self {
-        self.hostname_status = Some(value.into());
+    pub fn email(mut self, value: DomainEmail) -> Self {
+        self.email = Some(value);
         self
     }
 
@@ -126,13 +139,38 @@ impl DomainBuilder {
         self
     }
 
-    pub fn last_checked_at(mut self, value: impl Into<String>) -> Self {
-        self.last_checked_at = Some(value.into());
+    pub fn metadata(mut self, value: HashMap<String, String>) -> Self {
+        self.metadata = Some(value);
         self
     }
 
-    pub fn metadata(mut self, value: HashMap<String, String>) -> Self {
-        self.metadata = Some(value);
+    pub fn owned_by(mut self, value: DomainOwner) -> Self {
+        self.owned_by = Some(value);
+        self
+    }
+
+    pub fn pixel(mut self, value: DomainPixel) -> Self {
+        self.pixel = Some(value);
+        self
+    }
+
+    pub fn platform(mut self, value: DomainPlatform) -> Self {
+        self.platform = Some(value);
+        self
+    }
+
+    pub fn public_record(mut self, value: DomainPublicRecord) -> Self {
+        self.public_record = Some(value);
+        self
+    }
+
+    pub fn registration(mut self, value: DomainRegistration) -> Self {
+        self.registration = Some(value);
+        self
+    }
+
+    pub fn stats(mut self, value: DomainStats) -> Self {
+        self.stats = Some(value);
         self
     }
 
@@ -141,72 +179,65 @@ impl DomainBuilder {
         self
     }
 
+    pub fn subdomain(mut self, value: DomainSubdomain) -> Self {
+        self.subdomain = Some(value);
+        self
+    }
+
+    pub fn transfer(mut self, value: DomainTransfer) -> Self {
+        self.transfer = Some(value);
+        self
+    }
+
     pub fn updated_at(mut self, value: impl Into<String>) -> Self {
         self.updated_at = Some(value.into());
         self
     }
 
-    pub fn verification_expires_at(mut self, value: impl Into<String>) -> Self {
-        self.verification_expires_at = Some(value.into());
+    pub fn verification(mut self, value: DomainVerification) -> Self {
+        self.verification = Some(value);
         self
     }
 
-    pub fn verified_at(mut self, value: impl Into<String>) -> Self {
-        self.verified_at = Some(value.into());
+    pub fn website(mut self, value: DomainWebsite) -> Self {
+        self.website = Some(value);
         self
     }
 
     /// Consumes the builder and constructs a [`Domain`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`account_id`](DomainBuilder::account_id)
-    /// - [`app_id`](DomainBuilder::app_id)
-    /// - [`created_at`](DomainBuilder::created_at)
-    /// - [`dns_records`](DomainBuilder::dns_records)
-    /// - [`dns_status`](DomainBuilder::dns_status)
     /// - [`domain`](DomainBuilder::domain)
-    /// - [`id`](DomainBuilder::id)
     /// - [`issues`](DomainBuilder::issues)
     /// - [`metadata`](DomainBuilder::metadata)
-    /// - [`status`](DomainBuilder::status)
-    /// - [`updated_at`](DomainBuilder::updated_at)
     pub fn build(self) -> Result<Domain, BuildError> {
         Ok(Domain {
-            account_id: self
-                .account_id
-                .ok_or_else(|| BuildError::missing_field("account_id"))?,
-            app_id: self
-                .app_id
-                .ok_or_else(|| BuildError::missing_field("app_id"))?,
-            certificate_status: self.certificate_status,
-            created_at: self
-                .created_at
-                .ok_or_else(|| BuildError::missing_field("created_at"))?,
-            dns_records: self
-                .dns_records
-                .ok_or_else(|| BuildError::missing_field("dns_records"))?,
-            dns_status: self
-                .dns_status
-                .ok_or_else(|| BuildError::missing_field("dns_status"))?,
+            account_id: self.account_id,
+            apple_pay: self.apple_pay,
+            availability: self.availability,
+            created_at: self.created_at,
             domain: self
                 .domain
                 .ok_or_else(|| BuildError::missing_field("domain"))?,
-            hostname_status: self.hostname_status,
-            id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            email: self.email,
+            id: self.id,
             issues: self
                 .issues
                 .ok_or_else(|| BuildError::missing_field("issues"))?,
-            last_checked_at: self.last_checked_at,
             metadata: self
                 .metadata
                 .ok_or_else(|| BuildError::missing_field("metadata"))?,
-            status: self
-                .status
-                .ok_or_else(|| BuildError::missing_field("status"))?,
-            updated_at: self
-                .updated_at
-                .ok_or_else(|| BuildError::missing_field("updated_at"))?,
-            verification_expires_at: self.verification_expires_at,
-            verified_at: self.verified_at,
+            owned_by: self.owned_by,
+            pixel: self.pixel,
+            platform: self.platform,
+            public_record: self.public_record,
+            registration: self.registration,
+            stats: self.stats,
+            status: self.status,
+            subdomain: self.subdomain,
+            transfer: self.transfer,
+            updated_at: self.updated_at,
+            verification: self.verification,
+            website: self.website,
         })
     }
 }

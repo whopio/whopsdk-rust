@@ -24,7 +24,19 @@ pub struct AppsListQueryRequest {
     /// A search string matched against app names.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
-    /// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
+    /// Only return apps whose `product_category` is this product category, such as `pressure_washing`. An unknown product category is rejected.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_category: Option<String>,
+    /// Only return apps whose `product_category` sits under this business type in Whop's business taxonomy, such as `services`. An unknown business type is rejected.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub business_type: Option<String>,
+    /// Only return apps whose `product_category` sits under this industry type of `business_type`, such as `exterior_cleaning`. Requires `business_type`. An industry type outside it is rejected.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub industry_type: Option<String>,
+    /// Only return apps in this app store category. Use a `route` from `GET /apps/categories`, such as `business-productivity`. An unknown route is rejected.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub marketplace_category_route: Option<String>,
+    /// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template. `template_recent_sales` ranks them by how many of those businesses processed a payment in the last 24 hours, recounted hourly, breaking ties by `template_usage`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<ListAppsRequestOrder>,
     /// Sort direction.
@@ -42,6 +54,9 @@ pub struct AppsListQueryRequest {
     /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
+    /// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_total_count: Option<bool>,
 }
 
 impl AppsListQueryRequest {
@@ -60,12 +75,17 @@ pub struct AppsListQueryRequestBuilder {
     verified_apps_only: Option<bool>,
     recommended: Option<bool>,
     query: Option<String>,
+    product_category: Option<String>,
+    business_type: Option<String>,
+    industry_type: Option<String>,
+    marketplace_category_route: Option<String>,
     order: Option<ListAppsRequestOrder>,
     direction: Option<ListAppsRequestDirection>,
     first: Option<i64>,
     after: Option<String>,
     last: Option<i64>,
     before: Option<String>,
+    include_total_count: Option<bool>,
 }
 
 impl AppsListQueryRequestBuilder {
@@ -104,6 +124,26 @@ impl AppsListQueryRequestBuilder {
         self
     }
 
+    pub fn product_category(mut self, value: impl Into<String>) -> Self {
+        self.product_category = Some(value.into());
+        self
+    }
+
+    pub fn business_type(mut self, value: impl Into<String>) -> Self {
+        self.business_type = Some(value.into());
+        self
+    }
+
+    pub fn industry_type(mut self, value: impl Into<String>) -> Self {
+        self.industry_type = Some(value.into());
+        self
+    }
+
+    pub fn marketplace_category_route(mut self, value: impl Into<String>) -> Self {
+        self.marketplace_category_route = Some(value.into());
+        self
+    }
+
     pub fn order(mut self, value: ListAppsRequestOrder) -> Self {
         self.order = Some(value);
         self
@@ -134,6 +174,11 @@ impl AppsListQueryRequestBuilder {
         self
     }
 
+    pub fn include_total_count(mut self, value: bool) -> Self {
+        self.include_total_count = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`AppsListQueryRequest`].
     pub fn build(self) -> Result<AppsListQueryRequest, BuildError> {
         Ok(AppsListQueryRequest {
@@ -144,12 +189,17 @@ impl AppsListQueryRequestBuilder {
             verified_apps_only: self.verified_apps_only,
             recommended: self.recommended,
             query: self.query,
+            product_category: self.product_category,
+            business_type: self.business_type,
+            industry_type: self.industry_type,
+            marketplace_category_route: self.marketplace_category_route,
             order: self.order,
             direction: self.direction,
             first: self.first,
             after: self.after,
             last: self.last,
             before: self.before,
+            include_total_count: self.include_total_count,
         })
     }
 }

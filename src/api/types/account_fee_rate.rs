@@ -2,10 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct AccountFeeRate {
-    /// The amount charged per event. `null` when the fee has no fixed component.
+    /// The amount charged per event. `null` when unavailable.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fixed: Option<Money>,
-    /// The percentage of the transaction, where `2` means 2%. `null` when the fee has no percentage component.
+    /// The percentage of the transaction, where `2` means 2%. `null` when unavailable.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]

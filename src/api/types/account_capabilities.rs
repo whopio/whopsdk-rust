@@ -20,7 +20,7 @@ pub struct AccountCapabilities {
     pub crypto_payout: AccountCapabilitiesCryptoPayout,
     /// Instant payouts to an eligible payout destination
     pub instant_payout: AccountCapabilitiesInstantPayout,
-    /// Launching ad campaigns through Whop Ads. `inactive` while a requested ads services agreement is awaiting the account's signature.
+    /// Launching ad campaigns through Whop Ads. `inactive` until the account's identity or business is verified, while a requested ads services agreement is awaiting the account's signature, and while the account is suspended from Whop Ads.
     pub run_ads: AccountCapabilitiesRunAds,
     /// Standard payouts to an external payout destination
     pub standard_payout: AccountCapabilitiesStandardPayout,

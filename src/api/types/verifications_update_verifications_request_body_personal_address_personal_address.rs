@@ -5,7 +5,7 @@ pub use crate::prelude::*;
 pub struct UpdateVerificationsRequestBodyPersonalAddressPersonalAddress {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub city: Option<String>,
-    /// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
+    /// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`. An address in a [sanctioned country or region](/trust-and-safety/trust-safety-overview/sanctioned-countries) is rejected with the error code `address_country_sanctioned`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub country: Option<String>,
     /// First line of the street address.

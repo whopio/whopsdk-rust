@@ -1,10 +1,16 @@
 pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
-#[serde(transparent)]
 pub struct CreatePartnerReferralRequestsRequestBodyAccountUrl {
     /// HTTP or HTTPS Whop business or product link.
+    #[serde(default)]
     pub account_url: String,
+    /// Your team membership on the business this referral is made for, prefixed `ausr_`. Omit for a personal referral.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub authorized_user_id: Option<String>,
+    /// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub member_id: Option<String>,
 }
 
 impl CreatePartnerReferralRequestsRequestBodyAccountUrl {
@@ -17,11 +23,23 @@ impl CreatePartnerReferralRequestsRequestBodyAccountUrl {
 #[non_exhaustive]
 pub struct CreatePartnerReferralRequestsRequestBodyAccountUrlBuilder {
     account_url: Option<String>,
+    authorized_user_id: Option<String>,
+    member_id: Option<String>,
 }
 
 impl CreatePartnerReferralRequestsRequestBodyAccountUrlBuilder {
     pub fn account_url(mut self, value: impl Into<String>) -> Self {
         self.account_url = Some(value.into());
+        self
+    }
+
+    pub fn authorized_user_id(mut self, value: impl Into<String>) -> Self {
+        self.authorized_user_id = Some(value.into());
+        self
+    }
+
+    pub fn member_id(mut self, value: impl Into<String>) -> Self {
+        self.member_id = Some(value.into());
         self
     }
 
@@ -33,6 +51,8 @@ impl CreatePartnerReferralRequestsRequestBodyAccountUrlBuilder {
             account_url: self
                 .account_url
                 .ok_or_else(|| BuildError::missing_field("account_url"))?,
+            authorized_user_id: self.authorized_user_id,
+            member_id: self.member_id,
         })
     }
 }

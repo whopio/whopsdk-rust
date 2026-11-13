@@ -5,6 +5,7 @@ pub use crate::prelude::*;
 pub enum ListApiKeysRequestResourceType {
     Account,
     App,
+    User,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -15,6 +16,7 @@ impl Serialize for ListApiKeysRequestResourceType {
         match self {
             Self::Account => serializer.serialize_str("account"),
             Self::App => serializer.serialize_str("app"),
+            Self::User => serializer.serialize_str("user"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -26,6 +28,7 @@ impl<'de> Deserialize<'de> for ListApiKeysRequestResourceType {
         match value.as_str() {
             "account" => Ok(Self::Account),
             "app" => Ok(Self::App),
+            "user" => Ok(Self::User),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -36,6 +39,7 @@ impl fmt::Display for ListApiKeysRequestResourceType {
         match self {
             Self::Account => write!(f, "account"),
             Self::App => write!(f, "app"),
+            Self::User => write!(f, "user"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

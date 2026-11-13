@@ -17,6 +17,12 @@ pub struct CreateMethodsRequest {
     /// A label for the payout method, unique per destination.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nickname: Option<String>,
+    /// The token your `return_url` received after a Log in with PayPal session started with `POST /payouts/paypal_link_sessions`. Use it for a PayPal supported payout method instead of `fields`. Sending `fields` or `plaid_public_token` alongside it is rejected, and `nickname` is ignored because Whop names the method after the PayPal email. The PayPal holder's name must match the name on the account's payout setup. An account PayPal reports as unverified, or with an unconfirmed email, is saved and flagged on the method's log rather than refused. Single use; expires 15 minutes after the login.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub paypal_link_token: Option<String>,
+    /// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recipient: Option<CreateMethodsRequestRecipient>,
     /// The supported payout method to save (a podst_ identifier from a previous listing).
     #[serde(default)]
     pub supported_payout_method_id: String,
@@ -39,6 +45,8 @@ pub struct CreateMethodsRequestBuilder {
     fields: Option<HashMap<String, String>>,
     is_default: Option<bool>,
     nickname: Option<String>,
+    paypal_link_token: Option<String>,
+    recipient: Option<CreateMethodsRequestRecipient>,
     supported_payout_method_id: Option<String>,
     user_id: Option<String>,
 }
@@ -69,6 +77,16 @@ impl CreateMethodsRequestBuilder {
         self
     }
 
+    pub fn paypal_link_token(mut self, value: impl Into<String>) -> Self {
+        self.paypal_link_token = Some(value.into());
+        self
+    }
+
+    pub fn recipient(mut self, value: CreateMethodsRequestRecipient) -> Self {
+        self.recipient = Some(value);
+        self
+    }
+
     pub fn supported_payout_method_id(mut self, value: impl Into<String>) -> Self {
         self.supported_payout_method_id = Some(value.into());
         self
@@ -89,6 +107,8 @@ impl CreateMethodsRequestBuilder {
             fields: self.fields,
             is_default: self.is_default,
             nickname: self.nickname,
+            paypal_link_token: self.paypal_link_token,
+            recipient: self.recipient,
             supported_payout_method_id: self
                 .supported_payout_method_id
                 .ok_or_else(|| BuildError::missing_field("supported_payout_method_id"))?,

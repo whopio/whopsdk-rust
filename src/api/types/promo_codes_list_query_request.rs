@@ -12,9 +12,9 @@ pub struct PromoCodesListQueryRequest {
     /// Only promo codes scoped to these product IDs.
     #[serde(default)]
     pub product_ids: Vec<Option<String>>,
-    /// Only promo codes scoped to these plan IDs.
+    /// Only promo codes scoped to these variant IDs.
     #[serde(default)]
-    pub plan_ids: Vec<Option<String>>,
+    pub variant_ids: Vec<Option<String>>,
     /// Only promo codes created before this ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -43,6 +43,9 @@ pub struct PromoCodesListQueryRequest {
     /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
+    /// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_total_count: Option<bool>,
 }
 
 impl PromoCodesListQueryRequest {
@@ -57,7 +60,7 @@ pub struct PromoCodesListQueryRequestBuilder {
     account_id: Option<String>,
     status: Option<ListPromoCodesRequestStatus>,
     product_ids: Option<Vec<Option<String>>>,
-    plan_ids: Option<Vec<Option<String>>>,
+    variant_ids: Option<Vec<Option<String>>>,
     created_before: Option<DateTime<FixedOffset>>,
     created_after: Option<DateTime<FixedOffset>>,
     order: Option<ListPromoCodesRequestOrder>,
@@ -66,6 +69,7 @@ pub struct PromoCodesListQueryRequestBuilder {
     after: Option<String>,
     last: Option<i64>,
     before: Option<String>,
+    include_total_count: Option<bool>,
 }
 
 impl PromoCodesListQueryRequestBuilder {
@@ -84,8 +88,8 @@ impl PromoCodesListQueryRequestBuilder {
         self
     }
 
-    pub fn plan_ids(mut self, value: Vec<Option<String>>) -> Self {
-        self.plan_ids = Some(value);
+    pub fn variant_ids(mut self, value: Vec<Option<String>>) -> Self {
+        self.variant_ids = Some(value);
         self
     }
 
@@ -129,11 +133,16 @@ impl PromoCodesListQueryRequestBuilder {
         self
     }
 
+    pub fn include_total_count(mut self, value: bool) -> Self {
+        self.include_total_count = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`PromoCodesListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](PromoCodesListQueryRequestBuilder::account_id)
     /// - [`product_ids`](PromoCodesListQueryRequestBuilder::product_ids)
-    /// - [`plan_ids`](PromoCodesListQueryRequestBuilder::plan_ids)
+    /// - [`variant_ids`](PromoCodesListQueryRequestBuilder::variant_ids)
     pub fn build(self) -> Result<PromoCodesListQueryRequest, BuildError> {
         Ok(PromoCodesListQueryRequest {
             account_id: self
@@ -143,9 +152,9 @@ impl PromoCodesListQueryRequestBuilder {
             product_ids: self
                 .product_ids
                 .ok_or_else(|| BuildError::missing_field("product_ids"))?,
-            plan_ids: self
-                .plan_ids
-                .ok_or_else(|| BuildError::missing_field("plan_ids"))?,
+            variant_ids: self
+                .variant_ids
+                .ok_or_else(|| BuildError::missing_field("variant_ids"))?,
             created_before: self.created_before,
             created_after: self.created_after,
             order: self.order,
@@ -154,6 +163,7 @@ impl PromoCodesListQueryRequestBuilder {
             after: self.after,
             last: self.last,
             before: self.before,
+            include_total_count: self.include_total_count,
         })
     }
 }

@@ -1,9 +1,9 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum PaymentRuleConditionValue {
-    Integer(i64),
+    Double(f64),
 
     String(String),
 
@@ -11,8 +11,8 @@ pub enum PaymentRuleConditionValue {
 }
 
 impl PaymentRuleConditionValue {
-    pub fn is_integer(&self) -> bool {
-        matches!(self, Self::Integer(_))
+    pub fn is_double(&self) -> bool {
+        matches!(self, Self::Double(_))
     }
 
     pub fn is_string(&self) -> bool {
@@ -23,16 +23,16 @@ impl PaymentRuleConditionValue {
         matches!(self, Self::StringList(_))
     }
 
-    pub fn as_integer(&self) -> Option<&i64> {
+    pub fn as_double(&self) -> Option<&f64> {
         match self {
-            Self::Integer(value) => Some(value),
+            Self::Double(value) => Some(value),
             _ => None,
         }
     }
 
-    pub fn into_integer(self) -> Option<i64> {
+    pub fn into_double(self) -> Option<f64> {
         match self {
-            Self::Integer(value) => Some(value),
+            Self::Double(value) => Some(value),
             _ => None,
         }
     }

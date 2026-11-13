@@ -5,6 +5,9 @@ pub struct PostPayoutCreatedPayloadData {
     /// The payout amount in whole currency units, as a decimal string.
     #[serde(default)]
     pub amount: String,
+    /// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
+    #[serde(default)]
+    pub cancelable: bool,
     /// When the payout was created.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
@@ -15,7 +18,7 @@ pub struct PostPayoutCreatedPayloadData {
     /// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_amount: Option<String>,
-    /// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+    /// Currency the funds are delivered in, taken from the payout method when the payout is created. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_currency: Option<String>,
     /// Estimated time the funds become available in the destination account.
@@ -45,7 +48,7 @@ pub struct PostPayoutCreatedPayloadData {
     /// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
     #[serde(default)]
     pub metadata: HashMap<String, String>,
-    /// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+    /// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
     #[serde(default)]
     pub net_amount: String,
     /// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
@@ -61,20 +64,20 @@ pub struct PostPayoutCreatedPayloadData {
     /// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_request_id: Option<String>,
-    /// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+    /// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<PostPayoutCreatedPayloadDataSource>,
     /// Payout delivery speed.
     pub speed: PostPayoutCreatedPayloadDataSpeed,
-    /// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+    /// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub statement_descriptor: Option<String>,
     /// Current payout status.
     pub status: PostPayoutCreatedPayloadDataStatus,
-    /// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+    /// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
     #[serde(default)]
     pub status_detail: String,
-    /// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+    /// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. `null` until the reference is available, and on payouts that have none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub trace_code: Option<String>,
 }
@@ -89,6 +92,7 @@ impl PostPayoutCreatedPayloadData {
 #[non_exhaustive]
 pub struct PostPayoutCreatedPayloadDataBuilder {
     amount: Option<String>,
+    cancelable: Option<bool>,
     created_at: Option<DateTime<FixedOffset>>,
     currency: Option<String>,
     destination_amount: Option<String>,
@@ -118,6 +122,11 @@ pub struct PostPayoutCreatedPayloadDataBuilder {
 impl PostPayoutCreatedPayloadDataBuilder {
     pub fn amount(mut self, value: impl Into<String>) -> Self {
         self.amount = Some(value.into());
+        self
+    }
+
+    pub fn cancelable(mut self, value: bool) -> Self {
+        self.cancelable = Some(value);
         self
     }
 
@@ -244,6 +253,7 @@ impl PostPayoutCreatedPayloadDataBuilder {
     /// Consumes the builder and constructs a [`PostPayoutCreatedPayloadData`].
     /// This method will fail if any of the following fields are not set:
     /// - [`amount`](PostPayoutCreatedPayloadDataBuilder::amount)
+    /// - [`cancelable`](PostPayoutCreatedPayloadDataBuilder::cancelable)
     /// - [`created_at`](PostPayoutCreatedPayloadDataBuilder::created_at)
     /// - [`currency`](PostPayoutCreatedPayloadDataBuilder::currency)
     /// - [`fee_amount`](PostPayoutCreatedPayloadDataBuilder::fee_amount)
@@ -261,6 +271,9 @@ impl PostPayoutCreatedPayloadDataBuilder {
             amount: self
                 .amount
                 .ok_or_else(|| BuildError::missing_field("amount"))?,
+            cancelable: self
+                .cancelable
+                .ok_or_else(|| BuildError::missing_field("cancelable"))?,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,

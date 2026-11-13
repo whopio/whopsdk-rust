@@ -2,10 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct SetNotificationsRequestPreferencesItem {
-    /// What the user is notified about in this scope. `mentions` is only valid for an experience level. `null` clears the preference.
+    /// What the user is notified about in this scope. `mentions` is only valid for an experience level; a topic override is `all` or `nothing`. `null` clears the preference, so the scope inherits its default again rather than being switched off.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub level: Option<SetNotificationsRequestPreferencesItemLevel>,
-    /// What the preference applies to. `null` on a dimension means the preference is not narrowed there.
+    /// What the preference applies to. `null` on a dimension means the preference is not narrowed there. A scope read back from either list endpoint can be sent as-is. A scope naming an experience with no topic sets that experience's level; any other scope sets a topic override.
     #[serde(default)]
     pub scope: SetNotificationsRequestPreferencesItemScope,
 }

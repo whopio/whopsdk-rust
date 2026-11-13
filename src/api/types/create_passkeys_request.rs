@@ -14,6 +14,12 @@ pub struct CreatePasskeysRequest {
     /// A name for this passkey, usually the device it lives on. 255 characters or fewer.
     #[serde(default)]
     pub nickname: String,
+    /// The `getTransports()` result from the registration response. Values Whop does not recognize are dropped.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transports: Option<Vec<String>>,
+    /// The `creation_options.user.id` the passkey was created with. Must match the challenge's options.
+    #[serde(default)]
+    pub user_handle: String,
 }
 
 impl CreatePasskeysRequest {
@@ -29,6 +35,8 @@ pub struct CreatePasskeysRequestBuilder {
     client_data_json: Option<String>,
     credential_id: Option<String>,
     nickname: Option<String>,
+    transports: Option<Vec<String>>,
+    user_handle: Option<String>,
 }
 
 impl CreatePasskeysRequestBuilder {
@@ -52,12 +60,23 @@ impl CreatePasskeysRequestBuilder {
         self
     }
 
+    pub fn transports(mut self, value: Vec<String>) -> Self {
+        self.transports = Some(value);
+        self
+    }
+
+    pub fn user_handle(mut self, value: impl Into<String>) -> Self {
+        self.user_handle = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreatePasskeysRequest`].
     /// This method will fail if any of the following fields are not set:
     /// - [`attestation_object`](CreatePasskeysRequestBuilder::attestation_object)
     /// - [`client_data_json`](CreatePasskeysRequestBuilder::client_data_json)
     /// - [`credential_id`](CreatePasskeysRequestBuilder::credential_id)
     /// - [`nickname`](CreatePasskeysRequestBuilder::nickname)
+    /// - [`user_handle`](CreatePasskeysRequestBuilder::user_handle)
     pub fn build(self) -> Result<CreatePasskeysRequest, BuildError> {
         Ok(CreatePasskeysRequest {
             attestation_object: self
@@ -72,6 +91,10 @@ impl CreatePasskeysRequestBuilder {
             nickname: self
                 .nickname
                 .ok_or_else(|| BuildError::missing_field("nickname"))?,
+            transports: self.transports,
+            user_handle: self
+                .user_handle
+                .ok_or_else(|| BuildError::missing_field("user_handle"))?,
         })
     }
 }

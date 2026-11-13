@@ -23,13 +23,13 @@ pub struct CreateOverridesResponse {
     pub id: String,
     /// The type of override (standard or rev_share).
     pub override_type: AffiliateOverrideRoles,
-    /// The plan ID (for standard overrides).
+    /// The plan ID (for standard overrides). Null for a product-wide override, which sets the terms for plans added to the product later.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub plan_id: Option<String>,
     /// The product page direct link for referrals (standard overrides only).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_direct_link: Option<String>,
-    /// The product ID (for rev-share overrides).
+    /// The product ID (for rev-share overrides, and for product-wide overrides that set the terms for plans added to the product later).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
     /// The revenue calculation basis (pre_fees or post_fees).

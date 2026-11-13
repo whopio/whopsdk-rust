@@ -8,19 +8,24 @@ pub struct UpdateAdGroupsRequest {
     /// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bid_type: Option<UpdateAdGroupsRequestBidType>,
-    /// This ad group's budget, in the ad account's currency. Omit when the budget is set on the campaign instead.
+    /// This ad group's budget in USD, which is what it is stored and billed in. Omit when the budget is set on the campaign instead.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub budget_amount: Option<f64>,
+    /// This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub budget_amount_local: Option<f64>,
     /// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub budget_type: Option<UpdateAdGroupsRequestBudgetType>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub conversion_event: Option<ConversionEvent>,
-    /// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
+    /// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub conversion_location: Option<UpdateAdGroupsRequestConversionLocation>,
+    pub delivery_schedule: Option<UpdateAdGroupsRequestDeliverySchedule>,
     /// Age, gender, and automatic-audience targeting.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub demographics: Option<AdGroupDemographicsBody>,
@@ -29,44 +34,18 @@ pub struct UpdateAdGroupsRequest {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub desired_cost_per_result: Option<f64>,
-    /// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. At most 100 entries per section. Can't be combined with demographics.automatic, and unavailable to campaigns with special_ad_categories. Send the complete intended state — a section you omit is cleared.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub detailed_targeting: Option<AdGroupDetailedTargetingBody>,
     /// Device platforms and operating systems to target.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub devices: Option<AdGroupDevicesBody>,
     /// When the ad group stops delivering, as an ISO 8601 timestamp. Omit to run until paused.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ends_at: Option<String>,
-    /// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
+    /// Search terms the ad group's ads can show for, and terms they never show for. Only search campaigns take keywords, and each of their ad groups needs at least one before launch. Replaces the stored list; omit to keep it.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub frequency_cap: Option<UpdateAdGroupsRequestFrequencyCap>,
+    pub keywords: Option<Vec<UpdateAdGroupsRequestKeywordsItem>>,
     /// Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub languages: Option<Vec<String>>,
-    /// Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub message_apps: Option<Vec<UpdateAdGroupsRequestMessageAppsItem>>,
-    /// Minimum the ad group tries to spend each day.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::number_serializers::option")]
-    pub minimum_daily_spend: Option<f64>,
-    /// The result the ad group's delivery is optimized to get the most of.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub optimization_goal: Option<UpdateAdGroupsRequestOptimizationGoal>,
-    /// `automatic` to let the ad platform choose placements, or the list of platforms and positions to target. Omit a platform's positions to target all of them.
-    ///
-    /// Valid positions per platform:
-    ///
-    /// - `facebook`: `feed`, `right_hand_column`, `marketplace`, `search`, `profile_feed`, `notification`, `story`, `instream_video`, `facebook_reels`, `facebook_reels_overlay`, `biz_disco_feed`
-    /// - `instagram`: `stream`, `story`, `explore`, `explore_home`, `reels`, `profile_feed`, `profile_reels`, `ig_search`
-    /// - `messenger`: `story`
-    /// - `audience_network`: `classic`, `rewarded_video`
-    /// - `threads`: `threads_stream`
-    /// - `whatsapp`: `status`
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub placements: Option<UpdateAdGroupsRequestPlacements>,
     /// Locations to target and exclude.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub regions: Option<AdGroupRegionsBody>,
@@ -93,20 +72,16 @@ pub struct UpdateAdGroupsRequestBuilder {
     audiences: Option<AdGroupAudiencesBody>,
     bid_type: Option<UpdateAdGroupsRequestBidType>,
     budget_amount: Option<f64>,
+    budget_amount_local: Option<f64>,
     budget_type: Option<UpdateAdGroupsRequestBudgetType>,
     conversion_event: Option<ConversionEvent>,
-    conversion_location: Option<UpdateAdGroupsRequestConversionLocation>,
+    delivery_schedule: Option<UpdateAdGroupsRequestDeliverySchedule>,
     demographics: Option<AdGroupDemographicsBody>,
     desired_cost_per_result: Option<f64>,
-    detailed_targeting: Option<AdGroupDetailedTargetingBody>,
     devices: Option<AdGroupDevicesBody>,
     ends_at: Option<String>,
-    frequency_cap: Option<UpdateAdGroupsRequestFrequencyCap>,
+    keywords: Option<Vec<UpdateAdGroupsRequestKeywordsItem>>,
     languages: Option<Vec<String>>,
-    message_apps: Option<Vec<UpdateAdGroupsRequestMessageAppsItem>>,
-    minimum_daily_spend: Option<f64>,
-    optimization_goal: Option<UpdateAdGroupsRequestOptimizationGoal>,
-    placements: Option<UpdateAdGroupsRequestPlacements>,
     regions: Option<AdGroupRegionsBody>,
     starts_at: Option<String>,
     status: Option<UpdateAdGroupsRequestStatus>,
@@ -129,6 +104,11 @@ impl UpdateAdGroupsRequestBuilder {
         self
     }
 
+    pub fn budget_amount_local(mut self, value: f64) -> Self {
+        self.budget_amount_local = Some(value);
+        self
+    }
+
     pub fn budget_type(mut self, value: UpdateAdGroupsRequestBudgetType) -> Self {
         self.budget_type = Some(value);
         self
@@ -139,8 +119,8 @@ impl UpdateAdGroupsRequestBuilder {
         self
     }
 
-    pub fn conversion_location(mut self, value: UpdateAdGroupsRequestConversionLocation) -> Self {
-        self.conversion_location = Some(value);
+    pub fn delivery_schedule(mut self, value: UpdateAdGroupsRequestDeliverySchedule) -> Self {
+        self.delivery_schedule = Some(value);
         self
     }
 
@@ -154,11 +134,6 @@ impl UpdateAdGroupsRequestBuilder {
         self
     }
 
-    pub fn detailed_targeting(mut self, value: AdGroupDetailedTargetingBody) -> Self {
-        self.detailed_targeting = Some(value);
-        self
-    }
-
     pub fn devices(mut self, value: AdGroupDevicesBody) -> Self {
         self.devices = Some(value);
         self
@@ -169,33 +144,13 @@ impl UpdateAdGroupsRequestBuilder {
         self
     }
 
-    pub fn frequency_cap(mut self, value: UpdateAdGroupsRequestFrequencyCap) -> Self {
-        self.frequency_cap = Some(value);
+    pub fn keywords(mut self, value: Vec<UpdateAdGroupsRequestKeywordsItem>) -> Self {
+        self.keywords = Some(value);
         self
     }
 
     pub fn languages(mut self, value: Vec<String>) -> Self {
         self.languages = Some(value);
-        self
-    }
-
-    pub fn message_apps(mut self, value: Vec<UpdateAdGroupsRequestMessageAppsItem>) -> Self {
-        self.message_apps = Some(value);
-        self
-    }
-
-    pub fn minimum_daily_spend(mut self, value: f64) -> Self {
-        self.minimum_daily_spend = Some(value);
-        self
-    }
-
-    pub fn optimization_goal(mut self, value: UpdateAdGroupsRequestOptimizationGoal) -> Self {
-        self.optimization_goal = Some(value);
-        self
-    }
-
-    pub fn placements(mut self, value: UpdateAdGroupsRequestPlacements) -> Self {
-        self.placements = Some(value);
         self
     }
 
@@ -225,20 +180,16 @@ impl UpdateAdGroupsRequestBuilder {
             audiences: self.audiences,
             bid_type: self.bid_type,
             budget_amount: self.budget_amount,
+            budget_amount_local: self.budget_amount_local,
             budget_type: self.budget_type,
             conversion_event: self.conversion_event,
-            conversion_location: self.conversion_location,
+            delivery_schedule: self.delivery_schedule,
             demographics: self.demographics,
             desired_cost_per_result: self.desired_cost_per_result,
-            detailed_targeting: self.detailed_targeting,
             devices: self.devices,
             ends_at: self.ends_at,
-            frequency_cap: self.frequency_cap,
+            keywords: self.keywords,
             languages: self.languages,
-            message_apps: self.message_apps,
-            minimum_daily_spend: self.minimum_daily_spend,
-            optimization_goal: self.optimization_goal,
-            placements: self.placements,
             regions: self.regions,
             starts_at: self.starts_at,
             status: self.status,

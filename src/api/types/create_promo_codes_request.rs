@@ -21,8 +21,6 @@ pub struct CreatePromoCodesRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub one_per_customer: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan_ids: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub product_id: Option<String>,
     #[serde(default)]
     pub promo_duration_months: i64,
@@ -31,6 +29,8 @@ pub struct CreatePromoCodesRequest {
     pub stock: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unlimited_stock: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub variant_ids: Option<Vec<String>>,
 }
 
 impl CreatePromoCodesRequest {
@@ -51,12 +51,12 @@ pub struct CreatePromoCodesRequestBuilder {
     expires_at: Option<String>,
     new_users_only: Option<bool>,
     one_per_customer: Option<bool>,
-    plan_ids: Option<Vec<String>>,
     product_id: Option<String>,
     promo_duration_months: Option<i64>,
     promo_type: Option<CreatePromoCodesRequestPromoType>,
     stock: Option<i64>,
     unlimited_stock: Option<bool>,
+    variant_ids: Option<Vec<String>>,
 }
 
 impl CreatePromoCodesRequestBuilder {
@@ -105,11 +105,6 @@ impl CreatePromoCodesRequestBuilder {
         self
     }
 
-    pub fn plan_ids(mut self, value: Vec<String>) -> Self {
-        self.plan_ids = Some(value);
-        self
-    }
-
     pub fn product_id(mut self, value: impl Into<String>) -> Self {
         self.product_id = Some(value.into());
         self
@@ -132,6 +127,11 @@ impl CreatePromoCodesRequestBuilder {
 
     pub fn unlimited_stock(mut self, value: bool) -> Self {
         self.unlimited_stock = Some(value);
+        self
+    }
+
+    pub fn variant_ids(mut self, value: Vec<String>) -> Self {
+        self.variant_ids = Some(value);
         self
     }
 
@@ -163,7 +163,6 @@ impl CreatePromoCodesRequestBuilder {
                 .new_users_only
                 .ok_or_else(|| BuildError::missing_field("new_users_only"))?,
             one_per_customer: self.one_per_customer,
-            plan_ids: self.plan_ids,
             product_id: self.product_id,
             promo_duration_months: self
                 .promo_duration_months
@@ -173,6 +172,7 @@ impl CreatePromoCodesRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("promo_type"))?,
             stock: self.stock,
             unlimited_stock: self.unlimited_stock,
+            variant_ids: self.variant_ids,
         })
     }
 }

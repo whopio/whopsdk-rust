@@ -8,18 +8,26 @@ pub struct TeamMember {
     /// Custom role assigned to this member, or `null` when the member has a system role.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub authorized_role: Option<TeamMemberAuthorizedRole>,
-    /// When the member joined or the invite was sent, as an ISO 8601 timestamp.
+    /// When the member joined the team or the invite was sent, as an ISO 8601 timestamp. A member who was a customer first keeps the date they were given their role.
     #[serde(default)]
     pub created_at: String,
-    /// The member's email address. For accepted members, `null` unless the caller holds the email read scope; for invites, the invited address.
+    /// How many team members report directly to this member. `null` for invites.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub direct_reports_count: Option<i64>,
+    /// The member's email address. For an invite sent to an email with no Whop account yet, the invited address; for accepted members and invites to an existing Whop account, `null` unless the caller holds the `company:authorized_user:email:read` scope.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
-    /// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
+    /// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque: both member prefixes are accepted wherever a team member ID is.
     #[serde(default)]
     pub id: String,
     /// Whether this member is an agent (app-controlled account) rather than a human team member. Always `false` for invites.
     #[serde(default)]
     pub is_agent: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reports_to_chain: Option<Vec<TeamMemberManager>>,
+    /// The ID of the team member this member reports to, starting with `ausr_` or `mber_`; treat it as opaque. `null` when the member reports to the business directly, and for invites.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reports_to_id: Option<String>,
     /// The member's role on the account. `custom` means a bespoke dashboard-managed role; the API can read but not grant it.
     pub role: TeamMemberRole,
     /// `joined` for accepted members, `pending` while the invite is pending.
@@ -44,9 +52,12 @@ pub struct TeamMemberBuilder {
     account_id: Option<String>,
     authorized_role: Option<TeamMemberAuthorizedRole>,
     created_at: Option<String>,
+    direct_reports_count: Option<i64>,
     email: Option<String>,
     id: Option<String>,
     is_agent: Option<bool>,
+    reports_to_chain: Option<Vec<TeamMemberManager>>,
+    reports_to_id: Option<String>,
     role: Option<TeamMemberRole>,
     status: Option<TeamMemberStatus>,
     updated_at: Option<String>,
@@ -69,6 +80,11 @@ impl TeamMemberBuilder {
         self
     }
 
+    pub fn direct_reports_count(mut self, value: i64) -> Self {
+        self.direct_reports_count = Some(value);
+        self
+    }
+
     pub fn email(mut self, value: impl Into<String>) -> Self {
         self.email = Some(value.into());
         self
@@ -81,6 +97,16 @@ impl TeamMemberBuilder {
 
     pub fn is_agent(mut self, value: bool) -> Self {
         self.is_agent = Some(value);
+        self
+    }
+
+    pub fn reports_to_chain(mut self, value: Vec<TeamMemberManager>) -> Self {
+        self.reports_to_chain = Some(value);
+        self
+    }
+
+    pub fn reports_to_id(mut self, value: impl Into<String>) -> Self {
+        self.reports_to_id = Some(value.into());
         self
     }
 
@@ -122,11 +148,14 @@ impl TeamMemberBuilder {
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
+            direct_reports_count: self.direct_reports_count,
             email: self.email,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             is_agent: self
                 .is_agent
                 .ok_or_else(|| BuildError::missing_field("is_agent"))?,
+            reports_to_chain: self.reports_to_chain,
+            reports_to_id: self.reports_to_id,
             role: self.role.ok_or_else(|| BuildError::missing_field("role"))?,
             status: self
                 .status

@@ -5,6 +5,7 @@ pub use crate::prelude::*;
 pub enum RetrieveStatsRequestInterval {
     Minute,
     FiveMinutes,
+    FifteenMinutes,
     ThirtyMinutes,
     Hour,
     Day,
@@ -21,6 +22,7 @@ impl Serialize for RetrieveStatsRequestInterval {
         match self {
             Self::Minute => serializer.serialize_str("minute"),
             Self::FiveMinutes => serializer.serialize_str("five_minutes"),
+            Self::FifteenMinutes => serializer.serialize_str("fifteen_minutes"),
             Self::ThirtyMinutes => serializer.serialize_str("thirty_minutes"),
             Self::Hour => serializer.serialize_str("hour"),
             Self::Day => serializer.serialize_str("day"),
@@ -38,6 +40,7 @@ impl<'de> Deserialize<'de> for RetrieveStatsRequestInterval {
         match value.as_str() {
             "minute" => Ok(Self::Minute),
             "five_minutes" => Ok(Self::FiveMinutes),
+            "fifteen_minutes" => Ok(Self::FifteenMinutes),
             "thirty_minutes" => Ok(Self::ThirtyMinutes),
             "hour" => Ok(Self::Hour),
             "day" => Ok(Self::Day),
@@ -54,6 +57,7 @@ impl fmt::Display for RetrieveStatsRequestInterval {
         match self {
             Self::Minute => write!(f, "minute"),
             Self::FiveMinutes => write!(f, "five_minutes"),
+            Self::FifteenMinutes => write!(f, "fifteen_minutes"),
             Self::ThirtyMinutes => write!(f, "thirty_minutes"),
             Self::Hour => write!(f, "hour"),
             Self::Day => write!(f, "day"),

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The cancellation policy document.
+/// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, when not set.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdateDisputesRequestEvidenceCancellationPolicyAttachment {
     /// The ID returned by a direct upload.

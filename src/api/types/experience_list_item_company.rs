@@ -6,7 +6,7 @@ pub struct ExperienceListItemCompany {
     /// The unique identifier for the company.
     #[serde(default)]
     pub id: String,
-    /// URL slug for the account's store page, e.g. `pickaxe` in whop.com/pickaxe.
+    /// URL slug for the account's store page. For example, `pickaxe` in whop.com/pickaxe.
     #[serde(default)]
     pub route: String,
     /// The display name of the company shown to customers.

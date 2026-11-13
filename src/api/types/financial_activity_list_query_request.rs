@@ -24,12 +24,21 @@ pub struct FinancialActivityListQueryRequest {
     /// Optional prefixed resource ID. Returns activity associated with that resource.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resource_id: Option<String>,
+    /// Filter activity by payment ID (pay_), including related refunds, disputes, and fees. Combines with resource_id and other filters within the selected accounts. Unknown payments return an empty list.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_id: Option<String>,
     /// Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub activity_id: Option<String>,
     /// Whether to exclude balance reservations and balanced movements between the account's own balances.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub exclude_internal_movements: Option<bool>,
+    /// Which balance the activity changes. `total` includes available, pending, and reserved funds. `available` includes only movements into or out of available funds, including reservations, releases, and fees. Movements within the selected balance are omitted. Omit to preserve the existing activity feed. Requires account_id or user_id; cannot be combined with available_after or available_before.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub balance_type: Option<ListFinancialActivityRequestBalanceType>,
+    /// Withdrawal ID (wdrl_). With balance_type=available, selects the same period as its statement, after the previous withdrawal and through this withdrawal, excluding this withdrawal and its fee. Requires a single account. Overrides currency and posted-date filters.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub withdrawal_id: Option<String>,
     /// Optional currency code filter, for example `usd`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
@@ -43,10 +52,10 @@ pub struct FinancialActivityListQueryRequest {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub posted_before: Option<DateTime<FixedOffset>>,
-    /// Only include rows whose funds became withdrawable on or after this `YYYY-MM-DD` settlement date (UTC), distinct from posted_at. Requires currency.
+    /// Only include balance credits and debits available on or after this `YYYY-MM-DD` date (UTC), distinct from posted_at. Requires currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub available_after: Option<NaiveDate>,
-    /// Only include rows whose funds became withdrawable on or before this `YYYY-MM-DD` settlement date (UTC). Set equal to available_after for a single day. Requires currency.
+    /// Only include balance credits and debits available on or before this `YYYY-MM-DD` date (UTC). Set equal to available_after for a single day. Requires currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub available_before: Option<NaiveDate>,
     /// Maximum number of rows to return.
@@ -73,8 +82,11 @@ pub struct FinancialActivityListQueryRequestBuilder {
     line_types: Option<Vec<Option<ListFinancialActivityRequestLineTypesItem>>>,
     direction: Option<ListFinancialActivityRequestDirection>,
     resource_id: Option<String>,
+    payment_id: Option<String>,
     activity_id: Option<String>,
     exclude_internal_movements: Option<bool>,
+    balance_type: Option<ListFinancialActivityRequestBalanceType>,
+    withdrawal_id: Option<String>,
     currency: Option<String>,
     posted_after: Option<DateTime<FixedOffset>>,
     posted_before: Option<DateTime<FixedOffset>>,
@@ -123,6 +135,11 @@ impl FinancialActivityListQueryRequestBuilder {
         self
     }
 
+    pub fn payment_id(mut self, value: impl Into<String>) -> Self {
+        self.payment_id = Some(value.into());
+        self
+    }
+
     pub fn activity_id(mut self, value: impl Into<String>) -> Self {
         self.activity_id = Some(value.into());
         self
@@ -130,6 +147,16 @@ impl FinancialActivityListQueryRequestBuilder {
 
     pub fn exclude_internal_movements(mut self, value: bool) -> Self {
         self.exclude_internal_movements = Some(value);
+        self
+    }
+
+    pub fn balance_type(mut self, value: ListFinancialActivityRequestBalanceType) -> Self {
+        self.balance_type = Some(value);
+        self
+    }
+
+    pub fn withdrawal_id(mut self, value: impl Into<String>) -> Self {
+        self.withdrawal_id = Some(value.into());
         self
     }
 
@@ -182,8 +209,11 @@ impl FinancialActivityListQueryRequestBuilder {
                 .ok_or_else(|| BuildError::missing_field("line_types"))?,
             direction: self.direction,
             resource_id: self.resource_id,
+            payment_id: self.payment_id,
             activity_id: self.activity_id,
             exclude_internal_movements: self.exclude_internal_movements,
+            balance_type: self.balance_type,
+            withdrawal_id: self.withdrawal_id,
             currency: self.currency,
             posted_after: self.posted_after,
             posted_before: self.posted_before,

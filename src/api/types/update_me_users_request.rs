@@ -6,6 +6,9 @@ pub struct UpdateMeUsersRequest {
     pub banner: Option<UpdateMeUsersRequestBanner>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bio: Option<String>,
+    /// The user's date of birth as an ISO 8601 date, like `1998-04-23`. The user must be at least 13. Global profile only; refused with `account_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date_of_birth: Option<NaiveDate>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -28,6 +31,7 @@ impl UpdateMeUsersRequest {
 pub struct UpdateMeUsersRequestBuilder {
     banner: Option<UpdateMeUsersRequestBanner>,
     bio: Option<String>,
+    date_of_birth: Option<NaiveDate>,
     name: Option<String>,
     profile_picture: Option<UpdateMeUsersRequestProfilePicture>,
     username: Option<String>,
@@ -42,6 +46,11 @@ impl UpdateMeUsersRequestBuilder {
 
     pub fn bio(mut self, value: impl Into<String>) -> Self {
         self.bio = Some(value.into());
+        self
+    }
+
+    pub fn date_of_birth(mut self, value: NaiveDate) -> Self {
+        self.date_of_birth = Some(value);
         self
     }
 
@@ -70,6 +79,7 @@ impl UpdateMeUsersRequestBuilder {
         Ok(UpdateMeUsersRequest {
             banner: self.banner,
             bio: self.bio,
+            date_of_birth: self.date_of_birth,
             name: self.name,
             profile_picture: self.profile_picture,
             username: self.username,

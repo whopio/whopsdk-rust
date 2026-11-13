@@ -13,6 +13,7 @@ pub enum PaymentMethodDisplayCategory {
     Crypto,
     Balance,
     InAppPurchase,
+    CardPresent,
     Saved,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -31,6 +32,7 @@ impl Serialize for PaymentMethodDisplayCategory {
             Self::Crypto => serializer.serialize_str("crypto"),
             Self::Balance => serializer.serialize_str("balance"),
             Self::InAppPurchase => serializer.serialize_str("in_app_purchase"),
+            Self::CardPresent => serializer.serialize_str("card_present"),
             Self::Saved => serializer.serialize_str("saved"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
@@ -50,6 +52,7 @@ impl<'de> Deserialize<'de> for PaymentMethodDisplayCategory {
             "crypto" => Ok(Self::Crypto),
             "balance" => Ok(Self::Balance),
             "in_app_purchase" => Ok(Self::InAppPurchase),
+            "card_present" => Ok(Self::CardPresent),
             "saved" => Ok(Self::Saved),
             _ => Ok(Self::__Unknown(value)),
         }
@@ -68,6 +71,7 @@ impl fmt::Display for PaymentMethodDisplayCategory {
             Self::Crypto => write!(f, "crypto"),
             Self::Balance => write!(f, "balance"),
             Self::InAppPurchase => write!(f, "in_app_purchase"),
+            Self::CardPresent => write!(f, "card_present"),
             Self::Saved => write!(f, "saved"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }

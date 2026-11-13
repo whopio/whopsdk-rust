@@ -1,7 +1,7 @@
 pub use crate::prelude::*;
 
 /// The saved payout method used. Requires payout:destination:read; null without it.
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct PostPayoutCreatedPayloadDataPayoutMethod {
     /// Saved payout method nickname.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -10,6 +10,8 @@ pub struct PostPayoutCreatedPayloadDataPayoutMethod {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub supported_payout_method:
         Option<PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod>,
+    /// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+    pub r#type: PostPayoutCreatedPayloadDataPayoutMethodType,
 }
 
 impl PostPayoutCreatedPayloadDataPayoutMethod {
@@ -23,6 +25,7 @@ impl PostPayoutCreatedPayloadDataPayoutMethod {
 pub struct PostPayoutCreatedPayloadDataPayoutMethodBuilder {
     nickname: Option<String>,
     supported_payout_method: Option<PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod>,
+    r#type: Option<PostPayoutCreatedPayloadDataPayoutMethodType>,
 }
 
 impl PostPayoutCreatedPayloadDataPayoutMethodBuilder {
@@ -39,11 +42,21 @@ impl PostPayoutCreatedPayloadDataPayoutMethodBuilder {
         self
     }
 
+    pub fn r#type(mut self, value: PostPayoutCreatedPayloadDataPayoutMethodType) -> Self {
+        self.r#type = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`PostPayoutCreatedPayloadDataPayoutMethod`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`r#type`](PostPayoutCreatedPayloadDataPayoutMethodBuilder::r#type)
     pub fn build(self) -> Result<PostPayoutCreatedPayloadDataPayoutMethod, BuildError> {
         Ok(PostPayoutCreatedPayloadDataPayoutMethod {
             nickname: self.nickname,
             supported_payout_method: self.supported_payout_method,
+            r#type: self
+                .r#type
+                .ok_or_else(|| BuildError::missing_field("r#type"))?,
         })
     }
 }

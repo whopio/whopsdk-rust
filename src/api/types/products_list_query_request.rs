@@ -3,29 +3,29 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ProductsListQueryRequest {
-    /// The unique identifier of the account to list products for. Omit to search the public marketplace.
+    /// Account to list products for, prefixed `biz_`. Without the `access_pass:basic:read` permission on it, only the products its store page lists are returned. Omit to search the public marketplace.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// Ranked search against product title and headline. Omit to browse by recency.
+    /// Filters products by text. The public marketplace list searches product title, account name, headline and description, ranking products that match every word first and the closest partial matches after them; an account's own list is a plain substring match over title, headline and description. Omit to browse by recency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
     /// Only return marketplace products assigned to this category route, such as `trading`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub marketplace_category_route: Option<String>,
-    /// Filter to products with a buyable plan of these billing models, such as `one_time` or `renewal`.
+    /// Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`. On an account list, needs the `access_pass:basic:read` permission.
     #[serde(default)]
-    pub plan_types: Vec<Option<ListProductsRequestPlanTypesItem>>,
-    /// Only return products whose advertised buyable plan has a displayed price of at least this amount. Recurring plans use renewal price.
+    pub billing_types: Vec<Option<ListProductsRequestBillingTypesItem>>,
+    /// Only return products whose advertised buyable variant has a displayed price of at least this amount. Recurring variants use renewal price. On an account list, needs the `access_pass:basic:read` permission.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub price_minimum: Option<f64>,
-    /// Only return products whose advertised buyable plan has a displayed price of at most this amount. Recurring plans use renewal price.
+    /// Only return products whose advertised buyable variant has a displayed price of at most this amount. Recurring variants use renewal price. On an account list, needs the `access_pass:basic:read` permission.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub price_maximum: Option<f64>,
-    /// Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products.
+    /// Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products. Without the `access_pass:basic:read` permission on the account, only `visible` matches anything.
     #[serde(default)]
     pub visibilities: Vec<Option<String>>,
     /// Filter to only products matching these types.
@@ -37,9 +37,9 @@ pub struct ProductsListQueryRequest {
     /// The sort direction for results. Defaults to descending.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<ListProductsRequestDirection>,
-    /// The field to sort results by. Account lists default to `created_at`. Marketplace lists default to `discoverable_at` and accept `created_at` or `discoverable_at`. Cannot be combined with `query`.
+    /// Field to sort results by. Account lists default to `created_at`, and `position` with `direction` `asc` matches the order the store page shows. Without the `access_pass:basic:read` permission, an account list sorts only by `created_at` or `position`. Marketplace lists default to `discoverable_at`, accept only `created_at` or `discoverable_at`, and can't be combined with `query`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub order: Option<String>,
+    pub order: Option<ListProductsRequestOrder>,
     /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
@@ -52,6 +52,9 @@ pub struct ProductsListQueryRequest {
     /// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub before: Option<String>,
+    /// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_total_count: Option<bool>,
     /// Only return products created after this ISO 8601 timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_after: Option<String>,
@@ -72,18 +75,19 @@ pub struct ProductsListQueryRequestBuilder {
     account_id: Option<String>,
     query: Option<String>,
     marketplace_category_route: Option<String>,
-    plan_types: Option<Vec<Option<ListProductsRequestPlanTypesItem>>>,
+    billing_types: Option<Vec<Option<ListProductsRequestBillingTypesItem>>>,
     price_minimum: Option<f64>,
     price_maximum: Option<f64>,
     visibilities: Option<Vec<Option<String>>>,
     access_pass_types: Option<Vec<Option<String>>>,
     labels: Option<Vec<Option<String>>>,
     direction: Option<ListProductsRequestDirection>,
-    order: Option<String>,
+    order: Option<ListProductsRequestOrder>,
     first: Option<i64>,
     after: Option<String>,
     last: Option<i64>,
     before: Option<String>,
+    include_total_count: Option<bool>,
     created_after: Option<String>,
     created_before: Option<String>,
 }
@@ -104,8 +108,11 @@ impl ProductsListQueryRequestBuilder {
         self
     }
 
-    pub fn plan_types(mut self, value: Vec<Option<ListProductsRequestPlanTypesItem>>) -> Self {
-        self.plan_types = Some(value);
+    pub fn billing_types(
+        mut self,
+        value: Vec<Option<ListProductsRequestBillingTypesItem>>,
+    ) -> Self {
+        self.billing_types = Some(value);
         self
     }
 
@@ -139,8 +146,8 @@ impl ProductsListQueryRequestBuilder {
         self
     }
 
-    pub fn order(mut self, value: impl Into<String>) -> Self {
-        self.order = Some(value.into());
+    pub fn order(mut self, value: ListProductsRequestOrder) -> Self {
+        self.order = Some(value);
         self
     }
 
@@ -164,6 +171,11 @@ impl ProductsListQueryRequestBuilder {
         self
     }
 
+    pub fn include_total_count(mut self, value: bool) -> Self {
+        self.include_total_count = Some(value);
+        self
+    }
+
     pub fn created_after(mut self, value: impl Into<String>) -> Self {
         self.created_after = Some(value.into());
         self
@@ -176,7 +188,7 @@ impl ProductsListQueryRequestBuilder {
 
     /// Consumes the builder and constructs a [`ProductsListQueryRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`plan_types`](ProductsListQueryRequestBuilder::plan_types)
+    /// - [`billing_types`](ProductsListQueryRequestBuilder::billing_types)
     /// - [`visibilities`](ProductsListQueryRequestBuilder::visibilities)
     /// - [`access_pass_types`](ProductsListQueryRequestBuilder::access_pass_types)
     /// - [`labels`](ProductsListQueryRequestBuilder::labels)
@@ -185,9 +197,9 @@ impl ProductsListQueryRequestBuilder {
             account_id: self.account_id,
             query: self.query,
             marketplace_category_route: self.marketplace_category_route,
-            plan_types: self
-                .plan_types
-                .ok_or_else(|| BuildError::missing_field("plan_types"))?,
+            billing_types: self
+                .billing_types
+                .ok_or_else(|| BuildError::missing_field("billing_types"))?,
             price_minimum: self.price_minimum,
             price_maximum: self.price_maximum,
             visibilities: self
@@ -205,6 +217,7 @@ impl ProductsListQueryRequestBuilder {
             after: self.after,
             last: self.last,
             before: self.before,
+            include_total_count: self.include_total_count,
             created_after: self.created_after,
             created_before: self.created_before,
         })

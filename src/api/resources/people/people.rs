@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct PeopleClient {
@@ -13,7 +14,7 @@ impl PeopleClient {
         })
     }
 
-    /// Lists the people (visitors and customers) of an account: the identity-linked person profiles aggregated from every pixel, payment, and platform event — identities, purchases and LTV, geo/device profile, traffic sources, and first/last marketing touches.
+    /// Lists the people (visitors and customers) of an account: identity-linked profiles assembled from every pixel, payment, and platform event. Filter and sort them to segment an account's audience.
     ///
     /// # Arguments
     ///
@@ -144,11 +145,16 @@ impl PeopleClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "people",
                 None,
@@ -210,11 +216,124 @@ impl PeopleClient {
             .await
     }
 
-    /// Retrieves one person for an account. The identifier can be a person ID (prefixed `prsn_`), a user ID (prefixed `user_`), an email address, or a phone number — merged people resolve to the surviving profile.
+    pub async fn list_paginated(
+        &self,
+        request: &PeopleListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("account_id", request.account_id.clone())
+            .structured_query("query", request.query.clone())
+            .string_array("source", request.source.clone())
+            .serialize("attribution_model", request.attribution_model.clone())
+            .string_array("event_name", request.event_name.clone())
+            .string("custom_event", request.custom_event.clone())
+            .int("event_within_days", request.event_within_days.clone())
+            .datetime("from", request.from.clone())
+            .datetime("to", request.to.clone())
+            .datetime("event_from", request.event_from.clone())
+            .datetime("event_to", request.event_to.clone())
+            .string("audience_id", request.audience_id.clone())
+            .string("user_id", request.user_id.clone())
+            .string("email", request.email.clone())
+            .string("phone", request.phone.clone())
+            .string("country", request.country.clone())
+            .bool("has_purchased", request.has_purchased.clone())
+            .bool("contactable", request.contactable.clone())
+            .int(
+                "first_seen_within_days",
+                request.first_seen_within_days.clone(),
+            )
+            .int(
+                "last_seen_within_days",
+                request.last_seen_within_days.clone(),
+            )
+            .datetime("first_seen_after", request.first_seen_after.clone())
+            .datetime("first_seen_before", request.first_seen_before.clone())
+            .datetime("last_seen_after", request.last_seen_after.clone())
+            .datetime("last_seen_before", request.last_seen_before.clone())
+            .float("ltv_gt", request.ltv_gt.clone())
+            .float("ltv_gte", request.ltv_gte.clone())
+            .float("ltv_lt", request.ltv_lt.clone())
+            .float("ltv_lte", request.ltv_lte.clone())
+            .float("aov_gt", request.aov_gt.clone())
+            .float("aov_gte", request.aov_gte.clone())
+            .float("aov_lt", request.aov_lt.clone())
+            .float("aov_lte", request.aov_lte.clone())
+            .float("purchase_count_gt", request.purchase_count_gt.clone())
+            .float("purchase_count_gte", request.purchase_count_gte.clone())
+            .float("purchase_count_lt", request.purchase_count_lt.clone())
+            .float("purchase_count_lte", request.purchase_count_lte.clone())
+            .float("event_count_gt", request.event_count_gt.clone())
+            .float("event_count_gte", request.event_count_gte.clone())
+            .float("event_count_lt", request.event_count_lt.clone())
+            .float("event_count_lte", request.event_count_lte.clone())
+            .int("first", request.first.clone())
+            .string("before", request.before.clone())
+            .serialize("order", request.order.clone())
+            .serialize("direction", request.direction.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "people",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Retrieves one person for an account, looked up by person ID, user ID, email address, or phone number.
     ///
     /// # Arguments
     ///
-    /// * `id` - The person ID, user ID, email address, or phone number to look up.
+    /// * `id` - The person ID (prefixed `prsn_`), user ID (prefixed `user_`), email address, or phone number to look up. A merged person resolves to the surviving profile.
     /// * `account_id` - Account ID, prefixed `biz_`. Optional for account API keys; required for credentials that can access multiple accounts.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
@@ -256,11 +375,16 @@ impl PeopleClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("people/{}", id),
                 None,

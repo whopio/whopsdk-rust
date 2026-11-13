@@ -2,22 +2,16 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdatePlansRequestCustomFieldsItem {
-    /// The type of the custom field.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub field_type: Option<UpdatePlansRequestCustomFieldsItemFieldType>,
-    /// The ID of the custom field (if being updated).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
-    /// The name of the custom field.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    /// The order of the field.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<i64>,
-    /// An example response displayed in the input field.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub placeholder: Option<String>,
-    /// Whether or not the field is required.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<bool>,
 }

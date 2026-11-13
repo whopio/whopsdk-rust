@@ -1,53 +1,61 @@
 pub use crate::prelude::*;
 
-/// A transfer of credit between two ledger accounts.
+/// A transfer between Whop accounts or users.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ListTransfersResponseDataItem {
-    /// Transfer amount.
-    #[serde(default)]
-    #[serde(with = "crate::core::number_serializers")]
-    pub amount: f64,
+    /// Amount credited to the recipient. Null while the transfer has not succeeded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<Money>,
     /// When the transfer was created.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
     pub created_at: DateTime<FixedOffset>,
-    /// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
+    /// Business account or user receiving the transfer.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub created_by_user: Option<ListTransfersResponseDataItemCreatedByUser>,
-    /// Transfer currency.
-    #[serde(default)]
-    pub currency: String,
-    /// Destination ledger account ID.
-    #[serde(default)]
-    pub destination_ledger_account_id: String,
-    /// When the transfer failed, as an ISO 8601 timestamp. Null unless the transfer has failed.
+    pub destination: Option<ListTransfersResponseDataItemDestination>,
+    /// Recorded failure time. Null unless the transfer has failed.
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub failed_at: Option<DateTime<FixedOffset>>,
-    /// Machine-readable code for why the transfer failed. Null unless the transfer has failed.
+    /// Machine-readable failure code. Null unless the transfer has failed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub failure_code: Option<String>,
-    /// Human-readable explanation of why the transfer failed. Null unless the transfer has failed.
+    /// Failure explanation. Null unless the transfer has failed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub failure_reason: Option<String>,
-    /// Fee charged for the transfer.
+    /// All applicable transfer fees, including platform markup. Null when the authoritative total is unavailable.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub fee_amount: Option<f64>,
+    pub fee: Option<Money>,
     /// Transfer ID.
     #[serde(default)]
     pub id: String,
     /// Custom metadata attached to the transfer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<HashMap<String, serde_json::Value>>,
+    #[serde(default)]
+    pub metadata: HashMap<String, serde_json::Value>,
     /// Transfer note.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
     /// The object type.
     pub object: ListTransfersResponseDataItemObject,
-    /// Source ledger account ID.
-    #[serde(default)]
-    pub origin_ledger_account_id: String,
-    /// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+    /// Business account or user sending the transfer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub origin: Option<ListTransfersResponseDataItemOrigin>,
+    /// Current transfer status. A transfer can be created `processing` and settle a few seconds later; poll Retrieve Transfer or listen for the `transfer.completed` and `transfer.failed` webhooks instead of treating the create response as final. `succeeded` and `failed` are final.
     pub status: ListTransfersResponseDataItemStatus,
+    /// Recorded time of the current transition. Null when the historical transition time is unknown.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub status_changed_at: Option<DateTime<FixedOffset>>,
+    /// Recorded success time. Null when unknown.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::flexible_datetime::offset::option")]
+    pub succeeded_at: Option<DateTime<FixedOffset>>,
+    /// Tracking page for the transfer. Viewing it requires sign-in and access to the transfer.
+    #[serde(default)]
+    pub tracking_url: String,
 }
 
 impl ListTransfersResponseDataItem {
@@ -59,25 +67,26 @@ impl ListTransfersResponseDataItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListTransfersResponseDataItemBuilder {
-    amount: Option<f64>,
+    amount: Option<Money>,
     created_at: Option<DateTime<FixedOffset>>,
-    created_by_user: Option<ListTransfersResponseDataItemCreatedByUser>,
-    currency: Option<String>,
-    destination_ledger_account_id: Option<String>,
+    destination: Option<ListTransfersResponseDataItemDestination>,
     failed_at: Option<DateTime<FixedOffset>>,
     failure_code: Option<String>,
     failure_reason: Option<String>,
-    fee_amount: Option<f64>,
+    fee: Option<Money>,
     id: Option<String>,
     metadata: Option<HashMap<String, serde_json::Value>>,
     notes: Option<String>,
     object: Option<ListTransfersResponseDataItemObject>,
-    origin_ledger_account_id: Option<String>,
+    origin: Option<ListTransfersResponseDataItemOrigin>,
     status: Option<ListTransfersResponseDataItemStatus>,
+    status_changed_at: Option<DateTime<FixedOffset>>,
+    succeeded_at: Option<DateTime<FixedOffset>>,
+    tracking_url: Option<String>,
 }
 
 impl ListTransfersResponseDataItemBuilder {
-    pub fn amount(mut self, value: f64) -> Self {
+    pub fn amount(mut self, value: Money) -> Self {
         self.amount = Some(value);
         self
     }
@@ -87,18 +96,8 @@ impl ListTransfersResponseDataItemBuilder {
         self
     }
 
-    pub fn created_by_user(mut self, value: ListTransfersResponseDataItemCreatedByUser) -> Self {
-        self.created_by_user = Some(value);
-        self
-    }
-
-    pub fn currency(mut self, value: impl Into<String>) -> Self {
-        self.currency = Some(value.into());
-        self
-    }
-
-    pub fn destination_ledger_account_id(mut self, value: impl Into<String>) -> Self {
-        self.destination_ledger_account_id = Some(value.into());
+    pub fn destination(mut self, value: ListTransfersResponseDataItemDestination) -> Self {
+        self.destination = Some(value);
         self
     }
 
@@ -117,8 +116,8 @@ impl ListTransfersResponseDataItemBuilder {
         self
     }
 
-    pub fn fee_amount(mut self, value: f64) -> Self {
-        self.fee_amount = Some(value);
+    pub fn fee(mut self, value: Money) -> Self {
+        self.fee = Some(value);
         self
     }
 
@@ -142,8 +141,8 @@ impl ListTransfersResponseDataItemBuilder {
         self
     }
 
-    pub fn origin_ledger_account_id(mut self, value: impl Into<String>) -> Self {
-        self.origin_ledger_account_id = Some(value.into());
+    pub fn origin(mut self, value: ListTransfersResponseDataItemOrigin) -> Self {
+        self.origin = Some(value);
         self
     }
 
@@ -152,47 +151,57 @@ impl ListTransfersResponseDataItemBuilder {
         self
     }
 
+    pub fn status_changed_at(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.status_changed_at = Some(value);
+        self
+    }
+
+    pub fn succeeded_at(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.succeeded_at = Some(value);
+        self
+    }
+
+    pub fn tracking_url(mut self, value: impl Into<String>) -> Self {
+        self.tracking_url = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`ListTransfersResponseDataItem`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`amount`](ListTransfersResponseDataItemBuilder::amount)
     /// - [`created_at`](ListTransfersResponseDataItemBuilder::created_at)
-    /// - [`currency`](ListTransfersResponseDataItemBuilder::currency)
-    /// - [`destination_ledger_account_id`](ListTransfersResponseDataItemBuilder::destination_ledger_account_id)
     /// - [`id`](ListTransfersResponseDataItemBuilder::id)
+    /// - [`metadata`](ListTransfersResponseDataItemBuilder::metadata)
     /// - [`object`](ListTransfersResponseDataItemBuilder::object)
-    /// - [`origin_ledger_account_id`](ListTransfersResponseDataItemBuilder::origin_ledger_account_id)
     /// - [`status`](ListTransfersResponseDataItemBuilder::status)
+    /// - [`tracking_url`](ListTransfersResponseDataItemBuilder::tracking_url)
     pub fn build(self) -> Result<ListTransfersResponseDataItem, BuildError> {
         Ok(ListTransfersResponseDataItem {
-            amount: self
-                .amount
-                .ok_or_else(|| BuildError::missing_field("amount"))?,
+            amount: self.amount,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
-            created_by_user: self.created_by_user,
-            currency: self
-                .currency
-                .ok_or_else(|| BuildError::missing_field("currency"))?,
-            destination_ledger_account_id: self
-                .destination_ledger_account_id
-                .ok_or_else(|| BuildError::missing_field("destination_ledger_account_id"))?,
+            destination: self.destination,
             failed_at: self.failed_at,
             failure_code: self.failure_code,
             failure_reason: self.failure_reason,
-            fee_amount: self.fee_amount,
+            fee: self.fee,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
-            metadata: self.metadata,
+            metadata: self
+                .metadata
+                .ok_or_else(|| BuildError::missing_field("metadata"))?,
             notes: self.notes,
             object: self
                 .object
                 .ok_or_else(|| BuildError::missing_field("object"))?,
-            origin_ledger_account_id: self
-                .origin_ledger_account_id
-                .ok_or_else(|| BuildError::missing_field("origin_ledger_account_id"))?,
+            origin: self.origin,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
+            status_changed_at: self.status_changed_at,
+            succeeded_at: self.succeeded_at,
+            tracking_url: self
+                .tracking_url
+                .ok_or_else(|| BuildError::missing_field("tracking_url"))?,
         })
     }
 }

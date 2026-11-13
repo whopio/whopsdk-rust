@@ -5,9 +5,9 @@ pub struct ApproveAllWaitlistEntriesRequest {
     /// The seller account whose pending signups to approve, prefixed `biz_`.
     #[serde(default)]
     pub account_id: String,
-    /// Only approve signups for this plan, prefixed `plan_`. Omit to include every waitlist plan on the account.
+    /// Only approve signups for this variant, prefixed `plan_`. Omit to include every waitlist variant on the account.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub plan_id: Option<String>,
+    pub variant_id: Option<String>,
 }
 
 impl ApproveAllWaitlistEntriesRequest {
@@ -20,7 +20,7 @@ impl ApproveAllWaitlistEntriesRequest {
 #[non_exhaustive]
 pub struct ApproveAllWaitlistEntriesRequestBuilder {
     account_id: Option<String>,
-    plan_id: Option<String>,
+    variant_id: Option<String>,
 }
 
 impl ApproveAllWaitlistEntriesRequestBuilder {
@@ -29,8 +29,8 @@ impl ApproveAllWaitlistEntriesRequestBuilder {
         self
     }
 
-    pub fn plan_id(mut self, value: impl Into<String>) -> Self {
-        self.plan_id = Some(value.into());
+    pub fn variant_id(mut self, value: impl Into<String>) -> Self {
+        self.variant_id = Some(value.into());
         self
     }
 
@@ -42,7 +42,7 @@ impl ApproveAllWaitlistEntriesRequestBuilder {
             account_id: self
                 .account_id
                 .ok_or_else(|| BuildError::missing_field("account_id"))?,
-            plan_id: self.plan_id,
+            variant_id: self.variant_id,
         })
     }
 }

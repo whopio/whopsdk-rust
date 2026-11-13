@@ -1,0 +1,396 @@
+use crate::api::*;
+use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
+use reqwest::Method;
+
+pub struct ChannelMembersClient {
+    pub http_client: HttpClient,
+}
+
+impl ChannelMembersClient {
+    pub fn new(config: ClientConfig) -> Result<Self, ApiError> {
+        Ok(Self {
+            http_client: HttpClient::new(config.clone())?,
+        })
+    }
+
+    /// List or search the people in a channel.
+    ///
+    /// # Arguments
+    ///
+    /// * `first` - Number of results to return from the start of the range.
+    /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    /// * `last` - Number of results to return from the end of the range.
+    /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    /// * `channel_id` - The channel whose members to list.
+    /// * `query` - Search by name or username.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .channel_members
+    ///         .list(
+    ///             &ChannelMembersListQueryRequest {
+    ///                 channel_id: "channel_id".to_string(),
+    ///                 first: None,
+    ///                 after: None,
+    ///                 last: None,
+    ///                 before: None,
+    ///                 query: None,
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn list(
+        &self,
+        request: &ChannelMembersListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<ListChannelMembersResponse, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-11-12".to_string());
+            Some(o)
+        };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
+        self.http_client
+            .execute_request_with_base_url(
+                base_url,
+                Method::GET,
+                "channel_members",
+                None,
+                QueryBuilder::new()
+                    .int("first", request.first.clone())
+                    .string("after", request.after.clone())
+                    .int("last", request.last.clone())
+                    .string("before", request.before.clone())
+                    .string("channel_id", request.channel_id.clone())
+                    .structured_query("query", request.query.clone())
+                    .build(),
+                options,
+            )
+            .await
+    }
+
+    pub async fn list_paginated(
+        &self,
+        request: &ChannelMembersListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .string("channel_id", request.channel_id.clone())
+            .structured_query("query", request.query.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "channel_members",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Add a member to a direct or support channel.
+    ///
+    /// # Arguments
+    ///
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .channel_members
+    ///         .create(
+    ///             &CreateChannelMembersRequest {
+    ///                 channel_id: "feed_xxxxxxxxxxxxxxxxxxxxxx".to_string(),
+    ///                 user_id: "user_xxxxxxxxxxxxxx".to_string(),
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn create(
+        &self,
+        request: &CreateChannelMembersRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<ChannelMember, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-11-12".to_string());
+            Some(o)
+        };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
+        self.http_client
+            .execute_request_with_base_url(
+                base_url,
+                Method::POST,
+                "channel_members",
+                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
+                None,
+                options,
+            )
+            .await
+    }
+
+    /// Retrieve a channel member and their read position.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Public resource ID.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .channel_members
+    ///         .retrieve(&"id".to_string(), None)
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn retrieve(
+        &self,
+        id: &str,
+        options: Option<RequestOptions>,
+    ) -> Result<ChannelMember, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-11-12".to_string());
+            Some(o)
+        };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
+        self.http_client
+            .execute_request_with_base_url(
+                base_url,
+                Method::GET,
+                &format!("channel_members/{}", id),
+                None,
+                None,
+                options,
+            )
+            .await
+    }
+
+    /// Remove a channel member, or leave the channel yourself. Requires dms:channel:manage and access to the channel. Removing someone else also requires permission to manage its members.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Public resource ID.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// Empty response
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client.channel_members.delete(&"id".to_string(), None).await;
+    /// }
+    /// ```
+    pub async fn delete(&self, id: &str, options: Option<RequestOptions>) -> Result<(), ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-11-12".to_string());
+            Some(o)
+        };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
+        self.http_client
+            .execute_request_with_base_url(
+                base_url,
+                Method::DELETE,
+                &format!("channel_members/{}", id),
+                None,
+                None,
+                options,
+            )
+            .await
+    }
+
+    /// Update your notification preference using your stored membership ID in a private or support channel.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - Public resource ID.
+    /// * `options` - Additional request options such as headers, timeout, etc.
+    ///
+    /// # Returns
+    ///
+    /// JSON response from the API
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use whop_sdk::prelude::*;
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let config = ClientConfig {
+    ///         token: Some("<token>".to_string()),
+    ///         ..Default::default()
+    ///     };
+    ///     let client = Whop::new(config).expect("Failed to build client");
+    ///     client
+    ///         .channel_members
+    ///         .update(
+    ///             &"id".to_string(),
+    ///             &UpdateChannelMembersRequest {
+    ///                 notification_preference: UpdateChannelMembersRequestNotificationPreference::All,
+    ///             },
+    ///             None,
+    ///         )
+    ///         .await;
+    /// }
+    /// ```
+    pub async fn update(
+        &self,
+        id: &str,
+        request: &UpdateChannelMembersRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<ChannelMember, ApiError> {
+        let options = {
+            let mut o = options.unwrap_or_default();
+            o.additional_headers
+                .entry("Api-Version-Date".to_string())
+                .or_insert_with(|| "2026-11-12".to_string());
+            Some(o)
+        };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
+        self.http_client
+            .execute_request_with_base_url(
+                base_url,
+                Method::PATCH,
+                &format!("channel_members/{}", id),
+                Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
+                None,
+                options,
+            )
+            .await
+    }
+}

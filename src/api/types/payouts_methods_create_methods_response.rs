@@ -49,6 +49,9 @@ pub struct CreateMethodsResponse {
     /// Always null on create.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quote: Option<HashMap<String, serde_json::Value>>,
+    /// The recipient of a third-party payout method. Present only for recipient payout methods.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recipient: Option<CreateMethodsResponseRecipient>,
     /// Always `created` on create — no payout has used the method yet.
     pub status: CreateMethodsResponseStatus,
     /// Always `null` on create.
@@ -56,6 +59,9 @@ pub struct CreateMethodsResponse {
     pub status_reason: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub supported_payout_method: Option<CreateMethodsResponseSupportedPayoutMethod>,
+    /// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub r#type: Option<CreateMethodsResponseType>,
     /// Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unavailable_reason: Option<CreateMethodsResponseUnavailableReason>,
@@ -87,9 +93,11 @@ pub struct CreateMethodsResponseBuilder {
     object: Option<CreateMethodsResponseObject>,
     payer_name: Option<String>,
     quote: Option<HashMap<String, serde_json::Value>>,
+    recipient: Option<CreateMethodsResponseRecipient>,
     status: Option<CreateMethodsResponseStatus>,
     status_reason: Option<String>,
     supported_payout_method: Option<CreateMethodsResponseSupportedPayoutMethod>,
+    r#type: Option<CreateMethodsResponseType>,
     unavailable_reason: Option<CreateMethodsResponseUnavailableReason>,
 }
 
@@ -182,6 +190,11 @@ impl CreateMethodsResponseBuilder {
         self
     }
 
+    pub fn recipient(mut self, value: CreateMethodsResponseRecipient) -> Self {
+        self.recipient = Some(value);
+        self
+    }
+
     pub fn status(mut self, value: CreateMethodsResponseStatus) -> Self {
         self.status = Some(value);
         self
@@ -197,6 +210,11 @@ impl CreateMethodsResponseBuilder {
         value: CreateMethodsResponseSupportedPayoutMethod,
     ) -> Self {
         self.supported_payout_method = Some(value);
+        self
+    }
+
+    pub fn r#type(mut self, value: CreateMethodsResponseType) -> Self {
+        self.r#type = Some(value);
         self
     }
 
@@ -240,11 +258,13 @@ impl CreateMethodsResponseBuilder {
                 .ok_or_else(|| BuildError::missing_field("object"))?,
             payer_name: self.payer_name,
             quote: self.quote,
+            recipient: self.recipient,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
             status_reason: self.status_reason,
             supported_payout_method: self.supported_payout_method,
+            r#type: self.r#type,
             unavailable_reason: self.unavailable_reason,
         })
     }

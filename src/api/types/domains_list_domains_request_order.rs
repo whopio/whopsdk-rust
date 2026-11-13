@@ -3,8 +3,10 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ListDomainsRequestOrder {
+    UniqueVisitorsLast7Days,
     CreatedAt,
     UpdatedAt,
+    Domain,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -13,8 +15,12 @@ pub enum ListDomainsRequestOrder {
 impl Serialize for ListDomainsRequestOrder {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::UniqueVisitorsLast7Days => {
+                serializer.serialize_str("unique_visitors_last_7_days")
+            }
             Self::CreatedAt => serializer.serialize_str("created_at"),
             Self::UpdatedAt => serializer.serialize_str("updated_at"),
+            Self::Domain => serializer.serialize_str("domain"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -24,8 +30,10 @@ impl<'de> Deserialize<'de> for ListDomainsRequestOrder {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "unique_visitors_last_7_days" => Ok(Self::UniqueVisitorsLast7Days),
             "created_at" => Ok(Self::CreatedAt),
             "updated_at" => Ok(Self::UpdatedAt),
+            "domain" => Ok(Self::Domain),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -34,8 +42,10 @@ impl<'de> Deserialize<'de> for ListDomainsRequestOrder {
 impl fmt::Display for ListDomainsRequestOrder {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::UniqueVisitorsLast7Days => write!(f, "unique_visitors_last_7_days"),
             Self::CreatedAt => write!(f, "created_at"),
             Self::UpdatedAt => write!(f, "updated_at"),
+            Self::Domain => write!(f, "domain"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

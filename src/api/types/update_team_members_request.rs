@@ -1,9 +1,10 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdateTeamMembersRequest {
-    /// The system role to grant. Partners must pass all certification quizzes.
-    pub role: UpdateTeamMembersRequestRole,
+    /// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub role: Option<UpdateTeamMembersRequestRole>,
 }
 
 impl UpdateTeamMembersRequest {
@@ -25,11 +26,7 @@ impl UpdateTeamMembersRequestBuilder {
     }
 
     /// Consumes the builder and constructs a [`UpdateTeamMembersRequest`].
-    /// This method will fail if any of the following fields are not set:
-    /// - [`role`](UpdateTeamMembersRequestBuilder::role)
     pub fn build(self) -> Result<UpdateTeamMembersRequest, BuildError> {
-        Ok(UpdateTeamMembersRequest {
-            role: self.role.ok_or_else(|| BuildError::missing_field("role"))?,
-        })
+        Ok(UpdateTeamMembersRequest { role: self.role })
     }
 }

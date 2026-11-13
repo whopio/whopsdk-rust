@@ -11,16 +11,22 @@ pub struct CreateAppsRequest {
     /// The base production URL where the app is hosted, such as `https://myapp.example.com`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub base_url: Option<String>,
+    /// A domain on the account (`dom_` tag) to serve the app at, such as a whop.site address claimed with `POST /domains`. Required with `template_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub domain_id: Option<String>,
     /// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub icon: Option<CreateAppsRequestIcon>,
+    /// The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub imported_from_url: Option<String>,
     /// The display name for the app, shown to users on the app store and product pages.
     #[serde(default)]
     pub name: String,
     /// The whitelisted OAuth callback URLs that users are redirected to after authorizing the app.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect_uris: Option<Vec<String>>,
-    /// The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
+    /// Deprecated: claim an address with `POST /domains` and pass `domain_id`. The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
 }
@@ -37,7 +43,9 @@ pub struct CreateAppsRequestBuilder {
     account_id: Option<String>,
     app_type: Option<CreateAppsRequestAppType>,
     base_url: Option<String>,
+    domain_id: Option<String>,
     icon: Option<CreateAppsRequestIcon>,
+    imported_from_url: Option<String>,
     name: Option<String>,
     redirect_uris: Option<Vec<String>>,
     route: Option<String>,
@@ -59,8 +67,18 @@ impl CreateAppsRequestBuilder {
         self
     }
 
+    pub fn domain_id(mut self, value: impl Into<String>) -> Self {
+        self.domain_id = Some(value.into());
+        self
+    }
+
     pub fn icon(mut self, value: CreateAppsRequestIcon) -> Self {
         self.icon = Some(value);
+        self
+    }
+
+    pub fn imported_from_url(mut self, value: impl Into<String>) -> Self {
+        self.imported_from_url = Some(value.into());
         self
     }
 
@@ -87,7 +105,9 @@ impl CreateAppsRequestBuilder {
             account_id: self.account_id,
             app_type: self.app_type,
             base_url: self.base_url,
+            domain_id: self.domain_id,
             icon: self.icon,
+            imported_from_url: self.imported_from_url,
             name: self.name.ok_or_else(|| BuildError::missing_field("name"))?,
             redirect_uris: self.redirect_uris,
             route: self.route,

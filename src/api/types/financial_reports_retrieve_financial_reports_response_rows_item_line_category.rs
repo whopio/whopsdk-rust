@@ -6,6 +6,8 @@ pub use crate::prelude::*;
 pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     AcceleratedSettlementFee,
     AccountSettlement,
+    AdAffiliatePayout,
+    AdAffiliatePayoutReceived,
     AdBalanceFundingReceipt,
     AdBudgetRelease,
     AdCampaignBudget,
@@ -44,6 +46,12 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     BalanceReservationReversal,
     BillingPercentageFee,
     BuyerFee,
+    CapitalHold,
+    CapitalHoldRelease,
+    CapitalRemittance,
+    CapitalRemittanceReversal,
+    CapitalWithholding,
+    CapitalWithholdingReversal,
     CardInterchange,
     CardInterchangeReceivable,
     CardLoadDeposit,
@@ -115,9 +123,17 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     LegacyCryptoPayment,
     LegacyPayment,
     LegacyPaymentRefund,
+    LevelsPointsAds,
+    LevelsPointsBurned,
+    LevelsPointsCard,
+    LevelsPointsIssued,
+    LevelsPointsPartner,
+    LevelsPointsTrading,
+    LevelsRebate,
     LicenseSale,
     LicenseSaleCommission,
     LicenseSaleRevenue,
+    MarketingExpense,
     MarketplaceAffiliateFee,
     MiscPurchase,
     MiscRefund,
@@ -125,6 +141,10 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     OnboardingReward,
     OnchainDeposit,
     OnchainDepositOffset,
+    OnchainInternalTransferIncoming,
+    OnchainInternalTransferOutgoing,
+    OnchainPlatformTransferIncoming,
+    OnchainPlatformTransferOutgoing,
     OnchainSwapOffset,
     OnchainSwapSource,
     OnchainSwapTarget,
@@ -154,6 +174,7 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     PaymentRefund,
     PaymentRefundFee,
     PaymentRefundReversal,
+    PaymentReturnFee,
     PaymentRevshare,
     PaymentRevsharePayout,
     PaymentRevshareRefund,
@@ -165,6 +186,18 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     PayoutSubsidy,
     PayoutUnreconciledClearing,
     Pending,
+    PerpsBridgeFee,
+    PerpsBridgeFeeOffset,
+    PerpsFee,
+    PerpsFeeOffset,
+    PerpsLoadDeposit,
+    PerpsLoadTransfer,
+    PerpsRealizedPnl,
+    PerpsRealizedPnlOffset,
+    PerpsUnloadDeposit,
+    PerpsUnloadTransfer,
+    PerpsVolume,
+    PerpsVolumeOffset,
     PlatformAffiliatePayment,
     PlatformAffiliatePaymentReversal,
     PlatformBalancePayment,
@@ -173,11 +206,15 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     PlatformBalanceTransferIncoming,
     PlatformBalanceTransferOutgoing,
     PlatformCoveredDispute,
+    PlatformCreditsGranted,
+    PlatformCreditsPayment,
+    PlatformCreditsPaymentRefund,
     PlatformEarning,
     PlatformEarningSettlement,
     PlatformEarningUnreconciledClearing,
     PlatformMarkupFee,
     PlatformMarkupFeePayout,
+    PlatformTradingCommission,
     PromoReversal,
     PspAcceleratedSettlementFee,
     PspAccountDebit,
@@ -280,6 +317,7 @@ pub enum RetrieveFinancialReportsResponseRowsItemLineCategory {
     TradingAccountDepositOffset,
     TradingAccountWithdrawal,
     TradingAccountWithdrawalOffset,
+    TradingFee,
     TreasuryFee,
     TreasuryPayin,
     TreasuryPayinReceivable,
@@ -313,6 +351,10 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
                 serializer.serialize_str("accelerated_settlement_fee")
             }
             Self::AccountSettlement => serializer.serialize_str("account_settlement"),
+            Self::AdAffiliatePayout => serializer.serialize_str("ad_affiliate_payout"),
+            Self::AdAffiliatePayoutReceived => {
+                serializer.serialize_str("ad_affiliate_payout_received")
+            }
             Self::AdBalanceFundingReceipt => serializer.serialize_str("ad_balance_funding_receipt"),
             Self::AdBudgetRelease => serializer.serialize_str("ad_budget_release"),
             Self::AdCampaignBudget => serializer.serialize_str("ad_campaign_budget"),
@@ -357,6 +399,16 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             }
             Self::BillingPercentageFee => serializer.serialize_str("billing_percentage_fee"),
             Self::BuyerFee => serializer.serialize_str("buyer_fee"),
+            Self::CapitalHold => serializer.serialize_str("capital_hold"),
+            Self::CapitalHoldRelease => serializer.serialize_str("capital_hold_release"),
+            Self::CapitalRemittance => serializer.serialize_str("capital_remittance"),
+            Self::CapitalRemittanceReversal => {
+                serializer.serialize_str("capital_remittance_reversal")
+            }
+            Self::CapitalWithholding => serializer.serialize_str("capital_withholding"),
+            Self::CapitalWithholdingReversal => {
+                serializer.serialize_str("capital_withholding_reversal")
+            }
             Self::CardInterchange => serializer.serialize_str("card_interchange"),
             Self::CardInterchangeReceivable => {
                 serializer.serialize_str("card_interchange_receivable")
@@ -488,9 +540,17 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::LegacyCryptoPayment => serializer.serialize_str("legacy_crypto_payment"),
             Self::LegacyPayment => serializer.serialize_str("legacy_payment"),
             Self::LegacyPaymentRefund => serializer.serialize_str("legacy_payment_refund"),
+            Self::LevelsPointsAds => serializer.serialize_str("levels_points_ads"),
+            Self::LevelsPointsBurned => serializer.serialize_str("levels_points_burned"),
+            Self::LevelsPointsCard => serializer.serialize_str("levels_points_card"),
+            Self::LevelsPointsIssued => serializer.serialize_str("levels_points_issued"),
+            Self::LevelsPointsPartner => serializer.serialize_str("levels_points_partner"),
+            Self::LevelsPointsTrading => serializer.serialize_str("levels_points_trading"),
+            Self::LevelsRebate => serializer.serialize_str("levels_rebate"),
             Self::LicenseSale => serializer.serialize_str("license_sale"),
             Self::LicenseSaleCommission => serializer.serialize_str("license_sale_commission"),
             Self::LicenseSaleRevenue => serializer.serialize_str("license_sale_revenue"),
+            Self::MarketingExpense => serializer.serialize_str("marketing_expense"),
             Self::MarketplaceAffiliateFee => serializer.serialize_str("marketplace_affiliate_fee"),
             Self::MiscPurchase => serializer.serialize_str("misc_purchase"),
             Self::MiscRefund => serializer.serialize_str("misc_refund"),
@@ -498,6 +558,18 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::OnboardingReward => serializer.serialize_str("onboarding_reward"),
             Self::OnchainDeposit => serializer.serialize_str("onchain_deposit"),
             Self::OnchainDepositOffset => serializer.serialize_str("onchain_deposit_offset"),
+            Self::OnchainInternalTransferIncoming => {
+                serializer.serialize_str("onchain_internal_transfer_incoming")
+            }
+            Self::OnchainInternalTransferOutgoing => {
+                serializer.serialize_str("onchain_internal_transfer_outgoing")
+            }
+            Self::OnchainPlatformTransferIncoming => {
+                serializer.serialize_str("onchain_platform_transfer_incoming")
+            }
+            Self::OnchainPlatformTransferOutgoing => {
+                serializer.serialize_str("onchain_platform_transfer_outgoing")
+            }
             Self::OnchainSwapOffset => serializer.serialize_str("onchain_swap_offset"),
             Self::OnchainSwapSource => serializer.serialize_str("onchain_swap_source"),
             Self::OnchainSwapTarget => serializer.serialize_str("onchain_swap_target"),
@@ -545,6 +617,7 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::PaymentRefund => serializer.serialize_str("payment_refund"),
             Self::PaymentRefundFee => serializer.serialize_str("payment_refund_fee"),
             Self::PaymentRefundReversal => serializer.serialize_str("payment_refund_reversal"),
+            Self::PaymentReturnFee => serializer.serialize_str("payment_return_fee"),
             Self::PaymentRevshare => serializer.serialize_str("payment_revshare"),
             Self::PaymentRevsharePayout => serializer.serialize_str("payment_revshare_payout"),
             Self::PaymentRevshareRefund => serializer.serialize_str("payment_revshare_refund"),
@@ -562,6 +635,18 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
                 serializer.serialize_str("payout_unreconciled_clearing")
             }
             Self::Pending => serializer.serialize_str("pending"),
+            Self::PerpsBridgeFee => serializer.serialize_str("perps_bridge_fee"),
+            Self::PerpsBridgeFeeOffset => serializer.serialize_str("perps_bridge_fee_offset"),
+            Self::PerpsFee => serializer.serialize_str("perps_fee"),
+            Self::PerpsFeeOffset => serializer.serialize_str("perps_fee_offset"),
+            Self::PerpsLoadDeposit => serializer.serialize_str("perps_load_deposit"),
+            Self::PerpsLoadTransfer => serializer.serialize_str("perps_load_transfer"),
+            Self::PerpsRealizedPnl => serializer.serialize_str("perps_realized_pnl"),
+            Self::PerpsRealizedPnlOffset => serializer.serialize_str("perps_realized_pnl_offset"),
+            Self::PerpsUnloadDeposit => serializer.serialize_str("perps_unload_deposit"),
+            Self::PerpsUnloadTransfer => serializer.serialize_str("perps_unload_transfer"),
+            Self::PerpsVolume => serializer.serialize_str("perps_volume"),
+            Self::PerpsVolumeOffset => serializer.serialize_str("perps_volume_offset"),
             Self::PlatformAffiliatePayment => {
                 serializer.serialize_str("platform_affiliate_payment")
             }
@@ -582,6 +667,11 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
                 serializer.serialize_str("platform_balance_transfer_outgoing")
             }
             Self::PlatformCoveredDispute => serializer.serialize_str("platform_covered_dispute"),
+            Self::PlatformCreditsGranted => serializer.serialize_str("platform_credits_granted"),
+            Self::PlatformCreditsPayment => serializer.serialize_str("platform_credits_payment"),
+            Self::PlatformCreditsPaymentRefund => {
+                serializer.serialize_str("platform_credits_payment_refund")
+            }
             Self::PlatformEarning => serializer.serialize_str("platform_earning"),
             Self::PlatformEarningSettlement => {
                 serializer.serialize_str("platform_earning_settlement")
@@ -591,6 +681,9 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             }
             Self::PlatformMarkupFee => serializer.serialize_str("platform_markup_fee"),
             Self::PlatformMarkupFeePayout => serializer.serialize_str("platform_markup_fee_payout"),
+            Self::PlatformTradingCommission => {
+                serializer.serialize_str("platform_trading_commission")
+            }
             Self::PromoReversal => serializer.serialize_str("promo_reversal"),
             Self::PspAcceleratedSettlementFee => {
                 serializer.serialize_str("psp_accelerated_settlement_fee")
@@ -743,6 +836,7 @@ impl Serialize for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::TradingAccountWithdrawalOffset => {
                 serializer.serialize_str("trading_account_withdrawal_offset")
             }
+            Self::TradingFee => serializer.serialize_str("trading_fee"),
             Self::TreasuryFee => serializer.serialize_str("treasury_fee"),
             Self::TreasuryPayin => serializer.serialize_str("treasury_payin"),
             Self::TreasuryPayinReceivable => serializer.serialize_str("treasury_payin_receivable"),
@@ -793,6 +887,8 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
         match value.as_str() {
             "accelerated_settlement_fee" => Ok(Self::AcceleratedSettlementFee),
             "account_settlement" => Ok(Self::AccountSettlement),
+            "ad_affiliate_payout" => Ok(Self::AdAffiliatePayout),
+            "ad_affiliate_payout_received" => Ok(Self::AdAffiliatePayoutReceived),
             "ad_balance_funding_receipt" => Ok(Self::AdBalanceFundingReceipt),
             "ad_budget_release" => Ok(Self::AdBudgetRelease),
             "ad_campaign_budget" => Ok(Self::AdCampaignBudget),
@@ -831,6 +927,12 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "balance_reservation_reversal" => Ok(Self::BalanceReservationReversal),
             "billing_percentage_fee" => Ok(Self::BillingPercentageFee),
             "buyer_fee" => Ok(Self::BuyerFee),
+            "capital_hold" => Ok(Self::CapitalHold),
+            "capital_hold_release" => Ok(Self::CapitalHoldRelease),
+            "capital_remittance" => Ok(Self::CapitalRemittance),
+            "capital_remittance_reversal" => Ok(Self::CapitalRemittanceReversal),
+            "capital_withholding" => Ok(Self::CapitalWithholding),
+            "capital_withholding_reversal" => Ok(Self::CapitalWithholdingReversal),
             "card_interchange" => Ok(Self::CardInterchange),
             "card_interchange_receivable" => Ok(Self::CardInterchangeReceivable),
             "card_load_deposit" => Ok(Self::CardLoadDeposit),
@@ -910,9 +1012,17 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "legacy_crypto_payment" => Ok(Self::LegacyCryptoPayment),
             "legacy_payment" => Ok(Self::LegacyPayment),
             "legacy_payment_refund" => Ok(Self::LegacyPaymentRefund),
+            "levels_points_ads" => Ok(Self::LevelsPointsAds),
+            "levels_points_burned" => Ok(Self::LevelsPointsBurned),
+            "levels_points_card" => Ok(Self::LevelsPointsCard),
+            "levels_points_issued" => Ok(Self::LevelsPointsIssued),
+            "levels_points_partner" => Ok(Self::LevelsPointsPartner),
+            "levels_points_trading" => Ok(Self::LevelsPointsTrading),
+            "levels_rebate" => Ok(Self::LevelsRebate),
             "license_sale" => Ok(Self::LicenseSale),
             "license_sale_commission" => Ok(Self::LicenseSaleCommission),
             "license_sale_revenue" => Ok(Self::LicenseSaleRevenue),
+            "marketing_expense" => Ok(Self::MarketingExpense),
             "marketplace_affiliate_fee" => Ok(Self::MarketplaceAffiliateFee),
             "misc_purchase" => Ok(Self::MiscPurchase),
             "misc_refund" => Ok(Self::MiscRefund),
@@ -920,6 +1030,10 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "onboarding_reward" => Ok(Self::OnboardingReward),
             "onchain_deposit" => Ok(Self::OnchainDeposit),
             "onchain_deposit_offset" => Ok(Self::OnchainDepositOffset),
+            "onchain_internal_transfer_incoming" => Ok(Self::OnchainInternalTransferIncoming),
+            "onchain_internal_transfer_outgoing" => Ok(Self::OnchainInternalTransferOutgoing),
+            "onchain_platform_transfer_incoming" => Ok(Self::OnchainPlatformTransferIncoming),
+            "onchain_platform_transfer_outgoing" => Ok(Self::OnchainPlatformTransferOutgoing),
             "onchain_swap_offset" => Ok(Self::OnchainSwapOffset),
             "onchain_swap_source" => Ok(Self::OnchainSwapSource),
             "onchain_swap_target" => Ok(Self::OnchainSwapTarget),
@@ -949,6 +1063,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "payment_refund" => Ok(Self::PaymentRefund),
             "payment_refund_fee" => Ok(Self::PaymentRefundFee),
             "payment_refund_reversal" => Ok(Self::PaymentRefundReversal),
+            "payment_return_fee" => Ok(Self::PaymentReturnFee),
             "payment_revshare" => Ok(Self::PaymentRevshare),
             "payment_revshare_payout" => Ok(Self::PaymentRevsharePayout),
             "payment_revshare_refund" => Ok(Self::PaymentRevshareRefund),
@@ -960,6 +1075,18 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "payout_subsidy" => Ok(Self::PayoutSubsidy),
             "payout_unreconciled_clearing" => Ok(Self::PayoutUnreconciledClearing),
             "pending" => Ok(Self::Pending),
+            "perps_bridge_fee" => Ok(Self::PerpsBridgeFee),
+            "perps_bridge_fee_offset" => Ok(Self::PerpsBridgeFeeOffset),
+            "perps_fee" => Ok(Self::PerpsFee),
+            "perps_fee_offset" => Ok(Self::PerpsFeeOffset),
+            "perps_load_deposit" => Ok(Self::PerpsLoadDeposit),
+            "perps_load_transfer" => Ok(Self::PerpsLoadTransfer),
+            "perps_realized_pnl" => Ok(Self::PerpsRealizedPnl),
+            "perps_realized_pnl_offset" => Ok(Self::PerpsRealizedPnlOffset),
+            "perps_unload_deposit" => Ok(Self::PerpsUnloadDeposit),
+            "perps_unload_transfer" => Ok(Self::PerpsUnloadTransfer),
+            "perps_volume" => Ok(Self::PerpsVolume),
+            "perps_volume_offset" => Ok(Self::PerpsVolumeOffset),
             "platform_affiliate_payment" => Ok(Self::PlatformAffiliatePayment),
             "platform_affiliate_payment_reversal" => Ok(Self::PlatformAffiliatePaymentReversal),
             "platform_balance_payment" => Ok(Self::PlatformBalancePayment),
@@ -968,6 +1095,9 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "platform_balance_transfer_incoming" => Ok(Self::PlatformBalanceTransferIncoming),
             "platform_balance_transfer_outgoing" => Ok(Self::PlatformBalanceTransferOutgoing),
             "platform_covered_dispute" => Ok(Self::PlatformCoveredDispute),
+            "platform_credits_granted" => Ok(Self::PlatformCreditsGranted),
+            "platform_credits_payment" => Ok(Self::PlatformCreditsPayment),
+            "platform_credits_payment_refund" => Ok(Self::PlatformCreditsPaymentRefund),
             "platform_earning" => Ok(Self::PlatformEarning),
             "platform_earning_settlement" => Ok(Self::PlatformEarningSettlement),
             "platform_earning_unreconciled_clearing" => {
@@ -975,6 +1105,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             }
             "platform_markup_fee" => Ok(Self::PlatformMarkupFee),
             "platform_markup_fee_payout" => Ok(Self::PlatformMarkupFeePayout),
+            "platform_trading_commission" => Ok(Self::PlatformTradingCommission),
             "promo_reversal" => Ok(Self::PromoReversal),
             "psp_accelerated_settlement_fee" => Ok(Self::PspAcceleratedSettlementFee),
             "psp_account_debit" => Ok(Self::PspAccountDebit),
@@ -1079,6 +1210,7 @@ impl<'de> Deserialize<'de> for RetrieveFinancialReportsResponseRowsItemLineCateg
             "trading_account_deposit_offset" => Ok(Self::TradingAccountDepositOffset),
             "trading_account_withdrawal" => Ok(Self::TradingAccountWithdrawal),
             "trading_account_withdrawal_offset" => Ok(Self::TradingAccountWithdrawalOffset),
+            "trading_fee" => Ok(Self::TradingFee),
             "treasury_fee" => Ok(Self::TreasuryFee),
             "treasury_payin" => Ok(Self::TreasuryPayin),
             "treasury_payin_receivable" => Ok(Self::TreasuryPayinReceivable),
@@ -1110,6 +1242,8 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
         match self {
             Self::AcceleratedSettlementFee => write!(f, "accelerated_settlement_fee"),
             Self::AccountSettlement => write!(f, "account_settlement"),
+            Self::AdAffiliatePayout => write!(f, "ad_affiliate_payout"),
+            Self::AdAffiliatePayoutReceived => write!(f, "ad_affiliate_payout_received"),
             Self::AdBalanceFundingReceipt => write!(f, "ad_balance_funding_receipt"),
             Self::AdBudgetRelease => write!(f, "ad_budget_release"),
             Self::AdCampaignBudget => write!(f, "ad_campaign_budget"),
@@ -1148,6 +1282,12 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::BalanceReservationReversal => write!(f, "balance_reservation_reversal"),
             Self::BillingPercentageFee => write!(f, "billing_percentage_fee"),
             Self::BuyerFee => write!(f, "buyer_fee"),
+            Self::CapitalHold => write!(f, "capital_hold"),
+            Self::CapitalHoldRelease => write!(f, "capital_hold_release"),
+            Self::CapitalRemittance => write!(f, "capital_remittance"),
+            Self::CapitalRemittanceReversal => write!(f, "capital_remittance_reversal"),
+            Self::CapitalWithholding => write!(f, "capital_withholding"),
+            Self::CapitalWithholdingReversal => write!(f, "capital_withholding_reversal"),
             Self::CardInterchange => write!(f, "card_interchange"),
             Self::CardInterchangeReceivable => write!(f, "card_interchange_receivable"),
             Self::CardLoadDeposit => write!(f, "card_load_deposit"),
@@ -1241,9 +1381,17 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::LegacyCryptoPayment => write!(f, "legacy_crypto_payment"),
             Self::LegacyPayment => write!(f, "legacy_payment"),
             Self::LegacyPaymentRefund => write!(f, "legacy_payment_refund"),
+            Self::LevelsPointsAds => write!(f, "levels_points_ads"),
+            Self::LevelsPointsBurned => write!(f, "levels_points_burned"),
+            Self::LevelsPointsCard => write!(f, "levels_points_card"),
+            Self::LevelsPointsIssued => write!(f, "levels_points_issued"),
+            Self::LevelsPointsPartner => write!(f, "levels_points_partner"),
+            Self::LevelsPointsTrading => write!(f, "levels_points_trading"),
+            Self::LevelsRebate => write!(f, "levels_rebate"),
             Self::LicenseSale => write!(f, "license_sale"),
             Self::LicenseSaleCommission => write!(f, "license_sale_commission"),
             Self::LicenseSaleRevenue => write!(f, "license_sale_revenue"),
+            Self::MarketingExpense => write!(f, "marketing_expense"),
             Self::MarketplaceAffiliateFee => write!(f, "marketplace_affiliate_fee"),
             Self::MiscPurchase => write!(f, "misc_purchase"),
             Self::MiscRefund => write!(f, "misc_refund"),
@@ -1251,6 +1399,18 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::OnboardingReward => write!(f, "onboarding_reward"),
             Self::OnchainDeposit => write!(f, "onchain_deposit"),
             Self::OnchainDepositOffset => write!(f, "onchain_deposit_offset"),
+            Self::OnchainInternalTransferIncoming => {
+                write!(f, "onchain_internal_transfer_incoming")
+            }
+            Self::OnchainInternalTransferOutgoing => {
+                write!(f, "onchain_internal_transfer_outgoing")
+            }
+            Self::OnchainPlatformTransferIncoming => {
+                write!(f, "onchain_platform_transfer_incoming")
+            }
+            Self::OnchainPlatformTransferOutgoing => {
+                write!(f, "onchain_platform_transfer_outgoing")
+            }
             Self::OnchainSwapOffset => write!(f, "onchain_swap_offset"),
             Self::OnchainSwapSource => write!(f, "onchain_swap_source"),
             Self::OnchainSwapTarget => write!(f, "onchain_swap_target"),
@@ -1280,6 +1440,7 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::PaymentRefund => write!(f, "payment_refund"),
             Self::PaymentRefundFee => write!(f, "payment_refund_fee"),
             Self::PaymentRefundReversal => write!(f, "payment_refund_reversal"),
+            Self::PaymentReturnFee => write!(f, "payment_return_fee"),
             Self::PaymentRevshare => write!(f, "payment_revshare"),
             Self::PaymentRevsharePayout => write!(f, "payment_revshare_payout"),
             Self::PaymentRevshareRefund => write!(f, "payment_revshare_refund"),
@@ -1291,6 +1452,18 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::PayoutSubsidy => write!(f, "payout_subsidy"),
             Self::PayoutUnreconciledClearing => write!(f, "payout_unreconciled_clearing"),
             Self::Pending => write!(f, "pending"),
+            Self::PerpsBridgeFee => write!(f, "perps_bridge_fee"),
+            Self::PerpsBridgeFeeOffset => write!(f, "perps_bridge_fee_offset"),
+            Self::PerpsFee => write!(f, "perps_fee"),
+            Self::PerpsFeeOffset => write!(f, "perps_fee_offset"),
+            Self::PerpsLoadDeposit => write!(f, "perps_load_deposit"),
+            Self::PerpsLoadTransfer => write!(f, "perps_load_transfer"),
+            Self::PerpsRealizedPnl => write!(f, "perps_realized_pnl"),
+            Self::PerpsRealizedPnlOffset => write!(f, "perps_realized_pnl_offset"),
+            Self::PerpsUnloadDeposit => write!(f, "perps_unload_deposit"),
+            Self::PerpsUnloadTransfer => write!(f, "perps_unload_transfer"),
+            Self::PerpsVolume => write!(f, "perps_volume"),
+            Self::PerpsVolumeOffset => write!(f, "perps_volume_offset"),
             Self::PlatformAffiliatePayment => write!(f, "platform_affiliate_payment"),
             Self::PlatformAffiliatePaymentReversal => {
                 write!(f, "platform_affiliate_payment_reversal")
@@ -1305,6 +1478,9 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
                 write!(f, "platform_balance_transfer_outgoing")
             }
             Self::PlatformCoveredDispute => write!(f, "platform_covered_dispute"),
+            Self::PlatformCreditsGranted => write!(f, "platform_credits_granted"),
+            Self::PlatformCreditsPayment => write!(f, "platform_credits_payment"),
+            Self::PlatformCreditsPaymentRefund => write!(f, "platform_credits_payment_refund"),
             Self::PlatformEarning => write!(f, "platform_earning"),
             Self::PlatformEarningSettlement => write!(f, "platform_earning_settlement"),
             Self::PlatformEarningUnreconciledClearing => {
@@ -1312,6 +1488,7 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             }
             Self::PlatformMarkupFee => write!(f, "platform_markup_fee"),
             Self::PlatformMarkupFeePayout => write!(f, "platform_markup_fee_payout"),
+            Self::PlatformTradingCommission => write!(f, "platform_trading_commission"),
             Self::PromoReversal => write!(f, "promo_reversal"),
             Self::PspAcceleratedSettlementFee => write!(f, "psp_accelerated_settlement_fee"),
             Self::PspAccountDebit => write!(f, "psp_account_debit"),
@@ -1422,6 +1599,7 @@ impl fmt::Display for RetrieveFinancialReportsResponseRowsItemLineCategory {
             Self::TradingAccountDepositOffset => write!(f, "trading_account_deposit_offset"),
             Self::TradingAccountWithdrawal => write!(f, "trading_account_withdrawal"),
             Self::TradingAccountWithdrawalOffset => write!(f, "trading_account_withdrawal_offset"),
+            Self::TradingFee => write!(f, "trading_fee"),
             Self::TreasuryFee => write!(f, "treasury_fee"),
             Self::TreasuryPayin => write!(f, "treasury_payin"),
             Self::TreasuryPayinReceivable => write!(f, "treasury_payin_receivable"),

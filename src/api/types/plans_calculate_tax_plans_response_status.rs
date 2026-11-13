@@ -1,6 +1,5 @@
 pub use crate::prelude::*;
 
-/// Whether Whop calculated tax for this preview. `not_calculated` means no tax could be determined, so `tax_amount` is 0 and `total` equals `subtotal`.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CalculateTaxPlansResponseStatus {

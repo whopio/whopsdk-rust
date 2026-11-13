@@ -5,6 +5,9 @@ pub struct CreatePayoutsResponse {
     /// The payout amount in whole currency units, as a decimal string.
     #[serde(default)]
     pub amount: String,
+    /// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
+    #[serde(default)]
+    pub cancelable: bool,
     /// When the payout was created.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
@@ -15,7 +18,7 @@ pub struct CreatePayoutsResponse {
     /// The amount delivered in the destination currency, as a decimal string. Null until the payout settles; appears on the payout in GET /payouts once assigned.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_amount: Option<String>,
-    /// Currency the funds are delivered in, taken from the payout method. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+    /// Currency the funds are delivered in, taken from the payout method. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_currency: Option<String>,
     /// Estimated time the funds become available in the destination account. Null until the payout settles.
@@ -36,7 +39,7 @@ pub struct CreatePayoutsResponse {
     pub fee_amount: String,
     /// Who bore the payout fee: the account itself, or its parent platform.
     pub fee_paid_by: CreatePayoutsResponseFeePaidBy,
-    /// Payout ID, prefixed `wdrl_` — the id POST returns is the id GET /payouts lists. Conversion requests created before this version keep answering under their `cofr_` id.
+    /// Payout ID, prefixed `wdrl_` — the id POST returns is the id GET /payouts lists. Conversion requests created before this version keep answering under their `cofr_` id. A payout paid from a card with `payment_method_id` answers under its card payment's `pay_` id until it is submitted.
     #[serde(default)]
     pub id: String,
     /// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
@@ -45,7 +48,7 @@ pub struct CreatePayoutsResponse {
     /// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
     #[serde(default)]
     pub metadata: HashMap<String, String>,
-    /// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+    /// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
     #[serde(default)]
     pub net_amount: String,
     /// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
@@ -58,23 +61,23 @@ pub struct CreatePayoutsResponse {
     /// The saved payout method used. Requires payout:destination:read; null without it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_method: Option<CreatePayoutsResponsePayoutMethod>,
-    /// For a stablecoin payout, the id of the conversion request that funds it, prefixed `cofr_`; `null` on fiat payouts.
+    /// The id of the conversion request that funds this payout, prefixed `cofr_`; `null` when the payout has none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_request_id: Option<String>,
-    /// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+    /// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<CreatePayoutsResponseSource>,
     /// Payout delivery speed.
     pub speed: CreatePayoutsResponseSpeed,
-    /// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+    /// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub statement_descriptor: Option<String>,
     /// Current payout status, in the same vocabulary as GET /payouts.
     pub status: CreatePayoutsResponseStatus,
-    /// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+    /// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
     #[serde(default)]
     pub status_detail: String,
-    /// ACH trace number the recipient's bank can use to locate this payout. Always `null` here — it is assigned when the payout is submitted to the bank, and appears on the payout in GET /payouts once it has been sent; payouts not sent over ACH never get one.
+    /// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. Always `null` here. It appears on the payout in GET /payouts once the reference is available, and stays `null` on payouts that have none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub trace_code: Option<String>,
 }
@@ -89,6 +92,7 @@ impl CreatePayoutsResponse {
 #[non_exhaustive]
 pub struct CreatePayoutsResponseBuilder {
     amount: Option<String>,
+    cancelable: Option<bool>,
     created_at: Option<DateTime<FixedOffset>>,
     currency: Option<String>,
     destination_amount: Option<String>,
@@ -118,6 +122,11 @@ pub struct CreatePayoutsResponseBuilder {
 impl CreatePayoutsResponseBuilder {
     pub fn amount(mut self, value: impl Into<String>) -> Self {
         self.amount = Some(value.into());
+        self
+    }
+
+    pub fn cancelable(mut self, value: bool) -> Self {
+        self.cancelable = Some(value);
         self
     }
 
@@ -244,6 +253,7 @@ impl CreatePayoutsResponseBuilder {
     /// Consumes the builder and constructs a [`CreatePayoutsResponse`].
     /// This method will fail if any of the following fields are not set:
     /// - [`amount`](CreatePayoutsResponseBuilder::amount)
+    /// - [`cancelable`](CreatePayoutsResponseBuilder::cancelable)
     /// - [`created_at`](CreatePayoutsResponseBuilder::created_at)
     /// - [`currency`](CreatePayoutsResponseBuilder::currency)
     /// - [`fee_amount`](CreatePayoutsResponseBuilder::fee_amount)
@@ -261,6 +271,9 @@ impl CreatePayoutsResponseBuilder {
             amount: self
                 .amount
                 .ok_or_else(|| BuildError::missing_field("amount"))?,
+            cancelable: self
+                .cancelable
+                .ok_or_else(|| BuildError::missing_field("cancelable"))?,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,

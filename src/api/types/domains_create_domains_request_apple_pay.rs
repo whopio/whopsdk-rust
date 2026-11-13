@@ -1,0 +1,22 @@
+pub use crate::prelude::*;
+
+/// Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
+pub struct CreateDomainsRequestApplePay {}
+
+impl CreateDomainsRequestApplePay {
+    pub fn builder() -> CreateDomainsRequestApplePayBuilder {
+        <CreateDomainsRequestApplePayBuilder as Default>::default()
+    }
+}
+
+#[derive(Clone, PartialEq, Default, Debug)]
+#[non_exhaustive]
+pub struct CreateDomainsRequestApplePayBuilder {}
+
+impl CreateDomainsRequestApplePayBuilder {
+    /// Consumes the builder and constructs a [`CreateDomainsRequestApplePay`].
+    pub fn build(self) -> Result<CreateDomainsRequestApplePay, BuildError> {
+        Ok(CreateDomainsRequestApplePay {})
+    }
+}

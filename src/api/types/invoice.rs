@@ -1,82 +1,85 @@
 pub use crate::prelude::*;
 
-/// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Invoice {
-    /// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
+    #[serde(default)]
+    pub account_id: String,
+    #[serde(default)]
+    pub amount_due: Money,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub billing_address: Option<PaymentAddress>,
     #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub automatically_finalizes_at: Option<DateTime<FixedOffset>>,
-    /// Whether the invoice includes a buyer processing fee on top of the plan price.
+    pub buyer_fee_amount: Money,
     #[serde(default)]
-    pub charge_buyer_fee: bool,
-    /// The method used to collect payment for this invoice, such as automatic charging or manual payment.
-    pub collection_method: InvoiceCollectionMethods,
-    /// The company that issued this invoice.
+    #[serde(with = "crate::core::number_serializers")]
+    pub buyer_fee_percentage: f64,
+    /// A signed link that opens this invoice in a checkout session so the buyer can pay it. Pass it as `link` to `POST /checkout_sessions`. Present while the invoice is open. `null` in any other status, for an invoice billed to a business buyer, and for an invoice whose membership was canceled. Also `null` unless you have `payment:charge`, or `invoice:create` or `invoice:update` on an invoice with no `payment_method_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checkout_link: Option<String>,
     #[serde(default)]
-    pub company: InvoiceCompany,
-    /// The datetime the invoice was created.
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset")]
-    pub created_at: DateTime<FixedOffset>,
-    /// The plan that this invoice charges for.
-    pub current_plan: InvoiceCurrentPlan,
-    /// The full name of the customer this invoice is addressed to. Null if no name is on file.
+    pub created_at: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub customer_name: Option<String>,
-    /// The deadline by which payment is expected. Null if the invoice is collected automatically.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    /// True when `DELETE /invoices/{id}` can delete this invoice. A draft qualifies unless it is scheduled or bills a subscription. A void invoice qualifies unless it collected money or still awaits a bank wire.
     #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub due_date: Option<DateTime<FixedOffset>>,
-    /// The email address of the customer this invoice is addressed to. Null if no email is on file.
+    pub deletable: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub due_at: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email_address: Option<String>,
-    /// A signed token that allows fetching invoice data publicly without authentication.
-    #[serde(default)]
-    pub fetch_invoice_token: String,
-    /// The unique identifier for the invoice.
     #[serde(default)]
     pub id: String,
-    /// Optional line items that break down the invoice total into individual charges.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub invoice_prefix: Option<String>,
     #[serde(default)]
-    pub line_items: Vec<InvoiceLineItemsItem>,
-    /// The billing/mailing address associated with this invoice, if one was provided at creation time.
+    pub line_items: Vec<InvoiceLineItem>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub mailing_address: Option<InvoiceMailingAddress>,
-    /// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
+    pub mailing_address_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub member: Option<InvoiceMember>,
-    /// The sequential invoice number for display purposes.
+    pub member_id: Option<String>,
+    /// The membership this invoice bills, prefixed `mem_`. For a renewal invoice, it is the subscription that renews. For an invoice with a recurring item, it is the membership created when the invoice is issued. Null for one-off invoices, for a draft not yet issued, and without the member:basic:read permission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub membership_id: Option<String>,
+    /// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. `null` when none is set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub memo: Option<String>,
+    #[serde(default)]
+    pub metadata: HashMap<String, String>,
     #[serde(default)]
     pub number: String,
-    /// The checkout URL where the customer can pay this invoice online, with their email address pre-filled and locked.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub pay_online_url: Option<String>,
-    /// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment: Option<InvoicePayment>,
-    /// Whether a payment on this invoice is still clearing. True while a delayed payment method such as ACH or SEPA settles, during which the invoice stays open and is not marked past due.
+    pub object: InvoiceObject,
     #[serde(default)]
-    pub payment_processing: bool,
-    /// The product that this invoice was generated for.
-    #[serde(default)]
-    pub product: InvoiceProduct,
-    /// The current payment status of the invoice, such as draft, open, paid, or void.
-    pub status: InvoiceStatuses,
-    /// The date that defines when the subscription billing cycle starts. When set on a renewal plan invoice, all future billing periods anchor to this date.
+    pub overdue: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset::option")]
-    pub subscription_billing_anchor_at: Option<DateTime<FixedOffset>>,
-    /// The datetime the invoice was last updated.
-    #[serde(default)]
-    #[serde(with = "crate::core::flexible_datetime::offset")]
-    pub updated_at: DateTime<FixedOffset>,
-    /// The user this invoice is addressed to. Null if the user account has been removed.
+    pub paid_at: Option<String>,
+    /// The payment methods the customer can choose from when paying through the invoice's checkout link. It takes precedence over the invoice's variants and the account. `null` when the invoice uses its variants' payment methods.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user: Option<InvoiceUser>,
+    pub payment_method_configuration: Option<CheckoutSessionPaymentMethodConfiguration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_method_id: Option<String>,
+    #[serde(default)]
+    pub recipient_emails: Vec<String>,
+    /// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp. It is the `charge_at` the invoice was sent or issued with. Without one, it is `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due. On a draft, it is the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub scheduled_charge_at: Option<String>,
+    /// The `collection_method` a draft's scheduled send applies when it fires. `null` when the draft has no scheduled send or it was scheduled without one, and once the invoice is issued.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub scheduled_collection_method: Option<InvoiceScheduledCollectionMethod>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub scheduled_send_at: Option<String>,
+    /// Whether this draft is issued automatically when its `due_at` arrives. Issuing it charges its `payment_method_id`, or emails its payment link to its `recipient_emails`. `false` for an invoice that is not a draft and for a draft with a scheduled send. `false` while sending the draft would fail for missing recipients or an unavailable payment link. `false` for a draft that had no future `due_at` when it was last saved. `false` for a draft created before 2026-11-12T22:00:00Z.
+    #[serde(default)]
+    pub sends_on_due_date: bool,
+    pub status: InvoiceStatus,
+    #[serde(default)]
+    pub subtotal: Money,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tax_amount: Option<Money>,
+    #[serde(default)]
+    pub total: Money,
+    pub totals_status: InvoiceTotalsStatus,
+    #[serde(default)]
+    pub updated_at: String,
 }
 
 impl Invoice {
@@ -88,59 +91,77 @@ impl Invoice {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct InvoiceBuilder {
-    automatically_finalizes_at: Option<DateTime<FixedOffset>>,
-    charge_buyer_fee: Option<bool>,
-    collection_method: Option<InvoiceCollectionMethods>,
-    company: Option<InvoiceCompany>,
-    created_at: Option<DateTime<FixedOffset>>,
-    current_plan: Option<InvoiceCurrentPlan>,
+    account_id: Option<String>,
+    amount_due: Option<Money>,
+    billing_address: Option<PaymentAddress>,
+    buyer_fee_amount: Option<Money>,
+    buyer_fee_percentage: Option<f64>,
+    checkout_link: Option<String>,
+    created_at: Option<String>,
     customer_name: Option<String>,
-    due_date: Option<DateTime<FixedOffset>>,
+    deletable: Option<bool>,
+    due_at: Option<String>,
     email_address: Option<String>,
-    fetch_invoice_token: Option<String>,
     id: Option<String>,
-    line_items: Option<Vec<InvoiceLineItemsItem>>,
-    mailing_address: Option<InvoiceMailingAddress>,
-    member: Option<InvoiceMember>,
+    invoice_prefix: Option<String>,
+    line_items: Option<Vec<InvoiceLineItem>>,
+    mailing_address_id: Option<String>,
+    member_id: Option<String>,
+    membership_id: Option<String>,
+    memo: Option<String>,
+    metadata: Option<HashMap<String, String>>,
     number: Option<String>,
-    pay_online_url: Option<String>,
-    payment: Option<InvoicePayment>,
-    payment_processing: Option<bool>,
-    product: Option<InvoiceProduct>,
-    status: Option<InvoiceStatuses>,
-    subscription_billing_anchor_at: Option<DateTime<FixedOffset>>,
-    updated_at: Option<DateTime<FixedOffset>>,
-    user: Option<InvoiceUser>,
+    object: Option<InvoiceObject>,
+    overdue: Option<bool>,
+    paid_at: Option<String>,
+    payment_method_configuration: Option<CheckoutSessionPaymentMethodConfiguration>,
+    payment_method_id: Option<String>,
+    recipient_emails: Option<Vec<String>>,
+    scheduled_charge_at: Option<String>,
+    scheduled_collection_method: Option<InvoiceScheduledCollectionMethod>,
+    scheduled_send_at: Option<String>,
+    sends_on_due_date: Option<bool>,
+    status: Option<InvoiceStatus>,
+    subtotal: Option<Money>,
+    tax_amount: Option<Money>,
+    total: Option<Money>,
+    totals_status: Option<InvoiceTotalsStatus>,
+    updated_at: Option<String>,
 }
 
 impl InvoiceBuilder {
-    pub fn automatically_finalizes_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.automatically_finalizes_at = Some(value);
+    pub fn account_id(mut self, value: impl Into<String>) -> Self {
+        self.account_id = Some(value.into());
         self
     }
 
-    pub fn charge_buyer_fee(mut self, value: bool) -> Self {
-        self.charge_buyer_fee = Some(value);
+    pub fn amount_due(mut self, value: Money) -> Self {
+        self.amount_due = Some(value);
         self
     }
 
-    pub fn collection_method(mut self, value: InvoiceCollectionMethods) -> Self {
-        self.collection_method = Some(value);
+    pub fn billing_address(mut self, value: PaymentAddress) -> Self {
+        self.billing_address = Some(value);
         self
     }
 
-    pub fn company(mut self, value: InvoiceCompany) -> Self {
-        self.company = Some(value);
+    pub fn buyer_fee_amount(mut self, value: Money) -> Self {
+        self.buyer_fee_amount = Some(value);
         self
     }
 
-    pub fn created_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.created_at = Some(value);
+    pub fn buyer_fee_percentage(mut self, value: f64) -> Self {
+        self.buyer_fee_percentage = Some(value);
         self
     }
 
-    pub fn current_plan(mut self, value: InvoiceCurrentPlan) -> Self {
-        self.current_plan = Some(value);
+    pub fn checkout_link(mut self, value: impl Into<String>) -> Self {
+        self.checkout_link = Some(value.into());
+        self
+    }
+
+    pub fn created_at(mut self, value: impl Into<String>) -> Self {
+        self.created_at = Some(value.into());
         self
     }
 
@@ -149,8 +170,13 @@ impl InvoiceBuilder {
         self
     }
 
-    pub fn due_date(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.due_date = Some(value);
+    pub fn deletable(mut self, value: bool) -> Self {
+        self.deletable = Some(value);
+        self
+    }
+
+    pub fn due_at(mut self, value: impl Into<String>) -> Self {
+        self.due_at = Some(value.into());
         self
     }
 
@@ -159,28 +185,43 @@ impl InvoiceBuilder {
         self
     }
 
-    pub fn fetch_invoice_token(mut self, value: impl Into<String>) -> Self {
-        self.fetch_invoice_token = Some(value.into());
-        self
-    }
-
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
         self
     }
 
-    pub fn line_items(mut self, value: Vec<InvoiceLineItemsItem>) -> Self {
+    pub fn invoice_prefix(mut self, value: impl Into<String>) -> Self {
+        self.invoice_prefix = Some(value.into());
+        self
+    }
+
+    pub fn line_items(mut self, value: Vec<InvoiceLineItem>) -> Self {
         self.line_items = Some(value);
         self
     }
 
-    pub fn mailing_address(mut self, value: InvoiceMailingAddress) -> Self {
-        self.mailing_address = Some(value);
+    pub fn mailing_address_id(mut self, value: impl Into<String>) -> Self {
+        self.mailing_address_id = Some(value.into());
         self
     }
 
-    pub fn member(mut self, value: InvoiceMember) -> Self {
-        self.member = Some(value);
+    pub fn member_id(mut self, value: impl Into<String>) -> Self {
+        self.member_id = Some(value.into());
+        self
+    }
+
+    pub fn membership_id(mut self, value: impl Into<String>) -> Self {
+        self.membership_id = Some(value.into());
+        self
+    }
+
+    pub fn memo(mut self, value: impl Into<String>) -> Self {
+        self.memo = Some(value.into());
+        self
+    }
+
+    pub fn metadata(mut self, value: HashMap<String, String>) -> Self {
+        self.metadata = Some(value);
         self
     }
 
@@ -189,110 +230,184 @@ impl InvoiceBuilder {
         self
     }
 
-    pub fn pay_online_url(mut self, value: impl Into<String>) -> Self {
-        self.pay_online_url = Some(value.into());
+    pub fn object(mut self, value: InvoiceObject) -> Self {
+        self.object = Some(value);
         self
     }
 
-    pub fn payment(mut self, value: InvoicePayment) -> Self {
-        self.payment = Some(value);
+    pub fn overdue(mut self, value: bool) -> Self {
+        self.overdue = Some(value);
         self
     }
 
-    pub fn payment_processing(mut self, value: bool) -> Self {
-        self.payment_processing = Some(value);
+    pub fn paid_at(mut self, value: impl Into<String>) -> Self {
+        self.paid_at = Some(value.into());
         self
     }
 
-    pub fn product(mut self, value: InvoiceProduct) -> Self {
-        self.product = Some(value);
+    pub fn payment_method_configuration(
+        mut self,
+        value: CheckoutSessionPaymentMethodConfiguration,
+    ) -> Self {
+        self.payment_method_configuration = Some(value);
         self
     }
 
-    pub fn status(mut self, value: InvoiceStatuses) -> Self {
+    pub fn payment_method_id(mut self, value: impl Into<String>) -> Self {
+        self.payment_method_id = Some(value.into());
+        self
+    }
+
+    pub fn recipient_emails(mut self, value: Vec<String>) -> Self {
+        self.recipient_emails = Some(value);
+        self
+    }
+
+    pub fn scheduled_charge_at(mut self, value: impl Into<String>) -> Self {
+        self.scheduled_charge_at = Some(value.into());
+        self
+    }
+
+    pub fn scheduled_collection_method(mut self, value: InvoiceScheduledCollectionMethod) -> Self {
+        self.scheduled_collection_method = Some(value);
+        self
+    }
+
+    pub fn scheduled_send_at(mut self, value: impl Into<String>) -> Self {
+        self.scheduled_send_at = Some(value.into());
+        self
+    }
+
+    pub fn sends_on_due_date(mut self, value: bool) -> Self {
+        self.sends_on_due_date = Some(value);
+        self
+    }
+
+    pub fn status(mut self, value: InvoiceStatus) -> Self {
         self.status = Some(value);
         self
     }
 
-    pub fn subscription_billing_anchor_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.subscription_billing_anchor_at = Some(value);
+    pub fn subtotal(mut self, value: Money) -> Self {
+        self.subtotal = Some(value);
         self
     }
 
-    pub fn updated_at(mut self, value: DateTime<FixedOffset>) -> Self {
-        self.updated_at = Some(value);
+    pub fn tax_amount(mut self, value: Money) -> Self {
+        self.tax_amount = Some(value);
         self
     }
 
-    pub fn user(mut self, value: InvoiceUser) -> Self {
-        self.user = Some(value);
+    pub fn total(mut self, value: Money) -> Self {
+        self.total = Some(value);
+        self
+    }
+
+    pub fn totals_status(mut self, value: InvoiceTotalsStatus) -> Self {
+        self.totals_status = Some(value);
+        self
+    }
+
+    pub fn updated_at(mut self, value: impl Into<String>) -> Self {
+        self.updated_at = Some(value.into());
         self
     }
 
     /// Consumes the builder and constructs a [`Invoice`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`charge_buyer_fee`](InvoiceBuilder::charge_buyer_fee)
-    /// - [`collection_method`](InvoiceBuilder::collection_method)
-    /// - [`company`](InvoiceBuilder::company)
+    /// - [`account_id`](InvoiceBuilder::account_id)
+    /// - [`amount_due`](InvoiceBuilder::amount_due)
+    /// - [`buyer_fee_amount`](InvoiceBuilder::buyer_fee_amount)
+    /// - [`buyer_fee_percentage`](InvoiceBuilder::buyer_fee_percentage)
     /// - [`created_at`](InvoiceBuilder::created_at)
-    /// - [`current_plan`](InvoiceBuilder::current_plan)
-    /// - [`fetch_invoice_token`](InvoiceBuilder::fetch_invoice_token)
+    /// - [`deletable`](InvoiceBuilder::deletable)
     /// - [`id`](InvoiceBuilder::id)
     /// - [`line_items`](InvoiceBuilder::line_items)
+    /// - [`metadata`](InvoiceBuilder::metadata)
     /// - [`number`](InvoiceBuilder::number)
-    /// - [`payment_processing`](InvoiceBuilder::payment_processing)
-    /// - [`product`](InvoiceBuilder::product)
+    /// - [`object`](InvoiceBuilder::object)
+    /// - [`overdue`](InvoiceBuilder::overdue)
+    /// - [`recipient_emails`](InvoiceBuilder::recipient_emails)
+    /// - [`sends_on_due_date`](InvoiceBuilder::sends_on_due_date)
     /// - [`status`](InvoiceBuilder::status)
+    /// - [`subtotal`](InvoiceBuilder::subtotal)
+    /// - [`total`](InvoiceBuilder::total)
+    /// - [`totals_status`](InvoiceBuilder::totals_status)
     /// - [`updated_at`](InvoiceBuilder::updated_at)
     pub fn build(self) -> Result<Invoice, BuildError> {
         Ok(Invoice {
-            automatically_finalizes_at: self.automatically_finalizes_at,
-            charge_buyer_fee: self
-                .charge_buyer_fee
-                .ok_or_else(|| BuildError::missing_field("charge_buyer_fee"))?,
-            collection_method: self
-                .collection_method
-                .ok_or_else(|| BuildError::missing_field("collection_method"))?,
-            company: self
-                .company
-                .ok_or_else(|| BuildError::missing_field("company"))?,
+            account_id: self
+                .account_id
+                .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            amount_due: self
+                .amount_due
+                .ok_or_else(|| BuildError::missing_field("amount_due"))?,
+            billing_address: self.billing_address,
+            buyer_fee_amount: self
+                .buyer_fee_amount
+                .ok_or_else(|| BuildError::missing_field("buyer_fee_amount"))?,
+            buyer_fee_percentage: self
+                .buyer_fee_percentage
+                .ok_or_else(|| BuildError::missing_field("buyer_fee_percentage"))?,
+            checkout_link: self.checkout_link,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
-            current_plan: self
-                .current_plan
-                .ok_or_else(|| BuildError::missing_field("current_plan"))?,
             customer_name: self.customer_name,
-            due_date: self.due_date,
+            deletable: self
+                .deletable
+                .ok_or_else(|| BuildError::missing_field("deletable"))?,
+            due_at: self.due_at,
             email_address: self.email_address,
-            fetch_invoice_token: self
-                .fetch_invoice_token
-                .ok_or_else(|| BuildError::missing_field("fetch_invoice_token"))?,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            invoice_prefix: self.invoice_prefix,
             line_items: self
                 .line_items
                 .ok_or_else(|| BuildError::missing_field("line_items"))?,
-            mailing_address: self.mailing_address,
-            member: self.member,
+            mailing_address_id: self.mailing_address_id,
+            member_id: self.member_id,
+            membership_id: self.membership_id,
+            memo: self.memo,
+            metadata: self
+                .metadata
+                .ok_or_else(|| BuildError::missing_field("metadata"))?,
             number: self
                 .number
                 .ok_or_else(|| BuildError::missing_field("number"))?,
-            pay_online_url: self.pay_online_url,
-            payment: self.payment,
-            payment_processing: self
-                .payment_processing
-                .ok_or_else(|| BuildError::missing_field("payment_processing"))?,
-            product: self
-                .product
-                .ok_or_else(|| BuildError::missing_field("product"))?,
+            object: self
+                .object
+                .ok_or_else(|| BuildError::missing_field("object"))?,
+            overdue: self
+                .overdue
+                .ok_or_else(|| BuildError::missing_field("overdue"))?,
+            paid_at: self.paid_at,
+            payment_method_configuration: self.payment_method_configuration,
+            payment_method_id: self.payment_method_id,
+            recipient_emails: self
+                .recipient_emails
+                .ok_or_else(|| BuildError::missing_field("recipient_emails"))?,
+            scheduled_charge_at: self.scheduled_charge_at,
+            scheduled_collection_method: self.scheduled_collection_method,
+            scheduled_send_at: self.scheduled_send_at,
+            sends_on_due_date: self
+                .sends_on_due_date
+                .ok_or_else(|| BuildError::missing_field("sends_on_due_date"))?,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
-            subscription_billing_anchor_at: self.subscription_billing_anchor_at,
+            subtotal: self
+                .subtotal
+                .ok_or_else(|| BuildError::missing_field("subtotal"))?,
+            tax_amount: self.tax_amount,
+            total: self
+                .total
+                .ok_or_else(|| BuildError::missing_field("total"))?,
+            totals_status: self
+                .totals_status
+                .ok_or_else(|| BuildError::missing_field("totals_status"))?,
             updated_at: self
                 .updated_at
                 .ok_or_else(|| BuildError::missing_field("updated_at"))?,
-            user: self.user,
         })
     }
 }

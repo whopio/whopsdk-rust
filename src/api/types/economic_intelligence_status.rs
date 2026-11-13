@@ -1,13 +1,15 @@
 pub use crate::prelude::*;
 
-/// `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
+/// `queued` when awaiting generation; `pending` while generating or preparing its work; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum EconomicIntelligenceStatus {
     Queued,
     Pending,
     Ready,
+    Running,
     Executed,
+    Incomplete,
     Superseded,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -20,7 +22,9 @@ impl Serialize for EconomicIntelligenceStatus {
             Self::Queued => serializer.serialize_str("queued"),
             Self::Pending => serializer.serialize_str("pending"),
             Self::Ready => serializer.serialize_str("ready"),
+            Self::Running => serializer.serialize_str("running"),
             Self::Executed => serializer.serialize_str("executed"),
+            Self::Incomplete => serializer.serialize_str("incomplete"),
             Self::Superseded => serializer.serialize_str("superseded"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
@@ -34,7 +38,9 @@ impl<'de> Deserialize<'de> for EconomicIntelligenceStatus {
             "queued" => Ok(Self::Queued),
             "pending" => Ok(Self::Pending),
             "ready" => Ok(Self::Ready),
+            "running" => Ok(Self::Running),
             "executed" => Ok(Self::Executed),
+            "incomplete" => Ok(Self::Incomplete),
             "superseded" => Ok(Self::Superseded),
             _ => Ok(Self::__Unknown(value)),
         }
@@ -47,7 +53,9 @@ impl fmt::Display for EconomicIntelligenceStatus {
             Self::Queued => write!(f, "queued"),
             Self::Pending => write!(f, "pending"),
             Self::Ready => write!(f, "ready"),
+            Self::Running => write!(f, "running"),
             Self::Executed => write!(f, "executed"),
+            Self::Incomplete => write!(f, "incomplete"),
             Self::Superseded => write!(f, "superseded"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }

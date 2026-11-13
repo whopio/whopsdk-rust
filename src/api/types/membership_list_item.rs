@@ -33,6 +33,12 @@ pub struct MembershipListItem {
     /// The three-letter ISO currency code for this membership's billing. Null if the membership is free.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<Currencies>,
+    /// The member's accounts on outside platforms, such as Discord and Telegram. Empty when the member has none linked. Null in webhooks.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub external_accounts: Option<Vec<MembershipListItemExternalAccountsItem>>,
+    /// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feedback_option: Option<MembershipListItemFeedbackOption>,
     /// The recurring renewal price for this membership, formatted with currency symbol and billing interval. Null if the membership is not recurring.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub formatted_renewal_price: Option<String>,
@@ -110,6 +116,8 @@ pub struct MembershipListItemBuilder {
     company: Option<MembershipListItemCompany>,
     created_at: Option<DateTime<FixedOffset>>,
     currency: Option<Currencies>,
+    external_accounts: Option<Vec<MembershipListItemExternalAccountsItem>>,
+    feedback_option: Option<MembershipListItemFeedbackOption>,
     formatted_renewal_price: Option<String>,
     id: Option<String>,
     initial_price_paid: Option<String>,
@@ -172,6 +180,16 @@ impl MembershipListItemBuilder {
 
     pub fn currency(mut self, value: Currencies) -> Self {
         self.currency = Some(value);
+        self
+    }
+
+    pub fn external_accounts(mut self, value: Vec<MembershipListItemExternalAccountsItem>) -> Self {
+        self.external_accounts = Some(value);
+        self
+    }
+
+    pub fn feedback_option(mut self, value: MembershipListItemFeedbackOption) -> Self {
+        self.feedback_option = Some(value);
         self
     }
 
@@ -289,6 +307,8 @@ impl MembershipListItemBuilder {
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
             currency: self.currency,
+            external_accounts: self.external_accounts,
+            feedback_option: self.feedback_option,
             formatted_renewal_price: self.formatted_renewal_price,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             initial_price_paid: self

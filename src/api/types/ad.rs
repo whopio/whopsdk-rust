@@ -43,6 +43,8 @@ pub struct Ad {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub contacts: f64,
+    /// Whop's content review of this ad: whether it has finished, which ad networks it is recommended for, and the content rules it breaks.
+    pub content_review: AdContentReview,
     /// Spend divided by attributed add-to-cart events; null when they are not the goal and none are attributed.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -119,17 +121,14 @@ pub struct Ad {
     /// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
     pub delivery_status: AdDeliveryStatus,
     #[serde(default)]
-    pub descriptions: Vec<String>,
-    /// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub existing_post_id: Option<String>,
-    /// Platform-reported impressions divided by reach.
+    pub descriptions: Vec<AdText>,
+    /// Impressions divided by reach.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub frequency: Option<f64>,
     #[serde(default)]
-    pub headlines: Vec<String>,
+    pub headlines: Vec<AdText>,
     /// Unique identifier for the ad, prefixed `ad_`.
     #[serde(default)]
     pub id: String,
@@ -139,12 +138,6 @@ pub struct Ad {
     pub impressions: f64,
     #[serde(default)]
     pub issues: Vec<AdPlatformIssue>,
-    /// The instant lead form shown when someone taps this ad. `null` when the ad group's conversion_location is not an instant-form destination.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub lead_form: Option<AdLeadForm>,
-    /// The ad platform's ID for the instant form the ad uses. Set when the ad references an existing form via `lead_form_id`, or once a form built from `lead_form` has been created on the platform.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub lead_form_id: Option<String>,
     /// USD value attributed to lead events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -153,32 +146,12 @@ pub struct Ad {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub leads: f64,
-    /// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+    /// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub link_clicks: f64,
-    /// Welcome message for click-to-message ads, shown when the conversation opens. `null` when the ad has none.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub messaging_config: Option<AdMessagingConfig>,
-    /// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub multi_advertiser_ads: Option<bool>,
-    /// The advertiser-uploaded MP3 a TikTok carousel ad plays. TikTok-only; `null` elsewhere and for non-carousel ads.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub music: Option<AdMusic>,
-    /// The ad platform this ad runs on.
-    pub platform: AdPlatform,
-    /// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_id: Option<String>,
-    /// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_source: Option<AdPostSource>,
-    /// Preview image of the post named by `existing_post_id`. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_thumbnail_url: Option<String>,
     #[serde(default)]
-    pub primary_texts: Vec<String>,
+    pub primary_texts: Vec<AdText>,
     /// USD value of pixel-attributed purchases.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -214,8 +187,6 @@ pub struct Ad {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub schedules: f64,
-    #[serde(default)]
-    pub social_accounts: Vec<AdEntityReference>,
     /// The amount charged, in spend_currency.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -251,7 +222,7 @@ pub struct Ad {
     /// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters on top; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+    /// Query parameters appended to `url`, keyed by name. Whop's click-attribution parameters are reserved.
     #[serde(default)]
     pub url_parameters: HashMap<String, serde_json::Value>,
     /// USD value attributed to view-content events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
@@ -284,6 +255,7 @@ pub struct AdBuilder {
     completed_registrations: Option<f64>,
     contact_value: Option<f64>,
     contacts: Option<f64>,
+    content_review: Option<AdContentReview>,
     cost_per_added_to_cart: Option<f64>,
     cost_per_click: Option<f64>,
     cost_per_completed_registration: Option<f64>,
@@ -302,26 +274,16 @@ pub struct AdBuilder {
     custom_event_counts: Option<HashMap<String, serde_json::Value>>,
     custom_event_values: Option<HashMap<String, serde_json::Value>>,
     delivery_status: Option<AdDeliveryStatus>,
-    descriptions: Option<Vec<String>>,
-    existing_post_id: Option<String>,
+    descriptions: Option<Vec<AdText>>,
     frequency: Option<f64>,
-    headlines: Option<Vec<String>>,
+    headlines: Option<Vec<AdText>>,
     id: Option<String>,
     impressions: Option<f64>,
     issues: Option<Vec<AdPlatformIssue>>,
-    lead_form: Option<AdLeadForm>,
-    lead_form_id: Option<String>,
     lead_value: Option<f64>,
     leads: Option<f64>,
     link_clicks: Option<f64>,
-    messaging_config: Option<AdMessagingConfig>,
-    multi_advertiser_ads: Option<bool>,
-    music: Option<AdMusic>,
-    platform: Option<AdPlatform>,
-    post_id: Option<String>,
-    post_source: Option<AdPostSource>,
-    post_thumbnail_url: Option<String>,
-    primary_texts: Option<Vec<String>>,
+    primary_texts: Option<Vec<AdText>>,
     purchase_value: Option<f64>,
     purchases: Option<f64>,
     reach: Option<f64>,
@@ -331,7 +293,6 @@ pub struct AdBuilder {
     return_on_ad_spend: Option<f64>,
     schedule_value: Option<f64>,
     schedules: Option<f64>,
-    social_accounts: Option<Vec<AdEntityReference>>,
     spend: Option<f64>,
     spend_currency: Option<String>,
     status: Option<AdStatus>,
@@ -400,6 +361,11 @@ impl AdBuilder {
 
     pub fn contacts(mut self, value: f64) -> Self {
         self.contacts = Some(value);
+        self
+    }
+
+    pub fn content_review(mut self, value: AdContentReview) -> Self {
+        self.content_review = Some(value);
         self
     }
 
@@ -493,13 +459,8 @@ impl AdBuilder {
         self
     }
 
-    pub fn descriptions(mut self, value: Vec<String>) -> Self {
+    pub fn descriptions(mut self, value: Vec<AdText>) -> Self {
         self.descriptions = Some(value);
-        self
-    }
-
-    pub fn existing_post_id(mut self, value: impl Into<String>) -> Self {
-        self.existing_post_id = Some(value.into());
         self
     }
 
@@ -508,7 +469,7 @@ impl AdBuilder {
         self
     }
 
-    pub fn headlines(mut self, value: Vec<String>) -> Self {
+    pub fn headlines(mut self, value: Vec<AdText>) -> Self {
         self.headlines = Some(value);
         self
     }
@@ -528,16 +489,6 @@ impl AdBuilder {
         self
     }
 
-    pub fn lead_form(mut self, value: AdLeadForm) -> Self {
-        self.lead_form = Some(value);
-        self
-    }
-
-    pub fn lead_form_id(mut self, value: impl Into<String>) -> Self {
-        self.lead_form_id = Some(value.into());
-        self
-    }
-
     pub fn lead_value(mut self, value: f64) -> Self {
         self.lead_value = Some(value);
         self
@@ -553,42 +504,7 @@ impl AdBuilder {
         self
     }
 
-    pub fn messaging_config(mut self, value: AdMessagingConfig) -> Self {
-        self.messaging_config = Some(value);
-        self
-    }
-
-    pub fn multi_advertiser_ads(mut self, value: bool) -> Self {
-        self.multi_advertiser_ads = Some(value);
-        self
-    }
-
-    pub fn music(mut self, value: AdMusic) -> Self {
-        self.music = Some(value);
-        self
-    }
-
-    pub fn platform(mut self, value: AdPlatform) -> Self {
-        self.platform = Some(value);
-        self
-    }
-
-    pub fn post_id(mut self, value: impl Into<String>) -> Self {
-        self.post_id = Some(value.into());
-        self
-    }
-
-    pub fn post_source(mut self, value: AdPostSource) -> Self {
-        self.post_source = Some(value);
-        self
-    }
-
-    pub fn post_thumbnail_url(mut self, value: impl Into<String>) -> Self {
-        self.post_thumbnail_url = Some(value.into());
-        self
-    }
-
-    pub fn primary_texts(mut self, value: Vec<String>) -> Self {
+    pub fn primary_texts(mut self, value: Vec<AdText>) -> Self {
         self.primary_texts = Some(value);
         self
     }
@@ -635,11 +551,6 @@ impl AdBuilder {
 
     pub fn schedules(mut self, value: f64) -> Self {
         self.schedules = Some(value);
-        self
-    }
-
-    pub fn social_accounts(mut self, value: Vec<AdEntityReference>) -> Self {
-        self.social_accounts = Some(value);
         self
     }
 
@@ -720,6 +631,7 @@ impl AdBuilder {
     /// - [`completed_registrations`](AdBuilder::completed_registrations)
     /// - [`contact_value`](AdBuilder::contact_value)
     /// - [`contacts`](AdBuilder::contacts)
+    /// - [`content_review`](AdBuilder::content_review)
     /// - [`cost_per_click`](AdBuilder::cost_per_click)
     /// - [`cost_per_mille`](AdBuilder::cost_per_mille)
     /// - [`created_at`](AdBuilder::created_at)
@@ -736,7 +648,6 @@ impl AdBuilder {
     /// - [`lead_value`](AdBuilder::lead_value)
     /// - [`leads`](AdBuilder::leads)
     /// - [`link_clicks`](AdBuilder::link_clicks)
-    /// - [`platform`](AdBuilder::platform)
     /// - [`primary_texts`](AdBuilder::primary_texts)
     /// - [`purchase_value`](AdBuilder::purchase_value)
     /// - [`purchases`](AdBuilder::purchases)
@@ -744,7 +655,6 @@ impl AdBuilder {
     /// - [`return_on_ad_spend`](AdBuilder::return_on_ad_spend)
     /// - [`schedule_value`](AdBuilder::schedule_value)
     /// - [`schedules`](AdBuilder::schedules)
-    /// - [`social_accounts`](AdBuilder::social_accounts)
     /// - [`spend`](AdBuilder::spend)
     /// - [`status`](AdBuilder::status)
     /// - [`submitted_application_value`](AdBuilder::submitted_application_value)
@@ -787,6 +697,9 @@ impl AdBuilder {
             contacts: self
                 .contacts
                 .ok_or_else(|| BuildError::missing_field("contacts"))?,
+            content_review: self
+                .content_review
+                .ok_or_else(|| BuildError::missing_field("content_review"))?,
             cost_per_added_to_cart: self.cost_per_added_to_cart,
             cost_per_click: self
                 .cost_per_click
@@ -824,7 +737,6 @@ impl AdBuilder {
             descriptions: self
                 .descriptions
                 .ok_or_else(|| BuildError::missing_field("descriptions"))?,
-            existing_post_id: self.existing_post_id,
             frequency: self.frequency,
             headlines: self
                 .headlines
@@ -836,8 +748,6 @@ impl AdBuilder {
             issues: self
                 .issues
                 .ok_or_else(|| BuildError::missing_field("issues"))?,
-            lead_form: self.lead_form,
-            lead_form_id: self.lead_form_id,
             lead_value: self
                 .lead_value
                 .ok_or_else(|| BuildError::missing_field("lead_value"))?,
@@ -847,15 +757,6 @@ impl AdBuilder {
             link_clicks: self
                 .link_clicks
                 .ok_or_else(|| BuildError::missing_field("link_clicks"))?,
-            messaging_config: self.messaging_config,
-            multi_advertiser_ads: self.multi_advertiser_ads,
-            music: self.music,
-            platform: self
-                .platform
-                .ok_or_else(|| BuildError::missing_field("platform"))?,
-            post_id: self.post_id,
-            post_source: self.post_source,
-            post_thumbnail_url: self.post_thumbnail_url,
             primary_texts: self
                 .primary_texts
                 .ok_or_else(|| BuildError::missing_field("primary_texts"))?,
@@ -880,9 +781,6 @@ impl AdBuilder {
             schedules: self
                 .schedules
                 .ok_or_else(|| BuildError::missing_field("schedules"))?,
-            social_accounts: self
-                .social_accounts
-                .ok_or_else(|| BuildError::missing_field("social_accounts"))?,
             spend: self
                 .spend
                 .ok_or_else(|| BuildError::missing_field("spend"))?,

@@ -19,6 +19,9 @@ pub struct LedgerActivityResourceAuthorizedAt {
     /// Card transaction ID.
     #[serde(default)]
     pub id: String,
+    /// Whop Levels points this transaction earned for the business, as a decimal string. Negative for a refund that takes them back. Null when it earns none: a transaction that hasn't settled, was declined, or was made on a personal card.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub levels_points: Option<String>,
     /// Amount the merchant charged in their local currency, as a decimal string. Pair with local_currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub local_amount: Option<String>,
@@ -43,7 +46,7 @@ pub struct LedgerActivityResourceAuthorizedAt {
     /// Current card transaction status.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
-    /// The processor-settled USD amount as a decimal string. The ledger's USDT leg is posted 1:1 from this value.
+    /// The processor-settled USD amount as a decimal string.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub usd_amount: Option<String>,
 }
@@ -62,6 +65,7 @@ pub struct LedgerActivityResourceAuthorizedAtBuilder {
     cashback_usd: Option<String>,
     declined_reason: Option<String>,
     id: Option<String>,
+    levels_points: Option<String>,
     local_amount: Option<String>,
     local_currency: Option<String>,
     merchant_category: Option<String>,
@@ -96,6 +100,11 @@ impl LedgerActivityResourceAuthorizedAtBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn levels_points(mut self, value: impl Into<String>) -> Self {
+        self.levels_points = Some(value.into());
         self
     }
 
@@ -155,6 +164,7 @@ impl LedgerActivityResourceAuthorizedAtBuilder {
             cashback_usd: self.cashback_usd,
             declined_reason: self.declined_reason,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            levels_points: self.levels_points,
             local_amount: self.local_amount,
             local_currency: self.local_currency,
             merchant_category: self.merchant_category,

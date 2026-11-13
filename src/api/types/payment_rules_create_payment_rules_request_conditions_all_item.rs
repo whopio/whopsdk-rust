@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CreatePaymentRulesRequestConditionsAllItem {
     /// The payment attribute this condition reads.
     pub field: CreatePaymentRulesRequestConditionsAllItemField,

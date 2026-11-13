@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct PixelValidation {
+    /// Whether an affiliate tracking SDK was found on the page at `url`. Supported platforms: Everflow.
+    #[serde(default)]
+    pub affiliate_tracking_detected: bool,
     /// False when the event lookup failed, meaning `host_events` and `last_seen_days` are incomplete.
     #[serde(default)]
     pub firing_data_ok: bool,
@@ -40,6 +43,7 @@ impl PixelValidation {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct PixelValidationBuilder {
+    affiliate_tracking_detected: Option<bool>,
     firing_data_ok: Option<bool>,
     host_events: Option<Vec<String>>,
     installed: Option<bool>,
@@ -52,6 +56,11 @@ pub struct PixelValidationBuilder {
 }
 
 impl PixelValidationBuilder {
+    pub fn affiliate_tracking_detected(mut self, value: bool) -> Self {
+        self.affiliate_tracking_detected = Some(value);
+        self
+    }
+
     pub fn firing_data_ok(mut self, value: bool) -> Self {
         self.firing_data_ok = Some(value);
         self
@@ -99,6 +108,7 @@ impl PixelValidationBuilder {
 
     /// Consumes the builder and constructs a [`PixelValidation`].
     /// This method will fail if any of the following fields are not set:
+    /// - [`affiliate_tracking_detected`](PixelValidationBuilder::affiliate_tracking_detected)
     /// - [`firing_data_ok`](PixelValidationBuilder::firing_data_ok)
     /// - [`host_events`](PixelValidationBuilder::host_events)
     /// - [`installed`](PixelValidationBuilder::installed)
@@ -107,6 +117,9 @@ impl PixelValidationBuilder {
     /// - [`page_events`](PixelValidationBuilder::page_events)
     pub fn build(self) -> Result<PixelValidation, BuildError> {
         Ok(PixelValidation {
+            affiliate_tracking_detected: self
+                .affiliate_tracking_detected
+                .ok_or_else(|| BuildError::missing_field("affiliate_tracking_detected"))?,
             firing_data_ok: self
                 .firing_data_ok
                 .ok_or_else(|| BuildError::missing_field("firing_data_ok"))?,

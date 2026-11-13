@@ -13,6 +13,13 @@ pub enum PaymentNextAction {
         render: Vec<PaymentNextActionAwaitConfirmationRenderItem>,
     },
 
+    #[serde(rename = "collect_card_present")]
+    #[non_exhaustive]
+    CollectCardPresent {
+        #[serde(default)]
+        data: PaymentNextActionCollectCardPresentData,
+    },
+
     #[serde(rename = "display_instructions")]
     #[non_exhaustive]
     DisplayInstructions {
@@ -43,6 +50,10 @@ impl PaymentNextAction {
         render: Vec<PaymentNextActionAwaitConfirmationRenderItem>,
     ) -> Self {
         Self::AwaitConfirmation { data, render }
+    }
+
+    pub fn collect_card_present(data: PaymentNextActionCollectCardPresentData) -> Self {
+        Self::CollectCardPresent { data }
     }
 
     pub fn display_instructions(

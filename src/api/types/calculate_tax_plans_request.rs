@@ -2,13 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CalculateTaxPlansRequest {
-    /// Buyer billing address used for tax calculation. Provide either `address.country` or `ip_address`; include state and postal code when available for more accurate results.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub address: Option<CalculateTaxPlansRequestAddress>,
-    /// Buyer IP address used to infer location when no billing address is provided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ip_address: Option<String>,
-    /// Optional buyer tax ID for B2B exemptions. At most one entry is supported.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_ids: Option<Vec<CalculateTaxPlansRequestTaxIdsItem>>,
 }

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Membership source: an uploaded CSV, Whop People filters, or social engagement.
+/// Membership source: an uploaded CSV, Whop People filters, or social engagement. Engagement audiences can no longer be created.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AudienceSourceType {

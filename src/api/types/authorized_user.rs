@@ -6,7 +6,7 @@ pub struct AuthorizedUser {
     /// The company this authorized user has access to.
     #[serde(default)]
     pub company: AuthorizedUserCompany,
-    /// The unique identifier for the authorized user.
+    /// The team member's ID. It may start with `ausr_` or `mber_`; treat it as opaque.
     #[serde(default)]
     pub id: String,
     /// The permission role assigned to this authorized user within the company.

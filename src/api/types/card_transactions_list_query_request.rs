@@ -3,9 +3,12 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CardTransactionsListQueryRequest {
-    /// The account whose card transactions to list, prefixed `biz_`. Defaults to the credential's account.
+    /// The account whose card transactions to list, prefixed `biz_`. Provide this or `user_id`. Defaults to the credential's account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
+    /// The user whose personal card transactions to list, prefixed `user_`. Provide this or `account_id`. Only that user can read them.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
     /// Return only these card transactions, each prefixed `citx_`. Repeat the parameter, or pass one comma-separated value.
     #[serde(default)]
     pub transaction_ids: Vec<Option<String>>,
@@ -54,6 +57,7 @@ impl CardTransactionsListQueryRequest {
 #[non_exhaustive]
 pub struct CardTransactionsListQueryRequestBuilder {
     account_id: Option<String>,
+    user_id: Option<String>,
     transaction_ids: Option<Vec<Option<String>>>,
     card_id: Option<Vec<Option<String>>>,
     cardholder_id: Option<Vec<Option<String>>>,
@@ -71,6 +75,11 @@ pub struct CardTransactionsListQueryRequestBuilder {
 impl CardTransactionsListQueryRequestBuilder {
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
+        self
+    }
+
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
         self
     }
 
@@ -142,6 +151,7 @@ impl CardTransactionsListQueryRequestBuilder {
     pub fn build(self) -> Result<CardTransactionsListQueryRequest, BuildError> {
         Ok(CardTransactionsListQueryRequest {
             account_id: self.account_id,
+            user_id: self.user_id,
             transaction_ids: self
                 .transaction_ids
                 .ok_or_else(|| BuildError::missing_field("transaction_ids"))?,

@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ExperimentsListQueryRequest {
-    /// Owning account ID. Omit or pass internal for Whop internal experiments; internal access is required.
+    /// Owning account ID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
     /// Filter by related resource; requires account_id.

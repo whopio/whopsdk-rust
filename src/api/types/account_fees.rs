@@ -5,6 +5,10 @@ pub struct AccountFees {
     /// The account these fees are charged to, prefixed `biz_`.
     #[serde(default)]
     pub account_id: String,
+    /// A flat fee in US dollars (USD), charged when the account holder disputes an ACH payment. Replaces the `dispute` fee for that payment.
+    pub ach_dispute: AccountFee,
+    /// A flat fee in US dollars (USD), charged when the buyer's bank returns an ACH payment unpaid.
+    pub ach_return: AccountFee,
     /// Charged on bank deposits into the account's balance.
     pub bank_deposit: AccountFee,
     /// Charged on recurring billing.
@@ -13,9 +17,12 @@ pub struct AccountFees {
     pub buyer: AccountFee,
     /// Card payments. `percentage` and `fixed` are the rate in the headline `region`; every other acquirer region is under `regions`.
     pub card_processing: AccountFee,
-    /// The default markups this account charges the accounts connected to it. `null` unless the account is a platform.
+    /// The default markups this account charges subaccounts, configurable before any accounts connect. `null` if this account has a parent.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub child_markups: Option<AccountFeeMarkups>,
+    /// Which payout fees this account pays for its subaccounts.
+    #[serde(default)]
+    pub covered_payout_fees: AccountCoveredPayoutFees,
     /// Added to a payment whose card was issued outside the region where the payment was processed.
     pub cross_border: AccountFee,
     /// Charged when a payment is disputed.
@@ -49,17 +56,21 @@ pub struct AccountFees {
     /// Processing fees for every non-card payment method the platform prices, keyed by payment method type such as `us_bank_account` or `klarna`.
     #[serde(default)]
     pub payment_methods: HashMap<String, AccountFee>,
-    /// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`.
+    /// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`. Payout fees the parent account covers show as zero when a subaccount's fees are read without access to its parent account.
     #[serde(default)]
     pub payouts: HashMap<String, AccountFee>,
-    /// Charged on a Whop Ads auto top-up that is funded from pending balance.
+    /// Charged when pending, not-yet-settled balance is advanced to fund the account's cards balance.
     pub pending_auto_topup: AccountFee,
     /// Whop's share of every payment, on top of card processing.
     pub platform_processing: AccountFee,
     /// Charged on payouts from a shared pool balance.
     pub pool_payout: AccountFee,
-    /// Charged on revenue shared with the account.
+    /// Charged on payments where the account shares revenue with revshare affiliates.
     pub revshare: AccountFee,
+    /// A flat fee in euros (EUR), charged when the account holder disputes a SEPA Direct Debit payment. Replaces the `dispute` fee for that payment.
+    pub sepa_dispute: AccountFee,
+    /// A flat fee in euros (EUR), charged when the buyer's bank returns a SEPA Direct Debit payment unpaid.
+    pub sepa_return: AccountFee,
     /// Charged when tax is calculated on a payment.
     pub tax_calculation: AccountFee,
     /// Charged when Whop collects and remits tax on the account's behalf.
@@ -80,11 +91,14 @@ impl AccountFees {
 #[non_exhaustive]
 pub struct AccountFeesBuilder {
     account_id: Option<String>,
+    ach_dispute: Option<AccountFee>,
+    ach_return: Option<AccountFee>,
     bank_deposit: Option<AccountFee>,
     billing: Option<AccountFee>,
     buyer: Option<AccountFee>,
     card_processing: Option<AccountFee>,
     child_markups: Option<AccountFeeMarkups>,
+    covered_payout_fees: Option<AccountCoveredPayoutFees>,
     cross_border: Option<AccountFee>,
     dispute: Option<AccountFee>,
     dispute_alert: Option<AccountFee>,
@@ -105,6 +119,8 @@ pub struct AccountFeesBuilder {
     platform_processing: Option<AccountFee>,
     pool_payout: Option<AccountFee>,
     revshare: Option<AccountFee>,
+    sepa_dispute: Option<AccountFee>,
+    sepa_return: Option<AccountFee>,
     tax_calculation: Option<AccountFee>,
     tax_service: Option<AccountFee>,
     three_ds: Option<AccountFee>,
@@ -114,6 +130,16 @@ pub struct AccountFeesBuilder {
 impl AccountFeesBuilder {
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
+        self
+    }
+
+    pub fn ach_dispute(mut self, value: AccountFee) -> Self {
+        self.ach_dispute = Some(value);
+        self
+    }
+
+    pub fn ach_return(mut self, value: AccountFee) -> Self {
+        self.ach_return = Some(value);
         self
     }
 
@@ -139,6 +165,11 @@ impl AccountFeesBuilder {
 
     pub fn child_markups(mut self, value: AccountFeeMarkups) -> Self {
         self.child_markups = Some(value);
+        self
+    }
+
+    pub fn covered_payout_fees(mut self, value: AccountCoveredPayoutFees) -> Self {
+        self.covered_payout_fees = Some(value);
         self
     }
 
@@ -242,6 +273,16 @@ impl AccountFeesBuilder {
         self
     }
 
+    pub fn sepa_dispute(mut self, value: AccountFee) -> Self {
+        self.sepa_dispute = Some(value);
+        self
+    }
+
+    pub fn sepa_return(mut self, value: AccountFee) -> Self {
+        self.sepa_return = Some(value);
+        self
+    }
+
     pub fn tax_calculation(mut self, value: AccountFee) -> Self {
         self.tax_calculation = Some(value);
         self
@@ -265,10 +306,13 @@ impl AccountFeesBuilder {
     /// Consumes the builder and constructs a [`AccountFees`].
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](AccountFeesBuilder::account_id)
+    /// - [`ach_dispute`](AccountFeesBuilder::ach_dispute)
+    /// - [`ach_return`](AccountFeesBuilder::ach_return)
     /// - [`bank_deposit`](AccountFeesBuilder::bank_deposit)
     /// - [`billing`](AccountFeesBuilder::billing)
     /// - [`buyer`](AccountFeesBuilder::buyer)
     /// - [`card_processing`](AccountFeesBuilder::card_processing)
+    /// - [`covered_payout_fees`](AccountFeesBuilder::covered_payout_fees)
     /// - [`cross_border`](AccountFeesBuilder::cross_border)
     /// - [`dispute`](AccountFeesBuilder::dispute)
     /// - [`dispute_alert`](AccountFeesBuilder::dispute_alert)
@@ -287,6 +331,8 @@ impl AccountFeesBuilder {
     /// - [`platform_processing`](AccountFeesBuilder::platform_processing)
     /// - [`pool_payout`](AccountFeesBuilder::pool_payout)
     /// - [`revshare`](AccountFeesBuilder::revshare)
+    /// - [`sepa_dispute`](AccountFeesBuilder::sepa_dispute)
+    /// - [`sepa_return`](AccountFeesBuilder::sepa_return)
     /// - [`tax_calculation`](AccountFeesBuilder::tax_calculation)
     /// - [`tax_service`](AccountFeesBuilder::tax_service)
     /// - [`three_ds`](AccountFeesBuilder::three_ds)
@@ -296,6 +342,12 @@ impl AccountFeesBuilder {
             account_id: self
                 .account_id
                 .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            ach_dispute: self
+                .ach_dispute
+                .ok_or_else(|| BuildError::missing_field("ach_dispute"))?,
+            ach_return: self
+                .ach_return
+                .ok_or_else(|| BuildError::missing_field("ach_return"))?,
             bank_deposit: self
                 .bank_deposit
                 .ok_or_else(|| BuildError::missing_field("bank_deposit"))?,
@@ -309,6 +361,9 @@ impl AccountFeesBuilder {
                 .card_processing
                 .ok_or_else(|| BuildError::missing_field("card_processing"))?,
             child_markups: self.child_markups,
+            covered_payout_fees: self
+                .covered_payout_fees
+                .ok_or_else(|| BuildError::missing_field("covered_payout_fees"))?,
             cross_border: self
                 .cross_border
                 .ok_or_else(|| BuildError::missing_field("cross_border"))?,
@@ -365,6 +420,12 @@ impl AccountFeesBuilder {
             revshare: self
                 .revshare
                 .ok_or_else(|| BuildError::missing_field("revshare"))?,
+            sepa_dispute: self
+                .sepa_dispute
+                .ok_or_else(|| BuildError::missing_field("sepa_dispute"))?,
+            sepa_return: self
+                .sepa_return
+                .ok_or_else(|| BuildError::missing_field("sepa_return"))?,
             tax_calculation: self
                 .tax_calculation
                 .ok_or_else(|| BuildError::missing_field("tax_calculation"))?,

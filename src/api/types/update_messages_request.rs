@@ -2,15 +2,18 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdateMessagesRequest {
-    /// A replacement list of file attachments for this message, such as images or videos.
+    /// Replacement attachment list; pass an empty list to remove attachments.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attachments: Option<Vec<UpdateMessagesRequestAttachmentsItem>>,
-    /// The updated body of the message in Markdown format. For example, 'Hello **world**'.
+    /// Replacement Markdown content.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<String>,
-    /// Whether this message should be pinned to the top of the channel.
+    /// Up to 10 GIFs to attach. URLs must use HTTPS on static.klipy.com, static1.klipy.com, or static2.klipy.com. Omit to preserve on edit; an empty list clears them.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub is_pinned: Option<bool>,
+    pub gifs: Option<Vec<UpdateMessagesRequestGifsItem>>,
+    /// Replacement preview URLs; pass an empty list to remove previews.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub link_previews: Option<Vec<UpdateMessagesRequestLinkPreviewsItem>>,
 }
 
 impl UpdateMessagesRequest {
@@ -24,7 +27,8 @@ impl UpdateMessagesRequest {
 pub struct UpdateMessagesRequestBuilder {
     attachments: Option<Vec<UpdateMessagesRequestAttachmentsItem>>,
     content: Option<String>,
-    is_pinned: Option<bool>,
+    gifs: Option<Vec<UpdateMessagesRequestGifsItem>>,
+    link_previews: Option<Vec<UpdateMessagesRequestLinkPreviewsItem>>,
 }
 
 impl UpdateMessagesRequestBuilder {
@@ -38,8 +42,13 @@ impl UpdateMessagesRequestBuilder {
         self
     }
 
-    pub fn is_pinned(mut self, value: bool) -> Self {
-        self.is_pinned = Some(value);
+    pub fn gifs(mut self, value: Vec<UpdateMessagesRequestGifsItem>) -> Self {
+        self.gifs = Some(value);
+        self
+    }
+
+    pub fn link_previews(mut self, value: Vec<UpdateMessagesRequestLinkPreviewsItem>) -> Self {
+        self.link_previews = Some(value);
         self
     }
 
@@ -48,7 +57,8 @@ impl UpdateMessagesRequestBuilder {
         Ok(UpdateMessagesRequest {
             attachments: self.attachments,
             content: self.content,
-            is_pinned: self.is_pinned,
+            gifs: self.gifs,
+            link_previews: self.link_previews,
         })
     }
 }

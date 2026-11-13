@@ -2,7 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct ConfirmationToken {
-    /// Enough of the billing details to raise a customer record and recognise the method — email, name, country and postal code. The street address is collected for the charge but never returned; this endpoint is a display-safe preview.
+    /// The collected billing address, including the name on the address. Null when not collected or without bearer authentication with payment:basic:read on the token’s account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub billing_address: Option<PaymentAddress>,
+    /// Billing preview supplied at collection: email, name, country and postal code.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub billing_details: Option<PaymentBillingDetailsPreview>,
     /// When the token was created, as an ISO 8601 timestamp.
@@ -34,6 +37,7 @@ impl ConfirmationToken {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ConfirmationTokenBuilder {
+    billing_address: Option<PaymentAddress>,
     billing_details: Option<PaymentBillingDetailsPreview>,
     created_at: Option<String>,
     expires_at: Option<String>,
@@ -45,6 +49,11 @@ pub struct ConfirmationTokenBuilder {
 }
 
 impl ConfirmationTokenBuilder {
+    pub fn billing_address(mut self, value: PaymentAddress) -> Self {
+        self.billing_address = Some(value);
+        self
+    }
+
     pub fn billing_details(mut self, value: PaymentBillingDetailsPreview) -> Self {
         self.billing_details = Some(value);
         self
@@ -95,6 +104,7 @@ impl ConfirmationTokenBuilder {
     /// - [`status`](ConfirmationTokenBuilder::status)
     pub fn build(self) -> Result<ConfirmationToken, BuildError> {
         Ok(ConfirmationToken {
+            billing_address: self.billing_address,
             billing_details: self.billing_details,
             created_at: self
                 .created_at

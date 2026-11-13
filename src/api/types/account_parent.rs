@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct AccountParent {
-    /// Markup rates this parent charges the connected account being read, keyed by fee type (for example `crypto_deposit_markup`), each with `percentage_fee` and `fixed_fee_usd`. Resolved with the connected account's own overrides winning over the platform default.
+    /// Markup rates this parent charges the subaccount being read, keyed by fee type (for example `crypto_deposit_markup`), each with `percentage_fee` and `fixed_fee_usd`. Resolved with the subaccount's own overrides winning over the platform default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fees: Option<HashMap<String, AccountParentFeesValue>>,
     /// Account ID, prefixed `biz_`.

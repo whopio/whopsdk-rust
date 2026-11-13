@@ -38,6 +38,7 @@ pub enum SpecificFeeOrigins {
     ApplicationFee,
     HighRiskMerchantFee,
     EconomicIntelligencePercentageFee,
+    PaymentReturnFee,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -102,6 +103,7 @@ impl Serialize for SpecificFeeOrigins {
             Self::EconomicIntelligencePercentageFee => {
                 serializer.serialize_str("economic_intelligence_percentage_fee")
             }
+            Self::PaymentReturnFee => serializer.serialize_str("payment_return_fee"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -145,6 +147,7 @@ impl<'de> Deserialize<'de> for SpecificFeeOrigins {
             "application_fee" => Ok(Self::ApplicationFee),
             "high_risk_merchant_fee" => Ok(Self::HighRiskMerchantFee),
             "economic_intelligence_percentage_fee" => Ok(Self::EconomicIntelligencePercentageFee),
+            "payment_return_fee" => Ok(Self::PaymentReturnFee),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -191,6 +194,7 @@ impl fmt::Display for SpecificFeeOrigins {
             Self::EconomicIntelligencePercentageFee => {
                 write!(f, "economic_intelligence_percentage_fee")
             }
+            Self::PaymentReturnFee => write!(f, "payment_return_fee"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

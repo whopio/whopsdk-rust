@@ -3,25 +3,25 @@ pub use crate::prelude::*;
 /// Identity document files, each value the file's raw bytes base64-encoded (JPEG, PNG, or PDF, up to 5MB per file before encoding). Sending this object verifies the person from the files in this request instead of a hosted session — individual verifications only, and the request must also carry `document_type`, `first_name`, `last_name`, `date_of_birth`, `country`, `phone`, `tax_identification_number`, and an `address` with `line1`, `city`, `state`, and `postal_code`. Send every slot for your `document_type` — a missing or rejected file fails the whole request and nothing is submitted; review starts automatically once every document is accepted. See [Identity documents](/developer/verification/identity-documents) for a full walkthrough.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateVerificationsRequestBodyIndividualDocuments {
-    /// Back of the driver's license, base64-encoded. Required when `document_type` is `DRIVERS`.
+    /// Back of the driver's license, base64-encoded. Required when `document_type` is `drivers`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub drivers_back: Option<String>,
-    /// Front of the driver's license, base64-encoded. Required when `document_type` is `DRIVERS`.
+    /// Front of the driver's license, base64-encoded. Required when `document_type` is `drivers`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub drivers_front: Option<String>,
-    /// Back of the ID card, base64-encoded. Required when `document_type` is `ID_CARD`.
+    /// Back of the ID card, base64-encoded. Required when `document_type` is `id_card`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id_card_back: Option<String>,
-    /// Front of the ID card, base64-encoded. Required when `document_type` is `ID_CARD`.
+    /// Front of the ID card, base64-encoded. Required when `document_type` is `id_card`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id_card_front: Option<String>,
-    /// Photo page of the passport, base64-encoded. Required when `document_type` is `PASSPORT`.
+    /// Photo page of the passport, base64-encoded. Required when `document_type` is `passport`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub passport_front: Option<String>,
-    /// Back of the residence permit, base64-encoded. Required when `document_type` is `RESIDENCE_PERMIT`.
+    /// Back of the residence permit, base64-encoded. Required when `document_type` is `residence_permit`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub residence_permit_back: Option<String>,
-    /// Front of the residence permit, base64-encoded. Required when `document_type` is `RESIDENCE_PERMIT`.
+    /// Front of the residence permit, base64-encoded. Required when `document_type` is `residence_permit`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub residence_permit_front: Option<String>,
     /// Photo of the person's face, base64-encoded. Always required, with every document type. Must be JPEG or PNG.

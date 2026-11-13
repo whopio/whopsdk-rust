@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The uploaded build file: `{ id }` for an existing file or `{ direct_upload_id }` for a completed direct upload.
+/// The uploaded build file: pass `id` for an existing file or `direct_upload_id` for a completed direct upload. iOS and Android builds take a .zip bundle; web builds take a JavaScript file or a .zip archive of the hosted site.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateAppBuildsRequestAttachment {
     /// The signed id of a completed direct upload.

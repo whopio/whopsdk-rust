@@ -1,24 +1,17 @@
 pub use crate::prelude::*;
 
-/// Buyer billing address used for tax calculation. Provide either `address.country` or `ip_address`; include state and postal code when available for more accurate results.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CalculateTaxPlansRequestAddress {
-    /// City name.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub city: Option<String>,
-    /// ISO 3166-1 alpha-2 country code, such as `US`, `DE`, or `GB`.
     #[serde(default)]
     pub country: String,
-    /// First line of the street address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub line1: Option<String>,
-    /// Second line of the street address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub line2: Option<String>,
-    /// Postal or ZIP code.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub postal_code: Option<String>,
-    /// State, province, or region code, such as `CA`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<String>,
 }

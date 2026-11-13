@@ -21,6 +21,8 @@ pub struct AccountPaymentControls {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
     pub high_risk_processing_fee_percentage: f64,
+    #[serde(default)]
+    pub payment_method_warnings: Vec<HashMap<String, serde_json::Value>>,
     /// Percentage fee charged when pending, not-yet-settled balance is advanced to fund the account's cards balance, where `2` means 2%. `0` when the account is exempt.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -36,7 +38,7 @@ pub struct AccountPaymentControls {
     pub resolution_center_auto_refund: AccountResolutionCenterAutoRefundControl,
     #[serde(default)]
     pub restricted_payment_methods: Vec<AccountPaymentControlsRestrictedPaymentMethodsItem>,
-    /// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete` and `pending_information_request` are things the merchant can act on. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
+    /// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete`, `pending_information_request`, and `update_payout_profile` are things the merchant can act on. `compliance_review` means a verification the merchant already submitted is being reviewed, so these funds stay pending until it clears. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub undated_pending_reason: Option<AccountPaymentControlsUndatedPendingReason>,
     /// How the account's balance automatically withdraws.
@@ -57,6 +59,7 @@ pub struct AccountPaymentControlsBuilder {
     enforce3ds: Option<bool>,
     financing_disabled: Option<bool>,
     high_risk_processing_fee_percentage: Option<f64>,
+    payment_method_warnings: Option<Vec<HashMap<String, serde_json::Value>>>,
     pending_auto_topup_fee_percentage: Option<f64>,
     pending_balance_delay_days: Option<i64>,
     reserve: Option<AccountReserveControl>,
@@ -92,6 +95,14 @@ impl AccountPaymentControlsBuilder {
 
     pub fn high_risk_processing_fee_percentage(mut self, value: f64) -> Self {
         self.high_risk_processing_fee_percentage = Some(value);
+        self
+    }
+
+    pub fn payment_method_warnings(
+        mut self,
+        value: Vec<HashMap<String, serde_json::Value>>,
+    ) -> Self {
+        self.payment_method_warnings = Some(value);
         self
     }
 
@@ -145,6 +156,7 @@ impl AccountPaymentControlsBuilder {
     /// - [`enforce3ds`](AccountPaymentControlsBuilder::enforce3ds)
     /// - [`financing_disabled`](AccountPaymentControlsBuilder::financing_disabled)
     /// - [`high_risk_processing_fee_percentage`](AccountPaymentControlsBuilder::high_risk_processing_fee_percentage)
+    /// - [`payment_method_warnings`](AccountPaymentControlsBuilder::payment_method_warnings)
     /// - [`pending_auto_topup_fee_percentage`](AccountPaymentControlsBuilder::pending_auto_topup_fee_percentage)
     /// - [`pending_balance_delay_days`](AccountPaymentControlsBuilder::pending_balance_delay_days)
     /// - [`reserve`](AccountPaymentControlsBuilder::reserve)
@@ -166,6 +178,9 @@ impl AccountPaymentControlsBuilder {
             high_risk_processing_fee_percentage: self
                 .high_risk_processing_fee_percentage
                 .ok_or_else(|| BuildError::missing_field("high_risk_processing_fee_percentage"))?,
+            payment_method_warnings: self
+                .payment_method_warnings
+                .ok_or_else(|| BuildError::missing_field("payment_method_warnings"))?,
             pending_auto_topup_fee_percentage: self
                 .pending_auto_topup_fee_percentage
                 .ok_or_else(|| BuildError::missing_field("pending_auto_topup_fee_percentage"))?,

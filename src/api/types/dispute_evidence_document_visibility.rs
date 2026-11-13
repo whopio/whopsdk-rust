@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+/// `public` files are served from an unsigned CDN URL. `private` files are served from a signed URL that expires.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum DisputeEvidenceDocumentVisibility {

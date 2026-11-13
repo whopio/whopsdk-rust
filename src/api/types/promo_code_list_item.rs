@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct PromoCodeListItem {
+    /// Affiliate credited with referrals that use the promo code, or `null` when no affiliate is attached.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub affiliate: Option<PromoCodeAffiliate>,
     /// Discount amount. Percentage discounts are represented as a decimal fraction.
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers")]
@@ -70,6 +73,7 @@ impl PromoCodeListItem {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct PromoCodeListItemBuilder {
+    affiliate: Option<PromoCodeAffiliate>,
     amount_off: Option<f64>,
     churned_users_only: Option<bool>,
     code: Option<String>,
@@ -93,6 +97,11 @@ pub struct PromoCodeListItemBuilder {
 }
 
 impl PromoCodeListItemBuilder {
+    pub fn affiliate(mut self, value: PromoCodeAffiliate) -> Self {
+        self.affiliate = Some(value);
+        self
+    }
+
     pub fn amount_off(mut self, value: f64) -> Self {
         self.amount_off = Some(value);
         self
@@ -213,6 +222,7 @@ impl PromoCodeListItemBuilder {
     /// - [`uses`](PromoCodeListItemBuilder::uses)
     pub fn build(self) -> Result<PromoCodeListItem, BuildError> {
         Ok(PromoCodeListItem {
+            affiliate: self.affiliate,
             amount_off: self
                 .amount_off
                 .ok_or_else(|| BuildError::missing_field("amount_off"))?,

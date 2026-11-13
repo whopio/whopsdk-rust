@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct ApiKeysClient {
@@ -13,11 +14,11 @@ impl ApiKeysClient {
         })
     }
 
-    /// Lists the API keys of an account or app, newest first. Responses never include the full secret — only its obfuscated form.
+    /// Lists the API keys of an account, app, or your own user, newest first. Responses never include the full secret — only its obfuscated form.
     ///
     /// # Arguments
     ///
-    /// * `resource_id` - The account (`biz_`) or app (`app_`) tag to list API keys for.
+    /// * `resource_id` - The account (`biz_`), app (`app_`), or your own user (`user_`) tag to list API keys for.
     /// * `resource_type` - The type of resource that owns the API keys.
     /// * `created_before` - Only return API keys created before this ISO 8601 timestamp.
     /// * `created_after` - Only return API keys created after this ISO 8601 timestamp.
@@ -48,9 +49,9 @@ impl ApiKeysClient {
     ///     client
     ///         .api_keys
     ///         .list(
-    ///             &APIKeysListQueryRequest {
+    ///             &ApiKeysListQueryRequest {
     ///                 resource_id: "resource_id".to_string(),
-    ///                 resource_type: ListAPIKeysRequestResourceType::Account,
+    ///                 resource_type: ListApiKeysRequestResourceType::Account,
     ///                 created_before: None,
     ///                 created_after: None,
     ///                 first: None,
@@ -74,11 +75,16 @@ impl ApiKeysClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "api_keys",
                 None,
@@ -99,7 +105,79 @@ impl ApiKeysClient {
             .await
     }
 
-    /// Creates an API key for an account or app. The response is the only place the full `secret_key` is returned — store it immediately. Requires a user session; API keys cannot manage API keys.
+    pub async fn list_paginated(
+        &self,
+        request: &ApiKeysListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("resource_id", request.resource_id.clone())
+            .serialize("resource_type", Some(request.resource_type.clone()))
+            .serialize("created_before", request.created_before.clone())
+            .serialize("created_after", request.created_after.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .serialize("order", request.order.clone())
+            .serialize("direction", request.direction.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "api_keys",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Creates an API key for an account, an app, or your own user. A user API key acts as you and can only grant `ad_campaign:basic:read`, `ad_campaign:update`, `ad_pixel:manage`, `member:journey:read`. The response is the only place the full `secret_key` is returned — store it immediately. Requires a user session; API keys cannot manage API keys.
     ///
     /// # Arguments
     ///
@@ -124,13 +202,13 @@ impl ApiKeysClient {
     ///     client
     ///         .api_keys
     ///         .create(
-    ///             &CreateAPIKeysRequest {
+    ///             &CreateApiKeysRequest {
     ///                 name: "Shine Time Booking (production)".to_string(),
-    ///                 permissions: CreateAPIKeysRequestPermissions {
+    ///                 permissions: CreateApiKeysRequestPermissions {
     ///                     ..Default::default()
     ///                 },
     ///                 resource_id: "biz_xxxxxxxxxxxxxx".to_string(),
-    ///                 resource_type: CreateAPIKeysRequestResourceType::Account,
+    ///                 resource_type: CreateApiKeysRequestResourceType::Account,
     ///                 api_version_date: None,
     ///                 expires_at: None,
     ///                 ip_allowlist: None,
@@ -149,11 +227,16 @@ impl ApiKeysClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "api_keys",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -163,7 +246,7 @@ impl ApiKeysClient {
             .await
     }
 
-    /// Lists the catalog of permission actions that can be granted to users, apps, and API keys — the source for the dashboard's permission pickers. Small and returned in full on one page.
+    /// Lists the catalog of permission actions that can be granted to users, apps, and API keys. Use it to choose the `permissions` for an API key or to build a permission picker. Small and returned in full on one page.
     ///
     /// # Arguments
     ///
@@ -196,11 +279,22 @@ impl ApiKeysClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(Method::GET, "api_keys/permissions", None, None, options)
+            .execute_request_with_base_url(
+                base_url,
+                Method::GET,
+                "api_keys/permissions",
+                None,
+                None,
+                options,
+            )
             .await
     }
 
@@ -239,11 +333,16 @@ impl ApiKeysClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("api_keys/{}", id),
                 None,
@@ -288,11 +387,16 @@ impl ApiKeysClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::DELETE,
                 &format!("api_keys/{}", id),
                 None,
@@ -329,7 +433,7 @@ impl ApiKeysClient {
     ///         .api_keys
     ///         .update(
     ///             &"id".to_string(),
-    ///             &UpdateAPIKeysRequest {
+    ///             &UpdateApiKeysRequest {
     ///                 ..Default::default()
     ///             },
     ///             None,
@@ -347,11 +451,16 @@ impl ApiKeysClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 &format!("api_keys/{}", id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -396,11 +505,16 @@ impl ApiKeysClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("api_keys/{}/rotate", id),
                 None,

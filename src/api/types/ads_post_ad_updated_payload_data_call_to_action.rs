@@ -35,6 +35,9 @@ pub enum PostAdUpdatedPayloadDataCallToAction {
     EventRsvp,
     SeeDetails,
     ViewInstagramProfile,
+    DonateNow,
+    SeeMore,
+    VisitSite,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -74,6 +77,9 @@ impl Serialize for PostAdUpdatedPayloadDataCallToAction {
             Self::EventRsvp => serializer.serialize_str("event_rsvp"),
             Self::SeeDetails => serializer.serialize_str("see_details"),
             Self::ViewInstagramProfile => serializer.serialize_str("view_instagram_profile"),
+            Self::DonateNow => serializer.serialize_str("donate_now"),
+            Self::SeeMore => serializer.serialize_str("see_more"),
+            Self::VisitSite => serializer.serialize_str("visit_site"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -114,6 +120,9 @@ impl<'de> Deserialize<'de> for PostAdUpdatedPayloadDataCallToAction {
             "event_rsvp" => Ok(Self::EventRsvp),
             "see_details" => Ok(Self::SeeDetails),
             "view_instagram_profile" => Ok(Self::ViewInstagramProfile),
+            "donate_now" => Ok(Self::DonateNow),
+            "see_more" => Ok(Self::SeeMore),
+            "visit_site" => Ok(Self::VisitSite),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -153,6 +162,9 @@ impl fmt::Display for PostAdUpdatedPayloadDataCallToAction {
             Self::EventRsvp => write!(f, "event_rsvp"),
             Self::SeeDetails => write!(f, "see_details"),
             Self::ViewInstagramProfile => write!(f, "view_instagram_profile"),
+            Self::DonateNow => write!(f, "donate_now"),
+            Self::SeeMore => write!(f, "see_more"),
+            Self::VisitSite => write!(f, "visit_site"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

@@ -1,12 +1,11 @@
 pub use crate::prelude::*;
 
-/// Current state of audience creation. For engagement audiences, `ready` means the rules were created on Meta; membership may still be populating. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
+/// Current state of audience creation. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AudienceStatus {
     Pending,
     Processing,
-    Syncing,
     Ready,
     Partial,
     Failed,
@@ -20,7 +19,6 @@ impl Serialize for AudienceStatus {
         match self {
             Self::Pending => serializer.serialize_str("pending"),
             Self::Processing => serializer.serialize_str("processing"),
-            Self::Syncing => serializer.serialize_str("syncing"),
             Self::Ready => serializer.serialize_str("ready"),
             Self::Partial => serializer.serialize_str("partial"),
             Self::Failed => serializer.serialize_str("failed"),
@@ -35,7 +33,6 @@ impl<'de> Deserialize<'de> for AudienceStatus {
         match value.as_str() {
             "pending" => Ok(Self::Pending),
             "processing" => Ok(Self::Processing),
-            "syncing" => Ok(Self::Syncing),
             "ready" => Ok(Self::Ready),
             "partial" => Ok(Self::Partial),
             "failed" => Ok(Self::Failed),
@@ -49,7 +46,6 @@ impl fmt::Display for AudienceStatus {
         match self {
             Self::Pending => write!(f, "pending"),
             Self::Processing => write!(f, "processing"),
-            Self::Syncing => write!(f, "syncing"),
             Self::Ready => write!(f, "ready"),
             Self::Partial => write!(f, "partial"),
             Self::Failed => write!(f, "failed"),

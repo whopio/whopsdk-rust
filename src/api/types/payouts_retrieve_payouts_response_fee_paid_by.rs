@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Who bore the payout fee: the account itself, or its parent platform.
+/// Who bore the payout fee: the account itself, or its parent platform. Only returned to callers with payout:withdrawal:read on the owning ledger.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RetrievePayoutsResponseFeePaidBy {

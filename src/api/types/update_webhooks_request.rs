@@ -14,6 +14,9 @@ pub struct UpdateWebhooksRequest {
     /// The events to send the webhook for, in dot form (for example `payment.succeeded`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub events: Option<Vec<UpdateWebhooksRequestEventsItem>>,
+    /// A label for the webhook, shown in the dashboard. Up to 255 characters. Pass `null` or an empty string to remove it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
     /// The URL to send the webhook to.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
@@ -32,6 +35,7 @@ pub struct UpdateWebhooksRequestBuilder {
     child_resource_events: Option<bool>,
     enabled: Option<bool>,
     events: Option<Vec<UpdateWebhooksRequestEventsItem>>,
+    title: Option<String>,
     url: Option<String>,
 }
 
@@ -56,6 +60,11 @@ impl UpdateWebhooksRequestBuilder {
         self
     }
 
+    pub fn title(mut self, value: impl Into<String>) -> Self {
+        self.title = Some(value.into());
+        self
+    }
+
     pub fn url(mut self, value: impl Into<String>) -> Self {
         self.url = Some(value.into());
         self
@@ -68,6 +77,7 @@ impl UpdateWebhooksRequestBuilder {
             child_resource_events: self.child_resource_events,
             enabled: self.enabled,
             events: self.events,
+            title: self.title,
             url: self.url,
         })
     }

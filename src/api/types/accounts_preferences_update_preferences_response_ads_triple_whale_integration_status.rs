@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` explicitly, or connect a Shopify store, before spend can be reported.
+/// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` before spend can be reported.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus {

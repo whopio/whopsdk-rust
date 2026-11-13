@@ -7,7 +7,7 @@ pub struct AccountTaxIdentifier {
     pub id: String,
     /// Tax ID type.
     pub tax_id_type: AccountTaxIdentifierTaxIdType,
-    /// Tax ID value.
+    /// Tax ID value, for example `DE123456789`. See the [tax IDs guide](/developer/guides/tax-ids).
     #[serde(default)]
     pub tax_id_value: String,
 }

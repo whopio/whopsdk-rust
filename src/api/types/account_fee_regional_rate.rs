@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct AccountFeeRegionalRate {
     /// The platform rate for this region before custom or inherited pricing is applied.
     #[serde(default)]
@@ -23,7 +23,8 @@ pub struct AccountFeeRegionalRate {
     #[serde(default)]
     pub reset: AccountFeeRate,
     /// Where the regional rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
-    pub source: AccountFeeRegionalRateSource,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<AccountFeeRegionalRateSource>,
 }
 
 impl AccountFeeRegionalRate {
@@ -84,7 +85,6 @@ impl AccountFeeRegionalRateBuilder {
     /// This method will fail if any of the following fields are not set:
     /// - [`default`](AccountFeeRegionalRateBuilder::default)
     /// - [`reset`](AccountFeeRegionalRateBuilder::reset)
-    /// - [`source`](AccountFeeRegionalRateBuilder::source)
     pub fn build(self) -> Result<AccountFeeRegionalRate, BuildError> {
         Ok(AccountFeeRegionalRate {
             default: self
@@ -97,9 +97,7 @@ impl AccountFeeRegionalRateBuilder {
             reset: self
                 .reset
                 .ok_or_else(|| BuildError::missing_field("reset"))?,
-            source: self
-                .source
-                .ok_or_else(|| BuildError::missing_field("source"))?,
+            source: self.source,
         })
     }
 }

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// How tax is handled for this plan, including whether tax is included in the price, added at checkout, or not configured.
+/// How tax is handled for this variant, including whether tax is included in the price, added at checkout, or not configured.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PlanTaxType {

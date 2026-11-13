@@ -28,6 +28,11 @@ pub struct CardTransaction {
     /// True when the merchant is outside the card's home country.
     #[serde(default)]
     pub international: bool,
+    /// Whop Levels points this transaction earned for the business. Negative for a refund that takes them back. Null when it earns none: a transaction that hasn't settled, was declined, or was made on a personal card.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub levels_points: Option<f64>,
     /// Amount the merchant charged in their own currency. Pair with `currency`.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -76,6 +81,7 @@ pub struct CardTransactionBuilder {
     declined_reason: Option<String>,
     id: Option<String>,
     international: Option<bool>,
+    levels_points: Option<f64>,
     local_amount: Option<f64>,
     merchant_category: Option<String>,
     merchant_category_code: Option<String>,
@@ -125,6 +131,11 @@ impl CardTransactionBuilder {
 
     pub fn international(mut self, value: bool) -> Self {
         self.international = Some(value);
+        self
+    }
+
+    pub fn levels_points(mut self, value: f64) -> Self {
+        self.levels_points = Some(value);
         self
     }
 
@@ -197,6 +208,7 @@ impl CardTransactionBuilder {
             international: self
                 .international
                 .ok_or_else(|| BuildError::missing_field("international"))?,
+            levels_points: self.levels_points,
             local_amount: self.local_amount,
             merchant_category: self.merchant_category,
             merchant_category_code: self.merchant_category_code,

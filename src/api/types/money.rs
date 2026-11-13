@@ -2,13 +2,13 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct Money {
-    /// The amount in major units, as an exact decimal string — `"10.00"` is ten dollars. A string so no float rounds it in transit.
+    /// The amount in major units, as an exact decimal string. For example, `"10.00"` is ten dollars. It is a string so that no float rounds it in transit.
     #[serde(default)]
     pub amount: String,
     /// Three-letter ISO 4217 currency code, lowercase.
     #[serde(default)]
     pub currency: String,
-    /// How many decimal places the amount CARRIES — the precision the charge itself runs at.
+    /// How many decimal places the amount carries. This is the precision the charge itself runs at.
     #[serde(default)]
     pub decimals: i64,
     /// How many decimal places to SHOW. Usually equal to `decimals`, and deliberately not always: COP is charged in centavos but written in whole pesos, so it is `2` and `0`. Format the number in your own locale using this.

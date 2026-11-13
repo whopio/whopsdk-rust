@@ -2,10 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateSwapsRequest {
-    /// Business or user account ID (biz_* / user_*).
-    #[serde(default)]
-    pub account_id: String,
-    /// Source token amount. Required for crypto swaps. For fiat pairs: the amount of from_token to convert at the mid-market rate; omit (along with to_amount) to repay the full negative to_token balance instead.
+    /// Business account that makes the swap, prefixed `biz_`. Provide this or `user_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
+    /// Source token amount. Required for a crypto pair: a decimal amount, or `all` to swap the whole from_token balance in the account's wallet, read from the chain when the swap is created (any token but USDT). An amount above that balance is rejected when the balance can be read. For fiat pairs: the amount of from_token to convert; omit (along with to_amount) to repay the full negative to_token balance instead.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub amount: Option<String>,
     /// Source chain name or chain ID. Defaults to the source token's chain when omitted.
@@ -26,6 +26,9 @@ pub struct CreateSwapsRequest {
     /// Destination token contract address or ticker symbol, such as "XAUT".
     #[serde(default)]
     pub to_token: String,
+    /// The caller's own user ID, prefixed `user_`, to swap in their personal account. Provide this or `account_id`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
 }
 
 impl CreateSwapsRequest {
@@ -45,6 +48,7 @@ pub struct CreateSwapsRequestBuilder {
     to_amount: Option<String>,
     to_chain: Option<CreateSwapsRequestToChain>,
     to_token: Option<String>,
+    user_id: Option<String>,
 }
 
 impl CreateSwapsRequestBuilder {
@@ -88,16 +92,18 @@ impl CreateSwapsRequestBuilder {
         self
     }
 
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreateSwapsRequest`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`account_id`](CreateSwapsRequestBuilder::account_id)
     /// - [`from_token`](CreateSwapsRequestBuilder::from_token)
     /// - [`to_token`](CreateSwapsRequestBuilder::to_token)
     pub fn build(self) -> Result<CreateSwapsRequest, BuildError> {
         Ok(CreateSwapsRequest {
-            account_id: self
-                .account_id
-                .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            account_id: self.account_id,
             amount: self.amount,
             from_chain: self.from_chain,
             from_token: self
@@ -109,6 +115,7 @@ impl CreateSwapsRequestBuilder {
             to_token: self
                 .to_token
                 .ok_or_else(|| BuildError::missing_field("to_token"))?,
+            user_id: self.user_id,
         })
     }
 }

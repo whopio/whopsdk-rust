@@ -8,7 +8,7 @@ pub struct ListEventsResponseDataItemRelatedPayment {
     pub card_last4: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
-    /// Everything this payment charged for, in purchase order, including quantities. Older payments fall back to their original plan.
+    /// Everything this payment charged for, in purchase order, including quantities. Older payments fall back to their original variant.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub line_items: Option<Vec<ReceiptLineItem>>,
     #[serde(skip_serializing_if = "Option::is_none")]

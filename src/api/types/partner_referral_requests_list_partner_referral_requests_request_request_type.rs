@@ -5,7 +5,7 @@ pub use crate::prelude::*;
 pub enum ListPartnerReferralRequestsRequestRequestType {
     Manual,
     OwnershipTransfer,
-    RewardLink,
+    Link,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -16,7 +16,7 @@ impl Serialize for ListPartnerReferralRequestsRequestRequestType {
         match self {
             Self::Manual => serializer.serialize_str("manual"),
             Self::OwnershipTransfer => serializer.serialize_str("ownership_transfer"),
-            Self::RewardLink => serializer.serialize_str("reward_link"),
+            Self::Link => serializer.serialize_str("link"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -28,7 +28,7 @@ impl<'de> Deserialize<'de> for ListPartnerReferralRequestsRequestRequestType {
         match value.as_str() {
             "manual" => Ok(Self::Manual),
             "ownership_transfer" => Ok(Self::OwnershipTransfer),
-            "reward_link" => Ok(Self::RewardLink),
+            "link" => Ok(Self::Link),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -39,7 +39,7 @@ impl fmt::Display for ListPartnerReferralRequestsRequestRequestType {
         match self {
             Self::Manual => write!(f, "manual"),
             Self::OwnershipTransfer => write!(f, "ownership_transfer"),
-            Self::RewardLink => write!(f, "reward_link"),
+            Self::Link => write!(f, "link"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

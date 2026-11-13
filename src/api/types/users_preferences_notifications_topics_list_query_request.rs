@@ -6,16 +6,16 @@ pub struct UsersPreferencesNotificationsTopicsListQueryRequest {
     /// Only return preferences for this delivery channel (or not narrowed to a channel).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channel: Option<ListTopicsRequestChannel>,
-    /// Only return preferences scoped to this account's member notifications (`biz_` tag).
+    /// Only return preferences scoped to this account's member notifications (`biz_` tag), or not narrowed to an account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// Only return preferences scoped to this account's team notifications (`biz_` tag).
+    /// Only return preferences scoped to this account's team notifications (`biz_` tag), or not narrowed to a team account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub team_account_id: Option<String>,
-    /// Only return preferences scoped to this experience (`exp_` tag).
+    /// Only return preferences scoped to this experience (`exp_` tag), or not narrowed to an experience.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub experience_id: Option<String>,
-    /// Only return preferences scoped to this notification topic (`topic_` tag).
+    /// Only return preferences scoped to this notification topic (`topic_` tag), or not narrowed to a topic.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub topic_id: Option<String>,
     /// Number of results to return from the start of the range.

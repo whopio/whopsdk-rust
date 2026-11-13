@@ -2,10 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct CreateExperimentsRequest {
-    /// Owning account tag or internal. Required; ownership cannot change.
+    /// Owning account ID. Required; ownership cannot change.
     #[serde(default)]
     pub account_id: String,
-    /// Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]` for account experiments and the signed-in user for internal experiments; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
+    /// Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]`; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bucket_by: Option<CreateExperimentsRequestBucketBy>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -19,9 +19,13 @@ pub struct CreateExperimentsRequest {
     /// Required for full experiments; rejected on feature flags. Structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." Evidence should be something real — a baseline number, a funnel breakdown — not a guess, and [name] is you, not something to leave blank.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hypothesis: Option<String>,
+    /// Up to 20 key-value pairs you can attach to the experiment for your own use, such as which pages it changes. Keys are at most 40 characters and values at most 500.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<HashMap<String, String>>,
     /// Human-readable display name. Defaults to `flag_key` when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    /// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub related_resource: Option<ExperimentResourceReference>,
     /// Rules that determine which subjects qualify for the experiment.
@@ -47,6 +51,7 @@ pub struct CreateExperimentsRequestBuilder {
     feature_flag_only: Option<bool>,
     flag_key: Option<String>,
     hypothesis: Option<String>,
+    metadata: Option<HashMap<String, String>>,
     name: Option<String>,
     related_resource: Option<ExperimentResourceReference>,
     targeting_rules: Option<Vec<CreateExperimentsRequestTargetingRulesItem>>,
@@ -81,6 +86,11 @@ impl CreateExperimentsRequestBuilder {
 
     pub fn hypothesis(mut self, value: impl Into<String>) -> Self {
         self.hypothesis = Some(value.into());
+        self
+    }
+
+    pub fn metadata(mut self, value: HashMap<String, String>) -> Self {
+        self.metadata = Some(value);
         self
     }
 
@@ -123,6 +133,7 @@ impl CreateExperimentsRequestBuilder {
                 .flag_key
                 .ok_or_else(|| BuildError::missing_field("flag_key"))?,
             hypothesis: self.hypothesis,
+            metadata: self.metadata,
             name: self.name,
             related_resource: self.related_resource,
             targeting_rules: self.targeting_rules,

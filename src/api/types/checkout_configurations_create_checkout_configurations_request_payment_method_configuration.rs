@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Payment method overrides for this checkout. `null` uses the plan or platform defaults.
+/// Payment method overrides for this checkout. `null` uses the variant or platform defaults.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateCheckoutConfigurationsRequestPaymentMethodConfiguration {
     /// Payment method types explicitly disabled for checkout — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.

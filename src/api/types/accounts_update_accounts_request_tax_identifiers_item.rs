@@ -2,9 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct UpdateAccountsRequestTaxIdentifiersItem {
-    /// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`.
+    /// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`. See the [tax IDs guide](/developer/guides/tax-ids) for an example of each type.
     pub tax_id_type: UpdateAccountsRequestTaxIdentifiersItemTaxIdType,
-    /// Tax ID value, for example `DE123456789`.
+    /// Tax ID value, for example `DE123456789`. An `eu_vat` number must start with its two-letter country code (Greece uses `EL`); spaces, dots, and dashes are removed and letters are uppercased. See the [tax IDs guide](/developer/guides/tax-ids).
     #[serde(default)]
     pub tax_id_value: String,
 }

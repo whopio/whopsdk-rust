@@ -36,6 +36,12 @@ pub struct MembershipLegacy {
     /// The customer's responses to custom checkout questions configured on the product at the time of purchase.
     #[serde(default)]
     pub custom_field_responses: Vec<MembershipLegacyCustomFieldResponsesItem>,
+    /// The member's accounts on outside platforms, such as Discord and Telegram. Empty when the member has none linked. Null in webhooks.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub external_accounts: Option<Vec<MembershipLegacyExternalAccountsItem>>,
+    /// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feedback_option: Option<MembershipLegacyFeedbackOption>,
     /// The recurring renewal price for this membership, formatted with currency symbol and billing interval. Null if the membership is not recurring.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub formatted_renewal_price: Option<String>,
@@ -114,6 +120,8 @@ pub struct MembershipLegacyBuilder {
     created_at: Option<DateTime<FixedOffset>>,
     currency: Option<Currencies>,
     custom_field_responses: Option<Vec<MembershipLegacyCustomFieldResponsesItem>>,
+    external_accounts: Option<Vec<MembershipLegacyExternalAccountsItem>>,
+    feedback_option: Option<MembershipLegacyFeedbackOption>,
     formatted_renewal_price: Option<String>,
     id: Option<String>,
     initial_price_paid: Option<String>,
@@ -184,6 +192,16 @@ impl MembershipLegacyBuilder {
         value: Vec<MembershipLegacyCustomFieldResponsesItem>,
     ) -> Self {
         self.custom_field_responses = Some(value);
+        self
+    }
+
+    pub fn external_accounts(mut self, value: Vec<MembershipLegacyExternalAccountsItem>) -> Self {
+        self.external_accounts = Some(value);
+        self
+    }
+
+    pub fn feedback_option(mut self, value: MembershipLegacyFeedbackOption) -> Self {
+        self.feedback_option = Some(value);
         self
     }
 
@@ -305,6 +323,8 @@ impl MembershipLegacyBuilder {
             custom_field_responses: self
                 .custom_field_responses
                 .ok_or_else(|| BuildError::missing_field("custom_field_responses"))?,
+            external_accounts: self.external_accounts,
+            feedback_option: self.feedback_option,
             formatted_renewal_price: self.formatted_renewal_price,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             initial_price_paid: self

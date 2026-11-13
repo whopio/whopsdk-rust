@@ -5,6 +5,7 @@ pub use crate::prelude::*;
 pub enum ListAppsRequestOrder {
     CreatedAt,
     DiscoverableAt,
+    TemplateRecentSales,
     TemplateUsage,
     TotalInstallsLast30Days,
     TotalInstallsLast7Days,
@@ -18,6 +19,7 @@ impl Serialize for ListAppsRequestOrder {
         match self {
             Self::CreatedAt => serializer.serialize_str("created_at"),
             Self::DiscoverableAt => serializer.serialize_str("discoverable_at"),
+            Self::TemplateRecentSales => serializer.serialize_str("template_recent_sales"),
             Self::TemplateUsage => serializer.serialize_str("template_usage"),
             Self::TotalInstallsLast30Days => {
                 serializer.serialize_str("total_installs_last_30_days")
@@ -34,6 +36,7 @@ impl<'de> Deserialize<'de> for ListAppsRequestOrder {
         match value.as_str() {
             "created_at" => Ok(Self::CreatedAt),
             "discoverable_at" => Ok(Self::DiscoverableAt),
+            "template_recent_sales" => Ok(Self::TemplateRecentSales),
             "template_usage" => Ok(Self::TemplateUsage),
             "total_installs_last_30_days" => Ok(Self::TotalInstallsLast30Days),
             "total_installs_last_7_days" => Ok(Self::TotalInstallsLast7Days),
@@ -47,6 +50,7 @@ impl fmt::Display for ListAppsRequestOrder {
         match self {
             Self::CreatedAt => write!(f, "created_at"),
             Self::DiscoverableAt => write!(f, "discoverable_at"),
+            Self::TemplateRecentSales => write!(f, "template_recent_sales"),
             Self::TemplateUsage => write!(f, "template_usage"),
             Self::TotalInstallsLast30Days => write!(f, "total_installs_last_30_days"),
             Self::TotalInstallsLast7Days => write!(f, "total_installs_last_7_days"),

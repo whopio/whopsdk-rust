@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// The fields of a fee the caller may change. Only the keys sent are replaced.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct UpdateFeesRequestFraudScreening {
-    /// The new amount per event in US dollars. `null` clears the custom amount.
+    /// The new amount per event, in US dollars (USD). `null` clears the custom amount.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fixed: Option<f64>,
     /// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.

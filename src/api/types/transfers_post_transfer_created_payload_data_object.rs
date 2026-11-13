@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The object type. Discriminates the create response from a send or a claim link.
+/// The object type.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum PostTransferCreatedPayloadDataObject {
     #[serde(rename = "transfer")]

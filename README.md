@@ -1,6 +1,6 @@
 # Whop Rust Library
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fwhopio%2Fwhopsdk-rust)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=Whop%2FRust)
 [![crates.io shield](https://img.shields.io/crates/v/whop_sdk)](https://crates.io/crates/whop_sdk)
 
 The Whop SDK gives you typed access to the Whop API. Pass your API key to the client explicitly — the SDK reads no environment variables, so a client built without a key sends unauthenticated requests and the API answers 401.
@@ -20,6 +20,7 @@ The Whop SDK gives you typed access to the Whop API. Pass your API key to the cl
   - [Timeouts](#timeouts)
   - [Additional Headers](#additional-headers)
   - [Additional Query String Parameters](#additional-query-string-parameters)
+  - [Additional Body Properties](#additional-body-properties)
   - [Custom Client](#custom-client)
 - [Contributing](#contributing)
 
@@ -33,7 +34,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-whop_sdk = "1.1.5"
+whop_sdk = "2.8.1"
 ```
 
 Or install via cargo:
@@ -44,7 +45,7 @@ cargo add whop_sdk
 
 ## Reference
 
-A full reference for this library is available [here](https://github.com/whopio/whopsdk-rust/blob/HEAD/./reference.md).
+A full reference for this library is available [here](./reference.md).
 
 ## Usage
 
@@ -80,7 +81,7 @@ This SDK allows you to configure different environments for API requests.
 use whop_sdk::prelude::{*};
 
 let config = ClientConfig {
-    base_url: Environment::Default.url().to_string(),
+    environment: Some(Environment::production()),
     ..Default::default()
 };
 let client = Client::new(config).expect("Failed to build client");
@@ -178,6 +179,25 @@ let response = client.access_tokens.create(
         RequestOptions::new()
             .additional_query_param("filter", "active")
             .additional_query_param("sort", "desc")
+    )
+)?
+.await;
+```
+
+### Additional Body Properties
+
+You can add properties to the request body using `RequestOptions`, e.g. to send fields the SDK
+doesn't model yet. Keys are sent as-is, and a property set here overrides a field of the same name.
+If the endpoint has no body, a JSON object containing only these properties is sent. Additional
+properties apply to JSON and form-urlencoded bodies; multipart (file upload) and raw bytes bodies
+are sent unchanged.
+
+```rust
+let response = client.access_tokens.create(
+    Some(
+        RequestOptions::new()
+            .additional_body_param("beta_feature", true)
+            .additional_body_param("metadata", serde_json::json!({ "source": "sdk" }))
     )
 )?
 .await;

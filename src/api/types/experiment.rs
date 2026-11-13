@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Experiment {
-    /// Owning account ID, or internal for Whop platform experiments.
+    /// Owning account ID.
     #[serde(default)]
     pub account_id: String,
     /// Assignment hashes UTF-8 seed + subject ID with CRC32 modulo 100 and selects the stored end-exclusive range.
@@ -11,7 +11,7 @@ pub struct Experiment {
     /// Randomization unit — `user` buckets each user independently, `account` buckets whole accounts (every user of an account gets the same arm). `null` for feature flags.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bucket_by: Option<ExperimentBucketBy>,
-    /// Revision of the serving configuration. Does not change the assignment seed.
+    /// Revision of the serving configuration. Increments on every configuration change, so a cached definition with a lower revision is stale. Does not change the assignment seed.
     #[serde(default)]
     pub configuration_revision: i64,
     #[serde(default)]
@@ -40,9 +40,13 @@ pub struct Experiment {
     /// Unique identifier for the experiment, prefixed `expt_`.
     #[serde(default)]
     pub id: String,
+    /// Key-value pairs attached when the experiment was created. Empty when none were set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<HashMap<String, String>>,
     /// Human-readable display name.
     #[serde(default)]
     pub name: String,
+    /// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
     pub related_resource: ExperimentResourceReference,
     /// When the experiment began collecting data, as an ISO 8601 timestamp. `null` for drafts.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -84,6 +88,7 @@ pub struct ExperimentBuilder {
     flag_key: Option<String>,
     hypothesis: Option<String>,
     id: Option<String>,
+    metadata: Option<HashMap<String, String>>,
     name: Option<String>,
     related_resource: Option<ExperimentResourceReference>,
     started_at: Option<String>,
@@ -157,6 +162,11 @@ impl ExperimentBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn metadata(mut self, value: HashMap<String, String>) -> Self {
+        self.metadata = Some(value);
         self
     }
 
@@ -238,6 +248,7 @@ impl ExperimentBuilder {
                 .ok_or_else(|| BuildError::missing_field("flag_key"))?,
             hypothesis: self.hypothesis,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            metadata: self.metadata,
             name: self.name.ok_or_else(|| BuildError::missing_field("name"))?,
             related_resource: self
                 .related_resource

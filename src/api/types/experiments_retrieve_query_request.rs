@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for retrieve
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ExperimentsRetrieveQueryRequest {
-    /// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+    /// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
 }

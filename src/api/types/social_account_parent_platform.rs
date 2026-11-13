@@ -11,6 +11,11 @@ pub enum SocialAccountParentPlatform {
     Facebook,
     Discord,
     Telegram,
+    Linkedin,
+    Snapchat,
+    Klaviyo,
+    Quickbooks,
+    Aimerce,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -26,6 +31,11 @@ impl Serialize for SocialAccountParentPlatform {
             Self::Facebook => serializer.serialize_str("facebook"),
             Self::Discord => serializer.serialize_str("discord"),
             Self::Telegram => serializer.serialize_str("telegram"),
+            Self::Linkedin => serializer.serialize_str("linkedin"),
+            Self::Snapchat => serializer.serialize_str("snapchat"),
+            Self::Klaviyo => serializer.serialize_str("klaviyo"),
+            Self::Quickbooks => serializer.serialize_str("quickbooks"),
+            Self::Aimerce => serializer.serialize_str("aimerce"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -42,6 +52,11 @@ impl<'de> Deserialize<'de> for SocialAccountParentPlatform {
             "facebook" => Ok(Self::Facebook),
             "discord" => Ok(Self::Discord),
             "telegram" => Ok(Self::Telegram),
+            "linkedin" => Ok(Self::Linkedin),
+            "snapchat" => Ok(Self::Snapchat),
+            "klaviyo" => Ok(Self::Klaviyo),
+            "quickbooks" => Ok(Self::Quickbooks),
+            "aimerce" => Ok(Self::Aimerce),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -57,6 +72,11 @@ impl fmt::Display for SocialAccountParentPlatform {
             Self::Facebook => write!(f, "facebook"),
             Self::Discord => write!(f, "discord"),
             Self::Telegram => write!(f, "telegram"),
+            Self::Linkedin => write!(f, "linkedin"),
+            Self::Snapchat => write!(f, "snapchat"),
+            Self::Klaviyo => write!(f, "klaviyo"),
+            Self::Quickbooks => write!(f, "quickbooks"),
+            Self::Aimerce => write!(f, "aimerce"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

@@ -2,9 +2,12 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct RetrievePayoutsResponse {
-    /// The payout amount in whole currency units, as a decimal string.
-    #[serde(default)]
-    pub amount: String,
+    /// The payout amount in whole currency units, as a decimal string. Only returned to callers with payout:withdrawal:read on the owning ledger.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<String>,
+    /// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended. Only returned to callers with payout:withdrawal:read on the owning ledger.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cancelable: Option<bool>,
     /// When the payout was created.
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
@@ -12,10 +15,13 @@ pub struct RetrievePayoutsResponse {
     /// Payout currency.
     #[serde(default)]
     pub currency: String,
+    /// Whether an in-transit withdrawal is past its settlement window.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub delayed: Option<bool>,
     /// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_amount: Option<String>,
-    /// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+    /// Currency the funds are delivered in, taken from the payout method when the payout is created. On a payout funded by a conversion request it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub destination_currency: Option<String>,
     /// Estimated time the funds become available in the destination account.
@@ -23,6 +29,9 @@ pub struct RetrievePayoutsResponse {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub estimated_arrival: Option<DateTime<FixedOffset>>,
+    /// End of the expected bank settlement window.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub estimated_arrival_end: Option<DateTime<FixedOffset>>,
     /// Exchange rate from the payout currency to the destination currency. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded rate.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -31,21 +40,22 @@ pub struct RetrievePayoutsResponse {
     /// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub failure: Option<RetrievePayoutsResponseFailure>,
-    /// The fee charged for the payout, in the payout currency, as a decimal string.
-    #[serde(default)]
-    pub fee_amount: String,
-    /// Who bore the payout fee: the account itself, or its parent platform.
-    pub fee_paid_by: RetrievePayoutsResponseFeePaidBy,
-    /// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts` or `cofr_` for a payout request returned by `POST /payouts`.
+    /// The fee charged for the payout, in the payout currency, as a decimal string. Only returned to callers with payout:withdrawal:read on the owning ledger.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fee_amount: Option<String>,
+    /// Who bore the payout fee: the account itself, or its parent platform. Only returned to callers with payout:withdrawal:read on the owning ledger.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fee_paid_by: Option<RetrievePayoutsResponseFeePaidBy>,
+    /// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts`, `cofr_` for a payout request returned by `POST /payouts`, or `pay_` for a payout funded by a card payment that has not been submitted yet.
     #[serde(default)]
     pub id: String,
-    /// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
-    #[serde(default)]
-    pub markup_fee: String,
-    /// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
-    #[serde(default)]
-    pub metadata: HashMap<String, String>,
-    /// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+    /// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies. Only returned to callers with payout:withdrawal:read on the owning ledger.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub markup_fee: Option<String>,
+    /// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters. Only returned to callers with payout:withdrawal:read on the owning ledger.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<HashMap<String, String>>,
+    /// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled payout funded by a conversion request can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
     #[serde(default)]
     pub net_amount: String,
     /// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
@@ -55,26 +65,35 @@ pub struct RetrievePayoutsResponse {
     /// Name of the entity processing the payout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payer_name: Option<String>,
-    /// The saved payout method used. Requires payout:destination:read; null without it.
+    /// Payout method display details. The nickname requires payout:destination:read on the owning ledger; otherwise it is null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_method: Option<RetrievePayoutsResponsePayoutMethod>,
     /// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. For a request retrieved by its own `cofr_` ID, this equals `id`. Returns `null` for payouts not created by `POST /payouts`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payout_request_id: Option<String>,
-    /// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+    /// The recipient's first name and last initial, or null when no recipient name is available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recipient_name: Option<String>,
+    /// The sending business's display name, or a personal sender's first name and last initial.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sender_name: Option<String>,
+    /// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source. Only returned to callers with payout:withdrawal:read on the owning ledger.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<RetrievePayoutsResponseSource>,
     /// Payout delivery speed.
     pub speed: RetrievePayoutsResponseSpeed,
-    /// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+    /// The payment description sent with the payout, or `null` if no descriptor was set. When set, 5-80 printable ASCII characters. Only returned to callers with payout:withdrawal:read on the owning ledger.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub statement_descriptor: Option<String>,
     /// Current payout status.
     pub status: RetrievePayoutsResponseStatus,
-    /// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+    /// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
     #[serde(default)]
     pub status_detail: String,
-    /// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+    /// Completed lifecycle events in chronological order. Present once the payout has a withdrawal record.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timeline: Option<Vec<RetrievePayoutsResponseTimelineItem>>,
+    /// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. `null` until the reference is available, and on payouts that have none.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub trace_code: Option<String>,
 }
@@ -89,11 +108,14 @@ impl RetrievePayoutsResponse {
 #[non_exhaustive]
 pub struct RetrievePayoutsResponseBuilder {
     amount: Option<String>,
+    cancelable: Option<bool>,
     created_at: Option<DateTime<FixedOffset>>,
     currency: Option<String>,
+    delayed: Option<bool>,
     destination_amount: Option<String>,
     destination_currency: Option<String>,
     estimated_arrival: Option<DateTime<FixedOffset>>,
+    estimated_arrival_end: Option<DateTime<FixedOffset>>,
     exchange_rate: Option<f64>,
     failure: Option<RetrievePayoutsResponseFailure>,
     fee_amount: Option<String>,
@@ -107,17 +129,25 @@ pub struct RetrievePayoutsResponseBuilder {
     payer_name: Option<String>,
     payout_method: Option<RetrievePayoutsResponsePayoutMethod>,
     payout_request_id: Option<String>,
+    recipient_name: Option<String>,
+    sender_name: Option<String>,
     source: Option<RetrievePayoutsResponseSource>,
     speed: Option<RetrievePayoutsResponseSpeed>,
     statement_descriptor: Option<String>,
     status: Option<RetrievePayoutsResponseStatus>,
     status_detail: Option<String>,
+    timeline: Option<Vec<RetrievePayoutsResponseTimelineItem>>,
     trace_code: Option<String>,
 }
 
 impl RetrievePayoutsResponseBuilder {
     pub fn amount(mut self, value: impl Into<String>) -> Self {
         self.amount = Some(value.into());
+        self
+    }
+
+    pub fn cancelable(mut self, value: bool) -> Self {
+        self.cancelable = Some(value);
         self
     }
 
@@ -128,6 +158,11 @@ impl RetrievePayoutsResponseBuilder {
 
     pub fn currency(mut self, value: impl Into<String>) -> Self {
         self.currency = Some(value.into());
+        self
+    }
+
+    pub fn delayed(mut self, value: bool) -> Self {
+        self.delayed = Some(value);
         self
     }
 
@@ -143,6 +178,11 @@ impl RetrievePayoutsResponseBuilder {
 
     pub fn estimated_arrival(mut self, value: DateTime<FixedOffset>) -> Self {
         self.estimated_arrival = Some(value);
+        self
+    }
+
+    pub fn estimated_arrival_end(mut self, value: DateTime<FixedOffset>) -> Self {
+        self.estimated_arrival_end = Some(value);
         self
     }
 
@@ -211,6 +251,16 @@ impl RetrievePayoutsResponseBuilder {
         self
     }
 
+    pub fn recipient_name(mut self, value: impl Into<String>) -> Self {
+        self.recipient_name = Some(value.into());
+        self
+    }
+
+    pub fn sender_name(mut self, value: impl Into<String>) -> Self {
+        self.sender_name = Some(value.into());
+        self
+    }
+
     pub fn source(mut self, value: RetrievePayoutsResponseSource) -> Self {
         self.source = Some(value);
         self
@@ -236,6 +286,11 @@ impl RetrievePayoutsResponseBuilder {
         self
     }
 
+    pub fn timeline(mut self, value: Vec<RetrievePayoutsResponseTimelineItem>) -> Self {
+        self.timeline = Some(value);
+        self
+    }
+
     pub fn trace_code(mut self, value: impl Into<String>) -> Self {
         self.trace_code = Some(value.into());
         self
@@ -243,14 +298,9 @@ impl RetrievePayoutsResponseBuilder {
 
     /// Consumes the builder and constructs a [`RetrievePayoutsResponse`].
     /// This method will fail if any of the following fields are not set:
-    /// - [`amount`](RetrievePayoutsResponseBuilder::amount)
     /// - [`created_at`](RetrievePayoutsResponseBuilder::created_at)
     /// - [`currency`](RetrievePayoutsResponseBuilder::currency)
-    /// - [`fee_amount`](RetrievePayoutsResponseBuilder::fee_amount)
-    /// - [`fee_paid_by`](RetrievePayoutsResponseBuilder::fee_paid_by)
     /// - [`id`](RetrievePayoutsResponseBuilder::id)
-    /// - [`markup_fee`](RetrievePayoutsResponseBuilder::markup_fee)
-    /// - [`metadata`](RetrievePayoutsResponseBuilder::metadata)
     /// - [`net_amount`](RetrievePayoutsResponseBuilder::net_amount)
     /// - [`object`](RetrievePayoutsResponseBuilder::object)
     /// - [`speed`](RetrievePayoutsResponseBuilder::speed)
@@ -258,33 +308,26 @@ impl RetrievePayoutsResponseBuilder {
     /// - [`status_detail`](RetrievePayoutsResponseBuilder::status_detail)
     pub fn build(self) -> Result<RetrievePayoutsResponse, BuildError> {
         Ok(RetrievePayoutsResponse {
-            amount: self
-                .amount
-                .ok_or_else(|| BuildError::missing_field("amount"))?,
+            amount: self.amount,
+            cancelable: self.cancelable,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
             currency: self
                 .currency
                 .ok_or_else(|| BuildError::missing_field("currency"))?,
+            delayed: self.delayed,
             destination_amount: self.destination_amount,
             destination_currency: self.destination_currency,
             estimated_arrival: self.estimated_arrival,
+            estimated_arrival_end: self.estimated_arrival_end,
             exchange_rate: self.exchange_rate,
             failure: self.failure,
-            fee_amount: self
-                .fee_amount
-                .ok_or_else(|| BuildError::missing_field("fee_amount"))?,
-            fee_paid_by: self
-                .fee_paid_by
-                .ok_or_else(|| BuildError::missing_field("fee_paid_by"))?,
+            fee_amount: self.fee_amount,
+            fee_paid_by: self.fee_paid_by,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
-            markup_fee: self
-                .markup_fee
-                .ok_or_else(|| BuildError::missing_field("markup_fee"))?,
-            metadata: self
-                .metadata
-                .ok_or_else(|| BuildError::missing_field("metadata"))?,
+            markup_fee: self.markup_fee,
+            metadata: self.metadata,
             net_amount: self
                 .net_amount
                 .ok_or_else(|| BuildError::missing_field("net_amount"))?,
@@ -295,6 +338,8 @@ impl RetrievePayoutsResponseBuilder {
             payer_name: self.payer_name,
             payout_method: self.payout_method,
             payout_request_id: self.payout_request_id,
+            recipient_name: self.recipient_name,
+            sender_name: self.sender_name,
             source: self.source,
             speed: self
                 .speed
@@ -306,6 +351,7 @@ impl RetrievePayoutsResponseBuilder {
             status_detail: self
                 .status_detail
                 .ok_or_else(|| BuildError::missing_field("status_detail"))?,
+            timeline: self.timeline,
             trace_code: self.trace_code,
         })
     }

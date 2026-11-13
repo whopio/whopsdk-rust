@@ -3,7 +3,7 @@ pub use crate::prelude::*;
 /// Query parameters for retrieve
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct ConfirmationTokensRetrieveQueryRequest {
-    /// The account (biz_) the token was minted for.
+    /// The account the token was minted for, prefixed `biz_`. It must match the token's account.
     #[serde(default)]
     pub account_id: String,
 }

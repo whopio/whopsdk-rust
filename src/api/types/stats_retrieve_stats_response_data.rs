@@ -2,6 +2,9 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct RetrieveStatsResponseData {
+    /// Present for webhook_deliveries. False while older deliveries are still being counted in the background: the points cover what is counted so far. Responses are cached for up to a minute, so wait a minute before requesting the same range again.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub complete: Option<bool>,
     /// ISO currency the values are denominated in. Present for currency-unit metrics: the convert_to currency, or usd.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
@@ -22,12 +25,18 @@ impl RetrieveStatsResponseData {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct RetrieveStatsResponseDataBuilder {
+    complete: Option<bool>,
     currency: Option<String>,
     points: Option<Vec<RetrieveStatsResponseDataPointsItem>>,
     totals: Option<Vec<RetrieveStatsResponseDataTotalsItem>>,
 }
 
 impl RetrieveStatsResponseDataBuilder {
+    pub fn complete(mut self, value: bool) -> Self {
+        self.complete = Some(value);
+        self
+    }
+
     pub fn currency(mut self, value: impl Into<String>) -> Self {
         self.currency = Some(value.into());
         self
@@ -48,6 +57,7 @@ impl RetrieveStatsResponseDataBuilder {
     /// - [`points`](RetrieveStatsResponseDataBuilder::points)
     pub fn build(self) -> Result<RetrieveStatsResponseData, BuildError> {
         Ok(RetrieveStatsResponseData {
+            complete: self.complete,
             currency: self.currency,
             points: self
                 .points

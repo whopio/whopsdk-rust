@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Launching ad campaigns through Whop Ads. `inactive` while a requested ads services agreement is awaiting the account's signature.
+/// Launching ad campaigns through Whop Ads. `inactive` until the account's identity or business is verified, while a requested ads services agreement is awaiting the account's signature, and while the account is suspended from Whop Ads.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AccountCapabilitiesRunAds {

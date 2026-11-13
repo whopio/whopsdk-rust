@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+/// The commission rate this referral pays for each income source, as a fraction (0.3 = 30%). A solo partner earns it directly; the team of a referring partner business splits it by their shares.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct RetrieveBusinessesResponsePayoutPercentages {
     /// Share of the referred business's Whop Ads spend.
@@ -22,6 +22,11 @@ pub struct RetrieveBusinessesResponsePayoutPercentages {
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
     pub transfer: Option<f64>,
+    /// Share of Whop's profit from withdrawals.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub withdrawal: Option<f64>,
 }
 
 impl RetrieveBusinessesResponsePayoutPercentages {
@@ -37,6 +42,7 @@ pub struct RetrieveBusinessesResponsePayoutPercentagesBuilder {
     card_interchange: Option<f64>,
     sales: Option<f64>,
     transfer: Option<f64>,
+    withdrawal: Option<f64>,
 }
 
 impl RetrieveBusinessesResponsePayoutPercentagesBuilder {
@@ -60,6 +66,11 @@ impl RetrieveBusinessesResponsePayoutPercentagesBuilder {
         self
     }
 
+    pub fn withdrawal(mut self, value: f64) -> Self {
+        self.withdrawal = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`RetrieveBusinessesResponsePayoutPercentages`].
     /// This method will fail if any of the following fields are not set:
     /// - [`sales`](RetrieveBusinessesResponsePayoutPercentagesBuilder::sales)
@@ -71,6 +82,7 @@ impl RetrieveBusinessesResponsePayoutPercentagesBuilder {
                 .sales
                 .ok_or_else(|| BuildError::missing_field("sales"))?,
             transfer: self.transfer,
+            withdrawal: self.withdrawal,
         })
     }
 }

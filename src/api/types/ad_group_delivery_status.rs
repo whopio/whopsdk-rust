@@ -4,12 +4,14 @@ pub use crate::prelude::*;
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AdGroupDeliveryStatus {
+    InAppeal,
     AllAdsRejected,
     Rejected,
     Draft,
     NoAds,
     CampaignPaused,
     Paused,
+    InReview,
     Processing,
     Issues,
     Scheduled,
@@ -26,12 +28,14 @@ pub enum AdGroupDeliveryStatus {
 impl Serialize for AdGroupDeliveryStatus {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
+            Self::InAppeal => serializer.serialize_str("in_appeal"),
             Self::AllAdsRejected => serializer.serialize_str("all_ads_rejected"),
             Self::Rejected => serializer.serialize_str("rejected"),
             Self::Draft => serializer.serialize_str("draft"),
             Self::NoAds => serializer.serialize_str("no_ads"),
             Self::CampaignPaused => serializer.serialize_str("campaign_paused"),
             Self::Paused => serializer.serialize_str("paused"),
+            Self::InReview => serializer.serialize_str("in_review"),
             Self::Processing => serializer.serialize_str("processing"),
             Self::Issues => serializer.serialize_str("issues"),
             Self::Scheduled => serializer.serialize_str("scheduled"),
@@ -49,12 +53,14 @@ impl<'de> Deserialize<'de> for AdGroupDeliveryStatus {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = String::deserialize(deserializer)?;
         match value.as_str() {
+            "in_appeal" => Ok(Self::InAppeal),
             "all_ads_rejected" => Ok(Self::AllAdsRejected),
             "rejected" => Ok(Self::Rejected),
             "draft" => Ok(Self::Draft),
             "no_ads" => Ok(Self::NoAds),
             "campaign_paused" => Ok(Self::CampaignPaused),
             "paused" => Ok(Self::Paused),
+            "in_review" => Ok(Self::InReview),
             "processing" => Ok(Self::Processing),
             "issues" => Ok(Self::Issues),
             "scheduled" => Ok(Self::Scheduled),
@@ -71,12 +77,14 @@ impl<'de> Deserialize<'de> for AdGroupDeliveryStatus {
 impl fmt::Display for AdGroupDeliveryStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::InAppeal => write!(f, "in_appeal"),
             Self::AllAdsRejected => write!(f, "all_ads_rejected"),
             Self::Rejected => write!(f, "rejected"),
             Self::Draft => write!(f, "draft"),
             Self::NoAds => write!(f, "no_ads"),
             Self::CampaignPaused => write!(f, "campaign_paused"),
             Self::Paused => write!(f, "paused"),
+            Self::InReview => write!(f, "in_review"),
             Self::Processing => write!(f, "processing"),
             Self::Issues => write!(f, "issues"),
             Self::Scheduled => write!(f, "scheduled"),

@@ -1,0 +1,492 @@
+pub use crate::prelude::*;
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct VariantListItem {
+    /// Account that sells this variant; `null` for standalone invoice variants.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account: Option<AccountSummary>,
+    /// Whether adaptive pricing is enabled for this variant. Raw setting — does not check processor compatibility or feature flags.
+    #[serde(default)]
+    pub adaptive_pricing_enabled: bool,
+    /// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+    #[serde(default)]
+    pub allow_multiple_quantity: bool,
+    /// Attribute values that distinguish this variant within its product, as a map of attribute name to value, e.g. `{"color": "Blue", "size": "Large"}`. Names are snake_case identifiers and come back in alphabetical order. Every attributed variant on a product carries the same attribute names and a distinct set of values; the product lists the full option set as `variant_attributes`. `null` when the variant has no attributes.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attributes: Option<HashMap<String, Option<String>>>,
+    /// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub billing_period: Option<f64>,
+    /// Billing model for this variant.
+    pub billing_type: VariantListItemBillingType,
+    /// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub cancel_discount_intervals: Option<f64>,
+    /// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub cancel_discount_percentage: Option<f64>,
+    /// Variant-level checkout styling (`background_color`, `button_color`, `font_family`, `border_style`); `null` inherits the account default.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checkout_styling: Option<HashMap<String, serde_json::Value>>,
+    /// When the variant was created, as an ISO 8601 timestamp.
+    #[serde(default)]
+    pub created_at: String,
+    /// Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
+    #[serde(default)]
+    pub currency: String,
+    #[serde(default)]
+    pub custom_fields: Vec<PlanCustomField>,
+    /// Customer-visible variant description. Maximum 1000 characters. `null` if no description is set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    /// Access duration in days for expiration-based variants, such as 365 for a one-year pass. `null` for variants without an expiration.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub expiration_days: Option<f64>,
+    /// Human-readable price for display (currency + interval) in `currency`, e.g. "$10 / month".
+    #[serde(default)]
+    pub formatted_price: String,
+    /// Variant ID, prefixed `plan_`.
+    #[serde(default)]
+    pub id: String,
+    /// Pricing-tier image (`url`, `blurhash`) shown on the product page; `null` when no image is set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub image: Option<HashMap<String, serde_json::Value>>,
+    /// Initial purchase price, in `currency`.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub initial_price: f64,
+    /// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring variants, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this variant. Stated in `currency`.
+    #[serde(default)]
+    pub initial_price_due: Money,
+    /// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub internal_notes: Option<String>,
+    /// Invoice this variant was generated for; `null` unless created for an invoice.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub invoice: Option<HashMap<String, serde_json::Value>>,
+    /// Active memberships through this variant. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub member_count: Option<f64>,
+    /// Custom key-value pairs stored on the variant. Included in webhook payloads for payment and membership events. Maximum 50 keys, 100 characters per key, 500 characters per value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this variant.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<HashMap<String, serde_json::Value>>,
+    /// Whether a cancellation discount is offered. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub offer_cancel_discount: Option<bool>,
+    /// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when variant uses default settings.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_method_configuration: Option<HashMap<String, serde_json::Value>>,
+    /// Product this variant belongs to; `null` for standalone variants.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product: Option<HashMap<String, serde_json::Value>>,
+    /// URL where customers can purchase this variant directly.
+    #[serde(default)]
+    pub purchase_url: String,
+    /// Sales method for this variant.
+    pub release_method: VariantListItemReleaseMethod,
+    /// Recurring price charged every billing period, in `currency`.
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers")]
+    pub renewal_price: f64,
+    /// Stock keeping unit, free text set by the seller (e.g. `TSHIRT-LARGE-BLUE`). Not enforced unique. `null` when unset.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sku: Option<String>,
+    /// Installment payments required before the subscription pauses. Must be greater than 1. `null` if split pay is not configured.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub split_pay_required_payments: Option<f64>,
+    /// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub stock: Option<f64>,
+    /// Original initial price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub strike_through_initial_price: Option<f64>,
+    /// Original renewal price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub strike_through_renewal_price: Option<f64>,
+    /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub three_ds_level: Option<VariantListItemThreeDsLevel>,
+    /// Variant display name shown to customers. Maximum 30 characters. A variant created without one defaults to its attribute values joined with ` / `. `null` if no title has been set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    /// Free trial days before the first renewal charge. `null` if no trial is configured or the user has already used a trial for this variant.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub trial_period_days: Option<f64>,
+    /// Whether the variant has unlimited stock. When `true`, the `stock` field is ignored; waitlist variants always report `true`.
+    #[serde(default)]
+    pub unlimited_stock: bool,
+    /// When the variant was last updated, as an ISO 8601 timestamp.
+    #[serde(default)]
+    pub updated_at: String,
+    /// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
+    pub visibility: VariantListItemVisibility,
+}
+
+impl VariantListItem {
+    pub fn builder() -> VariantListItemBuilder {
+        <VariantListItemBuilder as Default>::default()
+    }
+}
+
+#[derive(Clone, PartialEq, Default, Debug)]
+#[non_exhaustive]
+pub struct VariantListItemBuilder {
+    account: Option<AccountSummary>,
+    adaptive_pricing_enabled: Option<bool>,
+    allow_multiple_quantity: Option<bool>,
+    attributes: Option<HashMap<String, Option<String>>>,
+    billing_period: Option<f64>,
+    billing_type: Option<VariantListItemBillingType>,
+    cancel_discount_intervals: Option<f64>,
+    cancel_discount_percentage: Option<f64>,
+    checkout_styling: Option<HashMap<String, serde_json::Value>>,
+    created_at: Option<String>,
+    currency: Option<String>,
+    custom_fields: Option<Vec<PlanCustomField>>,
+    description: Option<String>,
+    expiration_days: Option<f64>,
+    formatted_price: Option<String>,
+    id: Option<String>,
+    image: Option<HashMap<String, serde_json::Value>>,
+    initial_price: Option<f64>,
+    initial_price_due: Option<Money>,
+    internal_notes: Option<String>,
+    invoice: Option<HashMap<String, serde_json::Value>>,
+    member_count: Option<f64>,
+    metadata: Option<HashMap<String, serde_json::Value>>,
+    offer_cancel_discount: Option<bool>,
+    payment_method_configuration: Option<HashMap<String, serde_json::Value>>,
+    product: Option<HashMap<String, serde_json::Value>>,
+    purchase_url: Option<String>,
+    release_method: Option<VariantListItemReleaseMethod>,
+    renewal_price: Option<f64>,
+    sku: Option<String>,
+    split_pay_required_payments: Option<f64>,
+    stock: Option<f64>,
+    strike_through_initial_price: Option<f64>,
+    strike_through_renewal_price: Option<f64>,
+    three_ds_level: Option<VariantListItemThreeDsLevel>,
+    title: Option<String>,
+    trial_period_days: Option<f64>,
+    unlimited_stock: Option<bool>,
+    updated_at: Option<String>,
+    visibility: Option<VariantListItemVisibility>,
+}
+
+impl VariantListItemBuilder {
+    pub fn account(mut self, value: AccountSummary) -> Self {
+        self.account = Some(value);
+        self
+    }
+
+    pub fn adaptive_pricing_enabled(mut self, value: bool) -> Self {
+        self.adaptive_pricing_enabled = Some(value);
+        self
+    }
+
+    pub fn allow_multiple_quantity(mut self, value: bool) -> Self {
+        self.allow_multiple_quantity = Some(value);
+        self
+    }
+
+    pub fn attributes(mut self, value: HashMap<String, Option<String>>) -> Self {
+        self.attributes = Some(value);
+        self
+    }
+
+    pub fn billing_period(mut self, value: f64) -> Self {
+        self.billing_period = Some(value);
+        self
+    }
+
+    pub fn billing_type(mut self, value: VariantListItemBillingType) -> Self {
+        self.billing_type = Some(value);
+        self
+    }
+
+    pub fn cancel_discount_intervals(mut self, value: f64) -> Self {
+        self.cancel_discount_intervals = Some(value);
+        self
+    }
+
+    pub fn cancel_discount_percentage(mut self, value: f64) -> Self {
+        self.cancel_discount_percentage = Some(value);
+        self
+    }
+
+    pub fn checkout_styling(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.checkout_styling = Some(value);
+        self
+    }
+
+    pub fn created_at(mut self, value: impl Into<String>) -> Self {
+        self.created_at = Some(value.into());
+        self
+    }
+
+    pub fn currency(mut self, value: impl Into<String>) -> Self {
+        self.currency = Some(value.into());
+        self
+    }
+
+    pub fn custom_fields(mut self, value: Vec<PlanCustomField>) -> Self {
+        self.custom_fields = Some(value);
+        self
+    }
+
+    pub fn description(mut self, value: impl Into<String>) -> Self {
+        self.description = Some(value.into());
+        self
+    }
+
+    pub fn expiration_days(mut self, value: f64) -> Self {
+        self.expiration_days = Some(value);
+        self
+    }
+
+    pub fn formatted_price(mut self, value: impl Into<String>) -> Self {
+        self.formatted_price = Some(value.into());
+        self
+    }
+
+    pub fn id(mut self, value: impl Into<String>) -> Self {
+        self.id = Some(value.into());
+        self
+    }
+
+    pub fn image(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.image = Some(value);
+        self
+    }
+
+    pub fn initial_price(mut self, value: f64) -> Self {
+        self.initial_price = Some(value);
+        self
+    }
+
+    pub fn initial_price_due(mut self, value: Money) -> Self {
+        self.initial_price_due = Some(value);
+        self
+    }
+
+    pub fn internal_notes(mut self, value: impl Into<String>) -> Self {
+        self.internal_notes = Some(value.into());
+        self
+    }
+
+    pub fn invoice(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.invoice = Some(value);
+        self
+    }
+
+    pub fn member_count(mut self, value: f64) -> Self {
+        self.member_count = Some(value);
+        self
+    }
+
+    pub fn metadata(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.metadata = Some(value);
+        self
+    }
+
+    pub fn offer_cancel_discount(mut self, value: bool) -> Self {
+        self.offer_cancel_discount = Some(value);
+        self
+    }
+
+    pub fn payment_method_configuration(
+        mut self,
+        value: HashMap<String, serde_json::Value>,
+    ) -> Self {
+        self.payment_method_configuration = Some(value);
+        self
+    }
+
+    pub fn product(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.product = Some(value);
+        self
+    }
+
+    pub fn purchase_url(mut self, value: impl Into<String>) -> Self {
+        self.purchase_url = Some(value.into());
+        self
+    }
+
+    pub fn release_method(mut self, value: VariantListItemReleaseMethod) -> Self {
+        self.release_method = Some(value);
+        self
+    }
+
+    pub fn renewal_price(mut self, value: f64) -> Self {
+        self.renewal_price = Some(value);
+        self
+    }
+
+    pub fn sku(mut self, value: impl Into<String>) -> Self {
+        self.sku = Some(value.into());
+        self
+    }
+
+    pub fn split_pay_required_payments(mut self, value: f64) -> Self {
+        self.split_pay_required_payments = Some(value);
+        self
+    }
+
+    pub fn stock(mut self, value: f64) -> Self {
+        self.stock = Some(value);
+        self
+    }
+
+    pub fn strike_through_initial_price(mut self, value: f64) -> Self {
+        self.strike_through_initial_price = Some(value);
+        self
+    }
+
+    pub fn strike_through_renewal_price(mut self, value: f64) -> Self {
+        self.strike_through_renewal_price = Some(value);
+        self
+    }
+
+    pub fn three_ds_level(mut self, value: VariantListItemThreeDsLevel) -> Self {
+        self.three_ds_level = Some(value);
+        self
+    }
+
+    pub fn title(mut self, value: impl Into<String>) -> Self {
+        self.title = Some(value.into());
+        self
+    }
+
+    pub fn trial_period_days(mut self, value: f64) -> Self {
+        self.trial_period_days = Some(value);
+        self
+    }
+
+    pub fn unlimited_stock(mut self, value: bool) -> Self {
+        self.unlimited_stock = Some(value);
+        self
+    }
+
+    pub fn updated_at(mut self, value: impl Into<String>) -> Self {
+        self.updated_at = Some(value.into());
+        self
+    }
+
+    pub fn visibility(mut self, value: VariantListItemVisibility) -> Self {
+        self.visibility = Some(value);
+        self
+    }
+
+    /// Consumes the builder and constructs a [`VariantListItem`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`adaptive_pricing_enabled`](VariantListItemBuilder::adaptive_pricing_enabled)
+    /// - [`allow_multiple_quantity`](VariantListItemBuilder::allow_multiple_quantity)
+    /// - [`billing_type`](VariantListItemBuilder::billing_type)
+    /// - [`created_at`](VariantListItemBuilder::created_at)
+    /// - [`currency`](VariantListItemBuilder::currency)
+    /// - [`custom_fields`](VariantListItemBuilder::custom_fields)
+    /// - [`formatted_price`](VariantListItemBuilder::formatted_price)
+    /// - [`id`](VariantListItemBuilder::id)
+    /// - [`initial_price`](VariantListItemBuilder::initial_price)
+    /// - [`initial_price_due`](VariantListItemBuilder::initial_price_due)
+    /// - [`purchase_url`](VariantListItemBuilder::purchase_url)
+    /// - [`release_method`](VariantListItemBuilder::release_method)
+    /// - [`renewal_price`](VariantListItemBuilder::renewal_price)
+    /// - [`unlimited_stock`](VariantListItemBuilder::unlimited_stock)
+    /// - [`updated_at`](VariantListItemBuilder::updated_at)
+    /// - [`visibility`](VariantListItemBuilder::visibility)
+    pub fn build(self) -> Result<VariantListItem, BuildError> {
+        Ok(VariantListItem {
+            account: self.account,
+            adaptive_pricing_enabled: self
+                .adaptive_pricing_enabled
+                .ok_or_else(|| BuildError::missing_field("adaptive_pricing_enabled"))?,
+            allow_multiple_quantity: self
+                .allow_multiple_quantity
+                .ok_or_else(|| BuildError::missing_field("allow_multiple_quantity"))?,
+            attributes: self.attributes,
+            billing_period: self.billing_period,
+            billing_type: self
+                .billing_type
+                .ok_or_else(|| BuildError::missing_field("billing_type"))?,
+            cancel_discount_intervals: self.cancel_discount_intervals,
+            cancel_discount_percentage: self.cancel_discount_percentage,
+            checkout_styling: self.checkout_styling,
+            created_at: self
+                .created_at
+                .ok_or_else(|| BuildError::missing_field("created_at"))?,
+            currency: self
+                .currency
+                .ok_or_else(|| BuildError::missing_field("currency"))?,
+            custom_fields: self
+                .custom_fields
+                .ok_or_else(|| BuildError::missing_field("custom_fields"))?,
+            description: self.description,
+            expiration_days: self.expiration_days,
+            formatted_price: self
+                .formatted_price
+                .ok_or_else(|| BuildError::missing_field("formatted_price"))?,
+            id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            image: self.image,
+            initial_price: self
+                .initial_price
+                .ok_or_else(|| BuildError::missing_field("initial_price"))?,
+            initial_price_due: self
+                .initial_price_due
+                .ok_or_else(|| BuildError::missing_field("initial_price_due"))?,
+            internal_notes: self.internal_notes,
+            invoice: self.invoice,
+            member_count: self.member_count,
+            metadata: self.metadata,
+            offer_cancel_discount: self.offer_cancel_discount,
+            payment_method_configuration: self.payment_method_configuration,
+            product: self.product,
+            purchase_url: self
+                .purchase_url
+                .ok_or_else(|| BuildError::missing_field("purchase_url"))?,
+            release_method: self
+                .release_method
+                .ok_or_else(|| BuildError::missing_field("release_method"))?,
+            renewal_price: self
+                .renewal_price
+                .ok_or_else(|| BuildError::missing_field("renewal_price"))?,
+            sku: self.sku,
+            split_pay_required_payments: self.split_pay_required_payments,
+            stock: self.stock,
+            strike_through_initial_price: self.strike_through_initial_price,
+            strike_through_renewal_price: self.strike_through_renewal_price,
+            three_ds_level: self.three_ds_level,
+            title: self.title,
+            trial_period_days: self.trial_period_days,
+            unlimited_stock: self
+                .unlimited_stock
+                .ok_or_else(|| BuildError::missing_field("unlimited_stock"))?,
+            updated_at: self
+                .updated_at
+                .ok_or_else(|| BuildError::missing_field("updated_at"))?,
+            visibility: self
+                .visibility
+                .ok_or_else(|| BuildError::missing_field("visibility"))?,
+        })
+    }
+}

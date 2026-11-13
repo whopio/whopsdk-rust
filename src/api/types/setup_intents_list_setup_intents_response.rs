@@ -1,14 +1,11 @@
 pub use crate::prelude::*;
 
-/// The connection type for SetupIntent.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListSetupIntentsResponse {
-    /// A list of nodes.
     #[serde(default)]
-    pub data: Vec<SetupIntentListItem>,
-    /// Information to aid in pagination.
+    pub data: Vec<SetupIntent>,
     #[serde(default)]
-    pub page_info: PageInfo,
+    pub page_info: ListSetupIntentsResponsePageInfo,
 }
 
 impl ListSetupIntentsResponse {
@@ -20,17 +17,17 @@ impl ListSetupIntentsResponse {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListSetupIntentsResponseBuilder {
-    data: Option<Vec<SetupIntentListItem>>,
-    page_info: Option<PageInfo>,
+    data: Option<Vec<SetupIntent>>,
+    page_info: Option<ListSetupIntentsResponsePageInfo>,
 }
 
 impl ListSetupIntentsResponseBuilder {
-    pub fn data(mut self, value: Vec<SetupIntentListItem>) -> Self {
+    pub fn data(mut self, value: Vec<SetupIntent>) -> Self {
         self.data = Some(value);
         self
     }
 
-    pub fn page_info(mut self, value: PageInfo) -> Self {
+    pub fn page_info(mut self, value: ListSetupIntentsResponsePageInfo) -> Self {
         self.page_info = Some(value);
         self
     }

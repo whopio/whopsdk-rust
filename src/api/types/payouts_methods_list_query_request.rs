@@ -20,6 +20,9 @@ pub struct PayoutsMethodsListQueryRequest {
     /// Currency code of the amount, for example `usd`. Only meaningful with amount or include_limits.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
+    /// When true, also includes bill-pay recipient methods tied to this funding account. Defaults to false, returning only the account's own payout methods.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_recipients: Option<bool>,
     /// When true, the response also carries limits — the live per-speed payout caps the account's payout requests are validated against, in the requested currency. Requires the payout:withdrawal:read scope.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub include_limits: Option<bool>,
@@ -51,6 +54,7 @@ pub struct PayoutsMethodsListQueryRequestBuilder {
     status: Option<ListMethodsRequestStatus>,
     amount: Option<f64>,
     currency: Option<String>,
+    include_recipients: Option<bool>,
     include_limits: Option<bool>,
     first: Option<i64>,
     after: Option<String>,
@@ -81,6 +85,11 @@ impl PayoutsMethodsListQueryRequestBuilder {
 
     pub fn currency(mut self, value: impl Into<String>) -> Self {
         self.currency = Some(value.into());
+        self
+    }
+
+    pub fn include_recipients(mut self, value: bool) -> Self {
+        self.include_recipients = Some(value);
         self
     }
 
@@ -117,6 +126,7 @@ impl PayoutsMethodsListQueryRequestBuilder {
             status: self.status,
             amount: self.amount,
             currency: self.currency,
+            include_recipients: self.include_recipients,
             include_limits: self.include_limits,
             first: self.first,
             after: self.after,

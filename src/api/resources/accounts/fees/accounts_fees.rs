@@ -13,7 +13,7 @@ impl FeesClient {
         })
     }
 
-    /// Retrieves the account's fees: a singleton document keyed by fee, with any markups its platform adds. `adjustable` on each fee says what the caller may change.
+    /// Retrieves the account's fees as a single document keyed by fee, with any markups its platform adds. Subaccounts see the rates in effect for them. `adjustable` on each fee says what you may change with Update Account Fees.
     ///
     /// # Arguments
     ///
@@ -52,11 +52,16 @@ impl FeesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("accounts/{}/fees", account_id),
                 None,
@@ -66,7 +71,7 @@ impl FeesClient {
             .await
     }
 
-    /// Updates the account's fees. Each key present in the body is replaced; omitted keys are left untouched. Only fees the document reports as `adjustable` can be changed.
+    /// Updates the account's fees. Each key present in the body is replaced; omitted keys are left untouched. Only fees that Retrieve Account Fees reports as `adjustable` can be changed.
     ///
     /// # Arguments
     ///
@@ -112,11 +117,16 @@ impl FeesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::PATCH,
                 &format!("accounts/{}/fees", account_id),
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),

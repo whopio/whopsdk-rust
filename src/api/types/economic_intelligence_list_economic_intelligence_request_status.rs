@@ -6,7 +6,9 @@ pub enum ListEconomicIntelligenceRequestStatus {
     Queued,
     Pending,
     Ready,
+    Running,
     Executed,
+    Incomplete,
     Superseded,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -19,7 +21,9 @@ impl Serialize for ListEconomicIntelligenceRequestStatus {
             Self::Queued => serializer.serialize_str("queued"),
             Self::Pending => serializer.serialize_str("pending"),
             Self::Ready => serializer.serialize_str("ready"),
+            Self::Running => serializer.serialize_str("running"),
             Self::Executed => serializer.serialize_str("executed"),
+            Self::Incomplete => serializer.serialize_str("incomplete"),
             Self::Superseded => serializer.serialize_str("superseded"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
@@ -33,7 +37,9 @@ impl<'de> Deserialize<'de> for ListEconomicIntelligenceRequestStatus {
             "queued" => Ok(Self::Queued),
             "pending" => Ok(Self::Pending),
             "ready" => Ok(Self::Ready),
+            "running" => Ok(Self::Running),
             "executed" => Ok(Self::Executed),
+            "incomplete" => Ok(Self::Incomplete),
             "superseded" => Ok(Self::Superseded),
             _ => Ok(Self::__Unknown(value)),
         }
@@ -46,7 +52,9 @@ impl fmt::Display for ListEconomicIntelligenceRequestStatus {
             Self::Queued => write!(f, "queued"),
             Self::Pending => write!(f, "pending"),
             Self::Ready => write!(f, "ready"),
+            Self::Running => write!(f, "running"),
             Self::Executed => write!(f, "executed"),
+            Self::Incomplete => write!(f, "incomplete"),
             Self::Superseded => write!(f, "superseded"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }

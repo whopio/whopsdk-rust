@@ -5,10 +5,13 @@ pub struct RetrieveStatsResponseDataPointsItem {
     /// Present only when broken down: one entry per property value in this period.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub breakdown: Option<Vec<RetrieveStatsResponseDataPointsItemBreakdownItem>>,
+    /// Present for the funnel metric. People reaching each step in order, starting with the entry step.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub steps: Option<Vec<FunnelStepResult>>,
     /// Unix timestamp (seconds) of the period start.
     #[serde(default)]
     pub timestamp: i64,
-    /// The metric's value for this period, in the metric's unit.
+    /// The metric's value for this period, in the metric's unit. For `funnel`, the final-step conversion percentage.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     #[serde(with = "crate::core::number_serializers::option")]
@@ -25,6 +28,7 @@ impl RetrieveStatsResponseDataPointsItem {
 #[non_exhaustive]
 pub struct RetrieveStatsResponseDataPointsItemBuilder {
     breakdown: Option<Vec<RetrieveStatsResponseDataPointsItemBreakdownItem>>,
+    steps: Option<Vec<FunnelStepResult>>,
     timestamp: Option<i64>,
     value: Option<f64>,
 }
@@ -35,6 +39,11 @@ impl RetrieveStatsResponseDataPointsItemBuilder {
         value: Vec<RetrieveStatsResponseDataPointsItemBreakdownItem>,
     ) -> Self {
         self.breakdown = Some(value);
+        self
+    }
+
+    pub fn steps(mut self, value: Vec<FunnelStepResult>) -> Self {
+        self.steps = Some(value);
         self
     }
 
@@ -54,6 +63,7 @@ impl RetrieveStatsResponseDataPointsItemBuilder {
     pub fn build(self) -> Result<RetrieveStatsResponseDataPointsItem, BuildError> {
         Ok(RetrieveStatsResponseDataPointsItem {
             breakdown: self.breakdown,
+            steps: self.steps,
             timestamp: self
                 .timestamp
                 .ok_or_else(|| BuildError::missing_field("timestamp"))?,

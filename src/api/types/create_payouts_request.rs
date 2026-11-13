@@ -21,19 +21,22 @@ pub struct CreatePayoutsRequest {
     /// Free-form notes to attach to the payout, with a maximum of 255 characters. Omit or pass `null` for no notes.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
+    /// A saved card of the account, prefixed `payt_`, to charge for this payout instead of paying from the balance. Requires a `quote_token` from `POST /payouts/quotes` made with the same card and `amount`. Only for business accounts paying a saved recipient in `usd` at `standard` speed. The payout is returned under the card payment's `pay_` id until it is submitted, then `GET /payouts/{id}` returns the submitted payout.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_method_id: Option<String>,
     /// The saved payout method to deliver to (a potk_ identifier).
     #[serde(default)]
     pub payout_method_id: String,
     /// Whether the parent platform covers the payout fee instead of the account being paid out. Omit to use the platform's configured fee coverage policy; pass `false` to opt out of it. `true` is only accepted for accounts that belong to a platform, and requires the platform's policy to cover this payout method's category or a caller authorized to manage the platform's child account fees.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub platform_covers_fees: Option<bool>,
-    /// The server-signed quote_token returned by POST /payouts/quotes. Required when the ledger account's payout_quote_required is true; a payout without it is refused with the invalid_payout_quote error type. When provided, Whop will not commit a provider payout below the destination amount the quote showed.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub quote_token: Option<String>,
+    /// Required server-signed token from POST /payouts/quotes, matching this payout's owner, method, amount, currency and speed. Submit before expiry. For an uncertain payout, retry with the original token and Idempotency-Key to recover the existing payout.
+    #[serde(default)]
+    pub quote_token: String,
     /// How fast the funds should arrive. `instant` is only accepted when the account and payout method are eligible; otherwise the payout is rejected.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub speed: Option<CreatePayoutsRequestSpeed>,
-    /// Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
+    /// Payment description sent with the payout, such as an invoice number or what it pays for. Must be 5-80 printable ASCII characters (letters, digits, spaces and punctuation); Whop sends it in upper case. Not all countries and banks show it on the recipient's statement, and it is not the sender name. Set this value when creating the quote; the payout request may omit it but cannot add or change it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub statement_descriptor: Option<String>,
     /// User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
@@ -56,6 +59,7 @@ pub struct CreatePayoutsRequestBuilder {
     currency: Option<String>,
     metadata: Option<HashMap<String, String>>,
     notes: Option<String>,
+    payment_method_id: Option<String>,
     payout_method_id: Option<String>,
     platform_covers_fees: Option<bool>,
     quote_token: Option<String>,
@@ -95,6 +99,11 @@ impl CreatePayoutsRequestBuilder {
         self
     }
 
+    pub fn payment_method_id(mut self, value: impl Into<String>) -> Self {
+        self.payment_method_id = Some(value.into());
+        self
+    }
+
     pub fn payout_method_id(mut self, value: impl Into<String>) -> Self {
         self.payout_method_id = Some(value.into());
         self
@@ -129,6 +138,7 @@ impl CreatePayoutsRequestBuilder {
     /// This method will fail if any of the following fields are not set:
     /// - [`amount`](CreatePayoutsRequestBuilder::amount)
     /// - [`payout_method_id`](CreatePayoutsRequestBuilder::payout_method_id)
+    /// - [`quote_token`](CreatePayoutsRequestBuilder::quote_token)
     pub fn build(self) -> Result<CreatePayoutsRequest, BuildError> {
         Ok(CreatePayoutsRequest {
             account_id: self.account_id,
@@ -139,11 +149,14 @@ impl CreatePayoutsRequestBuilder {
             currency: self.currency,
             metadata: self.metadata,
             notes: self.notes,
+            payment_method_id: self.payment_method_id,
             payout_method_id: self
                 .payout_method_id
                 .ok_or_else(|| BuildError::missing_field("payout_method_id"))?,
             platform_covers_fees: self.platform_covers_fees,
-            quote_token: self.quote_token,
+            quote_token: self
+                .quote_token
+                .ok_or_else(|| BuildError::missing_field("quote_token"))?,
             speed: self.speed,
             statement_descriptor: self.statement_descriptor,
             user_id: self.user_id,

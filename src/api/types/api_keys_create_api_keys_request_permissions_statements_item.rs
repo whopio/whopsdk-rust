@@ -8,7 +8,7 @@ pub struct CreateApiKeysRequestPermissionsStatementsItem {
     /// Whether the actions are granted (`true`) or denied (`false`).
     #[serde(default)]
     pub grant: bool,
-    /// Resource identifiers the statement applies to, for example `biz_xxx` or `biz_xxx|pass_*`. Defaults to the key's owning resource when omitted.
+    /// Resource identifiers the statement applies to, for example `biz_xxx` or `biz_xxx|prod_*`. Defaults to the key's owning resource when omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resources: Option<Vec<String>>,
 }

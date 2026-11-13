@@ -5,6 +5,9 @@ pub struct RetrieveStatsResponseDataPointsItemBreakdownItem {
     /// The property value, for example usd or visa.
     #[serde(default)]
     pub name: String,
+    /// Present for the funnel metric. People reaching each step in order, starting with the entry step.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub steps: Option<Vec<FunnelStepResult>>,
     /// The metric's value for this entry.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -22,12 +25,18 @@ impl RetrieveStatsResponseDataPointsItemBreakdownItem {
 #[non_exhaustive]
 pub struct RetrieveStatsResponseDataPointsItemBreakdownItemBuilder {
     name: Option<String>,
+    steps: Option<Vec<FunnelStepResult>>,
     value: Option<f64>,
 }
 
 impl RetrieveStatsResponseDataPointsItemBreakdownItemBuilder {
     pub fn name(mut self, value: impl Into<String>) -> Self {
         self.name = Some(value.into());
+        self
+    }
+
+    pub fn steps(mut self, value: Vec<FunnelStepResult>) -> Self {
+        self.steps = Some(value);
         self
     }
 
@@ -42,6 +51,7 @@ impl RetrieveStatsResponseDataPointsItemBreakdownItemBuilder {
     pub fn build(self) -> Result<RetrieveStatsResponseDataPointsItemBreakdownItem, BuildError> {
         Ok(RetrieveStatsResponseDataPointsItemBreakdownItem {
             name: self.name.ok_or_else(|| BuildError::missing_field("name"))?,
+            steps: self.steps,
             value: self.value,
         })
     }

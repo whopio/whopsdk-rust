@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct PaymentMethodsClient {
@@ -13,7 +14,7 @@ impl PaymentMethodsClient {
         })
     }
 
-    /// Returns a paginated list of payment methods for a member or company, or for the authenticated user when neither is given, with optional filtering by creation date. A payment method is a stored representation of how a customer intends to pay, such as a card, bank account, or digital wallet.
+    /// Returns a paginated list of saved payment methods for a member or account, or for the authenticated user when you pass neither.
     ///
     /// Required permissions:
     /// - `member:payment_methods:read`
@@ -87,11 +88,16 @@ impl PaymentMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "payment_methods",
                 None,
@@ -118,7 +124,85 @@ impl PaymentMethodsClient {
             .await
     }
 
-    /// Retrieves the details of an existing payment method. Addresses a member's wallet when member_id or account_id is given, otherwise your own.
+    pub async fn list_paginated(
+        &self,
+        request: &PaymentMethodsListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("before", request.before.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("member_id", request.member_id.clone())
+            .serialize("direction", request.direction.clone())
+            .datetime("created_before", request.created_before.clone())
+            .datetime("created_after", request.created_after.clone())
+            .serialize("future_usage", request.future_usage.clone())
+            .serialize_array("payment_method_types", request.payment_method_types.clone())
+            .serialize_array("card_brands", request.card_brands.clone())
+            .serialize_array("card_funding_types", request.card_funding_types.clone())
+            .bool("has_payer_document", request.has_payer_document.clone())
+            .bool("expired", request.expired.clone())
+            .bool("broken", request.broken.clone())
+            .string("account_id", request.account_id.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "payment_methods",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Retrieves a saved payment method from a member's wallet when you pass `member_id` or `account_id`, or from your own otherwise.
     ///
     /// Required permissions:
     /// - `member:payment_methods:read`
@@ -170,11 +254,16 @@ impl PaymentMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("payment_methods/{}", id),
                 None,
@@ -239,11 +328,16 @@ impl PaymentMethodsClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::DELETE,
                 &format!("payment_methods/{}", id),
                 None,

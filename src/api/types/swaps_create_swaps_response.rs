@@ -2,13 +2,16 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct CreateSwapsResponse {
-    /// Account ID that owns the wallet used for the swap.
+    /// Account that owns the swap: a business ID prefixed `biz_`, or the user ID for a personal account.
     #[serde(default)]
     pub account_id: String,
-    /// Fiat pairs only: amount of the source currency converted. Null while a stablecoin repayment is processing.
+    /// Crypto pairs only: the from_token amount the swap spends, as a decimal string. A request for `all` returns the wallet balance it read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<String>,
+    /// Fiat pairs only: amount of the source currency converted. Null while the conversion is settling.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub amount_in: Option<f64>,
-    /// Fiat pairs only: amount credited in the destination currency. Null while a stablecoin repayment is processing.
+    /// Fiat pairs only: amount credited in the destination currency. Null while the conversion is settling.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub amount_out: Option<f64>,
     /// Expected destination token amount.
@@ -27,7 +30,7 @@ pub struct CreateSwapsResponse {
     /// Quoted exchange rate used to create the swap.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rate: Option<String>,
-    /// Swap status. Crypto swaps start `queued`; fiat conversions return `complete`, or `working` while a stablecoin repayment settles.
+    /// Swap status. Crypto swaps start `queued`. Fiat conversions return `complete`, or `working` while the conversion settles.
     pub status: CreateSwapsResponseStatus,
     /// Destination chain for the swap.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -35,6 +38,9 @@ pub struct CreateSwapsResponse {
     /// Fiat pairs only: the destination currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub to_token: Option<CreateSwapsResponseToToken>,
+    /// User whose personal account owns the swap, prefixed `user_`. Null for a business account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
 }
 
 impl CreateSwapsResponse {
@@ -47,6 +53,7 @@ impl CreateSwapsResponse {
 #[non_exhaustive]
 pub struct CreateSwapsResponseBuilder {
     account_id: Option<String>,
+    amount: Option<String>,
     amount_in: Option<f64>,
     amount_out: Option<f64>,
     amount_out_expected: Option<String>,
@@ -58,11 +65,17 @@ pub struct CreateSwapsResponseBuilder {
     status: Option<CreateSwapsResponseStatus>,
     to_chain: Option<String>,
     to_token: Option<CreateSwapsResponseToToken>,
+    user_id: Option<String>,
 }
 
 impl CreateSwapsResponseBuilder {
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
+        self
+    }
+
+    pub fn amount(mut self, value: impl Into<String>) -> Self {
+        self.amount = Some(value.into());
         self
     }
 
@@ -121,6 +134,11 @@ impl CreateSwapsResponseBuilder {
         self
     }
 
+    pub fn user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
+        self
+    }
+
     /// Consumes the builder and constructs a [`CreateSwapsResponse`].
     /// This method will fail if any of the following fields are not set:
     /// - [`account_id`](CreateSwapsResponseBuilder::account_id)
@@ -131,6 +149,7 @@ impl CreateSwapsResponseBuilder {
             account_id: self
                 .account_id
                 .ok_or_else(|| BuildError::missing_field("account_id"))?,
+            amount: self.amount,
             amount_in: self.amount_in,
             amount_out: self.amount_out,
             amount_out_expected: self.amount_out_expected,
@@ -146,6 +165,7 @@ impl CreateSwapsResponseBuilder {
                 .ok_or_else(|| BuildError::missing_field("status"))?,
             to_chain: self.to_chain,
             to_token: self.to_token,
+            user_id: self.user_id,
         })
     }
 }

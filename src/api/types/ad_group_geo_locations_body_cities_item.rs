@@ -2,7 +2,7 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct AdGroupGeoLocationsBodyCitiesItem {
-    /// The ad platform's key for the city in its location taxonomy.
+    /// The city's key in the location taxonomy.
     #[serde(default)]
     pub key: String,
     /// City name, such as `Austin`.

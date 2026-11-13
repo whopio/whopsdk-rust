@@ -2,13 +2,10 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct CreateAppBuildsRequest {
-    /// The AI prompt that generated this build, if applicable.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ai_prompt_id: Option<String>,
     /// The app to create the build for, prefixed `app_`. Defaults to the app behind the presented credential.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub app_id: Option<String>,
-    /// The uploaded build file: `{ id }` for an existing file or `{ direct_upload_id }` for a completed direct upload.
+    /// The uploaded build file: pass `id` for an existing file or `direct_upload_id` for a completed direct upload. iOS and Android builds take a .zip bundle; web builds take a JavaScript file or a .zip archive of the hosted site.
     #[serde(default)]
     pub attachment: CreateAppBuildsRequestAttachment,
     /// A client-generated checksum of the build file, used to verify file integrity when unpacked.
@@ -33,7 +30,6 @@ impl CreateAppBuildsRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct CreateAppBuildsRequestBuilder {
-    ai_prompt_id: Option<String>,
     app_id: Option<String>,
     attachment: Option<CreateAppBuildsRequestAttachment>,
     checksum: Option<String>,
@@ -43,11 +39,6 @@ pub struct CreateAppBuildsRequestBuilder {
 }
 
 impl CreateAppBuildsRequestBuilder {
-    pub fn ai_prompt_id(mut self, value: impl Into<String>) -> Self {
-        self.ai_prompt_id = Some(value.into());
-        self
-    }
-
     pub fn app_id(mut self, value: impl Into<String>) -> Self {
         self.app_id = Some(value.into());
         self
@@ -88,7 +79,6 @@ impl CreateAppBuildsRequestBuilder {
     /// - [`platform`](CreateAppBuildsRequestBuilder::platform)
     pub fn build(self) -> Result<CreateAppBuildsRequest, BuildError> {
         Ok(CreateAppBuildsRequest {
-            ai_prompt_id: self.ai_prompt_id,
             app_id: self.app_id,
             attachment: self
                 .attachment

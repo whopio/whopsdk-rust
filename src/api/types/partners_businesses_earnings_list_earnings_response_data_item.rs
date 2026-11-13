@@ -11,6 +11,9 @@ pub struct ListEarningsResponseDataItem {
     /// What the referrer earns, in USD. Null until the earning settles.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub commission_amount_usd: Option<String>,
+    /// Whether an upfront commission advance replaces this commission, including covered earnings that are still awaiting settlement.
+    #[serde(default)]
+    pub covered_by_commission_advance: bool,
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset")]
     pub created_at: DateTime<FixedOffset>,
@@ -19,7 +22,7 @@ pub struct ListEarningsResponseDataItem {
     pub financial_activity: Option<Vec<ListEarningsResponseDataItemFinancialActivityItem>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
-    /// Which income source the commission is on: product-sales gross profit, Whop Ads spend billed to the business, platform balance transfer fees, Whop Card interchange, or a fixed onboarding or referral link reward paid to the partner when a referred business qualifies.
+    /// Which income source the commission is on: product-sales gross profit, Whop Ads spend billed to the business, platform balance transfer fees, Whop Card interchange, withdrawal gross profit, or a fixed onboarding or referral link reward paid to the partner when a referred business qualifies.
     pub income_source: ListEarningsResponseDataItemIncomeSource,
     pub object: ListEarningsResponseDataItemObject,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -33,7 +36,10 @@ pub struct ListEarningsResponseDataItem {
     pub payout_percentage: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product: Option<ListEarningsResponseDataItemProduct>,
-    /// The resource that generated the earning: the customer payment receipt for sales and ad spend earnings, the balance transfer for transfer earnings, the card transaction for card interchange earnings, or the qualifying reward for fixed reward earnings.
+    /// Estimated commission while awaiting settlement. Zero when a funded commission advance covers the earning. Null when no estimate is available or the earning has settled.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projected_commission_amount_usd: Option<Money>,
+    /// The resource that generated the earning. For sales and ad spend earnings, it is the customer payment receipt. For transfer earnings, it is the balance transfer. For withdrawal earnings, it is the withdrawal. For card interchange earnings, it is the card transaction. For fixed reward earnings, it is the qualifying reward. For business referral earnings, it is the referred partner business's own commission.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resource: Option<ListEarningsResponseDataItemResource>,
     /// Whether this earning is a second-tier (grandparent) commission.
@@ -58,6 +64,7 @@ pub struct ListEarningsResponseDataItemBuilder {
     account: Option<ListEarningsResponseDataItemAccount>,
     cancelation_reason: Option<String>,
     commission_amount_usd: Option<String>,
+    covered_by_commission_advance: Option<bool>,
     created_at: Option<DateTime<FixedOffset>>,
     financial_activity: Option<Vec<ListEarningsResponseDataItemFinancialActivityItem>>,
     id: Option<String>,
@@ -66,6 +73,7 @@ pub struct ListEarningsResponseDataItemBuilder {
     payout_at: Option<DateTime<FixedOffset>>,
     payout_percentage: Option<f64>,
     product: Option<ListEarningsResponseDataItemProduct>,
+    projected_commission_amount_usd: Option<Money>,
     resource: Option<ListEarningsResponseDataItemResource>,
     second_tier: Option<bool>,
     status: Option<ListEarningsResponseDataItemStatus>,
@@ -85,6 +93,11 @@ impl ListEarningsResponseDataItemBuilder {
 
     pub fn commission_amount_usd(mut self, value: impl Into<String>) -> Self {
         self.commission_amount_usd = Some(value.into());
+        self
+    }
+
+    pub fn covered_by_commission_advance(mut self, value: bool) -> Self {
+        self.covered_by_commission_advance = Some(value);
         self
     }
 
@@ -131,6 +144,11 @@ impl ListEarningsResponseDataItemBuilder {
         self
     }
 
+    pub fn projected_commission_amount_usd(mut self, value: Money) -> Self {
+        self.projected_commission_amount_usd = Some(value);
+        self
+    }
+
     pub fn resource(mut self, value: ListEarningsResponseDataItemResource) -> Self {
         self.resource = Some(value);
         self
@@ -153,6 +171,7 @@ impl ListEarningsResponseDataItemBuilder {
 
     /// Consumes the builder and constructs a [`ListEarningsResponseDataItem`].
     /// This method will fail if any of the following fields are not set:
+    /// - [`covered_by_commission_advance`](ListEarningsResponseDataItemBuilder::covered_by_commission_advance)
     /// - [`created_at`](ListEarningsResponseDataItemBuilder::created_at)
     /// - [`income_source`](ListEarningsResponseDataItemBuilder::income_source)
     /// - [`object`](ListEarningsResponseDataItemBuilder::object)
@@ -164,6 +183,9 @@ impl ListEarningsResponseDataItemBuilder {
             account: self.account,
             cancelation_reason: self.cancelation_reason,
             commission_amount_usd: self.commission_amount_usd,
+            covered_by_commission_advance: self
+                .covered_by_commission_advance
+                .ok_or_else(|| BuildError::missing_field("covered_by_commission_advance"))?,
             created_at: self
                 .created_at
                 .ok_or_else(|| BuildError::missing_field("created_at"))?,
@@ -178,6 +200,7 @@ impl ListEarningsResponseDataItemBuilder {
             payout_at: self.payout_at,
             payout_percentage: self.payout_percentage,
             product: self.product,
+            projected_commission_amount_usd: self.projected_commission_amount_usd,
             resource: self.resource,
             second_tier: self
                 .second_tier

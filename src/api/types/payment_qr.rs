@@ -5,6 +5,9 @@ pub struct PaymentQr {
     /// Exactly what the buyer must pay, in the charged currency.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub amount: Option<Money>,
+    /// The code the buyer pastes into their payment app instead of scanning, such as Pix's copy-and-paste code, so they can pay from the device showing the QR. Only present for methods that accept a pasted code.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub copy_code: Option<String>,
     /// A hosted page with the complete, printable instructions. If you would rather not render the details yourself, send the buyer here.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub document_url: Option<String>,
@@ -32,6 +35,7 @@ impl PaymentQr {
 #[non_exhaustive]
 pub struct PaymentQrBuilder {
     amount: Option<Money>,
+    copy_code: Option<String>,
     document_url: Option<String>,
     expires_at: Option<String>,
     key: Option<String>,
@@ -42,6 +46,11 @@ pub struct PaymentQrBuilder {
 impl PaymentQrBuilder {
     pub fn amount(mut self, value: Money) -> Self {
         self.amount = Some(value);
+        self
+    }
+
+    pub fn copy_code(mut self, value: impl Into<String>) -> Self {
+        self.copy_code = Some(value.into());
         self
     }
 
@@ -74,6 +83,7 @@ impl PaymentQrBuilder {
     pub fn build(self) -> Result<PaymentQr, BuildError> {
         Ok(PaymentQr {
             amount: self.amount,
+            copy_code: self.copy_code,
             document_url: self.document_url,
             expires_at: self.expires_at,
             key: self.key,

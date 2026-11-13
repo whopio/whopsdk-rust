@@ -9,7 +9,7 @@ pub struct LeaderboardPartnersResponseLeadersItem {
     /// 1-based leaderboard position.
     #[serde(default)]
     pub rank: i64,
-    /// The referrer's pending + completed earnings across all referred businesses, in USD.
+    /// The referrer's pending + completed earnings across all referred businesses, in USD, without commission advances. Whop Sales commission counts only the share that reaches its people.
     #[serde(default)]
     pub total_earnings_usd: String,
     /// Credited GMV across all the referrer's referred businesses, in USD.

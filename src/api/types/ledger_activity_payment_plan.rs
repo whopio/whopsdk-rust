@@ -1,12 +1,12 @@
 pub use crate::prelude::*;
 
-/// Plan associated with the payment, when applicable.
+/// Variant associated with the payment, when applicable.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct LedgerActivityPaymentPlan {
-    /// Plan ID, prefixed `plan_`.
+    /// Variant ID, prefixed `plan_`.
     #[serde(default)]
     pub id: String,
-    /// Plan name.
+    /// Variant name.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
 }

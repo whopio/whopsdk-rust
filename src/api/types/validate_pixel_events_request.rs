@@ -5,7 +5,7 @@ pub struct ValidatePixelEventsRequest {
     /// Account to check. Defaults to the authenticated account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// A page to read for the pixel, e.g. an ad destination. Omit it to check the account from its events alone.
+    /// A page to check for the pixel, such as an ad destination. Events from that page settle the answer; if it hasn't sent any lately, it is fetched and its source read for the pixel and the conversion events wired on it. Omit it to check the account from its events alone.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }

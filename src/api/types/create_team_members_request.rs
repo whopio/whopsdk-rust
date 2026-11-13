@@ -8,7 +8,7 @@ pub struct CreateTeamMembersRequest {
     /// Email address to invite. Mutually exclusive with `user_id`. If the email already belongs to a Whop account it is treated the same as passing that account's `user_id`; otherwise a pending invite is created for the email.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
-    /// The system role to grant. Partners must pass all certification quizzes.
+    /// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
     pub role: CreateTeamMembersRequestRole,
     /// The user to add to the team, prefixed `user_`. Mutually exclusive with `email`.
     #[serde(skip_serializing_if = "Option::is_none")]

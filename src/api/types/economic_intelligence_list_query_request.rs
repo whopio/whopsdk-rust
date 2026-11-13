@@ -3,12 +3,24 @@ pub use crate::prelude::*;
 /// Query parameters for list
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct EconomicIntelligenceListQueryRequest {
-    /// Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding.
+    /// Account ID, prefixed `biz_`. Defaults to the API key's own account. Omit with `has_run` for the runs on every account you can read.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    /// Filter recommendations by their current status.
+    /// `ready` lists the recommendations the account can run now. A run status lists only the runs in that state. `queued`, `pending` and `superseded` are no longer listed and answer nothing.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<ListEconomicIntelligenceRequestStatus>,
+    /// No longer read: recommendations are written for the business as it changes. Up to 1000 characters.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input: Option<String>,
+    /// When true, only recommendations someone has started running, by any user. Without `account_id`, covers every account you can read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub has_run: Option<bool>,
+    /// Sort field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order: Option<ListEconomicIntelligenceRequestOrder>,
+    /// Sort direction.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub direction: Option<ListEconomicIntelligenceRequestDirection>,
     /// Number of results to return from the start of the range.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub first: Option<i64>,
@@ -34,6 +46,10 @@ impl EconomicIntelligenceListQueryRequest {
 pub struct EconomicIntelligenceListQueryRequestBuilder {
     account_id: Option<String>,
     status: Option<ListEconomicIntelligenceRequestStatus>,
+    input: Option<String>,
+    has_run: Option<bool>,
+    order: Option<ListEconomicIntelligenceRequestOrder>,
+    direction: Option<ListEconomicIntelligenceRequestDirection>,
     first: Option<i64>,
     after: Option<String>,
     last: Option<i64>,
@@ -48,6 +64,26 @@ impl EconomicIntelligenceListQueryRequestBuilder {
 
     pub fn status(mut self, value: ListEconomicIntelligenceRequestStatus) -> Self {
         self.status = Some(value);
+        self
+    }
+
+    pub fn input(mut self, value: impl Into<String>) -> Self {
+        self.input = Some(value.into());
+        self
+    }
+
+    pub fn has_run(mut self, value: bool) -> Self {
+        self.has_run = Some(value);
+        self
+    }
+
+    pub fn order(mut self, value: ListEconomicIntelligenceRequestOrder) -> Self {
+        self.order = Some(value);
+        self
+    }
+
+    pub fn direction(mut self, value: ListEconomicIntelligenceRequestDirection) -> Self {
+        self.direction = Some(value);
         self
     }
 
@@ -76,6 +112,10 @@ impl EconomicIntelligenceListQueryRequestBuilder {
         Ok(EconomicIntelligenceListQueryRequest {
             account_id: self.account_id,
             status: self.status,
+            input: self.input,
+            has_run: self.has_run,
+            order: self.order,
+            direction: self.direction,
             first: self.first,
             after: self.after,
             last: self.last,

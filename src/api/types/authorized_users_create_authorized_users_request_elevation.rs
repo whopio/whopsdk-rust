@@ -3,25 +3,25 @@ pub use crate::prelude::*;
 /// Re-authentication proof required to perform this sensitive action.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct CreateAuthorizedUsersRequestElevation {
-    /// The WebAuthn authenticator data (base64).
+    /// Ignored. Kept so existing API clients that send a passkey assertion keep working.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub authenticator_data: Option<String>,
-    /// The WebAuthn client data JSON (base64).
+    /// Ignored. Kept so existing API clients that send a passkey assertion keep working.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub client_data_json: Option<String>,
-    /// The WebAuthn credential ID (base64).
+    /// Ignored. Kept so existing API clients that send a passkey assertion keep working.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub credential_id: Option<String>,
     /// The 6-digit code emailed to the user.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email_code: Option<String>,
-    /// The WebAuthn signature (base64).
+    /// Ignored. Kept so existing API clients that send a passkey assertion keep working.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub signature: Option<String>,
     /// The 6-digit code from the authenticator app or SMS.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub totp_code: Option<String>,
-    /// Reuse an existing elevated session (for SMS/email 2FA users).
+    /// Ignored. Kept so existing API clients that send it keep working.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub use_finance_session: Option<bool>,
 }

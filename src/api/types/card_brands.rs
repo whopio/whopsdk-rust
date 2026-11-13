@@ -49,6 +49,10 @@ pub enum CardBrands {
     Nyce,
     Pulse,
     Star,
+    Eftpos,
+    Alelo,
+    Edenred,
+    Sodexo,
     Unknown,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
@@ -103,6 +107,10 @@ impl Serialize for CardBrands {
             Self::Nyce => serializer.serialize_str("nyce"),
             Self::Pulse => serializer.serialize_str("pulse"),
             Self::Star => serializer.serialize_str("star"),
+            Self::Eftpos => serializer.serialize_str("eftpos"),
+            Self::Alelo => serializer.serialize_str("alelo"),
+            Self::Edenred => serializer.serialize_str("edenred"),
+            Self::Sodexo => serializer.serialize_str("sodexo"),
             Self::Unknown => serializer.serialize_str("unknown"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
@@ -158,6 +166,10 @@ impl<'de> Deserialize<'de> for CardBrands {
             "nyce" => Ok(Self::Nyce),
             "pulse" => Ok(Self::Pulse),
             "star" => Ok(Self::Star),
+            "eftpos" => Ok(Self::Eftpos),
+            "alelo" => Ok(Self::Alelo),
+            "edenred" => Ok(Self::Edenred),
+            "sodexo" => Ok(Self::Sodexo),
             "unknown" => Ok(Self::Unknown),
             _ => Ok(Self::__Unknown(value)),
         }
@@ -212,6 +224,10 @@ impl fmt::Display for CardBrands {
             Self::Nyce => write!(f, "nyce"),
             Self::Pulse => write!(f, "pulse"),
             Self::Star => write!(f, "star"),
+            Self::Eftpos => write!(f, "eftpos"),
+            Self::Alelo => write!(f, "alelo"),
+            Self::Edenred => write!(f, "edenred"),
+            Self::Sodexo => write!(f, "sodexo"),
             Self::Unknown => write!(f, "unknown"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }

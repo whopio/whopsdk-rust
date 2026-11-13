@@ -8,6 +8,7 @@ pub enum RefundReason {
     Fraudulent,
     RequestedByCustomer,
     ExpiredUncapturedCharge,
+    DisputeAlert,
     /// This variant is used for forward compatibility.
     /// If the server sends a value not recognized by the current SDK version,
     /// it will be captured here with the raw string value.
@@ -20,6 +21,7 @@ impl Serialize for RefundReason {
             Self::Fraudulent => serializer.serialize_str("fraudulent"),
             Self::RequestedByCustomer => serializer.serialize_str("requested_by_customer"),
             Self::ExpiredUncapturedCharge => serializer.serialize_str("expired_uncaptured_charge"),
+            Self::DisputeAlert => serializer.serialize_str("dispute_alert"),
             Self::__Unknown(val) => serializer.serialize_str(val),
         }
     }
@@ -33,6 +35,7 @@ impl<'de> Deserialize<'de> for RefundReason {
             "fraudulent" => Ok(Self::Fraudulent),
             "requested_by_customer" => Ok(Self::RequestedByCustomer),
             "expired_uncaptured_charge" => Ok(Self::ExpiredUncapturedCharge),
+            "dispute_alert" => Ok(Self::DisputeAlert),
             _ => Ok(Self::__Unknown(value)),
         }
     }
@@ -45,6 +48,7 @@ impl fmt::Display for RefundReason {
             Self::Fraudulent => write!(f, "fraudulent"),
             Self::RequestedByCustomer => write!(f, "requested_by_customer"),
             Self::ExpiredUncapturedCharge => write!(f, "expired_uncaptured_charge"),
+            Self::DisputeAlert => write!(f, "dispute_alert"),
             Self::__Unknown(val) => write!(f, "{}", val),
         }
     }

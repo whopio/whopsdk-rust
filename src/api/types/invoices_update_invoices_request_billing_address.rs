@@ -1,38 +1,25 @@
 pub use crate::prelude::*;
 
-/// Inline billing address to create or update a mailing address for this invoice.
+/// Create a billing address linked to this member.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UpdateInvoicesRequestBillingAddress {
-    /// The city of the address.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub city: Option<String>,
-    /// The country of the address.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub country: Option<String>,
-    /// The line 1 of the address.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub line1: Option<String>,
-    /// The line 2 of the address.
+    #[serde(default)]
+    pub city: String,
+    /// ISO 3166-1 alpha-2 country code.
+    #[serde(default)]
+    pub country: String,
+    #[serde(default)]
+    pub line1: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub line2: Option<String>,
-    /// The name of the customer.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    /// The phone number of the customer.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub phone: Option<String>,
-    /// The postal code of the address.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub postal_code: Option<String>,
-    /// The state of the address.
+    #[serde(default)]
+    pub postal_code: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<String>,
-    /// The type of tax identifier.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_id_type: Option<TaxIdentifierTypes>,
-    /// The value of the tax identifier.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_id_value: Option<String>,
 }
 
 impl UpdateInvoicesRequestBillingAddress {
@@ -52,8 +39,6 @@ pub struct UpdateInvoicesRequestBillingAddressBuilder {
     phone: Option<String>,
     postal_code: Option<String>,
     state: Option<String>,
-    tax_id_type: Option<TaxIdentifierTypes>,
-    tax_id_value: Option<String>,
 }
 
 impl UpdateInvoicesRequestBillingAddressBuilder {
@@ -97,29 +82,28 @@ impl UpdateInvoicesRequestBillingAddressBuilder {
         self
     }
 
-    pub fn tax_id_type(mut self, value: TaxIdentifierTypes) -> Self {
-        self.tax_id_type = Some(value);
-        self
-    }
-
-    pub fn tax_id_value(mut self, value: impl Into<String>) -> Self {
-        self.tax_id_value = Some(value.into());
-        self
-    }
-
     /// Consumes the builder and constructs a [`UpdateInvoicesRequestBillingAddress`].
+    /// This method will fail if any of the following fields are not set:
+    /// - [`city`](UpdateInvoicesRequestBillingAddressBuilder::city)
+    /// - [`country`](UpdateInvoicesRequestBillingAddressBuilder::country)
+    /// - [`line1`](UpdateInvoicesRequestBillingAddressBuilder::line1)
+    /// - [`postal_code`](UpdateInvoicesRequestBillingAddressBuilder::postal_code)
     pub fn build(self) -> Result<UpdateInvoicesRequestBillingAddress, BuildError> {
         Ok(UpdateInvoicesRequestBillingAddress {
-            city: self.city,
-            country: self.country,
-            line1: self.line1,
+            city: self.city.ok_or_else(|| BuildError::missing_field("city"))?,
+            country: self
+                .country
+                .ok_or_else(|| BuildError::missing_field("country"))?,
+            line1: self
+                .line1
+                .ok_or_else(|| BuildError::missing_field("line1"))?,
             line2: self.line2,
             name: self.name,
             phone: self.phone,
-            postal_code: self.postal_code,
+            postal_code: self
+                .postal_code
+                .ok_or_else(|| BuildError::missing_field("postal_code"))?,
             state: self.state,
-            tax_id_type: self.tax_id_type,
-            tax_id_value: self.tax_id_value,
         })
     }
 }

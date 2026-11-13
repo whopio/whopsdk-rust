@@ -3,6 +3,9 @@ pub use crate::prelude::*;
 /// Query parameters for retrieve
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct UsersRetrieveQueryRequest {
+    /// Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_trading: Option<bool>,
     /// When set, returns the user's account-specific profile overrides for this account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
@@ -35,6 +38,7 @@ impl UsersRetrieveQueryRequest {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct UsersRetrieveQueryRequestBuilder {
+    include_trading: Option<bool>,
     account_id: Option<String>,
     include_balance: Option<bool>,
     include_balance_history: Option<bool>,
@@ -45,6 +49,11 @@ pub struct UsersRetrieveQueryRequestBuilder {
 }
 
 impl UsersRetrieveQueryRequestBuilder {
+    pub fn include_trading(mut self, value: bool) -> Self {
+        self.include_trading = Some(value);
+        self
+    }
+
     pub fn account_id(mut self, value: impl Into<String>) -> Self {
         self.account_id = Some(value.into());
         self
@@ -83,6 +92,7 @@ impl UsersRetrieveQueryRequestBuilder {
     /// Consumes the builder and constructs a [`UsersRetrieveQueryRequest`].
     pub fn build(self) -> Result<UsersRetrieveQueryRequest, BuildError> {
         Ok(UsersRetrieveQueryRequest {
+            include_trading: self.include_trading,
             account_id: self.account_id,
             include_balance: self.include_balance,
             include_balance_history: self.include_balance_history,

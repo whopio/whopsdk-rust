@@ -1,5 +1,6 @@
 use crate::api::*;
 use crate::{ApiError, ClientConfig, HttpClient, QueryBuilder, RequestOptions};
+use crate::{AsyncPaginator, PaginationResult};
 use reqwest::Method;
 
 pub struct PromoCodesClient {
@@ -13,14 +14,14 @@ impl PromoCodesClient {
         })
     }
 
-    /// Lists promo codes for an account with cursor pagination, filters, and sorting.
+    /// Lists an account's promo codes.
     ///
     /// # Arguments
     ///
     /// * `account_id` - Account whose promo codes are listed (`biz_` tag).
     /// * `status` - Promo-code status. `expired` groups inactive and archived codes.
     /// * `product_ids` - Only promo codes scoped to these product IDs.
-    /// * `plan_ids` - Only promo codes scoped to these plan IDs.
+    /// * `variant_ids` - Only promo codes scoped to these variant IDs.
     /// * `created_before` - Only promo codes created before this ISO 8601 timestamp.
     /// * `created_after` - Only promo codes created after this ISO 8601 timestamp.
     /// * `order` - Sort field.
@@ -29,6 +30,7 @@ impl PromoCodesClient {
     /// * `after` - Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     /// * `last` - Number of results to return from the end of the range.
     /// * `before` - Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    /// * `include_total_count` - Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
     /// * `options` - Additional request options such as headers, timeout, etc.
     ///
     /// # Returns
@@ -53,7 +55,7 @@ impl PromoCodesClient {
     ///             &PromoCodesListQueryRequest {
     ///                 account_id: "account_id".to_string(),
     ///                 product_ids: vec![Some("prod_xxxxxxxxxxxxxx".to_string())],
-    ///                 plan_ids: vec![Some("plan_xxxxxxxxxxxxxx".to_string())],
+    ///                 variant_ids: vec![Some("plan_xxxxxxxxxxxxxx".to_string())],
     ///                 status: None,
     ///                 created_before: None,
     ///                 created_after: None,
@@ -63,6 +65,7 @@ impl PromoCodesClient {
     ///                 after: None,
     ///                 last: None,
     ///                 before: None,
+    ///                 include_total_count: None,
     ///             },
     ///             None,
     ///         )
@@ -78,11 +81,16 @@ impl PromoCodesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 "promo_codes",
                 None,
@@ -90,7 +98,7 @@ impl PromoCodesClient {
                     .string("account_id", request.account_id.clone())
                     .serialize("status", request.status.clone())
                     .string_array("product_ids", request.product_ids.clone())
-                    .string_array("plan_ids", request.plan_ids.clone())
+                    .string_array("variant_ids", request.variant_ids.clone())
                     .datetime("created_before", request.created_before.clone())
                     .datetime("created_after", request.created_after.clone())
                     .serialize("order", request.order.clone())
@@ -99,13 +107,89 @@ impl PromoCodesClient {
                     .string("after", request.after.clone())
                     .int("last", request.last.clone())
                     .string("before", request.before.clone())
+                    .bool("include_total_count", request.include_total_count.clone())
                     .build(),
                 options,
             )
             .await
     }
 
-    /// Creates a promo code for an account. First-party sessions may attach an affiliate.
+    pub async fn list_paginated(
+        &self,
+        request: &PromoCodesListQueryRequest,
+        options: Option<RequestOptions>,
+    ) -> Result<AsyncPaginator<serde_json::Value>, ApiError> {
+        let http_client = std::sync::Arc::new(self.http_client.clone());
+        let base_query_params = QueryBuilder::new()
+            .string("account_id", request.account_id.clone())
+            .serialize("status", request.status.clone())
+            .string_array("product_ids", request.product_ids.clone())
+            .string_array("variant_ids", request.variant_ids.clone())
+            .datetime("created_before", request.created_before.clone())
+            .datetime("created_after", request.created_after.clone())
+            .serialize("order", request.order.clone())
+            .serialize("direction", request.direction.clone())
+            .int("first", request.first.clone())
+            .int("last", request.last.clone())
+            .string("before", request.before.clone())
+            .bool("include_total_count", request.include_total_count.clone())
+            .build();
+        let options_clone = options.clone();
+
+        AsyncPaginator::new(
+            http_client,
+            move |client, cursor_value| {
+                let mut query_params: Vec<(String, String)> =
+                    base_query_params.clone().unwrap_or_default();
+                if let Some(cursor) = cursor_value {
+                    // Add cursor parameter based on pagination configuration
+                    query_params.push(("after".to_string(), cursor));
+                }
+                let options_for_request = options_clone.clone();
+
+                // Clone captured variables to move into the async block
+
+                Box::pin(async move {
+                    let raw_response = client
+                        .execute_request_raw::<serde_json::Value>(
+                            Method::GET,
+                            "promo_codes",
+                            None,
+                            Some(query_params),
+                            options_for_request,
+                        )
+                        .await?;
+                    let response = raw_response.body;
+
+                    // Extract pagination info from response
+                    // Generic field extraction using pagination configuration
+                    let items: Vec<serde_json::Value> = response
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.clone())
+                        .unwrap_or_default();
+
+                    let next_cursor: Option<String> = response
+                        .get("page_info")
+                        .and_then(|v| v.get("end_cursor"))
+                        .and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let has_next_page = next_cursor.is_some();
+
+                    Ok(PaginationResult {
+                        items,
+                        next_cursor,
+                        has_next_page,
+                        response: Some(response),
+                        status_code: raw_response.status_code,
+                        headers: raw_response.headers,
+                    })
+                })
+            },
+            None, // Start with no cursor
+        )
+    }
+
+    /// Creates a promo code for an account.
     ///
     /// # Arguments
     ///
@@ -142,10 +226,10 @@ impl PromoCodesClient {
     ///                 existing_memberships_only: None,
     ///                 expires_at: None,
     ///                 one_per_customer: None,
-    ///                 plan_ids: None,
     ///                 product_id: None,
     ///                 stock: None,
     ///                 unlimited_stock: None,
+    ///                 variant_ids: None,
     ///             },
     ///             None,
     ///         )
@@ -161,11 +245,16 @@ impl PromoCodesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 "promo_codes",
                 Some(serde_json::to_value(request).map_err(ApiError::Serialization)?),
@@ -210,11 +299,16 @@ impl PromoCodesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::GET,
                 &format!("promo_codes/{}", id),
                 None,
@@ -259,11 +353,16 @@ impl PromoCodesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::DELETE,
                 &format!("promo_codes/{}", id),
                 None,
@@ -308,11 +407,16 @@ impl PromoCodesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("promo_codes/{}/activate", id),
                 None,
@@ -357,11 +461,16 @@ impl PromoCodesClient {
             let mut o = options.unwrap_or_default();
             o.additional_headers
                 .entry("Api-Version-Date".to_string())
-                .or_insert_with(|| "2026-09-15".to_string());
+                .or_insert_with(|| "2026-11-12".to_string());
             Some(o)
         };
+        let base_url = self
+            .http_client
+            .config()
+            .service_url(|environment| environment.api_url());
         self.http_client
-            .execute_request(
+            .execute_request_with_base_url(
+                base_url,
                 Method::POST,
                 &format!("promo_codes/{}/deactivate", id),
                 None,

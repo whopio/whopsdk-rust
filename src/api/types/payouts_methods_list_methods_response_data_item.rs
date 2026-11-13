@@ -54,6 +54,9 @@ pub struct ListMethodsResponseDataItem {
     /// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quote: Option<ListMethodsResponseDataItemQuote>,
+    /// The recipient of a third-party payout method. Present only for recipient payout methods.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recipient: Option<ListMethodsResponseDataItemRecipient>,
     /// Lifecycle status: `created` means saved but unused, `active` means a payout succeeded through it, `broken` means a payout failure disabled it; a later successful payout returns it to `active`.
     pub status: ListMethodsResponseDataItemStatus,
     /// Machine-readable code for why the method is `broken` — the newest disabling failure recorded through it, whether a payout error or a pre-payout rejection. `null` unless the method is broken, or when it was disabled without a recorded failure.
@@ -62,6 +65,8 @@ pub struct ListMethodsResponseDataItem {
     /// The supported payout method this saved method was created from.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub supported_payout_method: Option<ListMethodsResponseDataItemSupportedPayoutMethod>,
+    /// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+    pub r#type: ListMethodsResponseDataItemType,
     /// Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unavailable_reason: Option<ListMethodsResponseDataItemUnavailableReason>,
@@ -93,9 +98,11 @@ pub struct ListMethodsResponseDataItemBuilder {
     object: Option<ListMethodsResponseDataItemObject>,
     payer_name: Option<String>,
     quote: Option<ListMethodsResponseDataItemQuote>,
+    recipient: Option<ListMethodsResponseDataItemRecipient>,
     status: Option<ListMethodsResponseDataItemStatus>,
     status_reason: Option<String>,
     supported_payout_method: Option<ListMethodsResponseDataItemSupportedPayoutMethod>,
+    r#type: Option<ListMethodsResponseDataItemType>,
     unavailable_reason: Option<ListMethodsResponseDataItemUnavailableReason>,
 }
 
@@ -188,6 +195,11 @@ impl ListMethodsResponseDataItemBuilder {
         self
     }
 
+    pub fn recipient(mut self, value: ListMethodsResponseDataItemRecipient) -> Self {
+        self.recipient = Some(value);
+        self
+    }
+
     pub fn status(mut self, value: ListMethodsResponseDataItemStatus) -> Self {
         self.status = Some(value);
         self
@@ -203,6 +215,11 @@ impl ListMethodsResponseDataItemBuilder {
         value: ListMethodsResponseDataItemSupportedPayoutMethod,
     ) -> Self {
         self.supported_payout_method = Some(value);
+        self
+    }
+
+    pub fn r#type(mut self, value: ListMethodsResponseDataItemType) -> Self {
+        self.r#type = Some(value);
         self
     }
 
@@ -225,6 +242,7 @@ impl ListMethodsResponseDataItemBuilder {
     /// - [`needs_plaid_reconnect`](ListMethodsResponseDataItemBuilder::needs_plaid_reconnect)
     /// - [`object`](ListMethodsResponseDataItemBuilder::object)
     /// - [`status`](ListMethodsResponseDataItemBuilder::status)
+    /// - [`r#type`](ListMethodsResponseDataItemBuilder::r#type)
     pub fn build(self) -> Result<ListMethodsResponseDataItem, BuildError> {
         Ok(ListMethodsResponseDataItem {
             account_reference: self.account_reference,
@@ -258,11 +276,15 @@ impl ListMethodsResponseDataItemBuilder {
                 .ok_or_else(|| BuildError::missing_field("object"))?,
             payer_name: self.payer_name,
             quote: self.quote,
+            recipient: self.recipient,
             status: self
                 .status
                 .ok_or_else(|| BuildError::missing_field("status"))?,
             status_reason: self.status_reason,
             supported_payout_method: self.supported_payout_method,
+            r#type: self
+                .r#type
+                .ok_or_else(|| BuildError::missing_field("r#type"))?,
             unavailable_reason: self.unavailable_reason,
         })
     }

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// What the user is notified about in this scope. `mentions` is only valid for an experience level. `null` clears the preference.
+/// What the user is notified about in this scope. `mentions` is only valid for an experience level; a topic override is `all` or `nothing`. `null` clears the preference, so the scope inherits its default again rather than being switched off.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum SetNotificationsRequestPreferencesItemLevel {

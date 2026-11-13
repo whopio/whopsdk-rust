@@ -15,6 +15,9 @@ pub struct ListCardsResponseDataItem {
     #[serde(default)]
     #[serde(with = "crate::core::flexible_datetime::offset::option")]
     pub created_at: Option<DateTime<FixedOffset>>,
+    /// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub digital_wallets: Option<Vec<ListCardsResponseDataItemDigitalWalletsItem>>,
     /// Card expiration month.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expiration_month: Option<String>,
@@ -24,6 +27,9 @@ pub struct ListCardsResponseDataItem {
     /// Card ID, prefixed `icrd_`.
     #[serde(default)]
     pub id: String,
+    /// `true` once the issuer has issued the card. `false` for an invited card still waiting on its cardholder's onboarding or review, or one the issuer declined; it has no card number until it is issued.
+    #[serde(default)]
+    pub issued: bool,
     /// Last four digits of the card number. `null` for pending invitation cards.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last4: Option<String>,
@@ -63,9 +69,11 @@ pub struct ListCardsResponseDataItemBuilder {
     billing: Option<ListCardsResponseDataItemBilling>,
     canceled_at: Option<DateTime<FixedOffset>>,
     created_at: Option<DateTime<FixedOffset>>,
+    digital_wallets: Option<Vec<ListCardsResponseDataItemDigitalWalletsItem>>,
     expiration_month: Option<String>,
     expiration_year: Option<String>,
     id: Option<String>,
+    issued: Option<bool>,
     last4: Option<String>,
     limit: Option<ListCardsResponseDataItemLimit>,
     name: Option<String>,
@@ -93,6 +101,14 @@ impl ListCardsResponseDataItemBuilder {
         self
     }
 
+    pub fn digital_wallets(
+        mut self,
+        value: Vec<ListCardsResponseDataItemDigitalWalletsItem>,
+    ) -> Self {
+        self.digital_wallets = Some(value);
+        self
+    }
+
     pub fn expiration_month(mut self, value: impl Into<String>) -> Self {
         self.expiration_month = Some(value.into());
         self
@@ -105,6 +121,11 @@ impl ListCardsResponseDataItemBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn issued(mut self, value: bool) -> Self {
+        self.issued = Some(value);
         self
     }
 
@@ -156,15 +177,20 @@ impl ListCardsResponseDataItemBuilder {
     /// Consumes the builder and constructs a [`ListCardsResponseDataItem`].
     /// This method will fail if any of the following fields are not set:
     /// - [`id`](ListCardsResponseDataItemBuilder::id)
+    /// - [`issued`](ListCardsResponseDataItemBuilder::issued)
     /// - [`object`](ListCardsResponseDataItemBuilder::object)
     pub fn build(self) -> Result<ListCardsResponseDataItem, BuildError> {
         Ok(ListCardsResponseDataItem {
             billing: self.billing,
             canceled_at: self.canceled_at,
             created_at: self.created_at,
+            digital_wallets: self.digital_wallets,
             expiration_month: self.expiration_month,
             expiration_year: self.expiration_year,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            issued: self
+                .issued
+                .ok_or_else(|| BuildError::missing_field("issued"))?,
             last4: self.last4,
             limit: self.limit,
             name: self.name,

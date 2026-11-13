@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-/// Work to attach to the submission. Combine `urls`, `file_ids`, and `caption` freely; all are optional.
+/// Work to attach to a livestream attempt. Combine `urls`, `file_ids`, and `caption` freely; all are optional. If the attempt already went to review when its stream ended, the deliverable attaches to it once, until reviewers start voting. Data capture attempts take no deliverable.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash)]
 pub struct SubmitBountySubmissionsRequestDeliverable {
     /// Written context shown to reviewers alongside the work.

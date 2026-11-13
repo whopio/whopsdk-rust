@@ -2,17 +2,28 @@ pub use crate::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct DisputeEvidenceDocument {
-    /// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts.
+    /// BlurHash placeholder for an image or video. Null when unavailable or removed by moderation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub blurhash: Option<String>,
+    /// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts, and rejected without one — never null.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content_type: Option<DisputeEvidenceDocumentContentType>,
     /// When the file was created, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
-    /// What kind of evidence the document is.
+    /// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
     pub document_type: DisputeEvidenceDocumentDocumentType,
+    /// Audio or video duration in seconds. Null when unavailable or removed by moderation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    #[serde(with = "crate::core::number_serializers::option")]
+    pub duration_seconds: Option<f64>,
     /// The original filename, including its extension.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub filename: Option<String>,
+    /// Image or video height in pixels. Null when unavailable or removed by moderation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub height: Option<i64>,
     /// The file's ID, prefixed `file_`.
     #[serde(default)]
     pub id: String,
@@ -27,6 +38,9 @@ pub struct DisputeEvidenceDocument {
     /// The type of this object, always `file`.
     #[serde(default)]
     pub object: String,
+    /// Whether moderation removed the file. When `true`, `url` serves a replacement image. `filename`, `size` and `content_type` still describe the original file.
+    #[serde(default)]
+    pub removed_by_moderation: bool,
     /// The file size in bytes. `null` until the upload has finished.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub size: Option<i64>,
@@ -38,11 +52,17 @@ pub struct DisputeEvidenceDocument {
     /// Presigned URL to PUT the file's bytes to. Present only on create, and only for single-part uploads.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub upload_url: Option<String>,
-    /// A URL to download the file: a permanent CDN URL for public files, a signed expiring URL for private ones. `null` until the upload has finished.
+    /// A URL to download the file. Public files get a permanent CDN URL, and private files get a signed URL that expires. `null` until the upload has finished. When moderation removes the file, a replacement image URL.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+    /// `public` files are served from an unsigned CDN URL. `private` files are served from a signed URL that expires.
     pub visibility: DisputeEvidenceDocumentVisibility,
+    /// Audio waveform URL. Null when unavailable or removed by moderation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub waveform_url: Option<String>,
+    /// Image or video width in pixels. Null when unavailable or removed by moderation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub width: Option<i64>,
 }
 
 impl DisputeEvidenceDocument {
@@ -54,24 +74,35 @@ impl DisputeEvidenceDocument {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct DisputeEvidenceDocumentBuilder {
+    blurhash: Option<String>,
     content_type: Option<DisputeEvidenceDocumentContentType>,
     created_at: Option<String>,
     document_type: Option<DisputeEvidenceDocumentDocumentType>,
+    duration_seconds: Option<f64>,
     filename: Option<String>,
+    height: Option<i64>,
     id: Option<String>,
     multipart_chunk_size: Option<i64>,
     multipart_upload_id: Option<String>,
     multipart_upload_urls: Option<Vec<FileMultipartUrl>>,
     object: Option<String>,
+    removed_by_moderation: Option<bool>,
     size: Option<i64>,
     upload_headers: Option<HashMap<String, serde_json::Value>>,
     upload_status: Option<DisputeEvidenceDocumentUploadStatus>,
     upload_url: Option<String>,
     url: Option<String>,
     visibility: Option<DisputeEvidenceDocumentVisibility>,
+    waveform_url: Option<String>,
+    width: Option<i64>,
 }
 
 impl DisputeEvidenceDocumentBuilder {
+    pub fn blurhash(mut self, value: impl Into<String>) -> Self {
+        self.blurhash = Some(value.into());
+        self
+    }
+
     pub fn content_type(mut self, value: DisputeEvidenceDocumentContentType) -> Self {
         self.content_type = Some(value);
         self
@@ -87,8 +118,18 @@ impl DisputeEvidenceDocumentBuilder {
         self
     }
 
+    pub fn duration_seconds(mut self, value: f64) -> Self {
+        self.duration_seconds = Some(value);
+        self
+    }
+
     pub fn filename(mut self, value: impl Into<String>) -> Self {
         self.filename = Some(value.into());
+        self
+    }
+
+    pub fn height(mut self, value: i64) -> Self {
+        self.height = Some(value);
         self
     }
 
@@ -114,6 +155,11 @@ impl DisputeEvidenceDocumentBuilder {
 
     pub fn object(mut self, value: impl Into<String>) -> Self {
         self.object = Some(value.into());
+        self
+    }
+
+    pub fn removed_by_moderation(mut self, value: bool) -> Self {
+        self.removed_by_moderation = Some(value);
         self
     }
 
@@ -147,16 +193,28 @@ impl DisputeEvidenceDocumentBuilder {
         self
     }
 
+    pub fn waveform_url(mut self, value: impl Into<String>) -> Self {
+        self.waveform_url = Some(value.into());
+        self
+    }
+
+    pub fn width(mut self, value: i64) -> Self {
+        self.width = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`DisputeEvidenceDocument`].
     /// This method will fail if any of the following fields are not set:
     /// - [`created_at`](DisputeEvidenceDocumentBuilder::created_at)
     /// - [`document_type`](DisputeEvidenceDocumentBuilder::document_type)
     /// - [`id`](DisputeEvidenceDocumentBuilder::id)
     /// - [`object`](DisputeEvidenceDocumentBuilder::object)
+    /// - [`removed_by_moderation`](DisputeEvidenceDocumentBuilder::removed_by_moderation)
     /// - [`upload_status`](DisputeEvidenceDocumentBuilder::upload_status)
     /// - [`visibility`](DisputeEvidenceDocumentBuilder::visibility)
     pub fn build(self) -> Result<DisputeEvidenceDocument, BuildError> {
         Ok(DisputeEvidenceDocument {
+            blurhash: self.blurhash,
             content_type: self.content_type,
             created_at: self
                 .created_at
@@ -164,7 +222,9 @@ impl DisputeEvidenceDocumentBuilder {
             document_type: self
                 .document_type
                 .ok_or_else(|| BuildError::missing_field("document_type"))?,
+            duration_seconds: self.duration_seconds,
             filename: self.filename,
+            height: self.height,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
             multipart_chunk_size: self.multipart_chunk_size,
             multipart_upload_id: self.multipart_upload_id,
@@ -172,6 +232,9 @@ impl DisputeEvidenceDocumentBuilder {
             object: self
                 .object
                 .ok_or_else(|| BuildError::missing_field("object"))?,
+            removed_by_moderation: self
+                .removed_by_moderation
+                .ok_or_else(|| BuildError::missing_field("removed_by_moderation"))?,
             size: self.size,
             upload_headers: self.upload_headers,
             upload_status: self
@@ -182,6 +245,8 @@ impl DisputeEvidenceDocumentBuilder {
             visibility: self
                 .visibility
                 .ok_or_else(|| BuildError::missing_field("visibility"))?,
+            waveform_url: self.waveform_url,
+            width: self.width,
         })
     }
 }

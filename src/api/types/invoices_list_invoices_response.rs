@@ -1,14 +1,11 @@
 pub use crate::prelude::*;
 
-/// The connection type for PublicInvoice.
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct ListInvoicesResponse {
-    /// A list of nodes.
     #[serde(default)]
-    pub data: Vec<InvoiceListItem>,
-    /// Information to aid in pagination.
+    pub data: Vec<Invoice>,
     #[serde(default)]
-    pub page_info: PageInfo,
+    pub page_info: ListInvoicesResponsePageInfo,
 }
 
 impl ListInvoicesResponse {
@@ -20,17 +17,17 @@ impl ListInvoicesResponse {
 #[derive(Clone, PartialEq, Default, Debug)]
 #[non_exhaustive]
 pub struct ListInvoicesResponseBuilder {
-    data: Option<Vec<InvoiceListItem>>,
-    page_info: Option<PageInfo>,
+    data: Option<Vec<Invoice>>,
+    page_info: Option<ListInvoicesResponsePageInfo>,
 }
 
 impl ListInvoicesResponseBuilder {
-    pub fn data(mut self, value: Vec<InvoiceListItem>) -> Self {
+    pub fn data(mut self, value: Vec<Invoice>) -> Self {
         self.data = Some(value);
         self
     }
 
-    pub fn page_info(mut self, value: PageInfo) -> Self {
+    pub fn page_info(mut self, value: ListInvoicesResponsePageInfo) -> Self {
         self.page_info = Some(value);
         self
     }

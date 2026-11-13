@@ -6,6 +6,9 @@ pub struct PaymentLegacyVerificationChecks {
     /// Whether the billing street address the customer entered matched the address the issuer has on file.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub address_line1: Option<String>,
+    /// The card issuer's authorization code for this charge. Null when the processor did not return one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub authorization_code: Option<String>,
     /// Whether the cardholder name the customer entered matched the name the issuer has on file.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub card_holder_name: Option<String>,
@@ -27,6 +30,7 @@ impl PaymentLegacyVerificationChecks {
 #[non_exhaustive]
 pub struct PaymentLegacyVerificationChecksBuilder {
     address_line1: Option<String>,
+    authorization_code: Option<String>,
     card_holder_name: Option<String>,
     card_security_code: Option<String>,
     zip_code: Option<String>,
@@ -35,6 +39,11 @@ pub struct PaymentLegacyVerificationChecksBuilder {
 impl PaymentLegacyVerificationChecksBuilder {
     pub fn address_line1(mut self, value: impl Into<String>) -> Self {
         self.address_line1 = Some(value.into());
+        self
+    }
+
+    pub fn authorization_code(mut self, value: impl Into<String>) -> Self {
+        self.authorization_code = Some(value.into());
         self
     }
 
@@ -57,6 +66,7 @@ impl PaymentLegacyVerificationChecksBuilder {
     pub fn build(self) -> Result<PaymentLegacyVerificationChecks, BuildError> {
         Ok(PaymentLegacyVerificationChecks {
             address_line1: self.address_line1,
+            authorization_code: self.authorization_code,
             card_holder_name: self.card_holder_name,
             card_security_code: self.card_security_code,
             zip_code: self.zip_code,

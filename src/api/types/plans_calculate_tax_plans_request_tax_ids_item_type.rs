@@ -1,6 +1,5 @@
 pub use crate::prelude::*;
 
-/// Tax ID type, such as `eu_vat` for an EU VAT number.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CalculateTaxPlansRequestTaxIdsItemType {

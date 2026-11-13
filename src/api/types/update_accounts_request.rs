@@ -17,9 +17,9 @@ pub struct UpdateAccountsRequest {
     /// The legal business name used with the account's tax address.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub business_name: Option<String>,
-    /// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+    /// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub business_type: Option<String>,
+    pub cancellation_policy: Option<UpdateAccountsRequestCancellationPolicy>,
     /// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub collect_vat_id: Option<bool>,
@@ -29,18 +29,21 @@ pub struct UpdateAccountsRequest {
     /// Account promotional description. When creating a Whop-managed Facebook page, it is truncated to 155 characters and used as the About text.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    /// Whether Whop assembles and files dispute evidence for this account. Enabling it opts into the success fee charged on disputes it wins. Requires payment:dispute. Omit to preserve the existing setting or creation default.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dispute_fighter_enabled: Option<bool>,
+    /// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eula: Option<UpdateAccountsRequestEula>,
+    /// Your platform's own identifier for this subaccount. It must be unique among your subaccounts, and a duplicate returns a 409. Only the parent account can set it. Pass `null` to clear.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub external_id: Option<String>,
     /// The ID of the product to feature for affiliates. Pass `null` to clear.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub featured_affiliate_product_id: Option<String>,
     /// Public account home page preferences.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub home_preferences: Option<Vec<UpdateAccountsRequestHomePreferencesItem>>,
-    /// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub industry_group: Option<String>,
-    /// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub industry_type: Option<String>,
     /// Prefix used for account invoices.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub invoice_prefix: Option<String>,
@@ -59,12 +62,18 @@ pub struct UpdateAccountsRequest {
     /// The account Open Graph image variant.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub opengraph_image_variant: Option<UpdateAccountsRequestOpengraphImageVariant>,
+    /// Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub orchestration_enabled: Option<bool>,
     /// The description of the business type when business_type is other.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub other_business_description: Option<String>,
     /// The description of the industry type when industry_type is other.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub other_industry_description: Option<String>,
+    /// The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub privacy_policy: Option<UpdateAccountsRequestPrivacyPolicy>,
     /// ID of the tax classification code applied by default to the account's products. See the available [product categories](https://docs.numeral.com/essentials/product-categories).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product_tax_code_id: Option<String>,
@@ -72,12 +81,18 @@ pub struct UpdateAccountsRequest {
     #[serde(rename = "require_2fa")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub require2fa: Option<bool>,
+    /// The account's return and refund policy document. Attached to new disputes as the refund policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub return_policy: Option<UpdateAccountsRequestReturnPolicy>,
     /// The unique URL slug for the account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub route: Option<String>,
     /// Whether Whop sends transactional emails to customers on behalf of this account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub send_customer_emails: Option<bool>,
+    /// The account's shipping policy document. Sent with physical-goods dispute evidence. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_policy: Option<UpdateAccountsRequestShippingPolicy>,
     /// Whether the account appears in joined whops on other accounts.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub show_joined_whops: Option<bool>,
@@ -100,7 +115,7 @@ pub struct UpdateAccountsRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_collection_enabled_states:
         Option<Vec<UpdateAccountsRequestTaxCollectionEnabledStatesItem>>,
-    /// Account tax/VAT registrations to add or update. When `tax_remitted_by` is `self`, tax is calculated and collected only in the countries where the account holds a registration.
+    /// Tax IDs to add to the account, or to replace when the account already has one of that type. When `tax_remitted_by` is `self`, tax outside the US is calculated and collected only in the countries where the account has a tax ID. US collection follows `tax_collection_enabled_states`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_identifiers: Option<Vec<UpdateAccountsRequestTaxIdentifiersItem>>,
     /// Determines whether Whop or the account calculates and remits tax. The account must provide a supported-country business address when it self-remits.
@@ -109,6 +124,9 @@ pub struct UpdateAccountsRequest {
     /// Determines whether tax is included in the listed price or added at checkout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tax_type: Option<UpdateAccountsRequestTaxType>,
+    /// The account's terms of service document. Attached to new disputes as the cancellation policy evidence when no cancellation policy is set. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub terms_of_service: Option<UpdateAccountsRequestTermsOfService>,
     /// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub three_ds_level: Option<UpdateAccountsRequestThreeDsLevel>,
@@ -121,6 +139,11 @@ pub struct UpdateAccountsRequest {
     /// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub website: Option<String>,
+    /// Set to `true` to turn on Whop Partner mode for the account, so its team can refer businesses and the account is paid partner commission on their sales. Recorded once; `false` is rejected. Only a verified Whop Partner can turn it on.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub whop_partner_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub industry_type: Option<serde_json::Value>,
 }
 
 impl UpdateAccountsRequest {
@@ -137,26 +160,31 @@ pub struct UpdateAccountsRequestBuilder {
     banner_image: Option<UpdateAccountsRequestBannerImage>,
     business_address: Option<UpdateAccountsRequestBusinessAddress>,
     business_name: Option<String>,
-    business_type: Option<String>,
+    cancellation_policy: Option<UpdateAccountsRequestCancellationPolicy>,
     collect_vat_id: Option<bool>,
     country: Option<String>,
     description: Option<String>,
+    dispute_fighter_enabled: Option<bool>,
+    eula: Option<UpdateAccountsRequestEula>,
+    external_id: Option<String>,
     featured_affiliate_product_id: Option<String>,
     home_preferences: Option<Vec<UpdateAccountsRequestHomePreferencesItem>>,
-    industry_group: Option<String>,
-    industry_type: Option<String>,
     invoice_prefix: Option<String>,
     logo: Option<UpdateAccountsRequestLogo>,
     metadata: Option<HashMap<String, serde_json::Value>>,
     onboarding_type: Option<UpdateAccountsRequestOnboardingType>,
     opengraph_image: Option<UpdateAccountsRequestOpengraphImage>,
     opengraph_image_variant: Option<UpdateAccountsRequestOpengraphImageVariant>,
+    orchestration_enabled: Option<bool>,
     other_business_description: Option<String>,
     other_industry_description: Option<String>,
+    privacy_policy: Option<UpdateAccountsRequestPrivacyPolicy>,
     product_tax_code_id: Option<String>,
     require2fa: Option<bool>,
+    return_policy: Option<UpdateAccountsRequestReturnPolicy>,
     route: Option<String>,
     send_customer_emails: Option<bool>,
+    shipping_policy: Option<UpdateAccountsRequestShippingPolicy>,
     show_joined_whops: Option<bool>,
     show_reviews_dtc: Option<bool>,
     show_user_directory: Option<bool>,
@@ -167,10 +195,13 @@ pub struct UpdateAccountsRequestBuilder {
     tax_identifiers: Option<Vec<UpdateAccountsRequestTaxIdentifiersItem>>,
     tax_remitted_by: Option<UpdateAccountsRequestTaxRemittedBy>,
     tax_type: Option<UpdateAccountsRequestTaxType>,
+    terms_of_service: Option<UpdateAccountsRequestTermsOfService>,
     three_ds_level: Option<UpdateAccountsRequestThreeDsLevel>,
     title: Option<String>,
     use_logo_as_opengraph_image_fallback: Option<bool>,
     website: Option<String>,
+    whop_partner_enabled: Option<bool>,
+    industry_type: Option<serde_json::Value>,
 }
 
 impl UpdateAccountsRequestBuilder {
@@ -199,8 +230,8 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
-    pub fn business_type(mut self, value: impl Into<String>) -> Self {
-        self.business_type = Some(value.into());
+    pub fn cancellation_policy(mut self, value: UpdateAccountsRequestCancellationPolicy) -> Self {
+        self.cancellation_policy = Some(value);
         self
     }
 
@@ -219,6 +250,21 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
+    pub fn dispute_fighter_enabled(mut self, value: bool) -> Self {
+        self.dispute_fighter_enabled = Some(value);
+        self
+    }
+
+    pub fn eula(mut self, value: UpdateAccountsRequestEula) -> Self {
+        self.eula = Some(value);
+        self
+    }
+
+    pub fn external_id(mut self, value: impl Into<String>) -> Self {
+        self.external_id = Some(value.into());
+        self
+    }
+
     pub fn featured_affiliate_product_id(mut self, value: impl Into<String>) -> Self {
         self.featured_affiliate_product_id = Some(value.into());
         self
@@ -229,16 +275,6 @@ impl UpdateAccountsRequestBuilder {
         value: Vec<UpdateAccountsRequestHomePreferencesItem>,
     ) -> Self {
         self.home_preferences = Some(value);
-        self
-    }
-
-    pub fn industry_group(mut self, value: impl Into<String>) -> Self {
-        self.industry_group = Some(value.into());
-        self
-    }
-
-    pub fn industry_type(mut self, value: impl Into<String>) -> Self {
-        self.industry_type = Some(value.into());
         self
     }
 
@@ -275,6 +311,11 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
+    pub fn orchestration_enabled(mut self, value: bool) -> Self {
+        self.orchestration_enabled = Some(value);
+        self
+    }
+
     pub fn other_business_description(mut self, value: impl Into<String>) -> Self {
         self.other_business_description = Some(value.into());
         self
@@ -282,6 +323,11 @@ impl UpdateAccountsRequestBuilder {
 
     pub fn other_industry_description(mut self, value: impl Into<String>) -> Self {
         self.other_industry_description = Some(value.into());
+        self
+    }
+
+    pub fn privacy_policy(mut self, value: UpdateAccountsRequestPrivacyPolicy) -> Self {
+        self.privacy_policy = Some(value);
         self
     }
 
@@ -295,6 +341,11 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
+    pub fn return_policy(mut self, value: UpdateAccountsRequestReturnPolicy) -> Self {
+        self.return_policy = Some(value);
+        self
+    }
+
     pub fn route(mut self, value: impl Into<String>) -> Self {
         self.route = Some(value.into());
         self
@@ -302,6 +353,11 @@ impl UpdateAccountsRequestBuilder {
 
     pub fn send_customer_emails(mut self, value: bool) -> Self {
         self.send_customer_emails = Some(value);
+        self
+    }
+
+    pub fn shipping_policy(mut self, value: UpdateAccountsRequestShippingPolicy) -> Self {
+        self.shipping_policy = Some(value);
         self
     }
 
@@ -358,6 +414,11 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
+    pub fn terms_of_service(mut self, value: UpdateAccountsRequestTermsOfService) -> Self {
+        self.terms_of_service = Some(value);
+        self
+    }
+
     pub fn three_ds_level(mut self, value: UpdateAccountsRequestThreeDsLevel) -> Self {
         self.three_ds_level = Some(value);
         self
@@ -378,6 +439,16 @@ impl UpdateAccountsRequestBuilder {
         self
     }
 
+    pub fn whop_partner_enabled(mut self, value: bool) -> Self {
+        self.whop_partner_enabled = Some(value);
+        self
+    }
+
+    pub fn industry_type(mut self, value: serde_json::Value) -> Self {
+        self.industry_type = Some(value);
+        self
+    }
+
     /// Consumes the builder and constructs a [`UpdateAccountsRequest`].
     pub fn build(self) -> Result<UpdateAccountsRequest, BuildError> {
         Ok(UpdateAccountsRequest {
@@ -386,26 +457,31 @@ impl UpdateAccountsRequestBuilder {
             banner_image: self.banner_image,
             business_address: self.business_address,
             business_name: self.business_name,
-            business_type: self.business_type,
+            cancellation_policy: self.cancellation_policy,
             collect_vat_id: self.collect_vat_id,
             country: self.country,
             description: self.description,
+            dispute_fighter_enabled: self.dispute_fighter_enabled,
+            eula: self.eula,
+            external_id: self.external_id,
             featured_affiliate_product_id: self.featured_affiliate_product_id,
             home_preferences: self.home_preferences,
-            industry_group: self.industry_group,
-            industry_type: self.industry_type,
             invoice_prefix: self.invoice_prefix,
             logo: self.logo,
             metadata: self.metadata,
             onboarding_type: self.onboarding_type,
             opengraph_image: self.opengraph_image,
             opengraph_image_variant: self.opengraph_image_variant,
+            orchestration_enabled: self.orchestration_enabled,
             other_business_description: self.other_business_description,
             other_industry_description: self.other_industry_description,
+            privacy_policy: self.privacy_policy,
             product_tax_code_id: self.product_tax_code_id,
             require2fa: self.require2fa,
+            return_policy: self.return_policy,
             route: self.route,
             send_customer_emails: self.send_customer_emails,
+            shipping_policy: self.shipping_policy,
             show_joined_whops: self.show_joined_whops,
             show_reviews_dtc: self.show_reviews_dtc,
             show_user_directory: self.show_user_directory,
@@ -416,10 +492,13 @@ impl UpdateAccountsRequestBuilder {
             tax_identifiers: self.tax_identifiers,
             tax_remitted_by: self.tax_remitted_by,
             tax_type: self.tax_type,
+            terms_of_service: self.terms_of_service,
             three_ds_level: self.three_ds_level,
             title: self.title,
             use_logo_as_opengraph_image_fallback: self.use_logo_as_opengraph_image_fallback,
             website: self.website,
+            whop_partner_enabled: self.whop_partner_enabled,
+            industry_type: self.industry_type,
         })
     }
 }

@@ -1,6 +1,6 @@
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Refund {
     /// The account that issued the refund, prefixed `biz_`.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -11,7 +11,7 @@ pub struct Refund {
     /// When the refund was requested, as an ISO 8601 timestamp.
     #[serde(default)]
     pub created_at: String,
-    /// The provider's own explanation of the failure, or null.
+    /// A merchant-facing explanation of why the refund failed, in the request's language. Null unless the refund failed or was canceled.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub failure_message: Option<String>,
     /// Why the refund failed, normalized across providers. Null unless the refund failed or was canceled.
@@ -20,6 +20,9 @@ pub struct Refund {
     /// Refund ID, prefixed `rf_`.
     #[serde(default)]
     pub id: String,
+    /// Your own key-value data attached when the refund was requested.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<HashMap<String, serde_json::Value>>,
     /// The refunded amount in the currency the processor moved.
     #[serde(default)]
     pub original_amount: Money,
@@ -69,6 +72,7 @@ pub struct RefundBuilder {
     failure_message: Option<String>,
     failure_reason: Option<RefundFailureReason>,
     id: Option<String>,
+    metadata: Option<HashMap<String, serde_json::Value>>,
     original_amount: Option<Money>,
     payment_id: Option<String>,
     provider: Option<String>,
@@ -110,6 +114,11 @@ impl RefundBuilder {
 
     pub fn id(mut self, value: impl Into<String>) -> Self {
         self.id = Some(value.into());
+        self
+    }
+
+    pub fn metadata(mut self, value: HashMap<String, serde_json::Value>) -> Self {
+        self.metadata = Some(value);
         self
     }
 
@@ -188,6 +197,7 @@ impl RefundBuilder {
             failure_message: self.failure_message,
             failure_reason: self.failure_reason,
             id: self.id.ok_or_else(|| BuildError::missing_field("id"))?,
+            metadata: self.metadata,
             original_amount: self
                 .original_amount
                 .ok_or_else(|| BuildError::missing_field("original_amount"))?,
